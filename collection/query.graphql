@@ -1,9 +1,5 @@
 query characterizeProjects($projectsPerPage: Int, $cursor: String) {
-    rateLimit {
-        cost
-        remaining
-    }
-    search(query: "is:public mirror:false archived:false fork:false stars:>=100000 pushed:>=2019-07-19 sort:stars", type: REPOSITORY, first: $projectsPerPage, after: $cursor) {
+    search(query: "is:public mirror:false archived:false fork:false stars:>=10000 pushed:>=2019-07-19 sort:stars", type: REPOSITORY, first: $projectsPerPage, after: $cursor) {
         pageInfo {
             endCursor
             hasNextPage
@@ -15,12 +11,17 @@ query characterizeProjects($projectsPerPage: Int, $cursor: String) {
                     login
                 }
                 name
-                description
                 createdAt
                 pushedAt
                 diskUsage
                 primaryLanguage {
                     name
+                }
+                languages {
+                    totalCount
+                }
+                contributors: mentionableUsers {
+                    totalCount
                 }
                 watchers {
                     totalCount
@@ -28,17 +29,11 @@ query characterizeProjects($projectsPerPage: Int, $cursor: String) {
                 stargazers {
                     totalCount
                 }
-                forkCount
-                contributorCount: mentionableUsers {
-                    totalCount
-                }
-                languages {
-                    totalCount
-                }
+                forks: forkCount
                 issues {
                     totalCount
                 }
-                commitCount: defaultBranchRef {
+                commits: defaultBranchRef {
                     target {
                         ... on Commit {
                             history {
@@ -47,18 +42,19 @@ query characterizeProjects($projectsPerPage: Int, $cursor: String) {
                         }
                     }
                 }
-                branchCount: refs(refPrefix: "refs/heads/") {
+                pullRequests {
                     totalCount
                 }
-                tagCount: refs(refPrefix: "refs/tags/") {
+                branches: refs(refPrefix: "refs/heads/") {
+                    totalCount
+                }
+                tags: refs(refPrefix: "refs/tags/") {
                     totalCount
                 }
                 releases {
                     totalCount
                 }
-                pullRequests {
-                    totalCount
-                }
+                description
             }
         }
     }

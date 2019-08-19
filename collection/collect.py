@@ -1,12 +1,25 @@
 import time
 from pprint import pprint
+import pandas as pd
 
 import requests
 import os
 
 
-def process(result):
-    pprint(result)
+def process(some_repositories, all_repositories):
+    for repo in some_repositories:
+        # Flattening fields
+        for k, v in repo.items():
+            while isinstance(v, dict):
+                v = next(iter(v.values()))
+            repo[k] = v
+
+        all_repositories.append(repo)
+
+
+def save(all_repositories):
+    df = pd.DataFrame(all_repositories)
+    df.to_excel('projects.xlsx', index=False)
 
 
 def main():
@@ -29,7 +42,7 @@ def main():
         'variables': variables
     }
 
-    processed_projects = 0
+    all_repositories = []
     has_next_page = True
     while has_next_page:
         print(f'Trying to retrieve the next {variables["projectsPerPage"]} projects...')
@@ -52,9 +65,8 @@ def main():
                 exit(1)
 
         if 'data' in result and result['data']:
-            process(result)
-            processed_projects += len(result['data']['search']['nodes'])
-            print(f'Processed {processed_projects} of {result["data"]["search"]["repositoryCount"]} projects.', end=' ')
+            process(result['data']['search']['nodes'], all_repositories)
+            print(f'Processed {len(all_repositories)} of {result["data"]["search"]["repositoryCount"]} projects.', end=' ')
 
             page_info = result['data']['search']['pageInfo']
             if page_info['hasNextPage']:  # We still have pending projects
@@ -65,6 +77,8 @@ def main():
                 has_next_page = False
 
         time.sleep(1)  # Wait 1 second before next request (https://developer.github.com/v3/#abuse-rate-limits)
+
+    save(all_repositories)
 
 
 if __name__ == "__main__":
