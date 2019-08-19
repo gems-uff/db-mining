@@ -3,7 +3,7 @@ query characterizeProjects($projectsPerPage: Int, $cursor: String) {
         cost
         remaining
     }
-    search(query: "is:public mirror:false archived:false fork:false stars:>=100000 pushed:>=2019-07-16 sort:stars", type: REPOSITORY, first: $projectsPerPage, after: $cursor) {
+    search(query: "is:public mirror:false archived:false fork:false stars:>=100000 pushed:>=2019-07-19 sort:stars", type: REPOSITORY, first: $projectsPerPage, after: $cursor) {
         pageInfo {
             endCursor
             hasNextPage
@@ -11,33 +11,53 @@ query characterizeProjects($projectsPerPage: Int, $cursor: String) {
         repositoryCount
         nodes {
             ... on Repository {
-                resourcePath
-                pushedAt
-                stargazers {
-                    totalCount
+                owner {
+                    login
                 }
+                name
+                description
+                createdAt
+                pushedAt
+                diskUsage
                 primaryLanguage {
                     name
                 }
-                languages(first: 10) {
-                    nodes {
-                        ... on Language {
-                            name
-                        }
-                    }
-                }
-                refs(refPrefix: "refs/heads/", first: 10) {
+                watchers {
                     totalCount
-                    nodes {
-                        name
-                        target {
-                            ... on Commit {
-                                history {
-                                    totalCount
-                                }
+                }
+                stargazers {
+                    totalCount
+                }
+                forkCount
+                contributorCount: mentionableUsers {
+                    totalCount
+                }
+                languages {
+                    totalCount
+                }
+                issues {
+                    totalCount
+                }
+                commitCount: defaultBranchRef {
+                    target {
+                        ... on Commit {
+                            history {
+                                totalCount
                             }
                         }
                     }
+                }
+                branchCount: refs(refPrefix: "refs/heads/") {
+                    totalCount
+                }
+                tagCount: refs(refPrefix: "refs/tags/") {
+                    totalCount
+                }
+                releases {
+                    totalCount
+                }
+                pullRequests {
+                    totalCount
                 }
             }
         }
