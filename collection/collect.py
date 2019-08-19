@@ -36,8 +36,8 @@ def main():
         response = requests.post(url="https://api.github.com/graphql", json=request, headers=headers)
         result = response.json()
 
-        # print(result)
-        # print(response.headers)
+        print(result)
+        print(response.headers)
 
         if 'message' in result:  # reached retry limit
             print(f'Waiting for {response.headers["Retry-After"]} seconds before continuing...', end=' ')
