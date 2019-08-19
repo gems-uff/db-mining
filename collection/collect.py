@@ -1,12 +1,12 @@
-import errno
 import time
+from pprint import pprint
 
 import requests
 import os
 
 
 def process(result):
-    print(result)
+    pprint(result)
 
 
 def main():
@@ -14,7 +14,7 @@ def main():
     if not token:
         print(
             'Please, set the GITHUB_TOKEN environment variable with your OAuth token (https://help.github.com/en/articles/creating-a-personal-access-token-for-the-command-line)')
-        exit(errno.EACCES)
+        exit(1)
     headers = {
         'Authorization': f'bearer {token}'
     }
@@ -36,22 +36,23 @@ def main():
         response = requests.post(url="https://api.github.com/graphql", json=request, headers=headers)
         result = response.json()
 
-        print(result)
-        print(response.headers)
-
-        if 'message' in result:  # reached retry limit
+        if 'Retry-After' in response.headers:  # reached retry limit
             print(f'Waiting for {response.headers["Retry-After"]} seconds before continuing...', end=' ')
             time.sleep(int(response.headers['Retry-After']))
 
-        if 'errors' in result:  # reached timeout
-            print(f'Timeout!', end=' ')
-            if variables['cursor']:  # We have already retrieved some projects in the past
-                variables['projectsPerPage'] = max(1, variables['projectsPerPage'] - 1)
-            else:  # We have always received timeout
-                variables['projectsPerPage'] = int(max(1, variables['projectsPerPage'] / 2))
+        if 'errors' in result:
+            if 'timeout' in result['errors'][0]['message']:  # reached timeout
+                print(f'Timeout!', end=' ')
+                if variables['cursor']:  # We have already retrieved some projects in the past
+                    variables['projectsPerPage'] = max(1, variables['projectsPerPage'] - 1)
+                else:  # We have always received timeout
+                    variables['projectsPerPage'] = int(max(1, variables['projectsPerPage'] / 2))
+            else:  # some unexpected error
+                pprint(result['error'])
+                exit(1)
 
         if 'data' in result and result['data']:
-            # process(result)
+            process(result)
             processed_projects += len(result['data']['search']['nodes'])
             print(f'Processed {processed_projects} of {result["data"]["search"]["repositoryCount"]} projects.', end=' ')
 
@@ -62,6 +63,9 @@ def main():
             else:  # We finished processing all projects
                 print(f'Finished.')
                 has_next_page = False
+
+        time.sleep(1)  # Wait 1 second before next request (https://developer.github.com/v3/#abuse-rate-limits)
+
 
 if __name__ == "__main__":
     main()
