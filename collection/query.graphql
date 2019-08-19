@@ -1,0 +1,45 @@
+query characterizeProjects($projectsPerPage: Int, $cursor: String) {
+    rateLimit {
+        cost
+        remaining
+    }
+    search(query: "is:public mirror:false archived:false fork:false stars:>=100000 pushed:>=2019-07-16 sort:stars", type: REPOSITORY, first: $projectsPerPage, after: $cursor) {
+        pageInfo {
+            endCursor
+            hasNextPage
+        }
+        repositoryCount
+        nodes {
+            ... on Repository {
+                resourcePath
+                pushedAt
+                stargazers {
+                    totalCount
+                }
+                primaryLanguage {
+                    name
+                }
+                languages(first: 10) {
+                    nodes {
+                        ... on Language {
+                            name
+                        }
+                    }
+                }
+                refs(refPrefix: "refs/heads/", first: 10) {
+                    totalCount
+                    nodes {
+                        name
+                        target {
+                            ... on Commit {
+                                history {
+                                    totalCount
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
