@@ -22,9 +22,6 @@
             totalCount
         }
         forkCount
-        collaborators {
-            totalCount
-        }
         contributorCount: mentionableUsers {
             totalCount
         }
