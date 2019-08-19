@@ -1,9 +1,13 @@
 import errno
+import time
+
 import requests
 import os
 
+
 def process(result):
     print(result)
+
 
 def main():
     token = os.getenv('GITHUB_TOKEN')
@@ -15,75 +19,49 @@ def main():
         'Authorization': f'bearer {token}'
     }
 
-    GRAPHQL_QUERY = """
-    query ($github_query: String!, $cursor: String) {
-        rateLimit {
-            cost
-            remaining
-        }
-        search(query: $github_query, type: REPOSITORY, first: 2, after: $cursor) {
-            pageInfo {
-                endCursor
-                hasNextPage
-            }
-            repositoryCount
-            nodes {
-                ... on Repository {
-                    resourcePath
-                    pushedAt
-                    stargazers {
-                        totalCount
-                    }
-                    primaryLanguage {
-                        name
-                    }
-                    languages(first: 10) {
-                        nodes {
-                            ... on Language {
-                                name
-                            }
-                        }
-                    }
-                    refs(refPrefix: "refs/heads/", first: 10) {
-                        totalCount
-                        nodes {
-                            name
-                            target {       
-                                ... on Commit {
-                                    history {
-                                        totalCount
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    """
-
     variables = {
-        "github_query": "is:public mirror:false archived:false fork:false stars:>=100000 pushed:>=2019-07-15 sort:stars"
+        "projectsPerPage": 100,  # from 1 to 100
+        "cursor": None
     }
 
     request = {
-        'query': GRAPHQL_QUERY,
+        'query': open('query.graphql', 'r').read(),
         'variables': variables
     }
 
+    processed_projects = 0
     has_next_page = True
     while has_next_page:
+        print(f'Trying to retrieve the next {variables["projectsPerPage"]} projects...')
         response = requests.post(url="https://api.github.com/graphql", json=request, headers=headers)
         result = response.json()
 
-        process(result)
+        # print(result)
+        # print(response.headers)
 
-        page_info = result['data']['search']['pageInfo']
-        if page_info['hasNextPage']:
-            variables['cursor'] = page_info['endCursor']
-        else:
-           has_next_page = False
+        if 'message' in result:  # reached retry limit
+            print(f'Waiting for {response.headers["Retry-After"]} seconds before continuing...', end=' ')
+            time.sleep(int(response.headers['Retry-After']))
+
+        if 'errors' in result:  # reached timeout
+            print(f'Timeout!', end=' ')
+            if variables['cursor']:  # We have already retrieved some projects in the past
+                variables['projectsPerPage'] = max(1, variables['projectsPerPage'] - 1)
+            else:  # We have always received timeout
+                variables['projectsPerPage'] = int(max(1, variables['projectsPerPage'] / 2))
+
+        if 'data' in result and result['data']:
+            # process(result)
+            processed_projects += len(result['data']['search']['nodes'])
+            print(f'Processed {processed_projects} of {result["data"]["search"]["repositoryCount"]} projects.', end=' ')
+
+            page_info = result['data']['search']['pageInfo']
+            if page_info['hasNextPage']:  # We still have pending projects
+                variables['cursor'] = page_info['endCursor']
+                variables['projectsPerPage'] = min(100, variables['projectsPerPage'] + 1)
+            else:  # We finished processing all projects
+                print(f'Finished.')
+                has_next_page = False
 
 if __name__ == "__main__":
     main()
