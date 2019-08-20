@@ -1,5 +1,5 @@
-query characterizeProjects($projectsPerPage: Int, $cursor: String) {
-    search(query: "is:public mirror:false archived:false fork:false stars:>=5000 pushed:>=2019-05-20 sort:stars", type: REPOSITORY, first: $projectsPerPage, after: $cursor) {
+query characterizeProjects($filter: String!, $projectsPerPage: Int, $cursor: String) {
+    search(query: $filter, type: REPOSITORY, first: $projectsPerPage, after: $cursor) {
         pageInfo {
             endCursor
             hasNextPage
