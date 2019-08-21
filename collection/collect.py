@@ -1,13 +1,13 @@
-import time
 import datetime
-from pprint import pprint
-import pandas as pd
-
-import requests
 import os
+import time
+from pprint import pprint
+
+import pandas as pd
+import requests
 
 
-def query_filter(min_stars=5000, max_stars=None, last_activity=90):
+def query_filter(min_stars=1000, max_stars=None, last_activity=90):
     """
     Builds the query filter string compatible to GitHub
     :param min_stars: minimum number of stargazers in the repository
@@ -67,6 +67,7 @@ def main():
     all_repositories = dict()
     repository_count = -1
     has_next_page = True
+    max_stars = None
     while has_next_page:
         print(f'Trying to retrieve the next {variables["projectsPerPage"]} projects...')
         response = requests.post(url="https://api.github.com/graphql", json=request, headers=headers)
@@ -82,7 +83,7 @@ def main():
                 variables['projectsPerPage'] = int(max(1, variables['projectsPerPage'] * md))  # using AIMD
                 ai = 2  # resetting slow start
             else:  # some unexpected error
-                pprint(result['error'])
+                pprint(result['errors'])
                 exit(1)
 
         if 'data' in result and result['data']:
@@ -92,6 +93,10 @@ def main():
             some_repositories = result['data']['search']['nodes']
             process(some_repositories, all_repositories)
             print(f'Processed {len(all_repositories)} of {repository_count} projects.', end=' ')
+
+            # Keeps the maximum number of stars already processed to restart the process when reaching 1,000 limit
+            if some_repositories:
+                max_stars = some_repositories[-1]['stargazers']
 
             page_info = result['data']['search']['pageInfo']
             variables['cursor'] = page_info['endCursor']
@@ -103,7 +108,7 @@ def main():
                     print(f'Finished.')
                     has_next_page = False
                 else:  # We have reached the 1,000 limit
-                    variables['filter'] = query_filter(max_stars=some_repositories[-1]['stargazers'])
+                    variables['filter'] = query_filter(max_stars=max_stars)
                     variables['cursor'] = None
 
         time.sleep(1)  # Wait 1 second before next request (https://developer.github.com/v3/#abuse-rate-limits)
