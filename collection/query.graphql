@@ -1,5 +1,5 @@
-query characterizeProjects($filter: String!, $projectsPerPage: Int, $cursor: String) {
-    search(query: $filter, type: REPOSITORY, first: $projectsPerPage, after: $cursor) {
+query characterizeProjects($filter: String!, $repositoriesPerPage: Int, $cursor: String) {
+    search(query: $filter, type: REPOSITORY, first: $repositoriesPerPage, after: $cursor) {
         pageInfo {
             endCursor
             hasNextPage
@@ -13,6 +13,7 @@ query characterizeProjects($filter: String!, $projectsPerPage: Int, $cursor: Str
                 name
                 createdAt
                 pushedAt
+                isMirror
                 diskUsage
                 primaryLanguage {
                     name
