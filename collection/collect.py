@@ -34,6 +34,8 @@ def save(repositories):
     repositories.update(load())
     print(f'Saving repositories to {FILE}...', end=' ')
     df = pd.DataFrame(repositories.values())
+    df.loc[df.description.str.contains('(?i)\\bmirror\\b',
+                                       na=False), 'isMirror'] = True  # Check 'mirror' in the description
     df.createdAt = pd.to_datetime(df.createdAt, infer_datetime_format=True).dt.tz_localize(None)
     df.pushedAt = pd.to_datetime(df.pushedAt, infer_datetime_format=True).dt.tz_localize(None)
     df.sort_values('stargazers', ascending=False, inplace=True)
