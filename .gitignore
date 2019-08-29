@@ -174,3 +174,6 @@ fabric.properties
 
 # Temp excel files
 ~$*.xlsx
+
+# Dir with downloaded repositories
+repos/
