@@ -13,7 +13,7 @@ MIN_STARS = 1000
 MAX_STARS = None
 
 # File to load/save the data
-FILE = 'projects.xlsx'
+FILE = '../docs/projects.xlsx'
 
 
 def load():
