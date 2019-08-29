@@ -34,9 +34,6 @@ def main():
 
         print('Ok ({:.0f}%).'.format((i + 1) / total * 100))
 
-        if i == 5:
-            break
-
     print("\nFinished.")
 
 
