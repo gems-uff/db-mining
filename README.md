@@ -12,9 +12,7 @@ Marco Aurélio Gerosa (NAU, USA)
 
 # Project Corpus
 
-- [Unfiltered](https://github.com/gems-uff/db-mining/raw/master/collection/projects.xlsx)
-- [Filtered](https://github.com/gems-uff/db-mining/raw/master/collection/filtered.xlsx)
-- [Annotated](https://github.com/gems-uff/db-mining/raw/master/collection/annotated.xlsx)  
+- [Excel Spreadsheet](https://github.com/gems-uff/db-mining/raw/master/docs/annotated.xlsx)  
 - [Collection Scripts](https://github.com/gems-uff/db-mining/tree/master/collection)
 
 # Acknowledgements
