@@ -1,0 +1,11 @@
+name: db-mining
+channels:
+  - defaults
+dependencies:
+  - python=3.7.*
+  - jupyter=1.0.*
+  - matplotlib=3.1.*
+  - openpyxl=2.6.*
+  - pandas=0.25.*
+  - requests=2.22.*
+  - xlrd=1.2.*
