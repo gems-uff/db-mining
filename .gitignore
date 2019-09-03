@@ -177,3 +177,6 @@ fabric.properties
 
 # Dir with downloaded repositories
 repos/
+
+# Log files
+extraction/log.txt
