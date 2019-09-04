@@ -4,7 +4,7 @@ import subprocess
 import pandas as pd
 
 # File to load the data with repositories
-REPO_FILE = '../docs/annotated.xlsx'
+REPO_FILE = '../resources/annotated.xlsx'
 
 # Dir to clone/update repositories
 REPO_DIR = os.path.abspath('../repos')
