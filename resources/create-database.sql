@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS project_version (
    sha1 TEXT,
    last BOOLEAN,
    project_id INTEGER,
-   FOREIGN KEY (project_id) REFERENCES project (project_id) ON DELETE RESTRICT
+   FOREIGN KEY (project_id) REFERENCES project (project_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS database_type (
@@ -85,8 +85,8 @@ CREATE TABLE IF NOT EXISTS execution (
    validated BOOLEAN,
    accepted BOOLEAN,
    PRIMARY KEY (heuristic_id, project_version_id),
-   FOREIGN KEY (heuristic_id) REFERENCES heuristic (heuristic_id) ON DELETE RESTRICT,
-   FOREIGN KEY (project_version_id) REFERENCES project_version (project_version_id) ON DELETE RESTRICT
+   FOREIGN KEY (heuristic_id) REFERENCES heuristic (heuristic_id) ON DELETE CASCADE,
+   FOREIGN KEY (project_version_id) REFERENCES project_version (project_version_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS match (
@@ -95,5 +95,5 @@ CREATE TABLE IF NOT EXISTS match (
    chunk TEXT,
    heuristic_id INTEGER,
    project_version_id INTEGER,
-   FOREIGN KEY (heuristic_id, project_version_id) REFERENCES execution
+   FOREIGN KEY (heuristic_id, project_version_id) REFERENCES execution ON DELETE CASCADE
 );
