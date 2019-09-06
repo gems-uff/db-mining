@@ -1,4 +1,5 @@
 import os
+import subprocess
 
 import pandas as pd
 
@@ -13,6 +14,9 @@ HEURISTICS_FILE = '../resources/heuristics-database.xlsx'
 # Dir to clone/update repositories
 REPO_DIR = os.path.abspath('../repos')
 
+# Basic git grep command
+BASIC_GREP_COMMAND = ['git', 'grep', '-I', '--context=5', '--break', '--heading', '--line-number']
+
 
 def main():
     print(f'Loading heuristics from {HEURISTICS_FILE}.')
@@ -24,12 +28,18 @@ def main():
 
     print(f'Processing {len(heuristics_df)} heuristics over {len(repos_df)} repositories...')
 
-    # open file to capture output
-    f = open("log.txt", "w")
-
     for i, heuristic in heuristics_df.iterrows():
-        print(f'Processing heuristic {bold(heuristic["regex"])}', end=' ')
+        print(f'Processing heuristic {bold(heuristic["pattern"])}', end=' ')
         print('({:.0f}%).'.format(i / len(heuristics_df) * 100))
+
+        grep_command = BASIC_GREP_COMMAND
+        if heuristic['regex']:
+            grep_command.append('--extended-regexp')
+        else:
+            grep_command.append('--fixed-strings')
+        if not heuristic['case-sensitive']:
+            grep_command.append('--ignore-case')
+        grep_command.append(heuristic['pattern'])
 
         # TODO: check if the heuristic already exists in the DB.
 
@@ -41,8 +51,10 @@ def main():
 
             if os.path.isdir(target):
                 os.chdir(target)
-                #
-                # subprocess.run(['git', 'grep', '-n', '-f', '../../../extraction/patterns.txt'], stdout=f)
+                process = subprocess.run(grep_command, text=True, capture_output=True)
+                print(process.stdout)
+                print(red(process.stderr))
+
                 print(green('ok.'))
             else:
                 print(red('not found.'))
@@ -51,7 +63,6 @@ def main():
     # TODO: remove from the DB the heuristics that were removed from the excel file.
 
     print("\nFinished.")
-    f.close()
 
 
 if __name__ == "__main__":
