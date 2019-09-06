@@ -14,6 +14,7 @@ languages_dict = None  # dictionary with languages
 domains_dict = None  # dictionary with domains
 projects_dict = None  # dictionary with projects
 projects_set = None  # set with dictionaries that were processed
+projects_versions_dict = None  # dictionary with project versions
 
 
 ###########################################
@@ -68,7 +69,6 @@ def load_heuristics_dict():
     for row in results:
         key = row[1] + '-' + row[2] + '-' + str(row[3]) + '-' + str(row[4]) + '-' + str(row[5]) + '-' + str(row[6])
         heuristics_dict[key] = row[0]
-    print(heuristics_dict)
 
 
 def load_languages_dict():
@@ -102,6 +102,16 @@ def load_projects_dict():
         projects_dict[key] = row[0]
 
 
+def load_projects_versions():
+    global projects_versions_dict
+    sql = 'SELECT * FROM project_version'
+    cursor = db_conn.cursor()
+    cursor.execute(sql)
+    results = cursor.fetchall()
+    for row in results:
+        projects_versions_dict[row[1]] = row[0]
+
+
 def load_existing_data():
     global database_types_dict
     global databases_dict
@@ -112,6 +122,7 @@ def load_existing_data():
     global domains_dict
     global projects_dict
     global projects_set
+    global projects_versions_dict
 
     database_types_dict = {}
     databases_dict = {}
@@ -122,6 +133,7 @@ def load_existing_data():
     domains_dict = {}
     projects_dict = {}
     projects_set = set()
+    projects_versions_dict = {}
     load_database_types_dict()
     load_databases_dict()
     load_query_strategies_dict()
@@ -130,6 +142,7 @@ def load_existing_data():
     load_languages_dict()
     load_domains_dict()
     load_projects_dict()
+    load_projects_versions()
 
 
 def connect():
@@ -233,16 +246,32 @@ def insert_heuristic(regex, reg_type, database, language, query_strategy, impl_s
     if impl_strategy is not None and impl_strategy != '':
         impl_strategy_id = insert_impl_strategy(impl_strategy)
 
-    key = regex + '-' + reg_type + '-' + str(database_id) + '-' + str(language_id) + '-' + str(query_strategy_id) + '-' + str(impl_strategy_id)
+    key = regex + '-' + reg_type + '-' + str(database_id) + '-' + str(language_id) + '-' + str(
+        query_strategy_id) + '-' + str(impl_strategy_id)
     heuristic_id = heuristics_dict.get(key, 0)
 
     if heuristic_id == 0:
         # saves heuristic
         print(f'Inserting {key}...')
         sql = 'INSERT INTO heuristic(regex, type, database_id, language_id, query_strategy_id, implementation_strategy_id) VALUES(?,?,?,?,?,?)'
-        heuristic_id = db_conn.execute(sql, [regex, reg_type, database_id, language_id, query_strategy_id, impl_strategy_id]).lastrowid
+        heuristic_id = db_conn.execute(sql, [regex, reg_type, database_id, language_id, query_strategy_id,
+                                             impl_strategy_id]).lastrowid
         heuristics_dict[key] = heuristic_id
     return heuristic_id
+
+
+def insert_execution(owner, name, sha1, last, regex, reg_type, database, language, query_strategy, impl_strategy,
+                     output, validated, accepted):
+    heuristic_id = get_heuristic_id(regex, reg_type, database, language, query_strategy, impl_strategy)
+    # TODO: terminar essa função
+    # project_version_id =
+
+    if heuristic_id == 0:
+        # saves heuristic
+        heuristic_id = insert_heuristic(regex, reg_type, database, language, query_strategy, impl_strategy)
+        sql = 'INSERT INTO execution(output, validated, accepted, heuristic_id, project_version_id) VALUES(?,?,?,?,?)'
+        execution_id = db_conn.execute(sql, [output, validated, accepted, heuristic_id, project_version_id]).lastrowid
+    return execution_id
 
 
 def insert_language(name):
@@ -297,6 +326,23 @@ def insert_project(project):
     return project_id
 
 
+def insert_project_version(owner, name, sha1, last):
+    global projects_versions_dict
+    key = owner + name
+    project_id = projects_dict.get(key, 0)
+    project_version_id = None
+    if project_id != 0:
+        project_version_id = projects_versions_dict.get(sha1, 0)
+        if project_version_id == 0:
+            # saves project version
+            sql = 'INSERT INTO project_version(sha1, last, project_id) VALUES(?,?,?)'
+            project_version_id = db_conn.execute(sql, [sha1, last, project_id]).lastrowid
+            projects_versions_dict[sha1] = project_version_id
+    else:
+        print(f'ERROR: {owner}/{name} not found...')
+    return project_version_id
+
+
 ###########################################
 # DATABASE GET FUNCTIONS
 ###########################################
@@ -333,6 +379,31 @@ def get_project(projec_id):
     cursor.execute(sql, [projec_id])
     project = cursor.fetchone()
     return project
+
+
+def get_project_version_id(sha1):
+    project_version_id = projects_versions_dict.get(sha1, 0)
+    return project_version_id
+
+
+def get_heuristic_id(regex, reg_type, database, language, query_strategy, impl_strategy):
+    database_id = None
+    language_id = None
+    query_strategy_id = None
+    impl_strategy_id = None
+    if database is not None and database != '':
+        database_id = insert_database(database)
+    if language is not None and language != '':
+        language_id = insert_language(language)
+    if query_strategy is not None and query_strategy != '':
+        query_strategy_id = insert_query_strategy(query_strategy)
+    if impl_strategy is not None and impl_strategy != '':
+        impl_strategy_id = insert_impl_strategy(impl_strategy)
+
+    key = regex + '-' + reg_type + '-' + str(database_id) + '-' + str(language_id) + '-' + str(
+        query_strategy_id) + '-' + str(impl_strategy_id)
+    heuristic_id = heuristics_dict.get(key, 0)
+    return heuristic_id
 
 
 ###########################################
@@ -393,6 +464,13 @@ def delete_project_by_id(project_id):
     if project_key in projects_set:
         projects_set.remove(project_key)  # removes project from set of processed projects
 
+def delete_project_version_by_id(project_version_id):
+    global projects_versions_dict
+    sql = 'DELETE FROM project_version WHERE project_version_id = ?'
+    db_conn.execute(sql, [project_version_id])
+    sha1 = (list(projects_versions_dict.keys())[list(projects_versions_dict.values()).index(project_version_id)])
+    projects_versions_dict.pop(sha1)  # removes project version from the dictionary
+
 
 def remove_old_projects():
     """
@@ -414,11 +492,8 @@ def remove_old_projects():
 
 def main():
     connect()
-    insert_heuristic('teste', 'database', None, 'Java', None, None)
-    insert_heuristic('teste', 'database', None, 'Java', None, None)
-    print(heuristics_dict)
-    commit()
     close()
+
 
 if __name__ == '__main__':
     main()
