@@ -15,7 +15,16 @@ HEURISTICS_FILE = '../resources/heuristics-database.xlsx'
 REPO_DIR = os.path.abspath('../repos')
 
 # Basic git grep command
-BASIC_GREP_COMMAND = ['git', 'grep', '-I', '--context=5', '--break', '--heading', '--line-number']
+BASIC_GREP_COMMAND = [
+    'git',
+    'grep',
+    '-I',
+    '--context=5',
+    '--break',
+    '--heading',
+    '--line-number',
+    '--color=always'
+]
 
 
 def main():
