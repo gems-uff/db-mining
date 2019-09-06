@@ -6,16 +6,20 @@ import pandas as pd
 from utils.view import bold, red, green
 
 # File to load the data with repositories
-REPOS_FILE = '../resources/annotated.xlsx'
+REPOS_FILE = os.path.abspath('../resources/annotated.xlsx')
 
-# File to load the data with database heuristics
-HEURISTICS_FILE = '../resources/heuristics-database.xlsx'
+# Directories with heuristics
+HEURISTICS_DIRS = {
+    'database': os.path.abspath('../heuristics/database'),
+    'implementation': os.path.abspath('../heuristics/implementation'),
+    'query': os.path.abspath('../heuristics/query')
+}
 
-# Dir to clone/update repositories
+# Directory with repositories
 REPO_DIR = os.path.abspath('../repos')
 
-# Basic git grep command
-BASIC_GREP_COMMAND = [
+# Git grep command
+GREP_COMMAND = [
     'git',
     'grep',
     '-I',
@@ -23,53 +27,62 @@ BASIC_GREP_COMMAND = [
     '--break',
     '--heading',
     '--line-number',
-    '--color=always'
+    '--color=always',
+    '--perl-regexp',
+    '-f'
 ]
 
 
-def main():
-    print(f'Loading heuristics from {HEURISTICS_FILE}.')
-    heuristics_df = pd.read_excel(HEURISTICS_FILE, keep_default_na=False)
+def load_heuristics(directory):
+    heuristics = dict()
+    for dirpath, dirnames, filenames in os.walk(directory):
+        for filename in filenames:
+            heuristics[os.path.splitext(filename)[0]] = os.path.join(dirpath, filename)
+    return heuristics
 
+
+def main():
     print(f'Loading repositories from {REPOS_FILE}.')
     repos_df = pd.read_excel(REPOS_FILE, keep_default_na=False)
     repos_df = repos_df[repos_df.discardReason == '']
 
-    print(f'Processing {len(heuristics_df)} heuristics over {len(repos_df)} repositories...')
+    for heuristic_type in HEURISTICS_DIRS.keys():
+        print(f'Loading {heuristic_type} heuristics from {HEURISTICS_DIRS[heuristic_type]}.')
+        heuristics = load_heuristics(HEURISTICS_DIRS[heuristic_type])
 
-    for i, heuristic in heuristics_df.iterrows():
-        print(f'Processing heuristic {bold(heuristic["pattern"])}', end=' ')
-        print('({:.0f}%).'.format(i / len(heuristics_df) * 100))
+        print(f'Processing {len(heuristics)} {heuristic_type} heuristics over {len(repos_df)} repositories...')
+        count_heuristic = 1
+        for heuristic, heuristic_file in heuristics.items():
 
-        grep_command = BASIC_GREP_COMMAND
-        if heuristic['regex']:
-            grep_command.append('--extended-regexp')
-        else:
-            grep_command.append('--fixed-strings')
-        if not heuristic['case-sensitive']:
-            grep_command.append('--ignore-case')
-        grep_command.append(heuristic['pattern'])
+            # TODO: check if the heuristic already exists in the DB.
 
-        # TODO: check if the heuristic already exists in the DB.
+            print(f'Processing heuristic for {bold(heuristic)}.')
+            for i, repo in repos_df.iterrows():
+                print(f'\tRepository {repo["owner"]}/{repo["name"]}:', end=' ')
 
-        for j, repo in repos_df.iterrows():
-            print(f'\tRepository {repo["owner"]}/{repo["name"]}:', end=' ')
-            target = REPO_DIR + os.sep + repo['owner'] + os.sep + repo['name']
+                # TODO: check if the heuristic has already been executed over the project.
 
-            # TODO: check if the heuristic has already been executed over the project.
+                target = REPO_DIR + os.sep + repo['owner'] + os.sep + repo['name']
+                if os.path.isdir(target):
+                    os.chdir(target)
+                    process = subprocess.run(GREP_COMMAND + [heuristic_file], text=True, capture_output=True)
 
-            if os.path.isdir(target):
-                os.chdir(target)
-                process = subprocess.run(grep_command, text=True, capture_output=True)
-                print(process.stdout)
-                print(red(process.stderr))
+                    if process.stderr:
+                        print(red('error.'))
+                        print(process.stderr)
+                        exit(1)
+                    else:
 
-                print(green('ok.'))
-            else:
-                print(red('not found.'))
+                        # TODO: save process.stdout
 
-    print('Deleting missing heuristics...')
-    # TODO: remove from the DB the heuristics that were removed from the excel file.
+                        print(green('ok.'))
+                else:
+                    print(red('not found.'))
+
+            count_heuristic += 1
+
+        print('Deleting missing heuristics...')
+        # TODO: remove from the DB the heuristics that were removed from the directory.
 
     print("\nFinished.")
 
