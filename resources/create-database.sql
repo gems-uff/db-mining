@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS project (
 
 
 CREATE TABLE IF NOT EXISTS project_version (
-   version_id INTEGER PRIMARY KEY AUTOINCREMENT, 
+   project_version_id INTEGER PRIMARY KEY AUTOINCREMENT,
    sha1 TEXT,
    last BOOLEAN,
    project_id INTEGER,
@@ -73,27 +73,19 @@ CREATE TABLE IF NOT EXISTS heuristic (
    language_id INTEGER,
    query_strategy_id INTEGER,
    implementation_strategy_id INTEGER,
-   FOREIGN KEY (database_id) REFERENCES database (database_id) ON DELETE RESTRICT,
-   FOREIGN KEY (language_id) REFERENCES language (language_id) ON DELETE RESTRICT,
-   FOREIGN KEY (query_strategy_id) REFERENCES query_strategy (query_strategy_id) ON DELETE RESTRICT,
-   FOREIGN KEY (implementation_strategy_id) REFERENCES implementation_strategy (implementation_strategy_id) ON DELETE RESTRICT
+   FOREIGN KEY (database_id) REFERENCES database (database_id) ON DELETE CASCADE,
+   FOREIGN KEY (language_id) REFERENCES language (language_id) ON DELETE CASCADE,
+   FOREIGN KEY (query_strategy_id) REFERENCES query_strategy (query_strategy_id) ON DELETE CASCADE,
+   FOREIGN KEY (implementation_strategy_id) REFERENCES implementation_strategy (implementation_strategy_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS execution (
-   heuristic_id INTEGER,
-   project_version_id INTEGER,
+   execution_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   output TEXT,
    validated BOOLEAN,
    accepted BOOLEAN,
-   PRIMARY KEY (heuristic_id, project_version_id),
-   FOREIGN KEY (heuristic_id) REFERENCES heuristic (heuristic_id) ON DELETE CASCADE,
-   FOREIGN KEY (project_version_id) REFERENCES project_version (project_version_id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS match (
-   match_id INTEGER PRIMARY KEY AUTOINCREMENT,
-   file TEXT,
-   chunk TEXT,
    heuristic_id INTEGER,
    project_version_id INTEGER,
-   FOREIGN KEY (heuristic_id, project_version_id) REFERENCES execution ON DELETE CASCADE
+   FOREIGN KEY (heuristic_id) REFERENCES heuristic (heuristic_id) ON DELETE CASCADE,
+   FOREIGN KEY (project_version_id) REFERENCES project_version (project_version_id) ON DELETE CASCADE
 );
