@@ -6,21 +6,20 @@ from pprint import pprint
 import pandas as pd
 import requests
 
+from util import PROJECTS_FILE
+
 # Minimum number of stars
 MIN_STARS = 1000
 
 # Maximum number of stars (None for no maximum limit)
 MAX_STARS = None
 
-# File to load/save the data
-FILE = '../resources/projects.xlsx'
-
 
 def load():
     repositories = dict()
-    print(f'Loading repositories from {FILE}...', end=' ')
+    print(f'Loading repositories from {PROJECTS_FILE}...', end=' ')
     try:
-        df = pd.read_excel(FILE, keep_default_na=False)
+        df = pd.read_excel(PROJECTS_FILE, keep_default_na=False)
         for i, row in df.iterrows():
             repo = row.to_dict()
             repositories[repo['owner'] + '/' + repo['name']] = repo
@@ -32,14 +31,14 @@ def load():
 
 def save(repositories):
     repositories.update(load())
-    print(f'Saving repositories to {FILE}...', end=' ')
+    print(f'Saving repositories to {PROJECTS_FILE}...', end=' ')
     df = pd.DataFrame(repositories.values())
     df.loc[df.description.str.contains('(?i)\\bmirror\\b',
                                        na=False), 'isMirror'] = True  # Check 'mirror' in the description
     df.createdAt = pd.to_datetime(df.createdAt, infer_datetime_format=True).dt.tz_localize(None)
     df.pushedAt = pd.to_datetime(df.pushedAt, infer_datetime_format=True).dt.tz_localize(None)
     df.sort_values('stargazers', ascending=False, inplace=True)
-    df.to_excel(FILE, index=False)
+    df.to_excel(PROJECTS_FILE, index=False)
     print('Done!')
 
 

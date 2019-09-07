@@ -1,8 +1,7 @@
 import os.path
 import sqlite3
 
-DB_FILENAME = '../resources/db-mining.db'
-DB_SCRIPT = '../resources/create-database.sql'
+from util import DATABASE_FILE, SCHEMA_FILE
 
 db_conn = None  # Connection to the database
 database_types_dict = None  # dictionary with database types
@@ -148,20 +147,18 @@ def load_existing_data():
 def connect():
     global db_conn
 
-    db_path = os.path.abspath(DB_FILENAME)
-    new_db = not os.path.exists(db_path)
-    db_conn = sqlite3.connect(db_path)
+    new_db = not os.path.exists(DATABASE_FILE)
+    db_conn = sqlite3.connect(DATABASE_FILE)
     if new_db:
         print('Creating Database...')
-        script_path = os.path.abspath(DB_SCRIPT)
-        f = open(script_path, 'r')
-        sqlFile = f.read()
+        f = open(SCHEMA_FILE, 'r')
+        sql_file = f.read()
         f.close()
 
         # all SQL commands (split on ';')
-        sqlCommands = sqlFile.split(';')
+        sql_commands = sql_file.split(';')
         # Execute every command from the input file
-        for command in sqlCommands:
+        for command in sql_commands:
             db_conn.execute(command)
         db_conn.commit()
 
@@ -463,6 +460,7 @@ def delete_project_by_id(project_id):
     projects_dict.pop(project_key)  # removes project from the dictionary
     if project_key in projects_set:
         projects_set.remove(project_key)  # removes project from set of processed projects
+
 
 def delete_project_version_by_id(project_version_id):
     global projects_versions_dict

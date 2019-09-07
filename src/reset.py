@@ -3,11 +3,7 @@ import subprocess
 
 import pandas as pd
 
-# File to load the data with repositories
-REPO_FILE = '../resources/annotated.xlsx'
-
-# Dir to clone/update repositories
-REPO_DIR = os.path.abspath('../repos')
+from util import ANNOTATED_FILE, REPOS_DIR
 
 
 def main():
@@ -15,8 +11,8 @@ def main():
     This program can be useful to fix collisions (due to data migrated from case insensitive to case sensitive file
     systems) and to update the workspace to the most recent version.
     """
-    print(f'Loading repositories from {REPO_FILE}.')
-    df = pd.read_excel(REPO_FILE, keep_default_na=False)
+    print(f'Loading repositories from {ANNOTATED_FILE}.')
+    df = pd.read_excel(ANNOTATED_FILE, keep_default_na=False)
 
     print('Removing discarded repositories.')
     df = df[df.discardReason == '']
@@ -26,7 +22,7 @@ def main():
 
     for i, row in df.iterrows():
         print(f'Processing repository {row["owner"]}/{row["name"]}.')
-        target = REPO_DIR + os.sep + row['owner'] + os.sep + row['name']
+        target = REPOS_DIR + os.sep + row['owner'] + os.sep + row['name']
 
         os.chdir(target)
         subprocess.run(['git', 'reset', '--hard', '-q', 'origin/HEAD'])
