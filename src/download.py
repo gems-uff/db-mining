@@ -3,16 +3,12 @@ import subprocess
 
 import pandas as pd
 
-# File to load the data with repositories
-REPO_FILE = '../resources/annotated.xlsx'
-
-# Dir to clone/update repositories
-REPO_DIR = os.path.abspath('../repos')
+from util import ANNOTATED_FILE, REPOS_DIR
 
 
 def main():
-    print(f'Loading repositories from {REPO_FILE}.')
-    df = pd.read_excel(REPO_FILE, keep_default_na=False)
+    print(f'Loading repositories from {ANNOTATED_FILE}.')
+    df = pd.read_excel(ANNOTATED_FILE, keep_default_na=False)
 
     print('Removing discarded repositories.')
     df = df[df.discardReason == '']
@@ -23,7 +19,7 @@ def main():
     for i, row in df.iterrows():
         print(f'Processing repository {row["owner"]}/{row["name"]}.')
         source = f'https://github.com/{row["owner"]}/{row["name"]}.git'
-        target = REPO_DIR + os.sep + row['owner'] + os.sep + row['name']
+        target = REPOS_DIR + os.sep + row['owner'] + os.sep + row['name']
 
         if os.path.isdir(target):
             os.chdir(target)
