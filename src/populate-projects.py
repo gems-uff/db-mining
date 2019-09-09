@@ -5,7 +5,7 @@ from util import ANNOTATED_FILE
 
 
 def main():
-    # create a database connection
+    # creating a database connection
     db.connect()
 
     print(f'Loading repositories from {ANNOTATED_FILE}...')
@@ -16,13 +16,11 @@ def main():
     print(f'Processing {total} projects...')
 
     for i, row in df.iterrows():
-        project_id = db.insert_project(row)
+        db.insert_project(row)
 
     print('\nRemoving projects that in the database and not in the Excel file...')
     db.remove_old_projects()
 
-    print('Committing changes...')
-    db.commit()
     print('Closing database connection...')
     db.close()
 
