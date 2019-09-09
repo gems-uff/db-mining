@@ -122,8 +122,8 @@ def close():
 
 def insert_category(name):
     global categories_dict
-    category_id = categories_dict.get(name, 0)
-    if category_id == 0:
+    category_id = categories_dict.get(name, None)
+    if category_id is None:
         # saves category
         print(f'Inserting category: {name}')
         sql = 'INSERT INTO category (name) VALUES (?)'
@@ -132,22 +132,22 @@ def insert_category(name):
     return category_id
 
 
-def insert_label(name, type, category, main):
+def insert_label(name, label_type, category, is_main):
     global labels_dict
-    label_id = labels_dict.get(name, 0)
+    label_id = labels_dict.get(name, None)
 
-    if label_id == 0:
+    if label_id is None:
         # saves label
         try:
             cursor = db_conn.cursor()  # starts transaction
             category_id = insert_category(category)
             print(f'Inserting label: {name}...')
             sql = 'INSERT INTO label(name, type) VALUES(?,?)'
-            label_id = cursor.execute(sql, [name, type]).lastrowid
+            label_id = cursor.execute(sql, [name, label_type]).lastrowid
             labels_dict[name] = label_id
             # saves relationship
-            sql = 'INSERT INTO label_category(label_id, category_id, main) VALUES (?,?,?)'
-            cursor.execute(sql, [label_id, category_id, main])
+            sql = 'INSERT INTO label_category(label_id, category_id, is_main) VALUES (?,?,?)'
+            cursor.execute(sql, [label_id, category_id, is_main])
         except db_conn.DatabaseError:
             db_conn.rollback()
         else:
@@ -155,12 +155,12 @@ def insert_label(name, type, category, main):
     return label_id
 
 
-def insert_heuristic(pattern, label, type, category, main):
+def insert_heuristic(pattern, label, label_type, category, is_main):
     global heuristics_dict
-    label_id = insert_label(label, type, category, main)
-    heuristic_id = heuristics_dict.get(pattern, 0)
+    label_id = insert_label(label, label_type, category, is_main)
+    heuristic_id = heuristics_dict.get(pattern, None)
 
-    if heuristic_id == 0:
+    if heuristic_id is None:
         # saves heuristic
         try:
             cursor = db_conn.cursor()  # starts transaction
@@ -179,7 +179,7 @@ def insert_execution(sha1, pattern, output, validated, accepted):
     execution_id = 0
     project_version_id = get_project_version_id(sha1)
     heuristic_id = get_heuristic_id(pattern)
-    if heuristic_id != 0 and project_version_id != 0:
+    if heuristic_id is not None and project_version_id is not None:
         try:
             cursor = db_conn.cursor() # starts transaction
             # saves execution
@@ -190,9 +190,9 @@ def insert_execution(sha1, pattern, output, validated, accepted):
         else:
             db_conn.commit()
     else:
-        if project_version_id == 0:
+        if project_version_id is None:
             print(f'ERROR: project version {sha1} not found...')
-        if heuristic_id == 0:
+        if heuristic_id is None:
             print(f'ERROR: heuristic {pattern} not found...')
     return execution_id
 
@@ -202,9 +202,9 @@ def insert_project(project):
     global projects_set
     key = project['owner'] + project['name']
     projects_set.add(key)
-    project_id = projects_dict.get(key, 0)
+    project_id = projects_dict.get(key, None)
 
-    if project_id == 0:
+    if project_id is None:
         # saves project
         try:
             cursor = db_conn.cursor()  # starts transaction
@@ -234,11 +234,11 @@ def insert_project(project):
 def insert_project_version(owner, name, sha1, last):
     global projects_versions_dict
     key = owner + name
-    project_id = projects_dict.get(key, 0)
+    project_id = projects_dict.get(key, None)
     project_version_id = None
-    if project_id != 0:
-        project_version_id = projects_versions_dict.get(sha1, 0)
-        if project_version_id == 0:
+    if project_id is not None:
+        project_version_id = projects_versions_dict.get(sha1, None)
+        if project_version_id is None:
             # saves project version
             try:
                 cursor = db_conn.cursor()  # starts transaction
@@ -255,13 +255,13 @@ def insert_project_version(owner, name, sha1, last):
     return project_version_id
 
 
-def insert_project_version_label(owner, name, sha1, label, type, category, main):
-    project_version_id = projects_versions_dict.get(sha1, 0)
-    if project_version_id != 0:
+def insert_project_version_label(owner, name, sha1, label, label_type, category, is_main):
+    project_version_id = projects_versions_dict.get(sha1, None)
+    if project_version_id is not None:
         # saves project version label
         try:
             cursor = db_conn.cursor()  # starts transaction
-            label_id = insert_label(label, type, category, main)
+            label_id = insert_label(label, label_type, category, is_main)
             print(f'Inserting project version label: {owner}/{name}; sha1={sha1}; label={label} ...')
             sql = 'INSERT INTO project_version_label(project_version_id, label_id) VALUES(?,?)'
             cursor.execute(sql, [project_version_id, label_id])
@@ -278,18 +278,21 @@ def insert_project_version_label(owner, name, sha1, label, type, category, main)
 ###########################################
 
 def get_label_group_id(name):
-    group_id = categories_dict.get(name, 0)
+    group_id = categories_dict.get(name, None)
     return group_id
 
 
 def get_label_id(name):
-    label_id = labels_dict.get(name, 0)
+    label_id = labels_dict.get(name, None)
     return label_id
 
 
+def get_project_id_by_key(project_key):
+    project_id = projects_dict.get(project_key, None)
+    return project_id
+
 def get_project_id(owner, name):
-    key = owner + name
-    project_id = projects_dict.get(key, 0)
+    project_id = get_project_id_by_key(owner+name)
     return project_id
 
 
@@ -302,12 +305,12 @@ def get_project(project_id):
 
 
 def get_project_version_id(sha1):
-    project_version_id = projects_versions_dict.get(sha1, 0)
+    project_version_id = projects_versions_dict.get(sha1, None)
     return project_version_id
 
 
 def get_heuristic_id(pattern):
-    heuristic_id = heuristics_dict.get(pattern, 0)
+    heuristic_id = heuristics_dict.get(pattern, None)
     return heuristic_id
 
 
@@ -319,32 +322,56 @@ def delete_project(owner, name):
     global projects_dict
     global projects_set
     key = owner + name
-    sql = 'DELETE FROM project WHERE project_id = ?'
-    project_id = projects_dict.get(key)
-    db_conn.execute(sql, [project_id])
-    projects_dict.pop(key)  # removes project from dictionary
-    if key in projects_set:
-        projects_set.remove(key)  # removes project from set of processed projects
-
+    project_id = projects_dict.get(key, None)
+    if project_id is not None:
+        try:
+            cursor = db_conn.cursor()  # starts transaction
+            sql = 'DELETE FROM project WHERE project_id = ?'
+            cursor.execute(sql, [project_id])
+            projects_dict.pop(key)  # removes project from dictionary
+            if key in projects_set:
+                projects_set.remove(key)  # removes project from set of processed projects
+        except db_conn.DatabaseError:
+            db_conn.rollback()
+        else:
+            db_conn.commit()
+    else:
+        print(f'ERROR: project {owner}/{name} not found...')
 
 def delete_project_by_id(project_id):
     global projects_dict
     global projects_set
-    sql = 'DELETE FROM project WHERE project_id = ?'
-    db_conn.execute(sql, [project_id])
-    project_key = (list(projects_dict.keys())[list(projects_dict.values()).index(project_id)])
-    projects_dict.pop(project_key)  # removes project from the dictionary
-    if project_key in projects_set:
-        projects_set.remove(project_key)  # removes project from set of processed projects
+    try:
+        cursor = db_conn.cursor()  # starts transaction
+        sql = 'DELETE FROM project WHERE project_id = ?'
+        cursor.execute(sql, [project_id])
+        project_key = (list(projects_dict.keys())[list(projects_dict.values()).index(project_id)])
+        projects_dict.pop(project_key)  # removes project from the dictionary
+        if project_key in projects_set:
+            projects_set.remove(project_key)  # removes project from set of processed projects
+    except db_conn.DatabaseError:
+        db_conn.rollback()
+    else:
+        db_conn.commit()
+
+
+def delete_project_by_key(project_key):
+    project_id = get_project_id_by_key(project_key)
+    delete_project_by_id(project_id)
 
 
 def delete_project_version_by_id(project_version_id):
     global projects_versions_dict
-    sql = 'DELETE FROM project_version WHERE project_version_id = ?'
-    db_conn.execute(sql, [project_version_id])
-    sha1 = (list(projects_versions_dict.keys())[list(projects_versions_dict.values()).index(project_version_id)])
-    projects_versions_dict.pop(sha1)  # removes project version from the dictionary
-
+    try:
+        cursor = db_conn.cursor()  # starts transaction
+        sql = 'DELETE FROM project_version WHERE project_version_id = ?'
+        cursor.execute(sql, [project_version_id])
+        sha1 = (list(projects_versions_dict.keys())[list(projects_versions_dict.values()).index(project_version_id)])
+        projects_versions_dict.pop(sha1)  # removes project version from the dictionary
+    except db_conn.DatabaseError:
+        db_conn.rollback()
+    else:
+        db_conn.commit()
 
 def remove_old_projects():
     """
@@ -356,12 +383,13 @@ def remove_old_projects():
 
     projects_in_database = projects_dict.keys()
     projects_to_remove = projects_in_database - projects_set
+    print(projects_in_database)
+    print(projects_set)
+    print(projects_to_remove)
 
     for project in projects_to_remove:
-        print(f'Removing project {project[1]}/{project[2]}...')
-        delete_project_by_id(project[0])
-        projects_dict.pop(project[1] + project[2])  # removes project from dictionary
-        projects_set.remove(project[1] + project[2])  # removes project from set of processed projects
+        print(f'Removing project {project}...')
+        delete_project_by_key(project)
 
 
 def main():
