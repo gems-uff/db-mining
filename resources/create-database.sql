@@ -1,13 +1,3 @@
-CREATE TABLE IF NOT EXISTS language (
-   language_id INTEGER PRIMARY KEY AUTOINCREMENT,
-   name TEXT
-);
-
-CREATE TABLE IF NOT EXISTS domain (
-   domain_id INTEGER PRIMARY KEY AUTOINCREMENT,
-   name TEXT
-);
-
 CREATE TABLE IF NOT EXISTS project (
    project_id INTEGER PRIMARY KEY AUTOINCREMENT,
    owner TEXT,
@@ -28,12 +18,9 @@ CREATE TABLE IF NOT EXISTS project (
    tags INTEGER,
    releases	INTEGER,
    description TEXT,
-   language_id INTEGER,
-   domain_id INTEGER,
-   FOREIGN KEY (language_id) REFERENCES language (language_id) ON DELETE RESTRICT,
-   FOREIGN KEY (domain_id) REFERENCES domain (domain_id) ON DELETE RESTRICT
+   primaryLanguage TEXT,
+   domain TEXT
 );
-
 
 CREATE TABLE IF NOT EXISTS project_version (
    project_version_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -43,40 +30,39 @@ CREATE TABLE IF NOT EXISTS project_version (
    FOREIGN KEY (project_id) REFERENCES project (project_id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS database_type (
-   type_id INTEGER PRIMARY KEY AUTOINCREMENT, 
+CREATE TABLE IF NOT EXISTS category (
+   category_id INTEGER PRIMARY KEY AUTOINCREMENT,
    name TEXT
 );
 
-CREATE TABLE IF NOT EXISTS database (
-   database_id INTEGER PRIMARY KEY AUTOINCREMENT,
-   name TEXT, 
-   type_id INTEGER,
-   FOREIGN KEY (type_id) REFERENCES database_type (type_id) ON DELETE RESTRICT 
+CREATE TABLE IF NOT EXISTS label (
+   label_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   name TEXT,
+   type TEXT
 );
 
-CREATE TABLE IF NOT EXISTS query_strategy (
-   query_strategy_id INTEGER PRIMARY KEY AUTOINCREMENT,
-   name TEXT
+CREATE TABLE IF NOT EXISTS label_category (
+   label_id INTEGER NOT NULL,
+   category_id INTEGER NOT NULL,
+   main BOOLEAN,
+   PRIMARY KEY (label_id, category_id),
+   FOREIGN KEY (label_id) REFERENCES label (label_id) ON DELETE CASCADE,
+   FOREIGN KEY (category_id) REFERENCES category (category_id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS implementation_strategy (
-   implementation_strategy_id INTEGER PRIMARY KEY AUTOINCREMENT,
-   name TEXT
+CREATE TABLE IF NOT EXISTS project_version_label (
+   project_version_id INTEGER NOT NULL,
+   label_id INTEGER NOT NULL,
+   PRIMARY KEY(project_version_id, label_id),
+   FOREIGN KEY (project_version_id) REFERENCES project_version (project_version_id) ON DELETE CASCADE,
+   FOREIGN KEY (label_id) REFERENCES label (label_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS heuristic (
    heuristic_id INTEGER PRIMARY KEY AUTOINCREMENT,
-   regex TEXT,
-   type TEXT,
-   database_id INTEGER,
-   language_id INTEGER,
-   query_strategy_id INTEGER,
-   implementation_strategy_id INTEGER,
-   FOREIGN KEY (database_id) REFERENCES database (database_id) ON DELETE CASCADE,
-   FOREIGN KEY (language_id) REFERENCES language (language_id) ON DELETE CASCADE,
-   FOREIGN KEY (query_strategy_id) REFERENCES query_strategy (query_strategy_id) ON DELETE CASCADE,
-   FOREIGN KEY (implementation_strategy_id) REFERENCES implementation_strategy (implementation_strategy_id) ON DELETE CASCADE
+   pattern TEXT,
+   label_id INTEGER,
+   FOREIGN KEY (label_id) REFERENCES label (label_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS execution (

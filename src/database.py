@@ -4,13 +4,9 @@ import sqlite3
 from util import DATABASE_FILE, SCHEMA_FILE
 
 db_conn = None  # Connection to the database
-database_types_dict = None  # dictionary with database types
-databases_dict = None  # dictionary with database names
-query_strategies_dict = None  # dictionary with query strategies
-impl_strategies_dict = None  # dictionary with implementation strategies
+categories_dict = None  # dictionary with categories
+labels_dict = None  # dictionary with labels
 heuristics_dict = None  # dictionary with heuristics
-languages_dict = None  # dictionary with languages
-domains_dict = None  # dictionary with domains
 projects_dict = None  # dictionary with projects
 projects_set = None  # set with dictionaries that were processed
 projects_versions_dict = None  # dictionary with project versions
@@ -19,44 +15,24 @@ projects_versions_dict = None  # dictionary with project versions
 ###########################################
 # DATABASE CONNECT, COMMIT, CLOSE
 ###########################################
-def load_database_types_dict():
-    global database_types_dict
-    sql = 'SELECT * FROM database_type'
+def load_categories_dict():
+    global categories_dict
+    sql = 'SELECT * FROM category'
     cursor = db_conn.cursor()
     cursor.execute(sql)
     results = cursor.fetchall()
     for row in results:
-        database_types_dict[row[1]] = row[0]
+        categories_dict[row[1]] = row[0]
 
 
-def load_databases_dict():
-    global databases_dict
-    sql = 'SELECT * FROM database'
+def load_labels_dict():
+    global labels_dict
+    sql = 'SELECT * FROM label'
     cursor = db_conn.cursor()
     cursor.execute(sql)
     results = cursor.fetchall()
     for row in results:
-        databases_dict[row[1]] = row[0]
-
-
-def load_query_strategies_dict():
-    global query_strategies_dict
-    sql = 'SELECT * FROM query_strategy'
-    cursor = db_conn.cursor()
-    cursor.execute(sql)
-    results = cursor.fetchall()
-    for row in results:
-        query_strategies_dict[row[1]] = row[0]
-
-
-def load_impl_strategies_dict():
-    global impl_strategies_dict
-    sql = 'SELECT * FROM implementation_strategy'
-    cursor = db_conn.cursor()
-    cursor.execute(sql)
-    results = cursor.fetchall()
-    for row in results:
-        impl_strategies_dict[row[1]] = row[0]
+        labels_dict[row[1]] = row[0]
 
 
 def load_heuristics_dict():
@@ -66,28 +42,7 @@ def load_heuristics_dict():
     cursor.execute(sql)
     results = cursor.fetchall()
     for row in results:
-        key = row[1] + '-' + row[2] + '-' + str(row[3]) + '-' + str(row[4]) + '-' + str(row[5]) + '-' + str(row[6])
-        heuristics_dict[key] = row[0]
-
-
-def load_languages_dict():
-    global languages_dict
-    sql = 'SELECT * FROM language'
-    cursor = db_conn.cursor()
-    cursor.execute(sql)
-    results = cursor.fetchall()
-    for row in results:
-        languages_dict[row[1]] = row[0]
-
-
-def load_domains_dict():
-    global domains_dict
-    sql = 'SELECT * FROM domain'
-    cursor = db_conn.cursor()
-    cursor.execute(sql)
-    results = cursor.fetchall()
-    for row in results:
-        domains_dict[row[1]] = row[0]
+        heuristics_dict[row[1]] = row[0]
 
 
 def load_projects_dict():
@@ -112,34 +67,22 @@ def load_projects_versions():
 
 
 def load_existing_data():
-    global database_types_dict
-    global databases_dict
-    global query_strategies_dict
-    global impl_strategies_dict
+    global categories_dict
+    global labels_dict
     global heuristics_dict
-    global languages_dict
-    global domains_dict
     global projects_dict
     global projects_set
     global projects_versions_dict
 
-    database_types_dict = {}
-    databases_dict = {}
-    query_strategies_dict = {}
-    impl_strategies_dict = {}
+    categories_dict = {}
+    labels_dict = {}
     heuristics_dict = {}
-    languages_dict = {}
-    domains_dict = {}
     projects_dict = {}
     projects_set = set()
     projects_versions_dict = {}
-    load_database_types_dict()
-    load_databases_dict()
-    load_query_strategies_dict()
-    load_impl_strategies_dict()
+    load_categories_dict()
+    load_labels_dict()
     load_heuristics_dict()
-    load_languages_dict()
-    load_domains_dict()
     load_projects_dict()
     load_projects_versions()
 
@@ -149,25 +92,24 @@ def connect():
 
     new_db = not os.path.exists(DATABASE_FILE)
     db_conn = sqlite3.connect(DATABASE_FILE)
-    if new_db:
-        print('Creating Database...')
-        f = open(SCHEMA_FILE, 'r')
-        sql_file = f.read()
-        f.close()
+    try:
+        if new_db:
+            print('Creating Database...')
+            f = open(SCHEMA_FILE, 'r')
+            sql_file = f.read()
+            f.close()
 
-        # all SQL commands (split on ';')
-        sql_commands = sql_file.split(';')
-        # Execute every command from the input file
-        for command in sql_commands:
-            db_conn.execute(command)
-        db_conn.commit()
+            # all SQL commands (split on ';')
+            sql_commands = sql_file.split(';')
+            # Execute every command from the input file
+            for command in sql_commands:
+                db_conn.execute(command)
+            db_conn.commit()
 
-    # if there is data in the database, load it
-    load_existing_data()
-
-
-def commit():
-    db_conn.commit()
+        # if there is data in the database, load it
+        load_existing_data()
+    except db_conn.DatabaseError:
+        print(db_conn.Error)
 
 
 def close():
@@ -178,121 +120,81 @@ def close():
 # DATABASE INSERT FUNCTIONS
 ###########################################
 
-def insert_database_type(name):
-    global database_types_dict
-    type_id = database_types_dict.get(name, 0)
-    if type_id == 0:
-        # saves database type
-        print(f'Inserting {name}')
-        sql = 'INSERT INTO database_type (name) VALUES (?)'
-        type_id = db_conn.execute(sql, [name]).lastrowid
-        database_types_dict[name] = type_id
-    return type_id
+def insert_category(name):
+    global categories_dict
+    category_id = categories_dict.get(name, 0)
+    if category_id == 0:
+        # saves category
+        print(f'Inserting category: {name}')
+        sql = 'INSERT INTO category (name) VALUES (?)'
+        category_id = db_conn.execute(sql, [name]).lastrowid
+        categories_dict[name] = category_id
+    return category_id
 
 
-def insert_database(name, type):
-    global databases_dict
-    database_id = databases_dict.get(name, 0)
+def insert_label(name, type, category, main):
+    global labels_dict
+    label_id = labels_dict.get(name, 0)
 
-    if database_id == 0:
-        # saves database
-        type_id = insert_database_type(type)
-        print(f'Inserting {name}...')
-        sql = 'INSERT INTO database(name, type_id) VALUES(?,?)'
-        database_id = db_conn.execute(sql, [name, type_id]).lastrowid
-        databases_dict[name] = database_id
-    return database_id
-
-
-def insert_query_strategy(name):
-    global query_strategies_dict
-    query_strategy_id = query_strategies_dict.get(name, 0)
-    if query_strategy_id == 0:
-        # saves query strategy type
-        print(f'Inserting {name}')
-        sql = 'INSERT INTO query_strategy (name) VALUES (?)'
-        query_strategy_id = db_conn.execute(sql, [name]).lastrowid
-        query_strategies_dict[name] = query_strategy_id
-    return query_strategy_id
+    if label_id == 0:
+        # saves label
+        try:
+            cursor = db_conn.cursor()  # starts transaction
+            category_id = insert_category(category)
+            print(f'Inserting label: {name}...')
+            sql = 'INSERT INTO label(name, type) VALUES(?,?)'
+            label_id = cursor.execute(sql, [name, type]).lastrowid
+            labels_dict[name] = label_id
+            # saves relationship
+            sql = 'INSERT INTO label_category(label_id, category_id, main) VALUES (?,?,?)'
+            cursor.execute(sql, [label_id, category_id, main])
+        except db_conn.DatabaseError:
+            db_conn.rollback()
+        else:
+            db_conn.commit()
+    return label_id
 
 
-def insert_impl_strategy(name):
-    global impl_strategies_dict
-    impl_strategy_id = impl_strategies_dict.get(name, 0)
-    if impl_strategy_id == 0:
-        # saves implementation strategy type
-        print(f'Inserting {name}')
-        sql = 'INSERT INTO implementation_strategy (name) VALUES (?)'
-        query_strategy_id = db_conn.execute(sql, [name]).lastrowid
-        impl_strategies_dict[name] = impl_strategy_id
-    return impl_strategy_id
-
-
-def insert_heuristic(regex, reg_type, database, language, query_strategy, impl_strategy):
+def insert_heuristic(pattern, label, type, category, main):
     global heuristics_dict
-    database_id = None
-    language_id = None
-    query_strategy_id = None
-    impl_strategy_id = None
-    if database is not None and database != '':
-        database_id = insert_database(database)
-    if language is not None and language != '':
-        language_id = insert_language(language)
-    if query_strategy is not None and query_strategy != '':
-        query_strategy_id = insert_query_strategy(query_strategy)
-    if impl_strategy is not None and impl_strategy != '':
-        impl_strategy_id = insert_impl_strategy(impl_strategy)
-
-    key = regex + '-' + reg_type + '-' + str(database_id) + '-' + str(language_id) + '-' + str(
-        query_strategy_id) + '-' + str(impl_strategy_id)
-    heuristic_id = heuristics_dict.get(key, 0)
+    label_id = insert_label(label, type, category, main)
+    heuristic_id = heuristics_dict.get(pattern, 0)
 
     if heuristic_id == 0:
         # saves heuristic
-        print(f'Inserting {key}...')
-        sql = 'INSERT INTO heuristic(regex, type, database_id, language_id, query_strategy_id, implementation_strategy_id) VALUES(?,?,?,?,?,?)'
-        heuristic_id = db_conn.execute(sql, [regex, reg_type, database_id, language_id, query_strategy_id,
-                                             impl_strategy_id]).lastrowid
-        heuristics_dict[key] = heuristic_id
+        try:
+            cursor = db_conn.cursor()  # starts transaction
+            print(f'Inserting heuristic: {pattern}...')
+            sql = 'INSERT INTO heuristic(pattern, label_id) VALUES(?,?)'
+            heuristic_id = cursor.execute(sql, [pattern, label_id]).lastrowid
+            heuristics_dict[pattern] = heuristic_id
+        except db_conn.DatabaseError:
+            db_conn.rollback()
+        else:
+            db_conn.commit()
     return heuristic_id
 
 
-def insert_execution(owner, name, sha1, last, regex, reg_type, database, language, query_strategy, impl_strategy,
-                     output, validated, accepted):
-    heuristic_id = get_heuristic_id(regex, reg_type, database, language, query_strategy, impl_strategy)
-    # TODO: terminar essa função
-    # project_version_id =
-
-    if heuristic_id == 0:
-        # saves heuristic
-        heuristic_id = insert_heuristic(regex, reg_type, database, language, query_strategy, impl_strategy)
-        sql = 'INSERT INTO execution(output, validated, accepted, heuristic_id, project_version_id) VALUES(?,?,?,?,?)'
-        execution_id = db_conn.execute(sql, [output, validated, accepted, heuristic_id, project_version_id]).lastrowid
+def insert_execution(sha1, pattern, output, validated, accepted):
+    execution_id = 0
+    project_version_id = get_project_version_id(sha1)
+    heuristic_id = get_heuristic_id(pattern)
+    if heuristic_id != 0 and project_version_id != 0:
+        try:
+            cursor = db_conn.cursor() # starts transaction
+            # saves execution
+            sql = 'INSERT INTO execution(output, validated, accepted, heuristic_id, project_version_id) VALUES(?,?,?,?,?)'
+            execution_id = cursor.execute(sql, [output, validated, accepted, heuristic_id, project_version_id]).lastrowid
+        except db_conn.DatabaseError:
+            db_conn.rollback()
+        else:
+            db_conn.commit()
+    else:
+        if project_version_id == 0:
+            print(f'ERROR: project version {sha1} not found...')
+        if heuristic_id == 0:
+            print(f'ERROR: heuristic {pattern} not found...')
     return execution_id
-
-
-def insert_language(name):
-    global languages_dict
-    language_id = languages_dict.get(name, 0)
-    if language_id == 0:
-        # saves language
-        print(f'Inserting {name}')
-        sql = 'INSERT INTO language (name) VALUES (?)'
-        language_id = db_conn.execute(sql, [name]).lastrowid
-        languages_dict[name] = language_id
-    return language_id
-
-
-def insert_domain(name):
-    global domains_dict
-    domain_id = domains_dict.get(name, 0)
-    if domain_id == 0:
-        # saves domain
-        print(f'Inserting {name}')
-        sql = 'INSERT INTO domain (name) VALUES (?)'
-        domain_id = db_conn.execute(sql, [name]).lastrowid
-        domains_dict[name] = domain_id
-    return domain_id
 
 
 def insert_project(project):
@@ -304,20 +206,26 @@ def insert_project(project):
 
     if project_id == 0:
         # saves project
-        language_id = insert_language(project['primaryLanguage'])
-        domain_id = insert_domain(project['domain'])
-        print(f'Inserting {project["owner"]}/{project["name"]}...')
-        createdAt = str(project['createdAt'])
-        pushedAt = str(project['pushedAt'])
+        try:
+            cursor = db_conn.cursor()  # starts transaction
+            print(f'Inserting project: {project["owner"]}/{project["name"]}...')
+            createdAt = str(project['createdAt'])
+            pushedAt = str(project['pushedAt'])
 
-        sql = 'INSERT INTO project(owner, name, createdAt, pushedAt, isMirror, diskUsage, languages, contributors, watchers, stargazers, forks, issues, commits, pullRequests, branches, tags, releases, description, language_id, domain_id) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
-        project_id = db_conn.execute(sql, [project['owner'], project['name'], createdAt, pushedAt, project['isMirror'],
-                                           project['diskUsage'], project['languages'], project['contributors'],
-                                           project['watchers'], project['stargazers'], project['forks'],
-                                           project['issues'], project['commits'], project['pullRequests'],
-                                           project['branches'], project['tags'], project['releases'],
-                                           project['description'], language_id, domain_id]).lastrowid
-        projects_dict[key] = project_id
+            sql = 'INSERT INTO project(owner, name, createdAt, pushedAt, isMirror, diskUsage, languages, contributors, watchers, stargazers, forks, issues, commits, pullRequests, branches, tags, releases, description, primaryLanguage, domain) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
+            project_id = cursor.execute(sql,
+                                        [project['owner'], project['name'], createdAt, pushedAt, project['isMirror'],
+                                         project['diskUsage'], project['languages'], project['contributors'],
+                                         project['watchers'], project['stargazers'], project['forks'],
+                                         project['issues'], project['commits'], project['pullRequests'],
+                                         project['branches'], project['tags'], project['releases'],
+                                         project['description'], project['primaryLanguage'],
+                                         project['domain']]).lastrowid
+            projects_dict[key] = project_id
+        except db_conn.DatabaseError:
+            db_conn.rollback()
+        else:
+            db_conn.commit()
     else:
         print(f'Skipping project {project["owner"]}/{project["name"]}...')
     return project_id
@@ -332,36 +240,51 @@ def insert_project_version(owner, name, sha1, last):
         project_version_id = projects_versions_dict.get(sha1, 0)
         if project_version_id == 0:
             # saves project version
-            sql = 'INSERT INTO project_version(sha1, last, project_id) VALUES(?,?,?)'
-            project_version_id = db_conn.execute(sql, [sha1, last, project_id]).lastrowid
-            projects_versions_dict[sha1] = project_version_id
+            try:
+                cursor = db_conn.cursor()  # starts transaction
+                print(f'Inserting project version: {owner}/{name}; sha1={sha1} ...')
+                sql = 'INSERT INTO project_version(sha1, last, project_id) VALUES(?,?,?)'
+                project_version_id = cursor.execute(sql, [sha1, last, project_id]).lastrowid
+                projects_versions_dict[sha1] = project_version_id
+            except db_conn.DatabaseError:
+                db_conn.rollback()
+            else:
+                db_conn.commit()
     else:
-        print(f'ERROR: {owner}/{name} not found...')
+        print(f'ERROR: project {owner}/{name} not found...')
     return project_version_id
+
+
+def insert_project_version_label(owner, name, sha1, label, type, category, main):
+    project_version_id = projects_versions_dict.get(sha1, 0)
+    if project_version_id != 0:
+        # saves project version label
+        try:
+            cursor = db_conn.cursor()  # starts transaction
+            label_id = insert_label(label, type, category, main)
+            print(f'Inserting project version label: {owner}/{name}; sha1={sha1}; label={label} ...')
+            sql = 'INSERT INTO project_version_label(project_version_id, label_id) VALUES(?,?)'
+            cursor.execute(sql, [project_version_id, label_id])
+        except db_conn.DatabaseError:
+            db_conn.rollback()
+        else:
+            db_conn.commit()
+    else:
+        print(f'ERROR: project {owner}/{name} version {sha1} not found...')
 
 
 ###########################################
 # DATABASE GET FUNCTIONS
 ###########################################
 
-def get_database_type_id(name):
-    database_type_id = database_types_dict.get(name, 0)
-    return database_type_id
+def get_label_group_id(name):
+    group_id = categories_dict.get(name, 0)
+    return group_id
 
 
-def get_database_id(name):
-    database_id = databases_dict.get(name, 0)
-    return database_id
-
-
-def get_language_id(name):
-    language_id = languages_dict.get(name, 0)
-    return language_id
-
-
-def get_domain_id(name):
-    domain_id = domains_dict.get(name, 0)
-    return domain_id
+def get_label_id(name):
+    label_id = labels_dict.get(name, 0)
+    return label_id
 
 
 def get_project_id(owner, name):
@@ -370,10 +293,10 @@ def get_project_id(owner, name):
     return project_id
 
 
-def get_project(projec_id):
+def get_project(project_id):
     sql = 'SELECT * FROM project WHERE project_id = ?'
     cursor = db_conn.cursor()
-    cursor.execute(sql, [projec_id])
+    cursor.execute(sql, [project_id])
     project = cursor.fetchone()
     return project
 
@@ -383,61 +306,14 @@ def get_project_version_id(sha1):
     return project_version_id
 
 
-def get_heuristic_id(regex, reg_type, database, language, query_strategy, impl_strategy):
-    database_id = None
-    language_id = None
-    query_strategy_id = None
-    impl_strategy_id = None
-    if database is not None and database != '':
-        database_id = insert_database(database)
-    if language is not None and language != '':
-        language_id = insert_language(language)
-    if query_strategy is not None and query_strategy != '':
-        query_strategy_id = insert_query_strategy(query_strategy)
-    if impl_strategy is not None and impl_strategy != '':
-        impl_strategy_id = insert_impl_strategy(impl_strategy)
-
-    key = regex + '-' + reg_type + '-' + str(database_id) + '-' + str(language_id) + '-' + str(
-        query_strategy_id) + '-' + str(impl_strategy_id)
-    heuristic_id = heuristics_dict.get(key, 0)
+def get_heuristic_id(pattern):
+    heuristic_id = heuristics_dict.get(pattern, 0)
     return heuristic_id
 
 
 ###########################################
 # DATABASE DELETE FUNCTIONS
 ###########################################
-
-def delete_language(language):
-    global languages_dict
-    sql = 'DELETE FROM language WHERE language_id = ?'
-    language_id = languages_dict.get(language)
-    db_conn.execute(sql, [language_id])
-    languages_dict.pop(language)  # removes language from the dictionary
-
-
-def delete_language_by_id(language_id):
-    global languages_dict
-    sql = 'DELETE FROM language WHERE language_id = ?'
-    db_conn.execute(sql, [language_id])
-    language_name = (list(languages_dict.keys())[list(languages_dict.values()).index(language_id)])
-    languages_dict.pop(language_name)  # removes language from the dictionary
-
-
-def delete_domain(domain):
-    global domains_dict
-    sql = 'DELETE FROM domain WHERE domain_id = ?'
-    domain_id = domains_dict.get(domain)
-    db_conn.execute(sql, [domain_id])
-    domains_dict.pop(domain)  # removes domain from dictionary
-
-
-def delete_domain_by_id(domain_id):
-    global domains_dict
-    sql = 'DELETE FROM domain WHERE domain_id = ?'
-    db_conn.execute(sql, [domain_id])
-    domain_name = (list(domains_dict.keys())[list(domains_dict.values()).index(domain_id)])
-    domains_dict.pop(domain_name)  # removes domain from the dictionary
-
 
 def delete_project(owner, name):
     global projects_dict
@@ -482,14 +358,19 @@ def remove_old_projects():
     projects_to_remove = projects_in_database - projects_set
 
     for project in projects_to_remove:
-        print(f'Removing project {project}...')
-        delete_project(project[0])
+        print(f'Removing project {project[1]}/{project[2]}...')
+        delete_project_by_id(project[0])
         projects_dict.pop(project[1] + project[2])  # removes project from dictionary
         projects_set.remove(project[1] + project[2])  # removes project from set of processed projects
 
 
 def main():
     connect()
+    # insert_heuristic('ABC', 'MySQL', 'database', 'Relational', True)
+    # insert_project_version('jupyter', 'notebook', '1234', True)
+    # insert_project_version_label('jupyter', 'notebook', '1234', 'MySQL', 'database', 'Relational', True)
+    # insert_project_version_label('jupyter', 'notebook', '1234', 'Cassandra', 'database', 'NoSQL', True)
+    # insert_execution('1234', 'ABC', 'test', False, False)
     close()
 
 
