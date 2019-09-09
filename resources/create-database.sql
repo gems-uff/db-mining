@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS label (
 CREATE TABLE IF NOT EXISTS label_category (
    label_id INTEGER NOT NULL,
    category_id INTEGER NOT NULL,
-   main BOOLEAN,
+   is_main BOOLEAN,
    PRIMARY KEY (label_id, category_id),
    FOREIGN KEY (label_id) REFERENCES label (label_id) ON DELETE CASCADE,
    FOREIGN KEY (category_id) REFERENCES category (category_id) ON DELETE CASCADE
