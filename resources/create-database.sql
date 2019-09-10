@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS category (
 );
 
 CREATE TABLE IF NOT EXISTS label (
-   label_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   id INTEGER PRIMARY KEY AUTOINCREMENT,
    name TEXT,
    type TEXT
 );
@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS label_category (
    category_id INTEGER NOT NULL,
    is_main BOOLEAN,
    PRIMARY KEY (label_id, category_id),
-   FOREIGN KEY (label_id) REFERENCES label (label_id) ON DELETE CASCADE,
+   FOREIGN KEY (label_id) REFERENCES label(id) ON DELETE CASCADE,
    FOREIGN KEY (category_id) REFERENCES category (category_id) ON DELETE CASCADE
 );
 
@@ -55,14 +55,14 @@ CREATE TABLE IF NOT EXISTS project_version_label (
    label_id INTEGER NOT NULL,
    PRIMARY KEY(project_version_id, label_id),
    FOREIGN KEY (project_version_id) REFERENCES project_version (project_version_id) ON DELETE CASCADE,
-   FOREIGN KEY (label_id) REFERENCES label (label_id) ON DELETE CASCADE
+   FOREIGN KEY (label_id) REFERENCES label(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS heuristic (
-   heuristic_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   id INTEGER PRIMARY KEY AUTOINCREMENT,
    pattern TEXT,
    label_id INTEGER,
-   FOREIGN KEY (label_id) REFERENCES label (label_id) ON DELETE CASCADE
+   FOREIGN KEY (label_id) REFERENCES label(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS execution (
@@ -72,6 +72,6 @@ CREATE TABLE IF NOT EXISTS execution (
    accepted BOOLEAN,
    heuristic_id INTEGER,
    project_version_id INTEGER,
-   FOREIGN KEY (heuristic_id) REFERENCES heuristic (heuristic_id) ON DELETE CASCADE,
+   FOREIGN KEY (heuristic_id) REFERENCES heuristic(id) ON DELETE CASCADE,
    FOREIGN KEY (project_version_id) REFERENCES project_version (project_version_id) ON DELETE CASCADE
 );

@@ -1,11 +1,13 @@
 import os
 
+# Directories
 SRC_DIR = os.path.dirname(os.path.realpath(__file__))
 BASE_DIR = os.path.dirname(SRC_DIR)
 REPOS_DIR = BASE_DIR + os.sep + 'repos'
 RESOURCE_DIR = BASE_DIR + os.sep + "resources"
 HEURISTICS_DIR = RESOURCE_DIR + os.sep + 'heuristics'
 
+# Files
 PROJECTS_FILE = RESOURCE_DIR + os.sep + 'projects.xlsx'
 FILTERED_FILE = RESOURCE_DIR + os.sep + 'filtered.xlsx'
 ANNOTATED_FILE = RESOURCE_DIR + os.sep + 'annotated.xlsx'

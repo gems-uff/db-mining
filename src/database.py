@@ -5,16 +5,27 @@ from util import DATABASE_FILE, SCHEMA_FILE
 
 db_conn = None  # Connection to the database
 categories_dict = None  # dictionary with categories
-labels_dict = None  # dictionary with labels
-heuristics_dict = None  # dictionary with heuristics
+labels_by_name = None  # dictionary with labels
+heuristics_by_label_id = None  # dictionary with heuristics
 projects_dict = None  # dictionary with projects
 projects_set = None  # set with dictionaries that were processed
 projects_versions_dict = None  # dictionary with project versions
 
 
+def sub_dict(super_dict, keys):
+    return dict((k, super_dict[k]) for k in keys)
+
 ###########################################
 # DATABASE CONNECT, COMMIT, CLOSE
 ###########################################
+
+def load(table_name, key, cache):
+    cursor = db_conn.cursor()
+    cursor.execute(f'SELECT * FROM {table_name}')
+    for row in cursor:
+        cache[row[key]] = dict(row)
+
+
 def load_categories_dict():
     global categories_dict
     sql = 'SELECT * FROM category'
@@ -23,26 +34,6 @@ def load_categories_dict():
     results = cursor.fetchall()
     for row in results:
         categories_dict[row[1]] = row[0]
-
-
-def load_labels_dict():
-    global labels_dict
-    sql = 'SELECT * FROM label'
-    cursor = db_conn.cursor()
-    cursor.execute(sql)
-    results = cursor.fetchall()
-    for row in results:
-        labels_dict[row[1]] = row[0]
-
-
-def load_heuristics_dict():
-    global heuristics_dict
-    sql = 'SELECT * FROM heuristic'
-    cursor = db_conn.cursor()
-    cursor.execute(sql)
-    results = cursor.fetchall()
-    for row in results:
-        heuristics_dict[row[1]] = row[0]
 
 
 def load_projects_dict():
@@ -68,21 +59,21 @@ def load_projects_versions():
 
 def load_existing_data():
     global categories_dict
-    global labels_dict
-    global heuristics_dict
+    global labels_by_name
+    global heuristics_by_label_id
     global projects_dict
     global projects_set
     global projects_versions_dict
 
     categories_dict = {}
-    labels_dict = {}
-    heuristics_dict = {}
+    labels_by_name = {}
+    heuristics_by_label_id = {}
     projects_dict = {}
     projects_set = set()
     projects_versions_dict = {}
     load_categories_dict()
-    load_labels_dict()
-    load_heuristics_dict()
+    load('label', 'name', labels_by_name)
+    load('heuristic', 'label_id', heuristics_by_label_id)
     load_projects_dict()
     load_projects_versions()
 
@@ -92,6 +83,7 @@ def connect():
 
     new_db = not os.path.exists(DATABASE_FILE)
     db_conn = sqlite3.connect(DATABASE_FILE)
+    db_conn.row_factory = sqlite3.Row
     try:
         if new_db:
             print('Creating Database...')
@@ -132,47 +124,44 @@ def insert_category(name):
     return category_id
 
 
-def insert_label(name, label_type, category, is_main):
-    global labels_dict
-    label_id = labels_dict.get(name, None)
+def insert_label(label):
+    global labels_by_name
 
-    if label_id is None:
-        # saves label
-        try:
+    existing_label = labels_by_name.get(label['name'], None)
+    if not existing_label:
+        try:  # saves label
             cursor = db_conn.cursor()  # starts transaction
-            category_id = insert_category(category)
-            print(f'Inserting label: {name}...')
-            sql = 'INSERT INTO label(name, type) VALUES(?,?)'
-            label_id = cursor.execute(sql, [name, label_type]).lastrowid
-            labels_dict[name] = label_id
-            # saves relationship
-            sql = 'INSERT INTO label_category(label_id, category_id, is_main) VALUES (?,?,?)'
-            cursor.execute(sql, [label_id, category_id, is_main])
+            sql = 'INSERT INTO label(name, type) VALUES (?,?)'
+            label['id'] = cursor.execute(sql, [label['name'], label['type']]).lastrowid
+            labels_by_name[label['name']] = label
         except db_conn.DatabaseError:
             db_conn.rollback()
         else:
             db_conn.commit()
-    return label_id
+    else:
+        label = existing_label
+
+    return label
 
 
-def insert_heuristic(pattern, label, label_type, category, is_main):
-    global heuristics_dict
-    label_id = insert_label(label, label_type, category, is_main)
-    heuristic_id = heuristics_dict.get(pattern, None)
+def insert_heuristic(heuristic):
+    global heuristics_by_label_id
 
-    if heuristic_id is None:
-        # saves heuristic
-        try:
+    label = insert_label(sub_dict(heuristic, ['name', 'type']))
+    heuristic['label_id'] = label['id']
+
+    existing_heuristic = heuristics_by_label_id.get(label['name'], None)
+    if not existing_heuristic:
+        try:  # saves heuristic
             cursor = db_conn.cursor()  # starts transaction
-            print(f'Inserting heuristic: {pattern}...')
             sql = 'INSERT INTO heuristic(pattern, label_id) VALUES(?,?)'
-            heuristic_id = cursor.execute(sql, [pattern, label_id]).lastrowid
-            heuristics_dict[pattern] = heuristic_id
+            heuristic['id'] = cursor.execute(sql, [heuristic['pattern'], heuristic['label_id']]).lastrowid
+            heuristics_by_label_id[heuristic['name']] = sub_dict(heuristic, ['id', 'pattern', 'label_id'])
         except db_conn.DatabaseError:
             db_conn.rollback()
         else:
             db_conn.commit()
-    return heuristic_id
+    return heuristic
 
 
 def insert_execution(sha1, pattern, output, validated, accepted):
@@ -181,10 +170,11 @@ def insert_execution(sha1, pattern, output, validated, accepted):
     heuristic_id = get_heuristic_id(pattern)
     if heuristic_id is not None and project_version_id is not None:
         try:
-            cursor = db_conn.cursor() # starts transaction
+            cursor = db_conn.cursor()  # starts transaction
             # saves execution
             sql = 'INSERT INTO execution(output, validated, accepted, heuristic_id, project_version_id) VALUES(?,?,?,?,?)'
-            execution_id = cursor.execute(sql, [output, validated, accepted, heuristic_id, project_version_id]).lastrowid
+            execution_id = cursor.execute(sql,
+                                          [output, validated, accepted, heuristic_id, project_version_id]).lastrowid
         except db_conn.DatabaseError:
             db_conn.rollback()
         else:
@@ -282,17 +272,17 @@ def get_label_group_id(name):
     return group_id
 
 
-def get_label_id(name):
-    label_id = labels_dict.get(name, None)
-    return label_id
+def get_label(name):
+    return labels_by_name.get(name, None)
 
 
 def get_project_id_by_key(project_key):
     project_id = projects_dict.get(project_key, None)
     return project_id
 
+
 def get_project_id(owner, name):
-    project_id = get_project_id_by_key(owner+name)
+    project_id = get_project_id_by_key(owner + name)
     return project_id
 
 
@@ -310,8 +300,12 @@ def get_project_version_id(sha1):
 
 
 def get_heuristic_id(pattern):
-    heuristic_id = heuristics_dict.get(pattern, None)
+    heuristic_id = heuristics_by_label_id.get(pattern, None)
     return heuristic_id
+
+
+def get_heuristic_by_label_id(label_id):
+    return heuristics_by_label_id.get(label_id, None)
 
 
 ###########################################
@@ -337,6 +331,7 @@ def delete_project(owner, name):
             db_conn.commit()
     else:
         print(f'ERROR: project {owner}/{name} not found...')
+
 
 def delete_project_by_id(project_id):
     global projects_dict
@@ -373,6 +368,22 @@ def delete_project_version_by_id(project_version_id):
     else:
         db_conn.commit()
 
+
+def delete_by_id(table_name, row_id, cache, key):
+    try:
+        cursor = db_conn.cursor()  # starts transaction
+        cursor.execute('DELETE FROM ? WHERE id = ?', [table_name, row_id])
+        del cache[key]
+    except db_conn.DatabaseError:
+        db_conn.rollback()
+    else:
+        db_conn.commit()
+
+
+def delete_heuristic(heuristic):
+    delete_by_id('heuristic', heuristic['id'], heuristics_by_label_id, heuristic['label_id'])
+
+
 def remove_old_projects():
     """
     Removes projects that are in the database but were not processed (insertion attempt) since the database connection was established
@@ -392,15 +403,4 @@ def remove_old_projects():
         delete_project_by_key(project)
 
 
-def main():
-    connect()
-    # insert_heuristic('ABC', 'MySQL', 'database', 'Relational', True)
-    # insert_project_version('jupyter', 'notebook', '1234', True)
-    # insert_project_version_label('jupyter', 'notebook', '1234', 'MySQL', 'database', 'Relational', True)
-    # insert_project_version_label('jupyter', 'notebook', '1234', 'Cassandra', 'database', 'NoSQL', True)
-    # insert_execution('1234', 'ABC', 'test', False, False)
-    close()
-
-
-if __name__ == '__main__':
-    main()
+connect()  # Connects to the database if someone imports this module
