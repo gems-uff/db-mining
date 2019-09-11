@@ -4,7 +4,7 @@ import subprocess
 import pandas as pd
 
 import database
-from util import ANNOTATED_FILE, HEURISTICS_DIR, REPOS_DIR, red, green, DEBUG, yellow
+from util import ANNOTATED_FILE, HEURISTICS_DIR, REPOS_DIR, red, green, yellow, CODE_DEBUG
 
 # Git grep command
 GREP_COMMAND = [
@@ -58,6 +58,16 @@ def main():
 
     database.connect()
 
+    status = {
+        'Success': 0,
+        'Skipped': 0,
+        'Repository not found': 0,
+        'Git error': 0,
+        'Total': len(info_heuristics) * len(info_repositories)
+    }
+
+    print(status)
+
     print(f'Processing {len(info_heuristics)} heuristics over {len(info_repositories)} repositories.')
     i = 0
     for heuristic_info in info_heuristics:
@@ -73,60 +83,59 @@ def main():
 
         # Applies the heuristic over each repository
         for j, info_repository in info_repositories.iterrows():
-            # Retrieve or create the Repository object
-            repo_dict = info_repository.to_dict()
-            repo_dict = {k: v for k, v in repo_dict.items() if k not in ['url', 'isSoftware', 'discardReason']}
-            repo_dict['createdAt'] = str(repo_dict['createdAt'])
-            repo_dict['pushedAt'] = str(repo_dict['pushedAt'])
-            project = database.get_or_create(database.Project, **repo_dict)
+            try:
+                # Retrieve or create the Repository object
+                repo_dict = info_repository.to_dict()
+                repo_dict = {k: v for k, v in repo_dict.items() if k not in ['url', 'isSoftware', 'discardReason']}
+                repo_dict['createdAt'] = str(repo_dict['createdAt'])
+                repo_dict['pushedAt'] = str(repo_dict['pushedAt'])
+                project = database.get_or_create(database.Project, **repo_dict)
 
-            # Print progress information
-            progress = '{:.2%}'.format(
-                (i * len(info_repositories) + j) / (len(info_heuristics) * len(info_repositories)))
-            print(f'[{progress}] Searching for {label.name} in {project.owner}/{project.name}:', end=' ')
+                # Print progress information
+                progress = '{:.2%}'.format((i * len(info_repositories) + j) / status['Total'])
+                print(f'[{progress}] Searching for {label.name} in {project.owner}/{project.name}:', end=' ')
 
-            # Enter in the repository workspace and run Git commands
-            repo_dir = REPOS_DIR + os.sep + project.owner + os.sep + project.name
-            if os.path.isdir(repo_dir):
-                os.chdir(repo_dir)
+                # Enter in the repository workspace
+                os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
 
                 # Retrieve or create the Version object
-                process = subprocess.run(REVPARSE_COMMAND, text=True, capture_output=True)
-                if not process.stderr:
-                    version = database.get_or_create(database.Version, sha1=process.stdout, isLast=True,
-                                                     project=project)
+                version = database.get(database.Version, isLast=True, project=project)
+                if not version:
+                    process = subprocess.run(REVPARSE_COMMAND, capture_output=True, check=True)
+                    version = database.create(database.Version, sha1=process.stdout, isLast=True, project=project)
 
-                    # Avoids executing the heuristic when it has been executed before
-                    execution = database.get(database.Execution, version=version, heuristic=heuristic)
-                    if not execution:
-                        # Executes the heuristic over the project
-                        process = subprocess.run(GREP_COMMAND + [heuristic_info['pattern_file']], text=True,
-                                                 capture_output=True)
-                        if not process.stderr:
-                            database.create(database.Execution, output=process.stdout, version=version, heuristic=heuristic, isValidated=False, isAccepted=False)
-                            print(green('ok.'))
-                        else:  # Git grep failed
-                            print(red('error.'))
-                            if DEBUG:
-                                print(process.stderr)
-                    else:  # Execution already exists
-                        print(yellow('already done.'))
-                else:  # Git rev-parse failed
-                    print(red('version not found.'))
-                    if DEBUG:
-                        print(process.stderr)
-            else:  # Repo dir does not exist
+                # Executes the heuristic over the project if was not executed before
+                execution = database.get(database.Execution, version=version, heuristic=heuristic)
+                if not execution:
+                    cmd = GREP_COMMAND + [heuristic_info['pattern_file']]
+                    process = subprocess.run(cmd, capture_output=True, check=True)
+                    database.create(database.Execution, output=process.stdout, version=version, heuristic=heuristic,
+                                    isValidated=False, isAccepted=False)
+                    print(green('ok.'))
+                    status['Success'] += 1
+                    database.commit()
+                else:  # Execution already exists
+                    print(yellow('already done.'))
+                    status['Skipped'] += 1
+            except NotADirectoryError:
                 print(red('repository not found.'))
-
-            database.commit()
-
+                status['Repository not found'] += 1
+            except subprocess.CalledProcessError as ex:
+                print(red('Git error.'))
+                status['Git error'] += 1
+                if CODE_DEBUG:
+                    print(ex.stderr)
         i += 1
 
     print('Deleting missing heuristics...')
     # TODO: remove from the DB the heuristics that were removed from the directory.
 
-    database.commit()
     database.close()
+
+    print('\n*** Processing results ***')
+    for k, v in status.items():
+        print(f'{k}: {v}')
+
     print("\nFinished.")
 
 
