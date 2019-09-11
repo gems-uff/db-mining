@@ -24,8 +24,12 @@ def bold(string):
 
 
 def red(string):
-    return '\033[91m' + string + '\033[0m'
+    return '\033[31m' + string + '\033[0m'
 
 
 def green(string):
-    return '\033[92m' + string + '\033[0m'
+    return '\033[32m' + string + '\033[0m'
+
+
+def yellow(string):
+    return '\033[33m' + string + '\033[0m'

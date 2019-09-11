@@ -106,7 +106,6 @@ class Execution(Base):
 
 
 def get(model, **kwargs):
-    print(f'Session: {session}')
     return session.query(model).filter_by(**kwargs).first()
 
 
