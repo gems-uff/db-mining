@@ -15,11 +15,13 @@ def main():
     total = len(df)
     print(f'Processing {total} projects...')
 
-    for i, row in df.iterrows():
-        db.insert_project(row)
+    # for i, row in df.iterrows():
+    #     db.insert_project(row)
+    # TODO: Use SQL Alchemy
 
     print('\nRemoving projects that in the database and not in the Excel file...')
-    db.remove_old_projects()
+    # db.remove_old_projects()
+    # TODO: migrate the function to here.
 
     print('Closing database connection...')
     db.close()
