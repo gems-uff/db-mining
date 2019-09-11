@@ -1,13 +1,11 @@
 import os.path
-import sqlite3
 
 from sqlalchemy import Column, Integer, String, create_engine, ForeignKey, Boolean, Table
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.orm import sessionmaker, relationship
 
-from util import DATABASE_FILE, SCHEMA_FILE
+from util import DATABASE_FILE
 
-db_conn = None  # Connection to the database
 session = None
 
 
@@ -64,7 +62,6 @@ version_label = Table('version_label',
 class Version(Base):
     sha1 = Column(String)
     isLast = Column(Boolean)
-    createdAt = Column(String)
     project_id = Column(Integer, ForeignKey('project.id', ondelete="CASCADE"))
     project = relationship("Project", back_populates="versions")
     labels = relationship('Label', secondary=version_label, back_populates="versions")
@@ -135,31 +132,15 @@ def delete(instance):
 ###########################################
 
 def connect():
-    global db_conn, session
-
+    global session
+    engine = create_engine('sqlite:///' + DATABASE_FILE, echo=True)
     new_db = not os.path.exists(DATABASE_FILE)
-    db_conn = sqlite3.connect(DATABASE_FILE)
-    db_conn.row_factory = sqlite3.Row
-    try:
-        if new_db:
-            print('Creating Database...')
-            f = open(SCHEMA_FILE, 'r')
-            sql_file = f.read()
-            f.close()
-
-            # all SQL commands (split on ';')
-            sql_commands = sql_file.split(';')
-            # Execute every command from the input file
-            for command in sql_commands:
-                db_conn.execute(command)
-            db_conn.commit()
-
-        engine = create_engine('sqlite:///' + DATABASE_FILE, echo=True)
-        Session = sessionmaker(bind=engine)
-
-        session = Session(expire_on_commit=False)
-    except db_conn.DatabaseError:
-        print(db_conn.Error)
+    if new_db:
+        print('Creating Database...')
+        schema = Base.metadata
+        schema.create_all(engine)
+    Session = sessionmaker(bind=engine)
+    session = Session(expire_on_commit=False)
 
 
 def commit():
@@ -168,7 +149,15 @@ def commit():
 
 def close():
     session.close()
-    db_conn.close()
+
+
+def main():
+    connect()
+    commit()
+
+
+if __name__ == '__main__':
+    main()
 
 # def remove_old_projects():
 #     """

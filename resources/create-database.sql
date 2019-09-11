@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS project (
 CREATE TABLE IF NOT EXISTS version (
    id INTEGER PRIMARY KEY AUTOINCREMENT,
    sha1 TEXT,
-   last BOOLEAN,
+   isLast BOOLEAN,
    project_id INTEGER,
    FOREIGN KEY (project_id) REFERENCES project(id) ON DELETE CASCADE
 );
@@ -68,8 +68,8 @@ CREATE TABLE IF NOT EXISTS heuristic (
 CREATE TABLE IF NOT EXISTS execution (
    id INTEGER PRIMARY KEY AUTOINCREMENT,
    output TEXT,
-   validated BOOLEAN,
-   accepted BOOLEAN,
+   isValidated BOOLEAN,
+   isAccepted BOOLEAN,
    heuristic_id INTEGER,
    version_id INTEGER,
    FOREIGN KEY (heuristic_id) REFERENCES heuristic(id) ON DELETE CASCADE,
