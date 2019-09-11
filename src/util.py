@@ -1,5 +1,8 @@
 import os
 
+# Flags
+DEBUG = False
+
 # Directories
 SRC_DIR = os.path.dirname(os.path.realpath(__file__))
 BASE_DIR = os.path.dirname(SRC_DIR)
