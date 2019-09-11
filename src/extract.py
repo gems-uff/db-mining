@@ -101,14 +101,17 @@ def main():
                 # Retrieve or create the Version object
                 version = database.get(database.Version, isLast=True, project=project)
                 if not version:
-                    process = subprocess.run(REVPARSE_COMMAND, capture_output=True, check=True)
+                    process = subprocess.run(REVPARSE_COMMAND, capture_output=True)
+                    if process.stderr:
+                        raise subprocess.CalledProcessError(process.stderr)
                     version = database.create(database.Version, sha1=process.stdout, isLast=True, project=project)
 
                 # Executes the heuristic over the project if was not executed before
                 execution = database.get(database.Execution, version=version, heuristic=heuristic)
                 if not execution:
-                    cmd = GREP_COMMAND + [heuristic_info['pattern_file']]
-                    process = subprocess.run(cmd, capture_output=True, check=True)
+                    process = subprocess.run(GREP_COMMAND + [heuristic_info['pattern_file']], capture_output=True)
+                    if process.stderr:
+                        raise subprocess.CalledProcessError(process.stderr)
                     database.create(database.Execution, output=process.stdout, version=version, heuristic=heuristic,
                                     isValidated=False, isAccepted=False)
                     print(green('ok.'))
