@@ -57,15 +57,15 @@ class Project(Base):
 
 version_label = Table('version_label',
                       Base.metadata,
-                      Column('version_id', Integer, ForeignKey('version.id')),
-                      Column('label_id', Integer, ForeignKey('label.id')))
+                      Column('version_id', Integer, ForeignKey('version.id', ondelete="CASCADE")),
+                      Column('label_id', Integer, ForeignKey('label.id', ondelete="CASCADE")))
 
 
 class Version(Base):
     sha1 = Column(String)
     isLast = Column(Boolean)
     createdAt = Column(String)
-    project_id = Column(Integer, ForeignKey('project.id'))
+    project_id = Column(Integer, ForeignKey('project.id', ondelete="CASCADE"))
     project = relationship("Project", back_populates="versions")
     labels = relationship('Label', secondary=version_label, back_populates="versions")
     executions = relationship("Execution", back_populates="version")
@@ -73,8 +73,8 @@ class Version(Base):
 
 label_category = Table('label_category',
                        Base.metadata,
-                       Column('label_id', Integer, ForeignKey('label.id')),
-                       Column('category_id', Integer, ForeignKey('category.id')),
+                       Column('label_id', Integer, ForeignKey('label.id', ondelete="CASCADE")),
+                       Column('category_id', Integer, ForeignKey('category.id', ondelete="CASCADE")),
                        Column('isMain', Boolean))
 
 
@@ -93,7 +93,7 @@ class Label(Base):
 
 class Heuristic(Base):
     pattern = Column(String)
-    label_id = Column(Integer, ForeignKey('label.id'))
+    label_id = Column(Integer, ForeignKey('label.id', ondelete="CASCADE"))
     label = relationship("Label", back_populates="heuristic")
     executions = relationship("Execution", back_populates="heuristic")
 
@@ -102,8 +102,8 @@ class Execution(Base):
     output = Column(String)
     isValidated = Column(Boolean)
     isAccepted = Column(Boolean)
-    heuristic_id = Column(Integer, ForeignKey('heuristic.id'))
-    version_id = Column(Integer, ForeignKey('version.id'))
+    heuristic_id = Column(Integer, ForeignKey('heuristic.id', ondelete="CASCADE"))
+    version_id = Column(Integer, ForeignKey('version.id', ondelete="CASCADE"))
     heuristic = relationship("Heuristic", back_populates="executions")
     version = relationship("Version", back_populates="executions")
 

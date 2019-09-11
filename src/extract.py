@@ -64,26 +64,35 @@ def main():
         for j, repo in repos_df.iterrows():
             progress = '{:.2%}'.format((i * len(repos_df) + j) / (len(heuristic_infos) * len(repos_df)))
             print(f'[{progress}] Searching for {label.name} in {repo["owner"]}/{repo["name"]}:', end=' ')
+            repo_dict = repo.to_dict()
+            repo_dict = {k:v for k,v in repo_dict.items() if k not in ['url','isSoftware','discardReason']}
+            repo_dict['createdAt'] = str(repo_dict['createdAt'])
+            repo_dict['pushedAt'] = str(repo_dict['pushedAt'])
+            project = database.get_or_create(database.Project, **repo_dict)
+            # #version = database.get_or_create(database.Version, sha1=?, last=? , project=project)
+            # checks if execution already exists
+            # execution = database.get(database.Execution, version=version, heuristic=heuristic)
+            #if not execution: # create execution
+            if True:
+                # execution = database.create(database.Execution, version=version, heuristic=heuristic, validated=False, accepted=False)
+                repo = REPOS_DIR + os.sep + repo['owner'] + os.sep + repo['name']
+                if os.path.isdir(repo):
+                    os.chdir(repo)
+                    process = subprocess.run(GREP_COMMAND + [heuristic_info['pattern_file']], text=True,
+                                             capture_output=True)
 
-            # TODO: check if the heuristic has already been executed over the project.
+                    if process.stderr:
+                        print(red('error.'))
+                        print(process.stderr)
+                        exit(1)
+                    else:
+                        # execution.output = ?
+                        # TODO: save process.stdout
 
-            repo = REPOS_DIR + os.sep + repo['owner'] + os.sep + repo['name']
-            if os.path.isdir(repo):
-                os.chdir(repo)
-                process = subprocess.run(GREP_COMMAND + [heuristic_info['pattern_file']], text=True,
-                                         capture_output=True)
 
-                if process.stderr:
-                    print(red('error.'))
-                    print(process.stderr)
-                    exit(1)
+                        print(green('ok.'))
                 else:
-
-                    # TODO: save process.stdout
-
-                    print(green('ok.'))
-            else:
-                print(red('not found.'))
+                    print(red('not found.'))
 
         i += 1
 
