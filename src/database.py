@@ -50,59 +50,59 @@ class Project(Base):
     description = Column(String)
     primaryLanguage = Column(String)
     domain = Column(String)
-    versions = relationship("Version", back_populates="project")
+    versions = relationship('Version', back_populates='project')
 
 
 version_label = Table('version_label',
                       Base.metadata,
-                      Column('version_id', Integer, ForeignKey('version.id', ondelete="CASCADE")),
-                      Column('label_id', Integer, ForeignKey('label.id', ondelete="CASCADE")))
+                      Column('version_id', Integer, ForeignKey('version.id', ondelete='CASCADE')),
+                      Column('label_id', Integer, ForeignKey('label.id', ondelete='CASCADE')))
 
 
 class Version(Base):
     sha1 = Column(String)
     isLast = Column(Boolean)
-    project_id = Column(Integer, ForeignKey('project.id', ondelete="CASCADE"))
-    project = relationship("Project", back_populates="versions")
-    labels = relationship('Label', secondary=version_label, back_populates="versions")
-    executions = relationship("Execution", back_populates="version")
+    project_id = Column(Integer, ForeignKey('project.id', ondelete='CASCADE'))
+    project = relationship('Project', back_populates='versions')
+    labels = relationship('Label', secondary=version_label, back_populates='versions')
+    executions = relationship('Execution', back_populates='version')
 
 
 label_category = Table('label_category',
                        Base.metadata,
-                       Column('label_id', Integer, ForeignKey('label.id', ondelete="CASCADE")),
-                       Column('category_id', Integer, ForeignKey('category.id', ondelete="CASCADE")),
+                       Column('label_id', Integer, ForeignKey('label.id', ondelete='CASCADE')),
+                       Column('category_id', Integer, ForeignKey('category.id', ondelete='CASCADE')),
                        Column('isMain', Boolean))
 
 
 class Category(Base):
     name = Column(String)
-    labels = relationship('Label', secondary=label_category, back_populates="categories")
+    labels = relationship('Label', secondary=label_category, back_populates='categories')
 
 
 class Label(Base):
     name = Column(String)
     type = Column(String)
-    heuristic = relationship("Heuristic", uselist=False, back_populates="label")
-    categories = relationship('Category', secondary=label_category, back_populates="labels")
-    versions = relationship('Version', secondary=version_label, back_populates="labels")
+    heuristic = relationship('Heuristic', uselist=False, back_populates='label')
+    categories = relationship('Category', secondary=label_category, back_populates='labels')
+    versions = relationship('Version', secondary=version_label, back_populates='labels')
 
 
 class Heuristic(Base):
     pattern = Column(String)
-    label_id = Column(Integer, ForeignKey('label.id', ondelete="CASCADE"))
-    label = relationship("Label", back_populates="heuristic")
-    executions = relationship("Execution", back_populates="heuristic")
+    label_id = Column(Integer, ForeignKey('label.id', ondelete='CASCADE'))
+    label = relationship('Label', back_populates='heuristic')
+    executions = relationship('Execution', back_populates='heuristic')
 
 
 class Execution(Base):
     output = Column(String)
     isValidated = Column(Boolean)
     isAccepted = Column(Boolean)
-    heuristic_id = Column(Integer, ForeignKey('heuristic.id', ondelete="CASCADE"))
-    version_id = Column(Integer, ForeignKey('version.id', ondelete="CASCADE"))
-    heuristic = relationship("Heuristic", back_populates="executions")
-    version = relationship("Version", back_populates="executions")
+    heuristic_id = Column(Integer, ForeignKey('heuristic.id', ondelete='CASCADE'))
+    version_id = Column(Integer, ForeignKey('version.id', ondelete='CASCADE'))
+    heuristic = relationship('Heuristic', back_populates='executions')
+    version = relationship('Version', back_populates='executions')
 
 
 def get(model, **kwargs):
