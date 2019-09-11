@@ -4,7 +4,7 @@ from sqlalchemy import Column, Integer, String, create_engine, ForeignKey, Boole
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.orm import sessionmaker, relationship
 
-from util import DATABASE_FILE
+from util import DATABASE_FILE, DEBUG
 
 session = None
 
@@ -133,7 +133,7 @@ def delete(instance):
 
 def connect():
     global session
-    engine = create_engine('sqlite:///' + DATABASE_FILE, echo=True)
+    engine = create_engine('sqlite:///' + DATABASE_FILE, echo=DEBUG)
     new_db = not os.path.exists(DATABASE_FILE)
     if new_db:
         print('Creating Database...')
