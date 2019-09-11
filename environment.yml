@@ -9,3 +9,4 @@ dependencies:
   - pandas=0.25.*
   - requests=2.22.*
   - xlrd=1.2.*
+  - sqlalchemy=1.3.*

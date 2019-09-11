@@ -1,9 +1,10 @@
 import os
+import subprocess
 
 import pandas as pd
 
 import database
-from util import ANNOTATED_FILE, HEURISTICS_DIR
+from util import ANNOTATED_FILE, HEURISTICS_DIR, REPOS_DIR, red, green
 
 # Git grep command
 GREP_COMMAND = [
@@ -45,47 +46,52 @@ def main():
     repos_df = repos_df[repos_df.discardReason == ''].reset_index(drop=True)
 
     print(f'Loading heuristics from {HEURISTICS_DIR}.')
-    heuristics = load_heuristics(HEURISTICS_DIR)
+    heuristic_infos = load_heuristics(HEURISTICS_DIR)
 
-    print(f'Processing {len(heuristics)} heuristics over {len(repos_df)} repositories.')
+    database.connect()
+
+    print(f'Processing {len(heuristic_infos)} heuristics over {len(repos_df)} repositories.')
     i = 0
-    for heuristic in heuristics:
-        label = database.insert_label(heuristic)
-        existing_heuristic = database.get_heuristic_by_label_id(label['id'])
-        if existing_heuristic and existing_heuristic['pattern'] != heuristic['pattern']:
-            database.delete_heuristic(existing_heuristic)
-            existing_heuristic = None
-        if not existing_heuristic:
-            database.insert_heuristic(heuristic)
+    for heuristic_info in heuristic_infos:
+        label = database.get_or_create(database.Label, name=heuristic_info['name'], type=heuristic_info['type'])
+        heuristic = label.heuristic
+        if heuristic and heuristic.pattern != heuristic_info['pattern']:
+            database.delete(heuristic)
+            heuristic = None
+        if not heuristic:
+            heuristic = database.create(database.Heuristic, pattern=heuristic_info['pattern'], label=label)
 
-        # for j, repo in repos_df.iterrows():
-        #     progress = '{:.2%}'.format((i * len(repos_df) + j) / (len(heuristics) * len(repos_df)))
-        #     print(f'[{progress}] Searching for {heuristic["name"]} in {repo["owner"]}/{repo["name"]}:', end=' ')
-        #
-        #     # TODO: check if the heuristic has already been executed over the project.
-        #
-        #     repo = REPOS_DIR + os.sep + repo['owner'] + os.sep + repo['name']
-        #     if os.path.isdir(repo):
-        #         os.chdir(repo)
-        #         process = subprocess.run(GREP_COMMAND + [heuristic['pattern_file']], text=True, capture_output=True)
-        #
-        #         if process.stderr:
-        #             print(red('error.'))
-        #             print(process.stderr)
-        #             exit(1)
-        #         else:
-        #
-        #             # TODO: save process.stdout
-        #
-        #             print(green('ok.'))
-        #     else:
-        #         print(red('not found.'))
+        for j, repo in repos_df.iterrows():
+            progress = '{:.2%}'.format((i * len(repos_df) + j) / (len(heuristic_infos) * len(repos_df)))
+            print(f'[{progress}] Searching for {label.name} in {repo["owner"]}/{repo["name"]}:', end=' ')
+
+            # TODO: check if the heuristic has already been executed over the project.
+
+            repo = REPOS_DIR + os.sep + repo['owner'] + os.sep + repo['name']
+            if os.path.isdir(repo):
+                os.chdir(repo)
+                process = subprocess.run(GREP_COMMAND + [heuristic_info['pattern_file']], text=True,
+                                         capture_output=True)
+
+                if process.stderr:
+                    print(red('error.'))
+                    print(process.stderr)
+                    exit(1)
+                else:
+
+                    # TODO: save process.stdout
+
+                    print(green('ok.'))
+            else:
+                print(red('not found.'))
 
         i += 1
 
     print('Deleting missing heuristics...')
     # TODO: remove from the DB the heuristics that were removed from the directory.
 
+    database.commit()
+    database.close()
     print("\nFinished.")
 
 

@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS project (
-   project_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   id INTEGER PRIMARY KEY AUTOINCREMENT,
    owner TEXT,
    name TEXT,
    createdAt TEXT,
@@ -22,16 +22,16 @@ CREATE TABLE IF NOT EXISTS project (
    domain TEXT
 );
 
-CREATE TABLE IF NOT EXISTS project_version (
-   project_version_id INTEGER PRIMARY KEY AUTOINCREMENT,
+CREATE TABLE IF NOT EXISTS version (
+   id INTEGER PRIMARY KEY AUTOINCREMENT,
    sha1 TEXT,
    last BOOLEAN,
    project_id INTEGER,
-   FOREIGN KEY (project_id) REFERENCES project (project_id) ON DELETE CASCADE
+   FOREIGN KEY (project_id) REFERENCES project(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS category (
-   category_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   id INTEGER PRIMARY KEY AUTOINCREMENT,
    name TEXT
 );
 
@@ -44,17 +44,17 @@ CREATE TABLE IF NOT EXISTS label (
 CREATE TABLE IF NOT EXISTS label_category (
    label_id INTEGER NOT NULL,
    category_id INTEGER NOT NULL,
-   is_main BOOLEAN,
+   isMain BOOLEAN,
    PRIMARY KEY (label_id, category_id),
    FOREIGN KEY (label_id) REFERENCES label(id) ON DELETE CASCADE,
-   FOREIGN KEY (category_id) REFERENCES category (category_id) ON DELETE CASCADE
+   FOREIGN KEY (category_id) REFERENCES category(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS project_version_label (
-   project_version_id INTEGER NOT NULL,
+CREATE TABLE IF NOT EXISTS version_label (
+   version_id INTEGER NOT NULL,
    label_id INTEGER NOT NULL,
-   PRIMARY KEY(project_version_id, label_id),
-   FOREIGN KEY (project_version_id) REFERENCES project_version (project_version_id) ON DELETE CASCADE,
+   PRIMARY KEY(version_id, label_id),
+   FOREIGN KEY (version_id) REFERENCES version(id) ON DELETE CASCADE,
    FOREIGN KEY (label_id) REFERENCES label(id) ON DELETE CASCADE
 );
 
@@ -66,12 +66,12 @@ CREATE TABLE IF NOT EXISTS heuristic (
 );
 
 CREATE TABLE IF NOT EXISTS execution (
-   execution_id INTEGER PRIMARY KEY AUTOINCREMENT,
+   id INTEGER PRIMARY KEY AUTOINCREMENT,
    output TEXT,
    validated BOOLEAN,
    accepted BOOLEAN,
    heuristic_id INTEGER,
-   project_version_id INTEGER,
+   version_id INTEGER,
    FOREIGN KEY (heuristic_id) REFERENCES heuristic(id) ON DELETE CASCADE,
-   FOREIGN KEY (project_version_id) REFERENCES project_version (project_version_id) ON DELETE CASCADE
+   FOREIGN KEY (version_id) REFERENCES version(id) ON DELETE CASCADE
 );
