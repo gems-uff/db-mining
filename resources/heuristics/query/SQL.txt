@@ -1,1 +1,1 @@
-(?i)SELECT.*FROM.*WHERE
+(SELECT|Select|select).*(FROM|From|from).*(WHERE|Where|where)
