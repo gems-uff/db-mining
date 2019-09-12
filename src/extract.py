@@ -16,7 +16,7 @@ GREP_COMMAND = [
     '--heading',
     '--line-number',
     '--color=always',
-    '--perl-regexp',
+    '--extended-regexp',
     '-f'
 ]
 
