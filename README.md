@@ -12,8 +12,36 @@ Marco Aurélio Gerosa (NAU, USA)
 
 # Project Corpus
 
-- [Excel Spreadsheet](https://github.com/gems-uff/db-mining/raw/master/docs/annotated.xlsx)  
-- [Collection Scripts](https://github.com/gems-uff/db-mining/tree/master/collection)
+- [Excel Spreadsheet](https://github.com/gems-uff/db-mining/raw/master/resources/annotated.xlsx)  
+- [Collection Scripts](https://github.com/gems-uff/db-mining/tree/master/src) (see the installation instructions bellow to run the scripts in your computer)
+
+# Installation
+
+## Requirements
+
+We assume you have [Anaconda](https://www.anaconda.com/) installed on your computer. 
+
+## Steps 
+
+1. Clone our repository:  
+
+`git clone https://github.com/gems-uff/db-mining.git`
+
+2. Go into the project directory:
+
+`cd db-mining`
+
+3. Create a conda environment: 
+
+`conda env create -f environment.yml`
+
+4. Activate the conda environment: 
+
+`conda activate db-mining` 
+
+(on Windows this should be `source activate db-mining`)
+
+5. You are now all set to run the scripts. 
 
 # Acknowledgements
 
