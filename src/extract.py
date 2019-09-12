@@ -99,18 +99,19 @@ def main():
                 # Retrieve or create the Version object
                 version = database.get(database.Version, isLast=True, project=project)
                 if not version:
-                    process = subprocess.run(REVPARSE_COMMAND, capture_output=True)
-                    if process.stderr:
-                        raise subprocess.CalledProcessError(process.stderr)
-                    version = database.create(database.Version, sha1=process.stdout, isLast=True, project=project)
+                    p = subprocess.run(REVPARSE_COMMAND, capture_output=True)
+                    if p.stderr:
+                        raise subprocess.CalledProcessError(p.returncode, REVPARSE_COMMAND, p.stdout, p.stderr)
+                    version = database.create(database.Version, sha1=p.stdout, isLast=True, project=project)
 
                 # Executes the heuristic over the project if was not executed before
                 execution = database.get(database.Execution, version=version, heuristic=heuristic)
                 if not execution:
-                    process = subprocess.run(GREP_COMMAND + [heuristic_info['pattern_file']], capture_output=True)
-                    if process.stderr:
-                        raise subprocess.CalledProcessError(process.stderr)
-                    database.create(database.Execution, output=process.stdout, version=version, heuristic=heuristic,
+                    cmd = GREP_COMMAND + [heuristic_info['pattern_file']]
+                    p = subprocess.run(cmd, capture_output=True)
+                    if p.stderr:
+                        raise subprocess.CalledProcessError(p.returncode, cmd, p.stdout, p.stderr)
+                    database.create(database.Execution, output=p.stdout, version=version, heuristic=heuristic,
                                     isValidated=False, isAccepted=False)
                     print(green('ok.'))
                     status['Success'] += 1
