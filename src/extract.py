@@ -66,8 +66,6 @@ def main():
         'Total': len(info_heuristics) * len(info_repositories)
     }
 
-    print(status)
-
     print(f'Processing {len(info_heuristics)} heuristics over {len(info_repositories)} repositories.')
     i = 0
     for heuristic_info in info_heuristics:
