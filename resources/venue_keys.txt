@@ -1,0 +1,14 @@
+conf/msr/
+conf/icse/
+conf/sigsoft/
+conf/kbse/
+conf/vldb/
+conf/sigmod/
+conf/icde/
+journals/sigmod/
+journals/vldb/
+journals/is/
+journals/tse/
+journals/tosem/
+journals/ese/
+journals/ase/
