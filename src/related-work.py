@@ -34,7 +34,6 @@ class DBLPHandler(xml.sax.ContentHandler):
         if save_paper:
             if len(stack) >= 2 and (stack[-2] == 'inproceedings' or stack[-2] == 'article'):
                 content = saxutils.unescape(content, entities=ent)
-
                 if stack[-1] == 'crossref':
                     paper['crossref'] = content
                 if stack[-1] == 'author':
@@ -45,12 +44,14 @@ class DBLPHandler(xml.sax.ContentHandler):
                 if stack[-1] == 'title':
                     title = title + content
                     paper['title'] = title
-                if len(stack) >= 2 and stack[-2] == 'title':
-                    #deal with cases like <title>Abc<i>def</i>ghd</title>
-                    title = title + content
-                    paper['title'] = title
                 if stack[-1] == 'url':
                     paper['url'] = content
+            if len(stack) >= 3 and (stack[-3] == 'inproceedings' or stack[-3] == 'article'):
+                content = saxutils.unescape(content, entities=ent)
+                if len(stack) >= 2 and stack[-2] == 'title':
+                    # deals with cases like <title>Abc<i>def</i>ghd</title>
+                    title = title + content
+                    paper['title'] = title
 
     def endElement(self, name):
         global stack, authors, save_paper, df, paper, title
