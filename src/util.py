@@ -13,11 +13,12 @@ HEURISTICS_DIR = RESOURCE_DIR + os.sep + 'heuristics'
 
 # Files
 PROJECTS_FILE = RESOURCE_DIR + os.sep + 'projects.xlsx'
-FILTERED_FILE = RESOURCE_DIR + os.sep + 'filtered.xlsx'
+FILTERED_FILE = RESOURCE_DIR + os.sep + 'filtered_projects.xlsx'
 ANNOTATED_FILE = RESOURCE_DIR + os.sep + 'annotated.xlsx'
 DBLP_FILE = RESOURCE_DIR + os.sep + 'dblp.xml'
 VENUE_KEYS = RESOURCE_DIR + os.sep + 'venue_keys.txt'
 PAPERS_FILE = RESOURCE_DIR + os.sep + 'papers.xlsx'
+FILTERED_PAPERS_FILE = RESOURCE_DIR + os.sep + 'filtered_papers.xlsx'
 
 SCHEMA_FILE = RESOURCE_DIR + os.sep + 'create-database.sql'
 DATABASE_FILE = RESOURCE_DIR + os.sep + 'db-mining.db'
