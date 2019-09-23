@@ -1,3 +1,4 @@
 jdbc:mysql
 mysqlx:
 MySql\.Data\.MySqlClient\.MySqlConnection
+import pymyssql
