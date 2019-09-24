@@ -3,7 +3,7 @@ import subprocess
 
 import pandas as pd
 
-import database
+import database as db
 from util import ANNOTATED_FILE, HEURISTICS_DIR, REPOS_DIR, red, green, yellow, CODE_DEBUG
 
 # Git grep command
@@ -56,7 +56,7 @@ def main():
     print(f'Loading heuristics from {HEURISTICS_DIR}.')
     info_heuristics = load_heuristics(HEURISTICS_DIR)
 
-    database.connect()
+    db.connect()
 
     status = {
         'Success': 0,
@@ -71,13 +71,13 @@ def main():
     for heuristic_info in info_heuristics:
 
         # Retrieve or create the Label and Heuristic objects
-        label = database.get_or_create(database.Label, name=heuristic_info['name'], type=heuristic_info['type'])
+        label = db.get_or_create(db.Label, name=heuristic_info['name'], type=heuristic_info['type'])
         heuristic = label.heuristic
         if heuristic and heuristic.pattern != heuristic_info['pattern']:
-            database.delete(heuristic)
+            db.delete(heuristic)
             heuristic = None
         if not heuristic:
-            heuristic = database.create(database.Heuristic, pattern=heuristic_info['pattern'], label=label)
+            heuristic = db.create(db.Heuristic, pattern=heuristic_info['pattern'], label=label)
 
         # Applies the heuristic over each repository
         for j, info_repository in info_repositories.iterrows():
@@ -87,7 +87,7 @@ def main():
                 repo_dict = {k: v for k, v in repo_dict.items() if k not in ['url', 'isSoftware', 'discardReason']}
                 repo_dict['createdAt'] = str(repo_dict['createdAt'])
                 repo_dict['pushedAt'] = str(repo_dict['pushedAt'])
-                project = database.get_or_create(database.Project, **repo_dict)
+                project = db.get_or_create(db.Project, **repo_dict)
 
                 # Print progress information
                 progress = '{:.2%}'.format((i * len(info_repositories) + j) / status['Total'])
@@ -97,25 +97,25 @@ def main():
                 os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
 
                 # Retrieve or create the Version object
-                version = database.get(database.Version, isLast=True, project=project)
+                version = db.query(db.Version, isLast=True, project=project).first()
                 if not version:
                     p = subprocess.run(REVPARSE_COMMAND, capture_output=True)
                     if p.stderr:
                         raise subprocess.CalledProcessError(p.returncode, REVPARSE_COMMAND, p.stdout, p.stderr)
-                    version = database.create(database.Version, sha1=p.stdout, isLast=True, project=project)
+                    version = db.create(db.Version, sha1=p.stdout, isLast=True, project=project)
 
                 # Executes the heuristic over the project if was not executed before
-                execution = database.get(database.Execution, version=version, heuristic=heuristic)
+                execution = db.query(db.Execution, version=version, heuristic=heuristic).first()
                 if not execution:
                     cmd = GREP_COMMAND + [heuristic_info['pattern_file']]
                     p = subprocess.run(cmd, capture_output=True)
                     if p.stderr:
                         raise subprocess.CalledProcessError(p.returncode, cmd, p.stdout, p.stderr)
-                    database.create(database.Execution, output=p.stdout, version=version, heuristic=heuristic,
-                                    isValidated=False, isAccepted=False)
+                    db.create(db.Execution, output=p.stdout, version=version, heuristic=heuristic, isValidated=False, isAccepted=False)
+
                     print(green('ok.'))
                     status['Success'] += 1
-                    database.commit()
+                    db.commit()
                 else:  # Execution already exists
                     print(yellow('already done.'))
                     status['Skipped'] += 1
@@ -132,7 +132,7 @@ def main():
     print('Deleting missing heuristics...')
     # TODO: remove from the DB the heuristics that were removed from the directory.
 
-    database.close()
+    db.close()
 
     print('\n*** Processing results ***')
     for k, v in status.items():

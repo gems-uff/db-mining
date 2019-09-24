@@ -1,8 +1,10 @@
+import atexit
 import os.path
 
-from sqlalchemy import Column, Integer, String, create_engine, ForeignKey, Boolean, Table
+from sqlalchemy import Column, Integer, String, Boolean, Table, ForeignKey, create_engine
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
-from sqlalchemy.orm import sessionmaker, relationship
+from sqlalchemy.orm import relationship, sessionmaker
+from sqlalchemy.pool import SingletonThreadPool
 
 from util import DATABASE_FILE, DATABASE_DEBUG
 
@@ -105,39 +107,16 @@ class Execution(Base):
     version = relationship('Version', back_populates='executions')
 
 
-def get(model, **kwargs):
-    return session.query(model).filter_by(**kwargs).first()
-
-
-def create(model, **kwargs):
-    instance = model(**kwargs)
-    session.add(instance)
-    return instance
-
-
-def get_or_create(model, **kwargs):
-    instance = get(model, **kwargs)
-    if not instance:
-        instance = create(model, **kwargs)
-    return instance
-
-
-def delete(instance):
-    session.delete(instance)
-
-
 ###########################################
 # DATABASE CONNECT, COMMIT, CLOSE
 ###########################################
 
 def connect():
     global session
-    engine = create_engine('sqlite:///' + DATABASE_FILE, echo=DATABASE_DEBUG)
-    new_db = not os.path.exists(DATABASE_FILE)
-    if new_db:
+    engine = create_engine('sqlite:///' + DATABASE_FILE, echo=DATABASE_DEBUG, poolclass=SingletonThreadPool)
+    if not os.path.exists(DATABASE_FILE):
         print('Creating Database...')
-        schema = Base.metadata
-        schema.create_all(engine)
+        Base.metadata.create_all(engine)
     Session = sessionmaker(bind=engine)
     session = Session(expire_on_commit=False)
 
@@ -150,28 +129,33 @@ def close():
     session.close()
 
 
-def main():
-    connect()
-    commit()
+###########################################
+# DATABASE ACCESSOR METHODS
+###########################################
+
+def query(model, **kwargs):
+    return session.query(model).filter_by(**kwargs)
 
 
-if __name__ == '__main__':
-    main()
+def create(model, **kwargs):
+    instance = model(**kwargs)
+    session.add(instance)
+    return instance
 
-# def remove_old_projects():
-#     """
-#     Removes projects that are in the database but were not processed (insertion attempt) since the database connection was established
-#     This means the project is NOT in the Excel file and should be removed
-#     """
-#     global projects_dict
-#     global projects_set
-#
-#     projects_in_database = projects_dict.keys()
-#     projects_to_remove = projects_in_database - projects_set
-#     print(projects_in_database)
-#     print(projects_set)
-#     print(projects_to_remove)
-#
-#     for project in projects_to_remove:
-#         print(f'Removing project {project}...')
-#         delete_project_by_key(project)
+
+def get_or_create(model, **kwargs):
+    instance = query(model, **kwargs).first()
+    if not instance:
+        instance = create(model, **kwargs)
+    return instance
+
+
+def add(instance):
+    session.add(instance)
+
+
+def delete(instance):
+    session.delete(instance)
+
+
+atexit.register(close)
