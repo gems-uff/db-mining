@@ -3,13 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@material-ui/core": "^4.4.3",
-    "@material-ui/icons": "^4.4.3",
-    "react": "^16.9.0",
-    "react-dom": "^16.9.0",
-    "react-scripts": "3.1.2",
-    "typeface-roboto": "0.0.75",
-    "clsx": "latest"
+    "@material-ui/core": "4.4.*",
+    "@material-ui/icons": "4.4.*",
+    "clsx": "1.0.*",
+    "react": "16.9.*",
+    "react-dom": "16.9.*",
+    "react-scripts": "3.1.*",
+    "typeface-roboto": "0.0.*"
   },
   "scripts": {
     "start": "react-scripts start",
