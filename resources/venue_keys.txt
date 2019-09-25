@@ -1,14 +1,14 @@
-conf/msr/
-conf/icse/
-conf/sigsoft/
-conf/kbse/
-conf/vldb/
-conf/sigmod/
-conf/icde/
-journals/sigmod/
-journals/vldb/
-journals/is/
-journals/tse/
-journals/tosem/
-journals/ese/
-journals/ase/
+conf/msr/  International Conference on Mining Software Repositories (MSR)
+conf/icse/  International Conference on Software Engineering (ICSE)
+conf/sigsoft/  Symposium on the Foundations of Software Engineering (FSE)
+conf/kbse/  International Conference on Automated Software Engineering(ASE)
+conf/vldb/  International Conference on Very Large Databases (VLDB)
+conf/sigmod/  International Conference on Management of Data (SIGMOD)
+conf/icde/  International Conference on Data Engineering (ICDE)
+journals/sigmod/  SIGMOD Record
+journals/vldb/  The VLDB Journal
+journals/is/  Information Systems
+journals/tse/  Transactions on Software Engineering (TSE)
+journals/tosem/  ACM Transactions on Software Engineering and Methodology (TOSEM)
+journals/ese/  Empirical Software Engineering (ESE)
+journals/ase/  Automated Software Engineering (ASE)
