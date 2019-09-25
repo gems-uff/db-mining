@@ -1,9 +1,17 @@
-from flask import jsonify, Flask
+from flask import jsonify, Flask, render_template
 import database as db
 from flask_cors import CORS
 
-app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
+from util import REACT_STATIC_DIR, REACT_BUILD_DIR
+
+app = Flask(__name__, static_folder=REACT_STATIC_DIR, template_folder=REACT_BUILD_DIR)
+# CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
+CORS(app, resources={r"/*": {"origins": "*"}})
+
+
+@app.route("/")
+def hello():
+    return render_template('index.html')
 
 
 @app.route('/projects', methods=['GET'])

@@ -8,8 +8,11 @@ CODE_DEBUG = True
 SRC_DIR = os.path.dirname(os.path.realpath(__file__))
 BASE_DIR = os.path.dirname(SRC_DIR)
 REPOS_DIR = BASE_DIR + os.sep + 'repos'
-RESOURCE_DIR = BASE_DIR + os.sep + "resources"
+RESOURCE_DIR = BASE_DIR + os.sep + 'resources'
 HEURISTICS_DIR = RESOURCE_DIR + os.sep + 'heuristics'
+
+REACT_BUILD_DIR = BASE_DIR + os.sep + 'web' + os.sep + 'build'
+REACT_STATIC_DIR = REACT_BUILD_DIR + os.sep + 'static'
 
 # Files
 PROJECTS_FILE = RESOURCE_DIR + os.sep + 'projects.xlsx'
