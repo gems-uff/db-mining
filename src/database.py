@@ -1,4 +1,3 @@
-import atexit
 import os.path
 
 from sqlalchemy import Column, Integer, String, Boolean, Table, ForeignKey, create_engine
@@ -113,7 +112,7 @@ class Execution(Base):
 
 def connect():
     global session
-    engine = create_engine('sqlite:///' + DATABASE_FILE, echo=DATABASE_DEBUG, poolclass=SingletonThreadPool)
+    engine = create_engine('sqlite:///' + DATABASE_FILE, echo=DATABASE_DEBUG)
     if not os.path.exists(DATABASE_FILE):
         print('Creating Database...')
         Base.metadata.create_all(engine)
@@ -156,6 +155,3 @@ def add(instance):
 
 def delete(instance):
     session.delete(instance)
-
-
-atexit.register(close)
