@@ -1,11 +1,11 @@
 import React from 'react';
 import './App.css';
-import PersistentDrawerLeft from "./PersistentDrawerLeft";
+import ProjectsDrawer from "./ProjectsDrawer";
 
 function App() {
   return (
     <div className="App">
-      <PersistentDrawerLeft />
+      <ProjectsDrawer />
     </div>
   );
 }
