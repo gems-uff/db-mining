@@ -17,3 +17,6 @@ dependencies:
   - flask-cors=3.0.*
   - nodejs=12.8.*
   - ansi2html=1.5.*
+  - pip=19.2.*
+  - pip:
+      - scholarly
