@@ -5,6 +5,8 @@ conf/kbse/  International Conference on Automated Software Engineering(ASE)
 conf/vldb/  International Conference on Very Large Databases (VLDB)
 conf/sigmod/  International Conference on Management of Data (SIGMOD)
 conf/icde/  International Conference on Data Engineering (ICDE)
+conf/icsm/  International Conference on Software Maintenance and Evolution (ICSME)
+conf/wcre/  International Conference on Software Analysis, Evolution and Reengineering (SANER)
 journals/sigmod/  SIGMOD Record
 journals/vldb/  The VLDB Journal
 journals/is/  Information Systems
