@@ -1,109 +1,98 @@
 import os.path
 
-from sqlalchemy import Column, Integer, String, Boolean, Table, ForeignKey, create_engine
-from sqlalchemy.ext.declarative import declarative_base, declared_attr
-from sqlalchemy.orm import relationship, sessionmaker
-from sqlalchemy.pool import SingletonThreadPool
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 
-from util import DATABASE_FILE, DATABASE_DEBUG
+from util import DATABASE_FILE, REACT_STATIC_DIR, REACT_BUILD_DIR
 
-session = None
+app = Flask(__name__, static_folder=REACT_STATIC_DIR, template_folder=REACT_BUILD_DIR)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + DATABASE_FILE
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
 
 
 ###########################################
 # SQLALCHEMY CLASSES
 ###########################################
 
-class Base(object):
-    @declared_attr
-    def __tablename__(cls):
-        return cls.__name__.lower()
-
-    id = Column(Integer, primary_key=True)
-
-    def __repr__(self):
-        attr = vars(self).copy()
-        del attr['_sa_instance_state']
-        return str(attr)
-
-
-Base = declarative_base(cls=Base)
-
-
-class Project(Base):
-    owner = Column(String)
-    name = Column(String)
-    createdAt = Column(String)
-    pushedAt = Column(String)
-    isMirror = Column(Boolean)
-    diskUsage = Column(Integer)
-    languages = Column(Integer)
-    contributors = Column(Integer)
-    watchers = Column(Integer)
-    stargazers = Column(Integer)
-    forks = Column(Integer)
-    issues = Column(Integer)
-    commits = Column(Integer)
-    pullRequests = Column(Integer)
-    branches = Column(Integer)
-    tags = Column(Integer)
-    releases = Column(Integer)
-    description = Column(String)
-    primaryLanguage = Column(String)
-    domain = Column(String)
-    versions = relationship('Version', back_populates='project')
+class Project(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    owner = db.Column(db.String)
+    name = db.Column(db.String)
+    createdAt = db.Column(db.String)
+    pushedAt = db.Column(db.String)
+    isMirror = db.Column(db.Boolean)
+    diskUsage = db.Column(db.Integer)
+    languages = db.Column(db.Integer)
+    contributors = db.Column(db.Integer)
+    watchers = db.Column(db.Integer)
+    stargazers = db.Column(db.Integer)
+    forks = db.Column(db.Integer)
+    issues = db.Column(db.Integer)
+    commits = db.Column(db.Integer)
+    pullRequests = db.Column(db.Integer)
+    branches = db.Column(db.Integer)
+    tags = db.Column(db.Integer)
+    releases = db.Column(db.Integer)
+    description = db.Column(db.String)
+    primaryLanguage = db.Column(db.String)
+    domain = db.Column(db.String)
+    versions = db.relationship('Version', back_populates='project')
 
 
-version_label = Table('version_label',
-                      Base.metadata,
-                      Column('version_id', Integer, ForeignKey('version.id', ondelete='CASCADE')),
-                      Column('label_id', Integer, ForeignKey('label.id', ondelete='CASCADE')))
+version_label = db.Table('version_label',
+                         db.Column('version_id', db.Integer, db.ForeignKey('version.id', ondelete='CASCADE')),
+                         db.Column('label_id', db.Integer, db.ForeignKey('label.id', ondelete='CASCADE')))
 
 
-class Version(Base):
-    sha1 = Column(String)
-    isLast = Column(Boolean)
-    project_id = Column(Integer, ForeignKey('project.id', ondelete='CASCADE'))
-    project = relationship('Project', back_populates='versions')
-    labels = relationship('Label', secondary=version_label, back_populates='versions')
-    executions = relationship('Execution', back_populates='version')
+class Version(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    sha1 = db.Column(db.String)
+    isLast = db.Column(db.Boolean)
+    project_id = db.Column(db.Integer, db.ForeignKey('project.id', ondelete='CASCADE'))
+    project = db.relationship('Project', back_populates='versions')
+    labels = db.relationship('Label', secondary=version_label, back_populates='versions')
+    executions = db.relationship('Execution', back_populates='version')
 
 
-label_category = Table('label_category',
-                       Base.metadata,
-                       Column('label_id', Integer, ForeignKey('label.id', ondelete='CASCADE')),
-                       Column('category_id', Integer, ForeignKey('category.id', ondelete='CASCADE')),
-                       Column('isMain', Boolean))
+label_category = db.Table('label_category',
+                          db.Column('label_id', db.Integer, db.ForeignKey('label.id', ondelete='CASCADE')),
+                          db.Column('category_id', db.Integer, db.ForeignKey('category.id', ondelete='CASCADE')),
+                          db.Column('isMain', db.Boolean))
 
 
-class Category(Base):
-    name = Column(String)
-    labels = relationship('Label', secondary=label_category, back_populates='categories')
+class Category(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
+    labels = db.relationship('Label', secondary=label_category, back_populates='categories')
 
 
-class Label(Base):
-    name = Column(String)
-    type = Column(String)
-    heuristic = relationship('Heuristic', uselist=False, back_populates='label')
-    categories = relationship('Category', secondary=label_category, back_populates='labels')
-    versions = relationship('Version', secondary=version_label, back_populates='labels')
+class Label(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
+    type = db.Column(db.String)
+    heuristic = db.relationship('Heuristic', uselist=False, back_populates='label')
+    categories = db.relationship('Category', secondary=label_category, back_populates='labels')
+    versions = db.relationship('Version', secondary=version_label, back_populates='labels')
 
 
-class Heuristic(Base):
-    pattern = Column(String)
-    label_id = Column(Integer, ForeignKey('label.id', ondelete='CASCADE'))
-    label = relationship('Label', back_populates='heuristic')
-    executions = relationship('Execution', back_populates='heuristic')
+class Heuristic(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    pattern = db.Column(db.String)
+    label_id = db.Column(db.Integer, db.ForeignKey('label.id', ondelete='CASCADE'))
+    label = db.relationship('Label', back_populates='heuristic')
+    executions = db.relationship('Execution', back_populates='heuristic')
 
 
-class Execution(Base):
-    output = Column(String)
-    isValidated = Column(Boolean)
-    isAccepted = Column(Boolean)
-    heuristic_id = Column(Integer, ForeignKey('heuristic.id', ondelete='CASCADE'))
-    version_id = Column(Integer, ForeignKey('version.id', ondelete='CASCADE'))
-    heuristic = relationship('Heuristic', back_populates='executions')
-    version = relationship('Version', back_populates='executions')
+class Execution(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    output = db.Column(db.String)
+    isValidated = db.Column(db.Boolean)
+    isAccepted = db.Column(db.Boolean)
+    heuristic_id = db.Column(db.Integer, db.ForeignKey('heuristic.id', ondelete='CASCADE'))
+    version_id = db.Column(db.Integer, db.ForeignKey('version.id', ondelete='CASCADE'))
+    heuristic = db.relationship('Heuristic', back_populates='executions')
+    version = db.relationship('Version', back_populates='executions')
 
 
 ###########################################
@@ -111,21 +100,17 @@ class Execution(Base):
 ###########################################
 
 def connect():
-    global session
-    engine = create_engine('sqlite:///' + DATABASE_FILE, echo=DATABASE_DEBUG)
     if not os.path.exists(DATABASE_FILE):
         print('Creating Database...')
-        Base.metadata.create_all(engine)
-    Session = sessionmaker(bind=engine)
-    session = Session(expire_on_commit=False)
+        db.create_all()
 
 
 def commit():
-    session.commit()
+    db.session.commit()
 
 
 def close():
-    session.close()
+    db.session.close()
 
 
 ###########################################
@@ -133,12 +118,12 @@ def close():
 ###########################################
 
 def query(model, **kwargs):
-    return session.query(model).filter_by(**kwargs)
+    return db.session.query(model).filter_by(**kwargs)
 
 
 def create(model, **kwargs):
     instance = model(**kwargs)
-    session.add(instance)
+    db.session.add(instance)
     return instance
 
 
@@ -150,8 +135,8 @@ def get_or_create(model, **kwargs):
 
 
 def add(instance):
-    session.add(instance)
+    db.session.add(instance)
 
 
 def delete(instance):
-    session.delete(instance)
+    db.session.delete(instance)

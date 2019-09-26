@@ -1,0 +1,32 @@
+import React from 'react';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import Box from "@material-ui/core/Box";
+
+export default function ProjectsList(props) {
+
+    const [selectedIndex, setSelectedIndex] = React.useState(0);
+
+    const handleClick = (event, index) => {
+        setSelectedIndex(index);
+        props.setProject(props.projects[index])
+    };
+
+    return (
+        <Box width="100%" height="100%" overflow="auto">
+        <List>
+            {props.projects.map((project, index) => (
+                <ListItem key={index}
+                          button
+                          selected={selectedIndex === index}
+                          onClick={event => handleClick(event, index)}
+                >
+                    <ListItemText primary={project.owner + "/" + project.name}
+                                  secondary={project.primaryLanguage}/>
+                </ListItem>
+            ))}
+        </List>
+        </Box>
+    );
+}
