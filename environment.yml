@@ -2,11 +2,12 @@ name: db-mining
 channels:
   - defaults
   - conda-forge
-# NOTE: Everytime we add a new conda dependency, we need to remove the conda environment and create it again.
+# NOTE: Everytime we add a new conda dependency, we need to remove the conda environment (conda remove --name db-mining --all)
+#       and create it again.
 #       This is a recommendation of Conda when we mix conda and pip packages
 #       More info at: https://www.anaconda.com/using-pip-in-a-conda-environment/
 #       "If modifications are needed to the environment, it is best to create a new environment rather
- #           than running conda after pip."
+#           than running conda after pip."
 dependencies:
   - python=3.7.*
   - git=2.23.*
