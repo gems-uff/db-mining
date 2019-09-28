@@ -1,72 +1,65 @@
-import Paper from "@material-ui/core/Paper";
 import Box from "@material-ui/core/Box";
 import React from "react";
-import Typography from "@material-ui/core/Typography";
+import Fab from "@material-ui/core/Fab";
+import ThumbUpOutlinedIcon from '@material-ui/icons/ThumbUpOutlined';
+import ThumbDownOutlinedIcon from '@material-ui/icons/ThumbDownOutlined';
+import ClearOutlinedIcon from '@material-ui/icons/ClearOutlined';
+import {makeStyles, MuiThemeProvider} from "@material-ui/core";
+import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
+
+const useStyles = makeStyles(theme => ({
+    textBox: {
+        width: '100%',
+        height: '100%',
+        padding: theme.spacing(1),
+        marginTop: 60,
+        overflow: 'auto'
+    },
+    fabBox: {
+        position: 'fixed',
+        bottom: 20,
+        right: 20
+    },
+    fab: {
+        margin: theme.spacing(1),
+    }
+}));
+
+const trafficLightTheme = createMuiTheme({
+    palette: {
+        primary: {
+            main: '#1b5e20',
+        },
+        secondary: {
+            main: '#b71c1c',
+        }
+    }
+});
 
 export default function ExecutionPanel(props) {
+    console.log("Execution panel: " + props.execution);
+
+    const classes = useStyles();
+
     return (
-        <Paper>
-            <Box width="100%" height="60vh" overflow="auto">
-                <b>sdfsdf</b>
-                <Typography paragraph>
-                    Lorem <b>ipsum</b> dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                    incididunt
-                    ut labore et dolore magna aliqua. Rhoncus dolor purus non enim praesent elementum
-                    facilisis leo vel. Risus at ultrices mi tempus imperdiet. Semper risus in hendrerit
-                    gravida rutrum quisque non tellus. Convallis convallis tellus id interdum velit laoreet
-                    id
-                    donec ultrices. Odio morbi quis commodo odio aenean sed adipiscing. Amet nisl suscipit
-                    adipiscing bibendum est ultricies integer quis. Cursus euismod quis viverra nibh cras.
-                    Metus vulputate eu scelerisque felis imperdiet proin fermentum leo. Mauris commodo quis
-                    imperdiet massa tincidunt. Cras tincidunt lobortis feugiat vivamus at augue. At augue
-                    eget
-                    arcu dictum varius duis at consectetur lorem. Velit sed ullamcorper morbi tincidunt.
-                    Lorem
-                    donec massa sapien faucibus et molestie ac.
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                    incididunt
-                    ut labore et dolore magna aliqua. Rhoncus dolor purus non enim praesent elementum
-                    facilisis leo vel. Risus at ultrices mi tempus imperdiet. Semper risus in hendrerit
-                    gravida rutrum quisque non tellus. Convallis convallis tellus id interdum velit laoreet
-                    id
-                    donec ultrices. Odio morbi quis commodo odio aenean sed adipiscing. Amet nisl suscipit
-                    adipiscing bibendum est ultricies integer quis. Cursus euismod quis viverra nibh cras.
-                    Metus vulputate eu scelerisque felis imperdiet proin fermentum leo. Mauris commodo quis
-                    imperdiet massa tincidunt. Cras tincidunt lobortis feugiat vivamus at augue. At augue
-                    eget
-                    arcu dictum varius duis at consectetur lorem. Velit sed ullamcorper morbi tincidunt.
-                    Lorem
-                    donec massa sapien faucibus et molestie ac.
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                    incididunt
-                    ut labore et dolore magna aliqua. Rhoncus dolor purus non enim praesent elementum
-                    facilisis leo vel. Risus at ultrices mi tempus imperdiet. Semper risus in hendrerit
-                    gravida rutrum quisque non tellus. Convallis convallis tellus id interdum velit laoreet
-                    id
-                    donec ultrices. Odio morbi quis commodo odio aenean sed adipiscing. Amet nisl suscipit
-                    adipiscing bibendum est ultricies integer quis. Cursus euismod quis viverra nibh cras.
-                    Metus vulputate eu scelerisque felis imperdiet proin fermentum leo. Mauris commodo quis
-                    imperdiet massa tincidunt. Cras tincidunt lobortis feugiat vivamus at augue. At augue
-                    eget
-                    arcu dictum varius duis at consectetur lorem. Velit sed ullamcorper morbi tincidunt.
-                    Lorem
-                    donec massa sapien faucibus et molestie ac.
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                    incididunt
-                    ut labore et dolore magna aliqua. Rhoncus dolor purus non enim praesent elementum
-                    facilisis leo vel. Risus at ultrices mi tempus imperdiet. Semper risus in hendrerit
-                    gravida rutrum quisque non tellus. Convallis convallis tellus id interdum velit laoreet
-                    id
-                    donec ultrices. Odio morbi quis commodo odio aenean sed adipiscing. Amet nisl suscipit
-                    adipiscing bibendum est ultricies integer quis. Cursus euismod quis viverra nibh cras.
-                    Metus vulputate eu scelerisque felis imperdiet proin fermentum leo. Mauris commodo quis
-                    imperdiet massa tincidunt. Cras tincidunt lobortis feugiat vivamus at augue. At augue
-                    eget
-                    arcu dictum varius duis at consectetur lorem. Velit sed ullamcorper morbi tincidunt.
-                    Lorem
-                    donec massa sapien faucibus et molestie ac.
-                </Typography>
+        <div>
+            <Box className={classes.textBox}>
+                {props.execution != null ?
+                    <div dangerouslySetInnerHTML={{__html: props.execution.output}} align="left"/> : ""}
             </Box>
-        </Paper>
+            <Box className={classes.fabBox}>
+                <MuiThemeProvider theme={trafficLightTheme}>
+                    <Fab color="primary" className={classes.fab}>
+                        <ThumbUpOutlinedIcon/>
+                    </Fab>
+                    <Fab color="secondary" className={classes.fab}>
+                        <ThumbDownOutlinedIcon/>
+                    </Fab>
+                    <Fab className={classes.fab}>
+                        <ClearOutlinedIcon/>
+                    </Fab>
+                </MuiThemeProvider>
+            </Box>
+        </div>
     )
 }
