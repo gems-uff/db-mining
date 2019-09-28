@@ -5,12 +5,18 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Box from "@material-ui/core/Box";
 
 export default function ProjectsList(props) {
+    console.log("Rendering project list");
 
-    const [selectedIndex, setSelectedIndex] = React.useState(0);
+    const [selectedIndex, setSelectedIndex] = React.useState(-1);
 
     const handleClick = (event, index) => {
-        setSelectedIndex(index);
-        props.setProject(props.projects[index])
+        if (index != selectedIndex) {
+            setSelectedIndex(index);
+            props.setProject(props.projects[index])
+        } else {
+            setSelectedIndex(-1);
+            props.setProject(null);
+        }
     };
 
     return (
@@ -20,10 +26,11 @@ export default function ProjectsList(props) {
                 <ListItem key={index}
                           button
                           selected={selectedIndex === index}
-                          onClick={event => handleClick(event, index)}
+                          onClick={(event) => handleClick(event, index)}
                 >
                     <ListItemText primary={project.owner + "/" + project.name}
-                                  secondary={project.primaryLanguage}/>
+                                  secondary={project.primaryLanguage}
+                                  primaryTypographyProps={{'noWrap':true}}/>
                 </ListItem>
             ))}
         </List>

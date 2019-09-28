@@ -1,42 +1,41 @@
 import React from "react";
-import Chip from "@material-ui/core/Chip";
 import Box from "@material-ui/core/Box";
-import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
-import makeStyles from "@material-ui/core/styles/makeStyles";
-
-const height = 150
+import ToggleButton from "@material-ui/lab/ToggleButton";
+import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
+import {makeStyles} from "@material-ui/core";
 
 const useStyles = makeStyles(theme => ({
-  paper: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    padding: theme.spacing(2),
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
-  }
+    buttonBox: {
+        position: 'fixed',
+        width: 'inherit',
+        padding: theme.spacing(1),
+        overflow: 'auto'
+    }
 }));
 
 export default function LabelGrid(props) {
-    // const [selectedLabelIndex, setSelectedLabelIndex] = React.useState(0);
+    console.log("Rendering labels: " + props.labels);
 
     const classes = useStyles();
 
-    function handleClick() {
-        console.log('click')
+    // TODO: this code should be global, in place of label.
+    const [selectedIndex, setSelectedIndex] = React.useState(-1);
+
+    function handleClick(event, index) {
+        console.log("click no label: " + index);
+        setSelectedIndex(index);
+        props.setLabel(props.labels[index]);
     }
 
     return (
-        <Paper className={classes.paper}>
-            <Box width="100%" height={height} overflow="auto">
-                <Grid container spacing={1}>
-                    {props.labels.map((label, index) => (
-                        <Grid item xs={2} key={index}>
-                            <Chip label={label.name} onClick={handleClick}/>
-                        </Grid>
-                    ))}
-                </Grid>
-            </Box>
-        </Paper>
+        <Box className={classes.buttonBox}>
+            <ToggleButtonGroup exclusive onChange={handleClick} value={selectedIndex}>
+                {props.labels.map((label, index) => (
+                    <ToggleButton key={index} value={index}>
+                        {label.name}
+                    </ToggleButton>
+                ))}
+            </ToggleButtonGroup>
+        </Box>
     )
 }
