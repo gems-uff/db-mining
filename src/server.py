@@ -1,3 +1,4 @@
+from ansi2html import Ansi2HTMLConverter
 from flask import jsonify, render_template
 from flask_cors import CORS
 
@@ -6,6 +7,18 @@ import database as db
 app = db.app
 # CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 CORS(app, resources={r"/*": {"origins": "*"}})
+
+
+def ansi2html(ansi):
+    a2h = Ansi2HTMLConverter(inline=True, escaped=False)
+
+    html = []
+    for line in ansi.splitlines():
+        if line and not line[0].isdigit() and not line[0] == '-':
+            line = '<h3>' + line + '</h3>'
+        html.append(line)
+
+    return a2h.convert('<br/>'.join(html), full=False)
 
 
 @app.route('/')
@@ -44,8 +57,11 @@ def get_execution(project_id, label_id):
         .join(db.Execution.heuristic) \
         .filter(db.Version.project_id == project_id) \
         .filter(db.Heuristic.label_id == label_id).first()
+
     attrs = ['isValidated', 'isAccepted']
-    return jsonify({a: getattr(execution, a) for a in attrs})
+    result = {a: getattr(execution, a) for a in attrs}
+    result['output'] = ansi2html(execution.output.decode('utf8'))
+    return jsonify(result)
 
 
 if __name__ == '__main__':
