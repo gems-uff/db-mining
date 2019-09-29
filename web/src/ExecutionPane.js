@@ -36,8 +36,8 @@ const trafficLightTheme = createMuiTheme({
     }
 });
 
-export default function ExecutionPanel(props) {
-    console.log("Execution panel: " + props.execution);
+export default function ExecutionPane(props) {
+    console.log("Rendering execution pane: " + props.execution);
 
     const classes = useStyles();
 

@@ -13,23 +13,18 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-export default function LabelGrid(props) {
-    console.log("Rendering labels: " + props.labels);
+export default function LabelsPane(props) {
+    console.log("Rendering labels pane");
 
     const classes = useStyles();
 
-    // TODO: this code should be global, in place of label.
-    const [selectedIndex, setSelectedIndex] = React.useState(-1);
-
     function handleClick(event, index) {
-        console.log("click no label: " + index);
-        setSelectedIndex(index);
-        props.setLabel(props.labels[index]);
+        props.setSelectedIndex(index);
     }
 
     return (
         <Box className={classes.buttonBox}>
-            <ToggleButtonGroup exclusive onChange={handleClick} value={selectedIndex}>
+            <ToggleButtonGroup exclusive onChange={handleClick} value={props.selectedIndex}>
                 {props.labels.map((label, index) => (
                     <ToggleButton key={index} value={index}>
                         {label.name}

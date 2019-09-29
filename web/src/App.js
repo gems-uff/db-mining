@@ -10,9 +10,9 @@ import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import LabelGrid from "./LabelsGrid";
-import ProjectsList from "./ProjectsList";
-import ExecutionPanel from "./ExecutionPanel";
+import LabelsPane from "./LabelsPane";
+import ProjectsPane from "./ProjectsPane";
+import ExecutionPane from "./ExecutionPane";
 
 const drawerWidth = 260;
 
@@ -83,9 +83,11 @@ export default function App() {
     const [open, setOpen] = React.useState(true);
 
     const [projects, setProjects] = React.useState([])
-    const [project, setProject] = React.useState(null)
+    const [selectedProjectIndex, setSelectedProjectIndex] = React.useState(null);
+
     const [labels, setLabels] = React.useState([]);
-    const [label, setLabel] = React.useState(null);
+    const [selectedLabelIndex, setSelectedLabelIndex] = React.useState(null);
+
     const [execution, setExecution] = React.useState(null);
 
     // Fetches projects once in the beginning
@@ -94,34 +96,46 @@ export default function App() {
             .then(res => res.json())
             .then(data => {
                 setProjects(data);
-            })
+            }).catch(function (error) {
+                console.log(error);
+            }
+        );
     }, []);
 
-    // Fetches labels when selected project changes
+    // Updates labels when selected project changes
     React.useEffect(() => {
-        if (project != null) {
-            fetch('http://localhost:5000/projects/' + project.id + '/labels')
+        if (selectedProjectIndex !== null) {
+            fetch('http://localhost:5000/projects/' + projects[selectedProjectIndex].id + '/labels')
                 .then(res => res.json())
                 .then(data => {
                     setLabels(data);
-                });
+                }).catch(function (error) {
+                    console.log(error);
+                }
+            );
         } else {
-            setLabels([])
+            setLabels([]);
         }
-    }, [project]);
+        setSelectedLabelIndex(null);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedProjectIndex]);
 
-    // Fetches execution when select label changes
+    // Updates execution when the selected label changes
     React.useEffect(() => {
-        if (project != null && label != null) {
-            fetch('http://localhost:5000/projects/' + project.id + '/labels/' + label.id + "/execution")
+        if (selectedProjectIndex !== null && selectedLabelIndex !== null) {
+            fetch('http://localhost:5000/projects/' + projects[selectedProjectIndex].id + '/labels/' + labels[selectedLabelIndex].id + "/execution")
                 .then(res => res.json())
                 .then(data => {
                     setExecution(data);
-                });
+                }).catch(function (error) {
+                    console.log(error);
+                }
+            );
         } else {
-            setExecution(null)
+            setExecution(null);
         }
-    }, [project, label]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedLabelIndex]);
 
     const handleClick = () => {
         setOpen(!open);
@@ -145,7 +159,7 @@ export default function App() {
                         {open ? <ChevronLeftIcon/> : <MenuIcon/>}
                     </IconButton>
                     <Typography variant="h6" noWrap className={classes.taskBarEntry}>
-                        {(project != null) ? project.owner + "/" + project.name : "No project selected"}
+                        {(selectedProjectIndex !== null) ? projects[selectedProjectIndex].owner + "/" + projects[selectedProjectIndex].name : "No project selected"}
                     </Typography>
                 </Toolbar>
             </AppBar>
@@ -162,7 +176,8 @@ export default function App() {
                     <Typography variant="h6">Projects</Typography>
                 </div>
                 <Divider/>
-                <ProjectsList projects={projects} setProject={setProject}/>
+                <ProjectsPane projects={projects} selectedIndex={selectedProjectIndex}
+                              setSelectedIndex={setSelectedProjectIndex}/>
             </Drawer>
             <main
                 className={clsx(classes.content, {
@@ -170,8 +185,9 @@ export default function App() {
                 })}
             >
                 <div className={classes.drawerHeader}/>
-                <LabelGrid labels={labels} setLabel={setLabel}/>
-                <ExecutionPanel execution={execution}/>
+                <LabelsPane labels={labels} selectedIndex={selectedLabelIndex}
+                            setSelectedIndex={setSelectedLabelIndex}/>
+                <ExecutionPane execution={execution}/>
             </main>
         </div>
     );
