@@ -41,21 +41,52 @@ export default function ExecutionPane(props) {
 
     const classes = useStyles();
 
+    function updateExecution(isValidated, isAccepted) {
+        let init = {
+            headers: { "Content-Type": "application/json; charset=utf-8" },
+            method: 'PUT',
+            body: JSON.stringify({
+                isValidated: isValidated,
+                isAccepted: isAccepted
+            })
+        };
+        fetch('http://localhost:5000/projects/' + props.execution.project_id + '/labels/' + props.execution.label_id + '/execution', init)
+            .then(res => res.json())
+            .then(json => {
+                console.log('TODO: update UI');
+            }).catch(err => {
+                console.error(err);
+            }
+        );
+    }
+
+    function handleAcceptClick() {
+        updateExecution(true, true);
+    }
+
+    function handleRejectClick() {
+        updateExecution(true, false);
+    }
+
+    function handleDiscardClick() {
+        updateExecution(false, false);
+    }
+
     return (
         <div>
             <Box className={classes.textBox}>
-                {props.execution != null ?
-                    <div dangerouslySetInnerHTML={{__html: props.execution.output}} align="left"/> : ""}
+                <div dangerouslySetInnerHTML={{__html: props.execution.output}} align="left"/>
             </Box>
+
             <Box className={classes.fabBox}>
                 <MuiThemeProvider theme={trafficLightTheme}>
-                    <Fab color="primary" className={classes.fab}>
+                    <Fab color="primary" className={classes.fab} onClick={handleAcceptClick}>
                         <ThumbUpOutlinedIcon/>
                     </Fab>
-                    <Fab color="secondary" className={classes.fab}>
+                    <Fab color="secondary" className={classes.fab} onClick={handleRejectClick}>
                         <ThumbDownOutlinedIcon/>
                     </Fab>
-                    <Fab className={classes.fab}>
+                    <Fab className={classes.fab} onClick={handleDiscardClick}>
                         <ClearOutlinedIcon/>
                     </Fab>
                 </MuiThemeProvider>

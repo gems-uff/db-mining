@@ -96,8 +96,8 @@ export default function App() {
             .then(res => res.json())
             .then(data => {
                 setProjects(data);
-            }).catch(function (error) {
-                console.log(error);
+            }).catch(err => {
+                console.error(err)
             }
         );
     }, []);
@@ -109,8 +109,8 @@ export default function App() {
                 .then(res => res.json())
                 .then(data => {
                     setLabels(data);
-                }).catch(function (error) {
-                    console.log(error);
+                }).catch(err => {
+                    console.error(err)
                 }
             );
         } else {
@@ -123,12 +123,12 @@ export default function App() {
     // Updates execution when the selected label changes
     React.useEffect(() => {
         if (selectedProjectIndex !== null && selectedLabelIndex !== null) {
-            fetch('http://localhost:5000/projects/' + projects[selectedProjectIndex].id + '/labels/' + labels[selectedLabelIndex].id + "/execution")
+            fetch('http://localhost:5000/projects/' + projects[selectedProjectIndex].id + '/labels/' + labels[selectedLabelIndex].id + '/execution')
                 .then(res => res.json())
                 .then(data => {
                     setExecution(data);
-                }).catch(function (error) {
-                    console.log(error);
+                }).catch(err => {
+                    console.error(err)
                 }
             );
         } else {
@@ -176,8 +176,8 @@ export default function App() {
                     <Typography variant="h6">Projects</Typography>
                 </div>
                 <Divider/>
-                <ProjectsPane projects={projects} selectedIndex={selectedProjectIndex}
-                              setSelectedIndex={setSelectedProjectIndex}/>
+                {projects.length !== 0 && <ProjectsPane projects={projects} selectedIndex={selectedProjectIndex}
+                                                        setSelectedIndex={setSelectedProjectIndex}/>}
             </Drawer>
             <main
                 className={clsx(classes.content, {
@@ -185,9 +185,9 @@ export default function App() {
                 })}
             >
                 <div className={classes.drawerHeader}/>
-                <LabelsPane labels={labels} selectedIndex={selectedLabelIndex}
-                            setSelectedIndex={setSelectedLabelIndex}/>
-                <ExecutionPane execution={execution}/>
+                {labels.length !== 0 && <LabelsPane labels={labels} selectedIndex={selectedLabelIndex}
+                                                    setSelectedIndex={setSelectedLabelIndex}/>}
+                {execution !== null && <ExecutionPane execution={execution}/>}
             </main>
         </div>
     );
