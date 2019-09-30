@@ -1,5 +1,5 @@
 from ansi2html import Ansi2HTMLConverter
-from flask import jsonify, render_template
+from flask import jsonify, render_template, request
 from flask_cors import CORS
 
 import database as db
@@ -61,7 +61,25 @@ def get_execution(project_id, label_id):
     attrs = ['isValidated', 'isAccepted']
     result = {a: getattr(execution, a) for a in attrs}
     result['output'] = ansi2html(execution.output.decode('utf8'))
+    result['project_id'] = project_id
+    result['label_id'] = label_id
     return jsonify(result)
+
+
+@app.route('/projects/<int:project_id>/labels/<int:label_id>/execution', methods=['PUT'])
+def put_execution(project_id, label_id):
+    json = request.get_json()
+
+    execution = db.query(db.Execution)\
+        .join(db.Execution.version) \
+        .join(db.Execution.heuristic) \
+        .filter(db.Version.project_id == project_id) \
+        .filter(db.Heuristic.label_id == label_id).first()
+    execution.isAccepted = json['isAccepted']
+    execution.isValidated = json['isValidated']
+    db.commit()
+
+    return get_execution(project_id, label_id), 200
 
 
 if __name__ == '__main__':
