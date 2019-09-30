@@ -1,0 +1,8 @@
+hive
+ThriftHive
+hive_service
+org\.apache\.hadoop\.hive
+HiveDriver
+RBHive.connect
+jdbc:hive2:
+gohive\.Connect

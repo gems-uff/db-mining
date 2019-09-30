@@ -1,0 +1,4 @@
+jdbc:db2
+import ibm_db
+IBM_DB.connect
+ibm_db
