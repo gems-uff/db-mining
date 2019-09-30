@@ -1,1 +1,4 @@
 jdbc:postgresql
+psycopg
+PG\.connect
+postgresql

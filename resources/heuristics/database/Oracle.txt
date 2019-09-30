@@ -1,1 +1,5 @@
 jdbc:oracle
+oracle
+import cx_Oracle
+oracle_enhanced
+OCI8

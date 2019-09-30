@@ -1,3 +1,5 @@
 redis
 redis[[:digit:]]
-jedis\.
+jedis\
+Redis\.new
+redis\.NewClient
