@@ -1,5 +1,5 @@
 splunklib
 splunk-client
 SplunkClient\.new
-splunk.search
+splunk\.search
 import com\.splunk
