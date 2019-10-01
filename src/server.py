@@ -27,6 +27,28 @@ def react():
     return render_template('index.html')
 
 
+@app.route('/status', methods=['GET'])
+def get_status():
+    result_set = db.query(db.Version.project_id.label('project_id'),
+                          db.Heuristic.label_id.label('label_id'),
+                          db.Execution.isValidated.label('isValidated'),
+                          db.Execution.isAccepted.label('isAccepted')
+                          ) \
+        .join(db.Version.executions) \
+        .join(db.Execution.heuristic) \
+        .filter(db.Execution.output != b'').all()
+
+    status = {}
+    for row in result_set:
+        labels = status.get(row.project_id)
+        if not labels:
+            labels = {}
+            status[row.project_id] = labels
+        labels[row.label_id] = (row.isValidated, row.isAccepted)
+
+    return jsonify(status)
+
+
 @app.route('/projects', methods=['GET'])
 def get_projects():
     projects = db.query(db.Project.id.label('id'),
