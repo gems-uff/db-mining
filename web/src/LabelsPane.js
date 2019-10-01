@@ -57,25 +57,24 @@ export default function LabelsPane(props) {
     }
 
     function handleFab(isValidated, isAccepted) {
+        let param = {
+                isValidated: isValidated,
+                isAccepted: isAccepted
+        }
         let init = {
             headers: {"Content-Type": "application/json; charset=utf-8"},
             method: 'PUT',
-            body: JSON.stringify({
-                isValidated: isValidated,
-                isAccepted: isAccepted
-            })
+            body: JSON.stringify(param)
         };
         fetch('http://localhost:5000/projects/' + props.labels[props.selectedIndex].project_id + '/labels/' + props.labels[props.selectedIndex].id, init)
             .then(res => res.json())
             .then(json => {
-                let labels = props.labels.map((label,index) => {
-                    if (index === props.selectedIndex) {
-                        return json;
-                    } else {
-                        return label;
-                    }
-                });
-                props.setLabels(labels)
+                let status = Object.assign({}, props.status);
+                status[json['project_id']][json['label_id']] = {
+                    isValidated: json['isValidated'],
+                    isAccepted: json['isAccepted']
+                }
+                props.setStatus(status)
             }).catch(err => {
                 console.error(err);
             }
@@ -89,11 +88,11 @@ export default function LabelsPane(props) {
                     {props.labels.map((label, index) => (
                         <ToggleButton key={index} value={index}>
                             {label.name}
-                            {label.isValidated ?
-                                (label.isAccepted ?
+                            {props.status[label.project_id][label.id]['isValidated'] &&
+                                (props.status[label.project_id][label.id]['isAccepted'] ?
                                     <ThumbUpOutlinedIcon className={classes.rightIcon} color='primary'/> :
                                     <ThumbDownOutlinedIcon className={classes.rightIcon} color='secondary'/>)
-                                : ""}
+                            }
                         </ToggleButton>
                     ))}
                 </ToggleButtonGroup>
