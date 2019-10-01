@@ -3,11 +3,12 @@ import os.path
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
-from util import DATABASE_FILE, REACT_STATIC_DIR, REACT_BUILD_DIR
+from util import DATABASE_FILE, DATABASE_DEBUG, REACT_STATIC_DIR, REACT_BUILD_DIR
 
 app = Flask(__name__, static_folder=REACT_STATIC_DIR, template_folder=REACT_BUILD_DIR)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + DATABASE_FILE
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_ECHO'] = DATABASE_DEBUG
 db = SQLAlchemy(app)
 
 
@@ -117,8 +118,8 @@ def close():
 # DATABASE ACCESSOR METHODS
 ###########################################
 
-def query(model, **kwargs):
-    return db.session.query(model).filter_by(**kwargs)
+def query(*model, **kwargs):
+    return db.session.query(*model).filter_by(**kwargs)
 
 
 def create(model, **kwargs):

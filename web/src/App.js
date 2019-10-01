@@ -12,7 +12,6 @@ import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import LabelsPane from "./LabelsPane";
 import ProjectsPane from "./ProjectsPane";
-import ExecutionPane from "./ExecutionPane";
 
 const drawerWidth = 260;
 
@@ -88,8 +87,6 @@ export default function App() {
     const [labels, setLabels] = React.useState([]);
     const [selectedLabelIndex, setSelectedLabelIndex] = React.useState(null);
 
-    const [execution, setExecution] = React.useState(null);
-
     // Fetches projects once in the beginning
     React.useEffect(() => {
         fetch('http://localhost:5000/projects')
@@ -119,23 +116,6 @@ export default function App() {
         setSelectedLabelIndex(null);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedProjectIndex]);
-
-    // Updates execution when the selected label changes
-    React.useEffect(() => {
-        if (selectedProjectIndex !== null && selectedLabelIndex !== null) {
-            fetch('http://localhost:5000/projects/' + projects[selectedProjectIndex].id + '/labels/' + labels[selectedLabelIndex].id + '/execution')
-                .then(res => res.json())
-                .then(data => {
-                    setExecution(data);
-                }).catch(err => {
-                    console.error(err)
-                }
-            );
-        } else {
-            setExecution(null);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedLabelIndex]);
 
     const handleClick = () => {
         setOpen(!open);
@@ -185,9 +165,13 @@ export default function App() {
                 })}
             >
                 <div className={classes.drawerHeader}/>
-                {labels.length !== 0 && <LabelsPane labels={labels} selectedIndex={selectedLabelIndex}
-                                                    setSelectedIndex={setSelectedLabelIndex}/>}
-                {execution !== null && <ExecutionPane execution={execution}/>}
+                {labels.length !== 0 &&
+                <LabelsPane labels={labels}
+                            setLabels={setLabels}
+                            selectedIndex={selectedLabelIndex}
+                            setSelectedIndex={setSelectedLabelIndex}
+                />
+                }
             </main>
         </div>
     );

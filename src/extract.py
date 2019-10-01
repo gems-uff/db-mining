@@ -82,7 +82,7 @@ def main():
         # Applies the heuristic over each repository
         for j, info_repository in info_repositories.iterrows():
             try:
-                # Retrieve or create the Repository object
+                # Retrieve or create the Project object
                 repo_dict = info_repository.to_dict()
                 repo_dict = {k: v for k, v in repo_dict.items() if k not in ['url', 'isSoftware', 'discardReason']}
                 repo_dict['createdAt'] = str(repo_dict['createdAt'])
