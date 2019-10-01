@@ -41,36 +41,44 @@ def get_project(project_id):
     return jsonify({a: getattr(project, a) for a in attrs})
 
 
+def labels_query(project_id):
+    return db.query(db.Label.id.label('id'),
+                      db.Label.name.label('name'),
+                      db.Execution.output.label('output'),
+                      db.Execution.isValidated.label('isValidated'),
+                      db.Execution.isAccepted.label('isAccepted')
+                      ) \
+        .join(db.Label.heuristic) \
+        .join(db.Heuristic.executions) \
+        .join(db.Execution.version) \
+        .filter(db.Version.project_id == project_id) \
+        .filter(db.Execution.output != b'')
+
+
+def label2dict(label, project_id):
+    result = label._asdict()
+    result['output'] = ansi2html(result['output'].decode('utf8'))
+    result['project_id'] = project_id
+    return result
+
+
 @app.route('/projects/<int:project_id>/labels', methods=['GET'])
 def get_labels(project_id):
-    version = db.query(db.Version, project_id=project_id, isLast=True).first()
-    executions = version.executions
-    labels = [e.heuristic.label for e in executions if e.output]
-    attrs = ['id', 'name', 'type']
-    return jsonify([{a: getattr(l, a) for a in attrs} for l in labels])
+    labels = labels_query(project_id).all()
+    return jsonify([label2dict(label, project_id) for label in labels])
 
 
-@app.route('/projects/<int:project_id>/labels/<int:label_id>/execution', methods=['GET'])
-def get_execution(project_id, label_id):
-    execution = db.query(db.Execution)\
-        .join(db.Execution.version) \
-        .join(db.Execution.heuristic) \
-        .filter(db.Version.project_id == project_id) \
-        .filter(db.Heuristic.label_id == label_id).first()
-
-    attrs = ['isValidated', 'isAccepted']
-    result = {a: getattr(execution, a) for a in attrs}
-    result['output'] = ansi2html(execution.output.decode('utf8'))
-    result['project_id'] = project_id
-    result['label_id'] = label_id
-    return jsonify(result)
+@app.route('/projects/<int:project_id>/labels/<int:label_id>', methods=['GET'])
+def get_label(project_id, label_id):
+    label = labels_query(project_id).filter(db.Label.id == label_id).first()
+    return jsonify(label2dict(label, project_id))
 
 
-@app.route('/projects/<int:project_id>/labels/<int:label_id>/execution', methods=['PUT'])
-def put_execution(project_id, label_id):
+@app.route('/projects/<int:project_id>/labels/<int:label_id>', methods=['PUT'])
+def put_label(project_id, label_id):
     json = request.get_json()
 
-    execution = db.query(db.Execution)\
+    execution = db.query(db.Execution) \
         .join(db.Execution.version) \
         .join(db.Execution.heuristic) \
         .filter(db.Version.project_id == project_id) \
@@ -79,7 +87,7 @@ def put_execution(project_id, label_id):
     execution.isValidated = json['isValidated']
     db.commit()
 
-    return get_execution(project_id, label_id), 200
+    return get_label(project_id, label_id), 200
 
 
 if __name__ == '__main__':
