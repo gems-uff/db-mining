@@ -41,18 +41,12 @@ class Project(db.Model):
     versions = db.relationship('Version', back_populates='project')
 
 
-version_label = db.Table('version_label',
-                         db.Column('version_id', db.Integer, db.ForeignKey('version.id', ondelete='CASCADE')),
-                         db.Column('label_id', db.Integer, db.ForeignKey('label.id', ondelete='CASCADE')))
-
-
 class Version(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     sha1 = db.Column(db.String)
     isLast = db.Column(db.Boolean)
     project_id = db.Column(db.Integer, db.ForeignKey('project.id', ondelete='CASCADE'))
     project = db.relationship('Project', back_populates='versions')
-    labels = db.relationship('Label', secondary=version_label, back_populates='versions')
     executions = db.relationship('Execution', back_populates='version')
 
 
@@ -74,7 +68,6 @@ class Label(db.Model):
     type = db.Column(db.String)
     heuristic = db.relationship('Heuristic', uselist=False, back_populates='label')
     categories = db.relationship('Category', secondary=label_category, back_populates='labels')
-    versions = db.relationship('Version', secondary=version_label, back_populates='labels')
 
 
 class Heuristic(db.Model):
