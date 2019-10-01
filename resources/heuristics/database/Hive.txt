@@ -3,6 +3,6 @@ ThriftHive
 hive_service
 org\.apache\.hadoop\.hive
 HiveDriver
-RBHive.connect
+RBHive\.connect
 jdbc:hive2:
 gohive\.Connect
