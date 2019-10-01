@@ -44,7 +44,7 @@ def get_status():
         if not labels:
             labels = {}
             status[row.project_id] = labels
-        labels[row.label_id] = (row.isValidated, row.isAccepted)
+        labels[row.label_id] = {'isValidated': row.isValidated, 'isAccepted': row.isAccepted}
 
     return jsonify(status)
 
@@ -72,9 +72,7 @@ def get_project(project_id):
 def labels_query(project_id):
     return db.query(db.Label.id.label('id'),
                     db.Label.name.label('name'),
-                    db.Execution.output.label('output'),
-                    db.Execution.isValidated.label('isValidated'),
-                    db.Execution.isAccepted.label('isAccepted')
+                    db.Execution.output.label('output')
                     ) \
         .join(db.Label.heuristic) \
         .join(db.Heuristic.executions) \
@@ -112,11 +110,13 @@ def put_label(project_id, label_id):
         .join(db.Execution.heuristic) \
         .filter(db.Version.project_id == project_id) \
         .filter(db.Heuristic.label_id == label_id).first()
-    execution.isAccepted = json['isAccepted']
     execution.isValidated = json['isValidated']
+    execution.isAccepted = json['isAccepted']
     db.commit()
 
-    return get_label(project_id, label_id), 200
+    json['project_id'] = project_id
+    json['label_id'] = label_id
+    return jsonify(json)
 
 
 if __name__ == '__main__':

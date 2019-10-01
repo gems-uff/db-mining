@@ -87,12 +87,26 @@ export default function App() {
     const [labels, setLabels] = React.useState([]);
     const [selectedLabelIndex, setSelectedLabelIndex] = React.useState(null);
 
+    const [status, setStatus] = React.useState([]);
+
     // Fetches projects once in the beginning
     React.useEffect(() => {
         fetch('http://localhost:5000/projects')
             .then(res => res.json())
             .then(data => {
                 setProjects(data);
+            }).catch(err => {
+                console.error(err)
+            }
+        );
+    }, []);
+
+    // Fetches status once in the beginning
+    React.useEffect(() => {
+        fetch('http://localhost:5000/status')
+            .then(res => res.json())
+            .then(data => {
+                setStatus(data);
             }).catch(err => {
                 console.error(err)
             }
@@ -156,8 +170,13 @@ export default function App() {
                     <Typography variant="h6">Projects</Typography>
                 </div>
                 <Divider/>
-                {projects.length !== 0 && <ProjectsPane projects={projects} selectedIndex={selectedProjectIndex}
-                                                        setSelectedIndex={setSelectedProjectIndex}/>}
+                {projects.length !== 0 && status.length !==0 &&
+                <ProjectsPane projects={projects}
+                              status={status}
+                              selectedIndex={selectedProjectIndex}
+                              setSelectedIndex={setSelectedProjectIndex}
+                />
+                }
             </Drawer>
             <main
                 className={clsx(classes.content, {
@@ -165,9 +184,10 @@ export default function App() {
                 })}
             >
                 <div className={classes.drawerHeader}/>
-                {labels.length !== 0 &&
+                {selectedProjectIndex !== null && labels.length !== 0 &&
                 <LabelsPane labels={labels}
-                            setLabels={setLabels}
+                            status={status}
+                            setStatus={setStatus}
                             selectedIndex={selectedLabelIndex}
                             setSelectedIndex={setSelectedLabelIndex}
                 />
