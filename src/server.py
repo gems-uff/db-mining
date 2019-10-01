@@ -1,6 +1,7 @@
 from ansi2html import Ansi2HTMLConverter
 from flask import jsonify, render_template, request
 from flask_cors import CORS
+from sqlalchemy import func
 
 import database as db
 
@@ -28,9 +29,14 @@ def react():
 
 @app.route('/projects', methods=['GET'])
 def get_projects():
-    projects = db.query(db.Project)
-    attrs = ['id', 'owner', 'name', 'primaryLanguage']
-    return jsonify([{a: getattr(p, a) for a in attrs} for p in projects])
+    projects = db.query(db.Project.id.label('id'),
+                        db.Project.owner.label('owner'),
+                        db.Project.name.label('name'),
+                        db.Project.owner.label('primaryLanguage')
+                        ) \
+        .order_by(func.lower(db.Project.owner)) \
+        .order_by(func.lower(db.Project.name)).all()
+    return jsonify([project._asdict() for project in projects])
 
 
 @app.route('/projects/<int:project_id>', methods=['GET'])
@@ -43,16 +49,17 @@ def get_project(project_id):
 
 def labels_query(project_id):
     return db.query(db.Label.id.label('id'),
-                      db.Label.name.label('name'),
-                      db.Execution.output.label('output'),
-                      db.Execution.isValidated.label('isValidated'),
-                      db.Execution.isAccepted.label('isAccepted')
-                      ) \
+                    db.Label.name.label('name'),
+                    db.Execution.output.label('output'),
+                    db.Execution.isValidated.label('isValidated'),
+                    db.Execution.isAccepted.label('isAccepted')
+                    ) \
         .join(db.Label.heuristic) \
         .join(db.Heuristic.executions) \
         .join(db.Execution.version) \
         .filter(db.Version.project_id == project_id) \
-        .filter(db.Execution.output != b'')
+        .filter(db.Execution.output != b'') \
+        .order_by(func.lower(db.Label.name))
 
 
 def label2dict(label, project_id):

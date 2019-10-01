@@ -1,7 +1,7 @@
 import os
 
 # Flags
-DATABASE_DEBUG = False
+DATABASE_DEBUG = True
 CODE_DEBUG = True
 
 # Directories
