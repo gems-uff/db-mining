@@ -57,25 +57,16 @@ export default function LabelsPane(props) {
     }
 
     function handleFab(isValidated, isAccepted) {
-        let param = {
-                isValidated: isValidated,
-                isAccepted: isAccepted
-        }
         let init = {
             headers: {"Content-Type": "application/json; charset=utf-8"},
             method: 'PUT',
-            body: JSON.stringify(param)
+            body: JSON.stringify({
+                isValidated: isValidated,
+                isAccepted: isAccepted
+            })
         };
         fetch('http://localhost:5000/projects/' + props.labels[props.selectedIndex].project_id + '/labels/' + props.labels[props.selectedIndex].id, init)
-            .then(res => res.json())
-            .then(json => {
-                let status = Object.assign({}, props.status);
-                status[json['project_id']][json['label_id']] = {
-                    isValidated: json['isValidated'],
-                    isAccepted: json['isAccepted']
-                }
-                props.setStatus(status)
-            }).catch(err => {
+            .catch(err => {
                 console.error(err);
             }
         );
