@@ -1,13 +1,17 @@
+import json
+
 from ansi2html import Ansi2HTMLConverter
-from flask import jsonify, render_template, request
+from flask import jsonify, render_template, request, Response
 from flask_cors import CORS
 from sqlalchemy import func
-
+from queue import Queue
 import database as db
 
 app = db.app
 # CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 CORS(app, resources={r"/*": {"origins": "*"}})
+
+queues = []
 
 
 def ansi2html(ansi):
@@ -103,20 +107,38 @@ def get_label(project_id, label_id):
 
 @app.route('/projects/<int:project_id>/labels/<int:label_id>', methods=['PUT'])
 def put_label(project_id, label_id):
-    json = request.get_json()
+    data = request.get_json()
 
     execution = db.query(db.Execution) \
         .join(db.Execution.version) \
         .join(db.Execution.heuristic) \
         .filter(db.Version.project_id == project_id) \
         .filter(db.Heuristic.label_id == label_id).first()
-    execution.isValidated = json['isValidated']
-    execution.isAccepted = json['isAccepted']
+    execution.isValidated = data['isValidated']
+    execution.isAccepted = data['isAccepted']
     db.commit()
 
-    json['project_id'] = project_id
-    json['label_id'] = label_id
-    return jsonify(json)
+    data['project_id'] = project_id
+    data['label_id'] = label_id
+
+    data = json.dumps(data)
+    for queue in queues:
+        queue.put(data)
+
+    return jsonify(success=True)
+
+
+def event_stream(queue):
+    while True:
+        data = queue.get()
+        yield f'data: {data}\n\n'
+
+
+@app.route('/stream')
+def stream():
+    queue = Queue()
+    queues.append(queue)
+    return Response(event_stream(queue), mimetype="text/event-stream")
 
 
 if __name__ == '__main__':

@@ -87,7 +87,7 @@ export default function App() {
     const [labels, setLabels] = React.useState([]);
     const [selectedLabelIndex, setSelectedLabelIndex] = React.useState(null);
 
-    const [status, setStatus] = React.useState([]);
+    const [status, setStatus] = React.useState({});
 
     // Fetches projects once in the beginning
     React.useEffect(() => {
@@ -101,12 +101,24 @@ export default function App() {
         );
     }, []);
 
-    // Fetches status once in the beginning
+    // Fetches status in the beginning and listen for server side events
     React.useEffect(() => {
         fetch('http://localhost:5000/status')
             .then(res => res.json())
             .then(data => {
                 setStatus(data);
+                const evtSource = new EventSource('http://localhost:5000/stream');
+                evtSource.onmessage = (event) => {
+                    let json = JSON.parse(event.data);
+                    setStatus(old_status => {
+                        let new_status = Object.assign({}, old_status);
+                        new_status[json['project_id']][json['label_id']] = {
+                            isValidated: json['isValidated'],
+                            isAccepted: json['isAccepted']
+                        }
+                        return new_status;
+                    })
+                }
             }).catch(err => {
                 console.error(err)
             }
@@ -128,8 +140,7 @@ export default function App() {
             setLabels([]);
         }
         setSelectedLabelIndex(null);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedProjectIndex]);
+    }, [projects, selectedProjectIndex]);
 
     const handleClick = () => {
         setOpen(!open);
@@ -170,7 +181,7 @@ export default function App() {
                     <Typography variant="h6">Projects</Typography>
                 </div>
                 <Divider/>
-                {projects.length !== 0 && status.length !==0 &&
+                {projects.length !== 0 && status.length !== 0 &&
                 <ProjectsPane projects={projects}
                               status={status}
                               selectedIndex={selectedProjectIndex}
