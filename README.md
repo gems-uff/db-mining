@@ -19,29 +19,31 @@ Marco Aurélio Gerosa (NAU, USA)
 
 ## Requirements
 
-We assume you have [Anaconda](https://www.anaconda.com/) installed on your computer. 
+We assume you have Python 3.7+ and Git 2.23+ installed on your computer. 
 
 ## Steps 
 
-1. Clone our repository:  
+1. Install pipenv (if it is not already installed)
 
-`git clone https://github.com/gems-uff/db-mining.git`
+`$ python3.7 -m pip install pipenv`
 
-2. Go into the project directory:
+2. Clone our repository:  
 
-`cd db-mining`
+`$ git clone https://github.com/gems-uff/db-mining.git`
 
-3. Create a conda environment: 
+3. Go into the project directory:
 
-`conda env create -f environment.yml`
+`$ cd db-mining`
 
-4. Activate the conda environment: 
+4. Create the environment: 
 
-`conda activate db-mining` 
+`pipenv install`
 
-(on Windows this should be `source activate db-mining`)
+5. Activate the environment: 
 
-5. You are now all set to run the scripts. 
+`pipenv shell` 
+
+6. You are now all set to run the scripts. 
 
 # Acknowledgements
 
