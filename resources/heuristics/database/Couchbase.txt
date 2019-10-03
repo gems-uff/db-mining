@@ -1,0 +1,6 @@
+couchbase.cluster
+couchbase
+CouchbaseCluster
+couchbases://
+couchbase://
+gocb

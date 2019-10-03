@@ -1,0 +1,3 @@
+informix
+jdbc:informix-sqli://
+com\.informix\.jdbc

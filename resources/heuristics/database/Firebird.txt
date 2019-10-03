@@ -1,0 +1,3 @@
+firebirdsql
+[Ff]irebird
+jdbc:firebirdsql://

@@ -1,0 +1,5 @@
+Devart ODBC Driver for ASE
+import Sybase
+/opt/sybase/DataAccess/ODBC
+jdbc:sybase:Tds
+SAP ASE
