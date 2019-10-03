@@ -65,7 +65,7 @@ export default function LabelsPane(props) {
                 isAccepted: isAccepted
             })
         };
-        fetch('http://localhost:5000/projects/' + props.labels[props.selectedIndex].project_id + '/labels/' + props.labels[props.selectedIndex].id, init)
+        fetch('/projects/' + props.labels[props.selectedIndex].project_id + '/labels/' + props.labels[props.selectedIndex].id, init)
             .catch(err => {
                 console.error(err);
             }
