@@ -1,8 +1,8 @@
 import os
 
 # Flags
-DATABASE_DEBUG = True
-CODE_DEBUG = True
+DATABASE_DEBUG = False
+CODE_DEBUG = False
 
 # Directories
 SRC_DIR = os.path.dirname(os.path.realpath(__file__))
