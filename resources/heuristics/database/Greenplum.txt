@@ -1,0 +1,2 @@
+[Gg]reenplum
+jdbc:pivotal:greenplum://
