@@ -1,0 +1,4 @@
+HANA
+hana
+hdbcli
+jdbc:sap:

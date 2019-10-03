@@ -1,2 +1,4 @@
 bolt://
 neo4j
+libneo4j-client
+org\.neo4j\.driver

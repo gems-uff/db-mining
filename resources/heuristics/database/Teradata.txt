@@ -1,0 +1,2 @@
+[Tt]eradata
+com\.teradata\.jdbc\.TeraDriver
