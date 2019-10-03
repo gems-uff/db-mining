@@ -91,7 +91,7 @@ export default function App() {
 
     // Fetches projects once in the beginning
     React.useEffect(() => {
-        fetch('http://localhost:5000/projects')
+        fetch('/projects')
             .then(res => res.json())
             .then(data => {
                 setProjects(data);
@@ -103,11 +103,11 @@ export default function App() {
 
     // Fetches status in the beginning and listen for server side events
     React.useEffect(() => {
-        fetch('http://localhost:5000/status')
+        fetch('/status')
             .then(res => res.json())
             .then(data => {
                 setStatus(data);
-                const evtSource = new EventSource('http://localhost:5000/stream');
+                const evtSource = new EventSource('/stream');
                 evtSource.onmessage = (event) => {
                     let json = JSON.parse(event.data);
                     setStatus(old_status => {
@@ -128,7 +128,7 @@ export default function App() {
     // Updates labels when selected project changes
     React.useEffect(() => {
         if (selectedProjectIndex !== null) {
-            fetch('http://localhost:5000/projects/' + projects[selectedProjectIndex].id + '/labels')
+            fetch('/projects/' + projects[selectedProjectIndex].id + '/labels')
                 .then(res => res.json())
                 .then(data => {
                     setLabels(data);
