@@ -1,0 +1,3 @@
+[Cc]ouch[Dd][Bb]
+org\.ektorp\.CouchDbConnector
+org\.ektorp\.CouchDbInstance
