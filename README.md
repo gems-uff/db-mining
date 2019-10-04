@@ -19,29 +19,89 @@ Marco Aurélio Gerosa (NAU, USA)
 
 ## Requirements
 
-We assume you have [Anaconda](https://www.anaconda.com/) installed on your computer. 
+We assume you have Python 3.7+, Node 12.10+ and Git 2.23+ installed on your computer. 
 
-## Steps 
+## Steps for setting up the environment (needs to do just once) 
 
 1. Clone our repository:  
 
-`git clone https://github.com/gems-uff/db-mining.git`
+`~$ git clone https://github.com/gems-uff/db-mining.git`
 
 2. Go into the project directory:
 
-`cd db-mining`
+`~$ cd db-mining`
 
-3. Create a conda environment: 
+3. Install pipenv (if it is not already installed)
 
-`conda env create -f environment.yml`
+`~/db-mining$ python3.7 -m pip install pipenv`
 
-4. Activate the conda environment: 
+4. Prepare the Python environment: 
 
-`conda activate db-mining` 
+`~/db-mining$ pipenv install`
 
-(on Windows this should be `source activate db-mining`)
+5. Go into the React app directory
 
-5. You are now all set to run the scripts. 
+`~/db-mining$ cd web`
+
+6. Prepare the React app environment:
+
+`~/db-mining/web$ npm install`
+
+7. Build the React app:
+
+`~/db-mining/web$ npm run build`
+
+## Steps for running the Python and Jupyter scripts 
+
+1. Go into the project directory:
+
+`~$ cd db-mining`
+
+2. Activate the environment: 
+
+`~/db-mining$ pipenv shell`
+
+3. You are now all set to run the scripts in src directory (check the [scripts description](#script-description) before running). For example:
+
+`~/db-mining$ python3.7 src/extract.py`
+
+or
+
+`~/db-mining$ jupyter notebook src/analyze.ipynb`
+
+## Steps for running the React app
+
+1. Go into the project directory:
+
+`~$ cd db-mining`
+
+2. Activate the environment: 
+
+`~/db-mining$ pipenv shell`
+
+3. Start the Flask server:
+
+`~/db-mining$ python3.7 src/server.py`
+
+4. Access the React app at http://localhost:5000.
+
+The URL http://localhost:5000 is served by Flask and uses the last build of the React app produced by `npm run build`. If you want to immediately reflect your changes into the React app without the need of rebuilding it every time during development, please follow the remaining steps.
+
+5. Go into the React app directory
+
+`~/db-mining$ cd web`
+
+6. Start the Node.js server:
+
+`~/db-mining/web$ npm start`
+
+7. Access the React app at http://localhost:3000.
+
+The URL http://localhost:3000 is served by Node.js and has hot reload capability. Please, note that it is significantly slower than rebuilding the React app (i.e., `npm run build`) and serving using Flask (http://localhost:5000). As our architecture is based on a REST API, even when accessing unsing Node.js, the Flask server should be online, to respond REST requests.
+
+# Scripts description
+
+Pending. We will add a table here soon.
 
 # Acknowledgements
 

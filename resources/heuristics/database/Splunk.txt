@@ -1,5 +1,0 @@
-splunklib
-splunk-client
-SplunkClient\.new
-splunk\.search
-import com\.splunk
