@@ -2,6 +2,7 @@
   "name": "db-mining-react",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:5000",
   "dependencies": {
     "@material-ui/core": "~4.4.3",
     "@material-ui/icons": "~4.4.3",
