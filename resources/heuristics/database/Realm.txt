@@ -1,0 +1,4 @@
+[Rr]ealm
+RealmObject
+Realm()
+RLMRealm

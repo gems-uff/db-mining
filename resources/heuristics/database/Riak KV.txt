@@ -1,0 +1,5 @@
+[Rr]iak
+import riak
+Riak\.Client
+com\.basho\.riak
+riak-client

@@ -1,1 +1,4 @@
+h2
 jdbc:h2
+hyper-h2
+org\.h2\.Driver
