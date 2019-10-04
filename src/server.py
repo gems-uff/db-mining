@@ -8,8 +8,7 @@ from queue import Queue
 import database as db
 
 app = db.app
-# CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
-CORS(app, resources={r"/*": {"origins": "*"}})
+CORS(app)
 
 queues = []
 
@@ -31,7 +30,7 @@ def react():
     return render_template('index.html')
 
 
-@app.route('/status', methods=['GET'])
+@app.route('/api/status', methods=['GET'])
 def get_status():
     result_set = db.query(db.Version.project_id.label('project_id'),
                           db.Heuristic.label_id.label('label_id'),
@@ -53,7 +52,7 @@ def get_status():
     return jsonify(status)
 
 
-@app.route('/projects', methods=['GET'])
+@app.route('/api/projects', methods=['GET'])
 def get_projects():
     projects = db.query(db.Project.id.label('id'),
                         db.Project.owner.label('owner'),
@@ -65,7 +64,7 @@ def get_projects():
     return jsonify([project._asdict() for project in projects])
 
 
-@app.route('/projects/<int:project_id>', methods=['GET'])
+@app.route('/api/projects/<int:project_id>', methods=['GET'])
 def get_project(project_id):
     project = db.query(db.Project, id=project_id).first()
     attrs = vars(project).copy()  # All attributes
@@ -93,19 +92,19 @@ def label2dict(label, project_id):
     return result
 
 
-@app.route('/projects/<int:project_id>/labels', methods=['GET'])
+@app.route('/api/projects/<int:project_id>/labels', methods=['GET'])
 def get_labels(project_id):
     labels = labels_query(project_id).all()
     return jsonify([label2dict(label, project_id) for label in labels])
 
 
-@app.route('/projects/<int:project_id>/labels/<int:label_id>', methods=['GET'])
+@app.route('/api/projects/<int:project_id>/labels/<int:label_id>', methods=['GET'])
 def get_label(project_id, label_id):
     label = labels_query(project_id).filter(db.Label.id == label_id).first()
     return jsonify(label2dict(label, project_id))
 
 
-@app.route('/projects/<int:project_id>/labels/<int:label_id>', methods=['PUT'])
+@app.route('/api/projects/<int:project_id>/labels/<int:label_id>', methods=['PUT'])
 def put_label(project_id, label_id):
     data = request.get_json()
 
@@ -134,11 +133,11 @@ def event_stream(queue):
         yield f'data: {data}\n\n'
 
 
-@app.route('/stream')
+@app.route('/api/stream')
 def stream():
     queue = Queue()
     queues.append(queue)
-    return Response(event_stream(queue), mimetype="text/event-stream")
+    return Response(event_stream(queue), mimetype='text/event-stream', headers={'Cache-Control': 'no-transform'})
 
 
 if __name__ == '__main__':
