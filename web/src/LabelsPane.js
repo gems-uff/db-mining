@@ -56,9 +56,14 @@ export default function LabelsPane(props) {
         props.setSelectedIndex(index);
     }
 
+    const auth = props.auth;
+
     function handleFab(isValidated, isAccepted) {
         let init = {
-            headers: {"Content-Type": "application/json; charset=utf-8"},
+            headers: {
+                "Content-Type": "application/json; charset=utf-8",
+                Authorization: `Bearer ${auth.token}`
+            },
             method: 'PUT',
             body: JSON.stringify({
                 isValidated: isValidated,
@@ -67,9 +72,9 @@ export default function LabelsPane(props) {
         };
         fetch('/api/projects/' + props.labels[props.selectedIndex].project_id + '/labels/' + props.labels[props.selectedIndex].id, init)
             .catch(err => {
-                console.error(err);
-            }
-        );
+                    console.error(err);
+                }
+            );
     }
 
     return (
@@ -80,9 +85,9 @@ export default function LabelsPane(props) {
                         <ToggleButton key={index} value={index}>
                             {label.name}
                             {props.status[label.project_id][label.id]['isValidated'] &&
-                                (props.status[label.project_id][label.id]['isAccepted'] ?
-                                    <ThumbUpOutlinedIcon className={classes.rightIcon} color='primary'/> :
-                                    <ThumbDownOutlinedIcon className={classes.rightIcon} color='secondary'/>)
+                            (props.status[label.project_id][label.id]['isAccepted'] ?
+                                <ThumbUpOutlinedIcon className={classes.rightIcon} color='primary'/> :
+                                <ThumbDownOutlinedIcon className={classes.rightIcon} color='secondary'/>)
                             }
                         </ToggleButton>
                     ))}
