@@ -101,9 +101,21 @@ The URL http://localhost:3000 is served by Node.js and has hot reload capability
 
 8. Update the variables `issuer` and `client_id` in the file `index.js` to match your [Okta](https://developer.okta.com) credentials, if you are intend to manage your own users. 
 
+# Spreadsheets description
+
+| Name | Content | # of projects |
+| ---- | ------- | ------------- |
+| projects.xlsx | All public, non-fork, and active (with pushes in the last 3 months) projects with ≥1000 stars from GitHub on August 23, 2019 | 13,393 |
+| filtered.xlsx | All projects from projects.xlsx with ≥5000 stars, ≥5000 commits, ≥10 contributors, and top-10 programming languages | 389 |
+| annotated.xlsx | All projects from filtered.xlsx with manual annotations classifying the domain of the projects and discarding inadequate projects | 178 |
+
 # Scripts description
 
-Pending. We will add a table here soon.
+| Name          | Goal                                                | Input          | Output        |
+| ------------- | --------------------------------------------------- | -------------- | ------------- | 
+| collect.py    | Queries projects' metadata from GitHub using API v4 | None           | projects.xlsx |
+| filter.ipynb  | Applies some extra filters                          | projects.xlsx  | filtered.xlsx |
+| analyze.ipynb | Produces statistics about the final corpus          | annotated.xlsx | None          |
 
 # Acknowledgements
 
