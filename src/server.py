@@ -6,6 +6,7 @@ from flask_cors import CORS
 from sqlalchemy import func
 from queue import Queue
 import database as db
+from auth import login_required
 
 app = db.app
 CORS(app)
@@ -31,6 +32,7 @@ def react():
 
 
 @app.route('/api/status', methods=['GET'])
+@login_required
 def get_status():
     result_set = db.query(db.Version.project_id.label('project_id'),
                           db.Heuristic.label_id.label('label_id'),
@@ -53,6 +55,7 @@ def get_status():
 
 
 @app.route('/api/projects', methods=['GET'])
+@login_required
 def get_projects():
     projects = db.query(db.Project.id.label('id'),
                         db.Project.owner.label('owner'),
@@ -65,6 +68,7 @@ def get_projects():
 
 
 @app.route('/api/projects/<int:project_id>', methods=['GET'])
+@login_required
 def get_project(project_id):
     project = db.query(db.Project, id=project_id).first()
     attrs = vars(project).copy()  # All attributes
@@ -93,18 +97,21 @@ def label2dict(label, project_id):
 
 
 @app.route('/api/projects/<int:project_id>/labels', methods=['GET'])
+@login_required
 def get_labels(project_id):
     labels = labels_query(project_id).all()
     return jsonify([label2dict(label, project_id) for label in labels])
 
 
 @app.route('/api/projects/<int:project_id>/labels/<int:label_id>', methods=['GET'])
+@login_required
 def get_label(project_id, label_id):
     label = labels_query(project_id).filter(db.Label.id == label_id).first()
     return jsonify(label2dict(label, project_id))
 
 
 @app.route('/api/projects/<int:project_id>/labels/<int:label_id>', methods=['PUT'])
+@login_required
 def put_label(project_id, label_id):
     data = request.get_json()
 
@@ -142,4 +149,5 @@ def stream():
 
 if __name__ == '__main__':
     db.connect()
-    app.run(host='0.0.0.0', debug=True)
+    # app.run(host='0.0.0.0', debug=True)
+    app.run(debug=True)

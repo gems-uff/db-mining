@@ -2,7 +2,6 @@ import React from 'react';
 import clsx from 'clsx';
 import {makeStyles} from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
-import CssBaseline from '@material-ui/core/CssBaseline';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
@@ -10,6 +9,7 @@ import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import LabelsPane from "./LabelsPane";
 import ProjectsPane from "./ProjectsPane";
 
@@ -33,8 +33,16 @@ const useStyles = makeStyles(theme => ({
             duration: theme.transitions.duration.enteringScreen,
         }),
     },
-    taskBarEntry: {
-        marginRight: theme.spacing(1),
+    taskBarDrawerButton: {
+        color: 'white'
+    },
+    taskBarTitle: {
+        marginLeft: theme.spacing(1),
+        color: 'white',
+        flexGrow: 1
+    },
+    taskBarLogoutButton: {
+        marginLeft: theme.spacing(1),
         color: 'white'
     },
     hide: {
@@ -74,64 +82,35 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-export default function App() {
+export default function App(props) {
     console.log("Rendering drawer");
 
     const classes = useStyles();
 
     const [open, setOpen] = React.useState(true);
 
-    const [projects, setProjects] = React.useState([])
+    const projects = props.projects;
     const [selectedProjectIndex, setSelectedProjectIndex] = React.useState(null);
 
     const [labels, setLabels] = React.useState([]);
     const [selectedLabelIndex, setSelectedLabelIndex] = React.useState(null);
 
-    const [status, setStatus] = React.useState({});
+    const status = props.status;
+    const setStatus = props.setStatus;
 
-    // Fetches projects once in the beginning
-    React.useEffect(() => {
-        fetch('/api/projects')
-            .then(res => res.json())
-            .then(data => {
-                setProjects(data);
-            }).catch(err => {
-                console.error(err)
-            }
-        );
-    }, []);
-
-    // Fetches status in the beginning and listen for server side events
-    React.useEffect(() => {
-        fetch('/api/status')
-            .then(res => res.json())
-            .then(data => {
-                setStatus(data);
-                const evtSource = new EventSource('/api/stream');
-                evtSource.onmessage = (event) => {
-                    let json = JSON.parse(event.data);
-                    setStatus(old_status => {
-                        let new_status = Object.assign({}, old_status);
-                        new_status[json['project_id']][json['label_id']] = {
-                            isValidated: json['isValidated'],
-                            isAccepted: json['isAccepted']
-                        }
-                        return new_status;
-                    })
-                }
-            }).catch(err => {
-                console.error(err)
-            }
-        );
-    }, []);
+    const auth = props.auth;
 
     // Updates labels when selected project changes
     React.useEffect(() => {
         if (selectedProjectIndex !== null) {
-            fetch('/api/projects/' + projects[selectedProjectIndex].id + '/labels')
+            fetch('/api/projects/' + projects[selectedProjectIndex].id + '/labels', {headers: {Authorization: `Bearer ${auth.token}`}})
                 .then(res => res.json())
                 .then(data => {
-                    setLabels(data);
+                    if ('error' in data) {
+                        console.error(data.error);
+                    } else {
+                        setLabels(data);
+                    }
                 }).catch(err => {
                     console.error(err)
                 }
@@ -140,7 +119,7 @@ export default function App() {
             setLabels([]);
         }
         setSelectedLabelIndex(null);
-    }, [projects, selectedProjectIndex]);
+    }, [projects, selectedProjectIndex, auth]);
 
     const handleClick = () => {
         setOpen(!open);
@@ -148,7 +127,6 @@ export default function App() {
 
     return (
         <div className={classes.root}>
-            <CssBaseline/>
             <AppBar
                 position="fixed"
                 className={clsx(classes.appBar, {
@@ -159,13 +137,15 @@ export default function App() {
                     <IconButton
                         onClick={handleClick}
                         edge="start"
-                        className={classes.taskBarEntry}
+                        className={classes.taskBarDrawerButton}
                     >
                         {open ? <ChevronLeftIcon/> : <MenuIcon/>}
                     </IconButton>
-                    <Typography variant="h6" noWrap className={classes.taskBarEntry}>
+                    <Typography variant="h6" noWrap className={classes.taskBarTitle}>
                         {(selectedProjectIndex !== null) ? projects[selectedProjectIndex].owner + "/" + projects[selectedProjectIndex].name : "No project selected"}
                     </Typography>
+                    <Typography>{auth.user.name}</Typography>
+                    <a href={"/logout"}><ExitToAppIcon className={classes.taskBarLogoutButton}/></a>
                 </Toolbar>
             </AppBar>
             <Drawer
@@ -198,6 +178,7 @@ export default function App() {
                 {selectedProjectIndex !== null && labels.length !== 0 &&
                 <LabelsPane labels={labels}
                             status={status}
+                            auth={auth}
                             setStatus={setStatus}
                             selectedIndex={selectedLabelIndex}
                             setSelectedIndex={setSelectedLabelIndex}
