@@ -99,6 +99,8 @@ The URL http://localhost:5000 is served by Flask and uses the last build of the 
 
 The URL http://localhost:3000 is served by Node.js and has hot reload capability. Please, note that it is significantly slower than rebuilding the React app (i.e., `npm run build`) and serving using Flask (http://localhost:5000). As our architecture is based on a REST API, even when accessing unsing Node.js, the Flask server should be online, to respond REST requests.
 
+8. Update the variables `issuer` and `client_id` in the file `index.js` to match your [Okta](https://developer.okta.com) credentials, if you are intend to manage your own users. 
+
 # Scripts description
 
 Pending. We will add a table here soon.
