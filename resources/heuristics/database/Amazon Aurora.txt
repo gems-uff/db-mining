@@ -1,0 +1,4 @@
+[Aa]urora
+auroradbcluster
+jdbc:mysql:aurora
+com\.amazonaws
