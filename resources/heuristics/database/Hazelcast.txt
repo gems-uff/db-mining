@@ -1,0 +1,3 @@
+[Hh]azelcast
+com\.hazelcast
+hazelcast-client
