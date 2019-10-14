@@ -1,11 +1,14 @@
 import os.path
+import json
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
-from util import DATABASE_FILE, DATABASE_DEBUG, REACT_STATIC_DIR, REACT_BUILD_DIR
+from util import DATABASE_FILE, DATABASE_CONFIG_FILE, DATABASE_DEBUG, REACT_STATIC_DIR, REACT_BUILD_DIR
 
 app = Flask(__name__, static_folder=REACT_STATIC_DIR, template_folder=REACT_BUILD_DIR)
+
+
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + DATABASE_FILE
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = DATABASE_DEBUG
@@ -45,14 +48,14 @@ class Version(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     sha1 = db.Column(db.String)
     isLast = db.Column(db.Boolean)
-    project_id = db.Column(db.Integer, db.ForeignKey('project.id', ondelete='CASCADE'))
+    project_id = db.Column(db.Integer, db.ForeignKey('project.id', ondelete='RESTRICT'))
     project = db.relationship('Project', back_populates='versions')
     executions = db.relationship('Execution', back_populates='version')
 
 
 label_category = db.Table('label_category',
-                          db.Column('label_id', db.Integer, db.ForeignKey('label.id', ondelete='CASCADE')),
-                          db.Column('category_id', db.Integer, db.ForeignKey('category.id', ondelete='CASCADE')),
+                          db.Column('label_id', db.Integer, db.ForeignKey('label.id', ondelete='RESTRICT')),
+                          db.Column('category_id', db.Integer, db.ForeignKey('category.id', ondelete='RESTRICT')),
                           db.Column('isMain', db.Boolean))
 
 
@@ -73,7 +76,7 @@ class Label(db.Model):
 class Heuristic(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     pattern = db.Column(db.String)
-    label_id = db.Column(db.Integer, db.ForeignKey('label.id', ondelete='CASCADE'))
+    label_id = db.Column(db.Integer, db.ForeignKey('label.id', ondelete='RESTRICT'))
     label = db.relationship('Label', back_populates='heuristic')
     executions = db.relationship('Execution', back_populates='heuristic')
 
@@ -83,8 +86,8 @@ class Execution(db.Model):
     output = db.Column(db.String)
     isValidated = db.Column(db.Boolean)
     isAccepted = db.Column(db.Boolean)
-    heuristic_id = db.Column(db.Integer, db.ForeignKey('heuristic.id', ondelete='CASCADE'))
-    version_id = db.Column(db.Integer, db.ForeignKey('version.id', ondelete='CASCADE'))
+    heuristic_id = db.Column(db.Integer, db.ForeignKey('heuristic.id', ondelete='RESTRICT'))
+    version_id = db.Column(db.Integer, db.ForeignKey('version.id', ondelete='RESTRICT'))
     heuristic = db.relationship('Heuristic', back_populates='executions')
     version = db.relationship('Version', back_populates='executions')
 
@@ -94,6 +97,8 @@ class Execution(db.Model):
 ###########################################
 
 def connect():
+#    db = json.loads(DATABASE_CONFIG_FILE)
+#    print(db)
     if not os.path.exists(DATABASE_FILE):
         print('Creating Database...')
         db.create_all()
@@ -134,3 +139,10 @@ def add(instance):
 
 def delete(instance):
     db.session.delete(instance)
+
+
+def main():
+    connect()
+
+if __name__ == "__main__":
+    main()
