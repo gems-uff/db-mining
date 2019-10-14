@@ -11,8 +11,8 @@ ReactDOM.render((
     <AuthProvider>
         <Router>
             <Security
-                issuer={`${process.env.REACT_APP_OKTA_ORG_URL}/oauth2/default`}
-                client_id={process.env.REACT_APP_OKTA_CLIENT_ID}
+                issuer='https://dev-248856.okta.com/oauth2/default'
+                client_id='0oa1ihleszMmGcVAc357'
                 redirect_uri={`${window.location.origin}/implicit/callback`}
             >
                 <Switch>
