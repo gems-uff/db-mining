@@ -34,7 +34,7 @@ def load_heuristics(directory):
     for label_type in os.scandir(directory):
         if label_type.is_dir():
             for label in os.scandir(label_type.path):
-                if label.is_file():
+                if label.is_file() and not label.name.startswith('.'):
                     with open(label.path) as file:
                         pattern = file.read()
                     heuristic = {
@@ -68,16 +68,18 @@ def main():
 
     print(f'Processing {len(info_heuristics)} heuristics over {len(info_repositories)} repositories.')
     i = 0
-    for heuristic_info in info_heuristics:
+    for info_heuristic in info_heuristics:
 
         # Retrieve or create the Label and Heuristic objects
-        label = db.get_or_create(db.Label, name=heuristic_info['name'], type=heuristic_info['type'])
+        label = db.get_or_create(db.Label, name=info_heuristic['name'], type=info_heuristic['type'])
         heuristic = label.heuristic
-        if heuristic and heuristic.pattern != heuristic_info['pattern']:
-            db.delete(heuristic)
-            heuristic = None
-        if not heuristic:
-            heuristic = db.create(db.Heuristic, pattern=heuristic_info['pattern'], label=label)
+        new_pattern = False
+        if heuristic:
+            if heuristic.pattern != info_heuristic['pattern']:
+                new_pattern = True
+                heuristic.pattern = info_heuristic['pattern']
+        else:
+            heuristic = db.create(db.Heuristic, pattern=info_heuristic['pattern'], label=label)
 
         # Applies the heuristic over each repository
         for j, info_repository in info_repositories.iterrows():
@@ -104,10 +106,13 @@ def main():
                         raise subprocess.CalledProcessError(p.returncode, REVPARSE_COMMAND, p.stdout, p.stderr)
                     version = db.create(db.Version, sha1=p.stdout, isLast=True, project=project)
 
-                # Executes the heuristic over the project if was not executed before
+                # Executes the heuristic over the project if was not executed before or if the pattern has changes
+                # and the execution was not validated ans accepted
                 execution = db.query(db.Execution, version=version, heuristic=heuristic).first()
+                if new_pattern and execution and not (execution.isValidated and execution.isAccepted):
+                    db.delete(execution)
                 if not execution:
-                    cmd = GREP_COMMAND + [heuristic_info['pattern_file']]
+                    cmd = GREP_COMMAND + [info_heuristic['pattern_file']]
                     p = subprocess.run(cmd, capture_output=True)
                     if p.stderr:
                         raise subprocess.CalledProcessError(p.returncode, cmd, p.stdout, p.stderr)
@@ -129,8 +134,14 @@ def main():
                     print(ex.stderr)
         i += 1
 
-    print('Deleting missing heuristics...')
-    # TODO: remove from the DB the heuristics that were removed from the directory.
+    print('Deleting missing heuristics...', end=' ')
+    dir_labels = {(info_heuristic['name'], info_heuristic['type']) for info_heuristic in info_heuristics}
+    bd_labels = db.query(db.Label).all()
+    for label in bd_labels:
+        if (label.name, label.type) not in dir_labels:
+            print(f'{red(label.name)} ({label.type})', end=' ')
+            db.delete(label)
+    db.commit()
 
     db.close()
 
