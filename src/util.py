@@ -23,9 +23,8 @@ VENUE_KEYS = RESOURCE_DIR + os.sep + 'venue_keys.txt'
 PAPERS_FILE = RESOURCE_DIR + os.sep + 'papers.xlsx'
 FILTERED_PAPERS_FILE = RESOURCE_DIR + os.sep + 'filtered_papers.xlsx'
 
-SCHEMA_FILE = RESOURCE_DIR + os.sep + 'create-database.sql'
 DATABASE_FILE = RESOURCE_DIR + os.sep + 'db-mining.db'
-
+DATABASE_CONFIG_FILE = RESOURCE_DIR + os.sep + 'database.txt'
 
 def bold(string):
     return '\033[1m' + string + '\033[0m'

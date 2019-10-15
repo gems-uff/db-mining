@@ -1,0 +1,2 @@
+{"drop_database": "False",
+"database_type": "sqlite"}
