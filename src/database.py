@@ -5,7 +5,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_utils import database_exists, create_database, drop_database
 
-from util import DATABASE_FILE, DATABASE_DEBUG, REACT_STATIC_DIR, REACT_BUILD_DIR
+from util import DATABASE_FILE, DATABASE_DEBUG, REACT_STATIC_DIR, REACT_BUILD_DIR, DATABASE_CONFIG_FILE
 
 app = Flask(__name__, static_folder=REACT_STATIC_DIR, template_folder=REACT_BUILD_DIR)
 
@@ -113,7 +113,7 @@ class Execution(db.Model):
 ###########################################
 
 def connect():
-    if bool(config['drop_database']):
+    if config['drop_database'] == 'True':
         print('Deleting database...')
         drop_database(app.config['SQLALCHEMY_DATABASE_URI'])
 

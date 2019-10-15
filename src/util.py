@@ -24,7 +24,7 @@ PAPERS_FILE = RESOURCE_DIR + os.sep + 'papers.xlsx'
 FILTERED_PAPERS_FILE = RESOURCE_DIR + os.sep + 'filtered_papers.xlsx'
 
 DATABASE_FILE = RESOURCE_DIR + os.sep + 'db-mining.db'
-DATABASE_CONFIG_FILE = RESOURCE_DIR + os.sep + 'database.txt'
+DATABASE_CONFIG_FILE = RESOURCE_DIR + os.sep + 'database.json'
 
 def bold(string):
     return '\033[1m' + string + '\033[0m'
