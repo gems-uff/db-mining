@@ -26,9 +26,9 @@ app.config['SQLALCHEMY_ECHO'] = DATABASE_DEBUG
 with open(DATABASE_CONFIG_FILE) as json_file:
     config = json.load(json_file)
 
-if config['database_type'] == 'sqlite':
+if config['database_type'].lower() == 'sqlite':
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + get_database_uri(config['database_name'])
-elif config['database_type'] == 'postgresql':
+elif config['database_type'].lower() == 'postgresql':
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://' + config['username'] + ':' + config['password'] + '@' + config['host'] + ':' + config['port'] + '/' + config['database_name']
 
 db = SQLAlchemy(app)
