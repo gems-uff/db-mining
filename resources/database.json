@@ -1,0 +1,9 @@
+{
+  "drop_database": "False",
+  "database_type": "sqlite",
+  "host": "none",
+  "port": "none",
+  "username": "none",
+  "password": "none",
+  "database_name": "dbmining.sqlite"
+}
