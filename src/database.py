@@ -3,15 +3,31 @@ import json
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy_utils import database_exists, create_database, drop_database
 
 from util import DATABASE_FILE, DATABASE_CONFIG_FILE, DATABASE_DEBUG, REACT_STATIC_DIR, REACT_BUILD_DIR
 
 app = Flask(__name__, static_folder=REACT_STATIC_DIR, template_folder=REACT_BUILD_DIR)
 
-
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + DATABASE_FILE
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = DATABASE_DEBUG
+
+# for SQLite, the JSON file needs to have "database_type": "sqlite"
+# for PostgreSQL, the JSON file needs to have
+# "database_type": "postgresql",
+# "host": "myhostname",
+# "port" : "port",
+# "username": "myusername",
+# "password": "mypassword"
+
+with open(DATABASE_CONFIG_FILE) as json_file:
+    config = json.load(json_file)
+
+if config['database_type'] == 'sqlite':
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + DATABASE_FILE
+elif config['database_type'] == 'postgresql':
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://' + config['username'] + ':' + config['password'] + '@' + config['host'] + ':' + config['port'] + '/' + config['database_name']
+
 db = SQLAlchemy(app)
 
 
@@ -97,10 +113,13 @@ class Execution(db.Model):
 ###########################################
 
 def connect():
-#    db = json.loads(DATABASE_CONFIG_FILE)
-#    print(db)
-    if not os.path.exists(DATABASE_FILE):
+    if bool(config['drop_database']):
+        print('Deleting database...')
+        drop_database(app.config['SQLALCHEMY_DATABASE_URI'])
+
+    if not database_exists(app.config['SQLALCHEMY_DATABASE_URI']):
         print('Creating Database...')
+        create_database(app.config['SQLALCHEMY_DATABASE_URI'])
         db.create_all()
 
 
