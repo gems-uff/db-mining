@@ -35,7 +35,7 @@ export default function ProjectsPane(props) {
                               onClick={(event) => handleClick(event, index)}
                     >
                         <ListItemText primary={project.owner + "/" + project.name}
-                                      secondary={project.primaryLanguage}
+                                      secondary={project.domain + " - " + project.primaryLanguage}
                                       primaryTypographyProps={{'noWrap': true}}/>
                         <Badge badgeContent={pending(index)} color="error"/>
                     </ListItem>
