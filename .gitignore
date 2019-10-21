@@ -183,4 +183,4 @@ extraction/log.txt
 dblp.xml
 
 .DS_Store
-resources/db-mining.sqlite
+resources/dbmining.sqlite
