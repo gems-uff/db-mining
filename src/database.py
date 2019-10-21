@@ -5,7 +5,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_utils import database_exists, create_database, drop_database
 
-from util import DATABASE_FILE, DATABASE_DEBUG, REACT_STATIC_DIR, REACT_BUILD_DIR, DATABASE_CONFIG_FILE
+from util import DATABASE_DEBUG, REACT_STATIC_DIR, REACT_BUILD_DIR, DATABASE_CONFIG_FILE, get_database_uri
 
 app = Flask(__name__, static_folder=REACT_STATIC_DIR, template_folder=REACT_BUILD_DIR)
 
@@ -20,12 +20,15 @@ app.config['SQLALCHEMY_ECHO'] = DATABASE_DEBUG
 # "username": "myusername",
 # "password": "mypassword"
 
+# The drop_database flag indicates whether the user wants to drop the current database and create a new empty one
+# "drop_database": "False",
+
 with open(DATABASE_CONFIG_FILE) as json_file:
     config = json.load(json_file)
 
-if config['database_type'] == 'sqlite':
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + DATABASE_FILE
-elif config['database_type'] == 'postgresql':
+if config['database_type'].lower() == 'sqlite':
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + get_database_uri(config['database_name'])
+elif config['database_type'].lower() == 'postgresql':
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://' + config['username'] + ':' + config['password'] + '@' + config['host'] + ':' + config['port'] + '/' + config['database_name']
 
 db = SQLAlchemy(app)
