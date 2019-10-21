@@ -60,10 +60,12 @@ def get_projects():
     projects = db.query(db.Project.id.label('id'),
                         db.Project.owner.label('owner'),
                         db.Project.name.label('name'),
-                        db.Project.owner.label('primaryLanguage')
+                        db.Project.primaryLanguage.label('primaryLanguage'),
+                        db.Project.domain.label('domain')
                         ) \
         .order_by(func.lower(db.Project.owner)) \
         .order_by(func.lower(db.Project.name)).all()
+    print([project._asdict() for project in projects])
     return jsonify([project._asdict() for project in projects])
 
 

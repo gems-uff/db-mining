@@ -13,7 +13,7 @@ import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import LabelsPane from "./LabelsPane";
 import ProjectsPane from "./ProjectsPane";
 
-const drawerWidth = 260;
+const drawerWidth = 300;
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -142,7 +142,7 @@ export default function App(props) {
                         {open ? <ChevronLeftIcon/> : <MenuIcon/>}
                     </IconButton>
                     <Typography variant="h6" noWrap className={classes.taskBarTitle}>
-                        {(selectedProjectIndex !== null) ? projects[selectedProjectIndex].owner + "/" + projects[selectedProjectIndex].name : "No project selected"}
+                        {(selectedProjectIndex !== null) ? projects[selectedProjectIndex].owner + "/" + projects[selectedProjectIndex].name + " (" + projects[selectedProjectIndex].domain + " - " + projects[selectedProjectIndex].primaryLanguage + ")" : "No project selected"}
                     </Typography>
                     <Typography>{auth.user.name}</Typography>
                     <a href={"/logout"}><ExitToAppIcon className={classes.taskBarLogoutButton}/></a>
