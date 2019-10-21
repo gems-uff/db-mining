@@ -51,6 +51,35 @@ We assume you have Python 3.7+, Node 12.10+ and Git 2.23+ installed on your comp
 
 `~/db-mining/web$ npm run build`
 
+8. Configure database access. You can you either SQLite or PostgreSQL database. Go into the resources directory: 
+
+`~$ cd resources`
+
+9. Edit the database.json file. This JSON file has a drop_database field which indicates whether you would like the application to drop the existing database and create a new empty one. If that is the case, the value of drop_database should be True. The database_type field specifies which database management system will be used: SQLite or PostgreSQL. The remaining fields depend on the type of database you are using. 
+
+If you are using SQLite, these are the mandatory fields of the JSON file: 
+
+```
+{
+  "drop_database": "False",
+  "database_type": "sqlite",
+  "database_name": "dbmining.sqlite"
+}
+```
+If you are using PostgreSQL, these are the mandatory fields:
+
+```
+{
+  "drop_database": "False",
+  "database_type": "postgresql",
+  "host": "none",
+  "port": "none",
+  "username": "none",
+  "password": "none",
+  "database_name": "dbmining"
+}
+```
+
 ## Steps for running the Python and Jupyter scripts 
 
 1. Go into the project directory:
