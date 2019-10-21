@@ -10,5 +10,11 @@
         <property name="enable_load_extension" value="true" />
       </driver-properties>
     </data-source>
+    <data-source source="LOCAL" name="postgres@amazon" uuid="49260726-963b-4cfc-aaa4-fb2029b66cc1">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://db-mining.cqr8egmi4ngc.us-west-1.rds.amazonaws.com:5432/dbmining</jdbc-url>
+    </data-source>
   </component>
 </project>
