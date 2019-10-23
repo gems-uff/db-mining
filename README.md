@@ -132,19 +132,44 @@ The URL http://localhost:3000 is served by Node.js and has hot reload capability
 
 # Spreadsheets description
 
+There are two sets of spreadsheets. The first one is related to the selection of projects for our corpus. The second one is related to our search for related work. They are described below, and can be found in the `resources` folder.
+
+## Project Corpus
+
 | Name | Content | # of projects |
 | ---- | ------- | ------------- |
 | projects.xlsx | All public, non-fork, and active (with pushes in the last 3 months) projects with ≥1000 stars from GitHub on August 23, 2019 | 13,393 |
 | filtered.xlsx | All projects from projects.xlsx with ≥5000 stars, ≥5000 commits, ≥10 contributors, and top-10 programming languages | 389 |
 | annotated.xlsx | All projects from filtered.xlsx with manual annotations classifying the domain of the projects and discarding inadequate projects | 178 |
 
+## Related Work
+
+We searched the DBLP XML file for papers that have "database" on the title, and that were published in major Software Engineering conferences and journals. The DBLP XML file was downloaded on Setember 16th, 2019. We then conducted a snowballing. The spreadsheets below are the result of this search. 
+
+| Name | Content | # of papers |
+| ---- | ------- | ------------- |
+| papers.xlsx | All papers published in major Database and Software Engineering conferences and journals. The list of venues is specified in the `venue_keys.txt` file | 40,730 |
+| filtered_papers.xlsx | All papers from the `papers.xlsx` file that have "database" in the title, filtered by Software Engineering venues and| 260 |  
+
+
 # Scripts description
+
+As with the spreadsheets, we also have two sets of scripts: one for the corpus and another for searching for related work. 
+
+## Project Corpus 
 
 | Name          | Goal                                                | Input          | Output        |
 | ------------- | --------------------------------------------------- | -------------- | ------------- | 
 | collect.py    | Queries projects' metadata from GitHub using API v4 | None           | projects.xlsx |
 | filter.ipynb  | Applies some extra filters                          | projects.xlsx  | filtered.xlsx |
 | analyze.ipynb | Produces statistics about the final corpus          | annotated.xlsx | None          |
+
+## Related Work 
+
+| Name          | Goal                                                | Input          | Output        |
+| ------------- | --------------------------------------------------- | -------------- | ------------- | 
+| related-work.py    | Traverses the DBLP XML file using the SAX API to get papers from major Database and Software Engineering conferences and journals | venue_keys.txt           | papers.xlsx |
+| related-work.ipynb  | Filters for papers with "database" on the title and that were published in Software Engineering venues                         | papers.xlsx  | filtered_papers.xlsx |
 
 # Acknowledgements
 
