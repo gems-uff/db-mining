@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "43dc5091915bbeae674da8d53f117a5af6b82b185f2135ecceaca5bbb727113a"
+            "sha256": "3deb14b9c83a5764bb480585920dd62bb6aed519ecc678a1a6128a09a802623c"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -16,19 +16,12 @@
         ]
     },
     "default": {
-        "ansi2html": {
-            "hashes": [
-                "sha256:96ae85ae7b26b7da674d87de2870ba4d1964bca733ae4614587080b6358c3ba9"
-            ],
-            "index": "pypi",
-            "version": "==1.5.2"
-        },
         "appnope": {
             "hashes": [
                 "sha256:5b26757dc6f79a3b7dc9fab95359328d5747fcb2409d331ea66d0272b90ab2a0",
                 "sha256:8b995ffe925347a2138d7ac0fe77155e4311a0ea6d6da4f5128fe4b3cbe5ed71"
             ],
-            "markers": "sys_platform == 'darwin'",
+            "markers": "platform_system == 'Darwin'",
             "version": "==0.1.0"
         },
         "arrow": {
@@ -322,10 +315,10 @@
         },
         "jupyter-core": {
             "hashes": [
-                "sha256:1368a838bba378c3c99f54c2961489831ea929ec7689a1d59d9844e584bc27dc",
-                "sha256:85103cee6548992780912c1a0a9ec2583a4a18f1ef79a248ec0db4446500bce3"
+                "sha256:464769f7387d7a62a2403d067f1ddc616655b7f77f5d810c0dd62cb54bfd0fb9",
+                "sha256:a183e0ec2e8f6adddf62b0a3fc6a2237e3e0056d381e536d3e7c7ecc3067e244"
             ],
-            "version": "==4.6.0"
+            "version": "==4.6.1"
         },
         "kiwisolver": {
             "hashes": [

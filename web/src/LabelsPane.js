@@ -8,6 +8,7 @@ import Fab from "@material-ui/core/Fab";
 import ThumbUpOutlinedIcon from '@material-ui/icons/ThumbUpOutlined';
 import ThumbDownOutlinedIcon from '@material-ui/icons/ThumbDownOutlined';
 import ClearOutlinedIcon from '@material-ui/icons/ClearOutlined';
+import Ansi from "ansi-to-react";
 
 const useStyles = makeStyles(theme => ({
     buttonBox: {
@@ -96,7 +97,17 @@ export default function LabelsPane(props) {
             {props.selectedIndex !== null &&
             <React.Fragment>
                 <Box className={classes.textBox}>
-                    <div dangerouslySetInnerHTML={{__html: props.labels[props.selectedIndex].output}} align="left"/>
+                    {props.labels[props.selectedIndex].output.split('\n').map((line, key) => {
+                        if (line !== '' && (line.charAt(0) < '0' || line.charAt(0) > '9')) {
+                            if (line.charCodeAt(0) !== 27) {
+                                return <React.Fragment key={key}><h3>{line}</h3><br/></React.Fragment>
+                            } else {
+                                return <React.Fragment key={key}><br/><hr/><br/></React.Fragment>
+                            }
+                        } else {
+                            return <React.Fragment key={key}><Ansi linkify={false}>{line}</Ansi><br/></React.Fragment>
+                        }
+                    })}
                 </Box>
                 <Box className={classes.fabBox}>
                     <Fab color="primary" className={classes.fab} onClick={() => handleFab(true, true)}>

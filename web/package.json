@@ -8,13 +8,14 @@
     "@material-ui/icons": "~4.4.3",
     "@material-ui/lab": "~4.0.0-alpha.27",
     "@okta/okta-react": "~1.2.3",
+    "ansi-to-react": "^5.1.0",
     "clsx": "~1.0.4",
+    "history": "~4.10.1",
     "react": "~16.10.0",
     "react-dom": "~16.10.0",
     "react-router-dom": "~5.1.2",
     "react-scripts": "~3.1.2",
-    "typeface-roboto": "~0.0.75",
-    "history": "~4.10.1"
+    "typeface-roboto": "~0.0.75"
   },
   "scripts": {
     "start": "react-scripts start",

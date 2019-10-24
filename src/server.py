@@ -1,6 +1,5 @@
 import json
 
-from ansi2html import Ansi2HTMLConverter
 from flask import jsonify, render_template, request, Response
 from flask_cors import CORS
 from sqlalchemy import func
@@ -12,18 +11,6 @@ app = db.app
 CORS(app)
 
 queues = []
-
-
-def ansi2html(ansi):
-    a2h = Ansi2HTMLConverter(inline=True, escaped=False)
-
-    html = []
-    for line in ansi.splitlines():
-        if line and not line[0].isdigit() and not line[0] == '-':
-            line = '<h3>' + line + '</h3>'
-        html.append(line)
-
-    return a2h.convert('<br/>'.join(html), full=False)
 
 
 @app.route('/')
@@ -92,7 +79,6 @@ def labels_query(project_id):
 
 def label2dict(label, project_id):
     result = label._asdict()
-    result['output'] = ansi2html(result['output'])
     result['project_id'] = project_id
     return result
 
