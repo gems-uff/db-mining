@@ -1,7 +1,30 @@
-from functools import wraps
-from flask import request, g, abort
-from jwt import decode, exceptions
 import json
+from functools import wraps
+
+import jwt
+import requests
+from flask import request, g
+from jwt import decode, exceptions
+from jwt.algorithms import RSAAlgorithm
+
+KEYS_URL = 'https://dev-248856.okta.com/oauth2/default/v1/keys?client_id=0oa1ihleszMmGcVAc357'
+CLIENT_ID = '0oa1ihleszMmGcVAc357'
+ALGORITHMS = ['RS256']
+public_keys = {}
+
+
+def verify(authorization):
+    token = authorization.split(' ')[1]
+    kid = jwt.get_unverified_header(token)['kid']
+    resp = decode(token, public_keys[kid], audience=CLIENT_ID, algorithms=ALGORITHMS)
+    return resp['sub']
+
+
+def load_keys():
+    jwks = requests.get(KEYS_URL).json()
+    for jwk in jwks['keys']:
+        kid = jwk['kid']
+        public_keys[kid] = RSAAlgorithm.from_jwk(json.dumps(jwk))
 
 
 def login_required(f):
@@ -12,12 +35,17 @@ def login_required(f):
             return json.dumps({'error': 'no authorization token provided'}), 403, {'Content-type': 'application/json'}
 
         try:
-            token = authorization.split(' ')[1]
-            resp = decode(token, None, verify=False, algorithms=['HS256'])
-            g.user = resp['sub']
-        except exceptions.DecodeError as identifier:
-            return json.dumps({'error': 'invalid authorization token'}), 403, {'Content-type': 'application/json'}
+            g.user = verify(authorization)
+        except exceptions.DecodeError:
+            try:  # The cached keys may have expired. Try to reload the keys.
+                load_keys()
+                g.user = verify(authorization)
+            except exceptions.DecodeError:
+                return json.dumps({'error': 'invalid authorization token'}), 403, {'Content-type': 'application/json'}
 
         return f(*args, **kwargs)
 
     return wrap
+
+
+load_keys()

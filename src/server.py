@@ -41,7 +41,7 @@ def get_status():
                           ) \
         .join(db.Version.executions) \
         .join(db.Execution.heuristic) \
-        .filter(db.Execution.output != b'').all()
+        .filter(db.Execution.output != '').all()
 
     status = {}
     for row in result_set:
@@ -65,7 +65,6 @@ def get_projects():
                         ) \
         .order_by(func.lower(db.Project.owner)) \
         .order_by(func.lower(db.Project.name)).all()
-    print([project._asdict() for project in projects])
     return jsonify([project._asdict() for project in projects])
 
 
@@ -87,13 +86,13 @@ def labels_query(project_id):
         .join(db.Heuristic.executions) \
         .join(db.Execution.version) \
         .filter(db.Version.project_id == project_id) \
-        .filter(db.Execution.output != b'') \
+        .filter(db.Execution.output != '') \
         .order_by(func.lower(db.Label.name))
 
 
 def label2dict(label, project_id):
     result = label._asdict()
-    result['output'] = ansi2html(result['output'].decode('utf8'))
+    result['output'] = ansi2html(result['output'])
     result['project_id'] = project_id
     return result
 
