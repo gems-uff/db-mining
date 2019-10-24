@@ -116,7 +116,7 @@ def main():
                     p = subprocess.run(cmd, capture_output=True)
                     if p.stderr:
                         raise subprocess.CalledProcessError(p.returncode, cmd, p.stdout, p.stderr)
-                    db.create(db.Execution, output=p.stdout.decode(errors='replace'), version=version, heuristic=heuristic, isValidated=False, isAccepted=False)
+                    db.create(db.Execution, output=p.stdout.decode(errors='replace').replace('\x00', '\uFFFD'), version=version, heuristic=heuristic, isValidated=False, isAccepted=False)
 
                     print(green('ok.'))
                     status['Success'] += 1
