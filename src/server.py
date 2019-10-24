@@ -18,6 +18,11 @@ def react():
     return render_template('index.html')
 
 
+@app.route('/implicit/callback')
+def callback():
+    return render_template('index.html')
+
+
 @app.route('/api/status', methods=['GET'])
 @login_required
 def get_status():
