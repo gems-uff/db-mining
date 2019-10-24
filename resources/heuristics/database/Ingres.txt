@@ -1,4 +1,2 @@
 [Ii]ngres
-jdbc:ingres://
-Driver={Ingres}
 Database=iidbdb
