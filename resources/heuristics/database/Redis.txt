@@ -1,4 +1,4 @@
 redis
-jedis\
+jedis
 Redis\.new
 redis\.NewClient
