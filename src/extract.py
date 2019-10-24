@@ -45,6 +45,7 @@ def load_heuristics(directory):
                         'pattern_file': label.path
                     }
                     heuristics.append(heuristic)
+    heuristics.sort(key=lambda item: item['name'])
     return heuristics
 
 
