@@ -1,5 +1,4 @@
 redis
-redis[[:digit:]]
 jedis\
 Redis\.new
 redis\.NewClient
