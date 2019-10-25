@@ -6,7 +6,6 @@ import Box from "@material-ui/core/Box";
 import Badge from "@material-ui/core/Badge";
 
 export default function ProjectsPane(props) {
-    console.log("Rendering projects pane");
 
     const pending = (index) => {
         let count = 0;

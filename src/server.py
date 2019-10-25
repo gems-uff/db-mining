@@ -1,5 +1,9 @@
-import json
+import os
+import sys
+sys.path.append(os.path.dirname(__file__))
 
+from threading import Timer
+import json
 from flask import jsonify, render_template, request, Response
 from flask_cors import CORS
 from sqlalchemy import func
@@ -7,23 +11,23 @@ from queue import Queue
 import database as db
 from auth import login_required
 
-app = db.app
-CORS(app)
+application = db.application
+CORS(application)
 
 queues = []
+PING_DELAY = 50  # To avoid timeout after 60 seconds of inactivity
+RESET_DELAY = 24 * 60 * 60  # To clean the resources every day
+# TODO: check if it is possible to just eliminate the unused queues (number of pending messages?)
 
 
-@app.route('/')
+@application.route('/')
+@application.route('/implicit/callback')
+@application.route('/logout')
 def react():
     return render_template('index.html')
 
 
-@app.route('/implicit/callback')
-def callback():
-    return render_template('index.html')
-
-
-@app.route('/api/status', methods=['GET'])
+@application.route('/api/status', methods=['GET'])
 @login_required
 def get_status():
     result_set = db.query(db.Version.project_id.label('project_id'),
@@ -46,7 +50,7 @@ def get_status():
     return jsonify(status)
 
 
-@app.route('/api/projects', methods=['GET'])
+@application.route('/api/projects', methods=['GET'])
 @login_required
 def get_projects():
     projects = db.query(db.Project.id.label('id'),
@@ -60,7 +64,7 @@ def get_projects():
     return jsonify([project._asdict() for project in projects])
 
 
-@app.route('/api/projects/<int:project_id>', methods=['GET'])
+@application.route('/api/projects/<int:project_id>', methods=['GET'])
 @login_required
 def get_project(project_id):
     project = db.query(db.Project, id=project_id).first()
@@ -88,21 +92,21 @@ def label2dict(label, project_id):
     return result
 
 
-@app.route('/api/projects/<int:project_id>/labels', methods=['GET'])
+@application.route('/api/projects/<int:project_id>/labels', methods=['GET'])
 @login_required
 def get_labels(project_id):
     labels = labels_query(project_id).all()
     return jsonify([label2dict(label, project_id) for label in labels])
 
 
-@app.route('/api/projects/<int:project_id>/labels/<int:label_id>', methods=['GET'])
+@application.route('/api/projects/<int:project_id>/labels/<int:label_id>', methods=['GET'])
 @login_required
 def get_label(project_id, label_id):
     label = labels_query(project_id).filter(db.Label.id == label_id).first()
     return jsonify(label2dict(label, project_id))
 
 
-@app.route('/api/projects/<int:project_id>/labels/<int:label_id>', methods=['PUT'])
+@application.route('/api/projects/<int:project_id>/labels/<int:label_id>', methods=['PUT'])
 @login_required
 def put_label(project_id, label_id):
     data = request.get_json()
@@ -119,27 +123,46 @@ def put_label(project_id, label_id):
     data['project_id'] = project_id
     data['label_id'] = label_id
 
-    data = json.dumps(data)
-    for queue in queues:
-        queue.put(data)
+    publish(json.dumps(data))
 
     return jsonify(success=True)
 
 
-def event_stream(queue):
+def ping():
+    publish(json.dumps('ping'))
+    Timer(PING_DELAY, ping).start()
+
+
+def reset():
+    publish(None)
+    queues.clear()
+    Timer(RESET_DELAY, reset).start()
+
+
+def publish(data):
+    for queue in queues:
+        queue.put(data)
+
+
+def listen(queue):
     while True:
         data = queue.get()
+        if not data:
+            break
         yield f'data: {data}\n\n'
 
 
-@app.route('/api/stream')
+@application.route('/api/stream')
 def stream():
     queue = Queue()
     queues.append(queue)
-    return Response(event_stream(queue), mimetype='text/event-stream', headers={'Cache-Control': 'no-transform'})
+    return Response(listen(queue), mimetype='text/event-stream', headers={'Cache-Control': 'no-transform'})
+
+
+db.connect()
+Timer(PING_DELAY, ping).start()
+Timer(RESET_DELAY, reset).start()
 
 
 if __name__ == '__main__':
-    db.connect()
-    # app.run(host='0.0.0.0', debug=True)
-    app.run(debug=True)
+    application.run(debug=True)

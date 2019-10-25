@@ -83,8 +83,6 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function App(props) {
-    console.log("Rendering drawer");
-
     const classes = useStyles();
 
     const [open, setOpen] = React.useState(true);
