@@ -1,0 +1,14 @@
+/*
+/*/
+
+!/.ebextensions/
+
+!/database.json
+!/requirements.txt
+
+!/src/auth.py
+!/src/database.py
+!/src/server.py
+!/src/util.py
+
+!/web/build/

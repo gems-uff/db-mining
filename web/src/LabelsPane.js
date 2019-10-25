@@ -49,8 +49,6 @@ const trafficLightTheme = createMuiTheme({
 });
 
 export default function LabelsPane(props) {
-    console.log("Rendering labels pane");
-
     const classes = useStyles();
 
     function handleToggle(event, index) {

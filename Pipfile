@@ -20,6 +20,7 @@ flask-cors = "*"
 scholarly = "*"
 pyjwt = "*"
 psycopg2-binary = "*"
+awsebcli = "*"
 
 [requires]
 python_version = "3.7"

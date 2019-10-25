@@ -4,8 +4,6 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import Grid from "@material-ui/core/Grid";
 
 export default function Splash() {
-    console.log("Rendering splash screen");
-
     return (
         <Grid
             container

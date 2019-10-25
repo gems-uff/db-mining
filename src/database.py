@@ -1,4 +1,3 @@
-import os.path
 import json
 
 from flask import Flask
@@ -7,10 +6,10 @@ from sqlalchemy_utils import database_exists, create_database, drop_database
 
 from util import DATABASE_DEBUG, REACT_STATIC_DIR, REACT_BUILD_DIR, DATABASE_CONFIG_FILE, get_database_uri
 
-app = Flask(__name__, static_folder=REACT_STATIC_DIR, template_folder=REACT_BUILD_DIR)
+application = Flask(__name__, static_folder=REACT_STATIC_DIR, template_folder=REACT_BUILD_DIR)
 
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_ECHO'] = DATABASE_DEBUG
+application.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+application.config['SQLALCHEMY_ECHO'] = DATABASE_DEBUG
 
 # for SQLite, the JSON file needs to have "database_type": "sqlite"
 # for PostgreSQL, the JSON file needs to have
@@ -27,11 +26,11 @@ with open(DATABASE_CONFIG_FILE) as json_file:
     config = json.load(json_file)
 
 if config['database_type'].lower() == 'sqlite':
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + get_database_uri(config['database_name'])
+    application.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + get_database_uri(config['database_name'])
 elif config['database_type'].lower() == 'postgresql':
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://' + config['username'] + ':' + config['password'] + '@' + config['host'] + ':' + config['port'] + '/' + config['database_name']
+    application.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://' + config['username'] + ':' + config['password'] + '@' + config['host'] + ':' + config['port'] + '/' + config['database_name']
 
-db = SQLAlchemy(app)
+db = SQLAlchemy(application)
 
 
 ###########################################
@@ -118,11 +117,11 @@ class Execution(db.Model):
 def connect():
     if config['drop_database'] == 'True':
         print('Deleting database...')
-        drop_database(app.config['SQLALCHEMY_DATABASE_URI'])
+        drop_database(application.config['SQLALCHEMY_DATABASE_URI'])
 
-    if not database_exists(app.config['SQLALCHEMY_DATABASE_URI']):
+    if not database_exists(application.config['SQLALCHEMY_DATABASE_URI']):
         print('Creating Database...')
-        create_database(app.config['SQLALCHEMY_DATABASE_URI'])
+        create_database(application.config['SQLALCHEMY_DATABASE_URI'])
         db.create_all()
 
 

@@ -5,8 +5,6 @@ import App from "./App";
 import Splash from "./Splash";
 
 export default function Loader() {
-    console.log("Rendering loader");
-
     const [projects, setProjects] = React.useState([])
 
     const [status, setStatus] = React.useState({});
@@ -44,7 +42,9 @@ export default function Loader() {
                         const evtSource = new EventSource('/api/stream', {headers: {Authorization: `Bearer ${auth.token}`}});
                         evtSource.onmessage = (event) => {
                             let data = JSON.parse(event.data);
-                            if ('error' in data) {
+                            if (data === 'ping') {
+                                console.log(data)
+                            } else if ('error' in data) {
                                 console.error(data.error);
                             } else {
                                 setStatus(old_status => {
@@ -56,7 +56,10 @@ export default function Loader() {
                                     return new_status;
                                 })
                             }
-                        }
+                        };
+                        evtSource.onerror = (err) => {
+                            console.error("EventSource failed:", err);
+                        };
                     }
                 }).catch(err => {
                     console.error(err)
