@@ -59,16 +59,27 @@ def get_or_create_projects():
         'Git error': 0
     }
 
+    i = 0
     # Deleting projects that do not exist in the Excel file
     for project in projects_db:
         if projects_excel.pop((project.owner, project.name), None) is not None:
+            # Print progress information
+            i += 1
+            progress = '{:.2%}'.format(i / len(projects_excel))
+            print(f'[{progress}] Adding project {project.owner}/{project.name}:', end=' ')
             projects.append(project)
+            print(yellow('already done.'))
         else:
             db.delete(project)
             status['Deleted'] += 1
 
     # Adding missing projects in the database
     for project_excel in projects_excel.values():
+        # Print progress information
+        i += 1
+        progress = '{:.2%}'.format(i / len(projects_excel))
+        print(f'[{progress}] Adding project {project_excel["owner"]}/{project_excel["name"]}:', end=' ')
+
         project_dict = {k: v for k, v in project_excel.to_dict().items() if
                         k not in ['url', 'isSoftware', 'discardReason']}
         project_dict['createdAt'] = str(project_dict['createdAt'])
@@ -82,10 +93,13 @@ def get_or_create_projects():
             project = db.create(db.Project, **project_dict)
             db.create(db.Version, sha1=p.stdout.decode().strip(), isLast=True, project=project)
             projects.append(project)
+            print(green('ok.'))
             status['Added'] += 1
         except NotADirectoryError:
+            print(red('repository not found.'))
             status['Repository not found'] += 1
         except subprocess.CalledProcessError as ex:
+            print(red('Git error.'))
             status['Git error'] += 1
             if CODE_DEBUG:
                 print(ex.stderr)
@@ -124,10 +138,15 @@ def get_or_create_labels():
         'Deleted': 0,
     }
 
+    i = 0
     # Deleting labels that do not exist in the file system
     for label in labels_db:
         label_fs = labels_fs.pop((label.type, label.name), None)
         if label_fs is not None:
+            # Print progress information
+            i += 1
+            progress = '{:.2%}'.format(i / len(labels_fs))
+            print(f'[{progress}] Adding label {label.type}/{label.name}:', end=' ')
             labels.append(label)
 
             # Check if pattern has changed and, in this case, remove executions that are not accepted and verified
@@ -137,15 +156,24 @@ def get_or_create_labels():
                 for execution in heuristic.executions:
                     if not (execution.isValidated and execution.isAccepted):
                         db.delete(execution)
+                print(green('heuristic updated.'))
+            else:
+                print(yellow('already done.'))
         else:
             db.delete(label)
             status['Deleted'] += 1
 
     # Adding missing labels in the database
     for label_fs in labels_fs.values():
+        # Print progress information
+        i += 1
+        progress = '{:.2%}'.format(i / len(labels_fs))
+        print(f'[{progress}] Adding label {label_fs["type"]}/{label_fs["name"]}:', end=' ')
+
         label = db.create(db.Label, name=label_fs['name'], type=label_fs['type'])
-        db.create(db.Heuristic, pattern=label_fs['pattern'], label=label)
+        db.create(db.Heuristic, pattern=label_fs['pattern'], label=label, executions=[])
         labels.append(label)
+        print(green('ok.'))
         status['Added'] += 1
 
     db.commit()
