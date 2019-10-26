@@ -65,7 +65,7 @@ def get_or_create_projects():
         if projects_excel.pop((project.owner, project.name), None) is not None:
             # Print progress information
             i += 1
-            progress = '{:.2%}'.format(i / len(projects_excel))
+            progress = '{:.2%}'.format(i / status['Excel'])
             print(f'[{progress}] Adding project {project.owner}/{project.name}:', end=' ')
             projects.append(project)
             print(yellow('already done.'))
@@ -77,7 +77,7 @@ def get_or_create_projects():
     for project_excel in projects_excel.values():
         # Print progress information
         i += 1
-        progress = '{:.2%}'.format(i / len(projects_excel))
+        progress = '{:.2%}'.format(i / status['Excel'])
         print(f'[{progress}] Adding project {project_excel["owner"]}/{project_excel["name"]}:', end=' ')
 
         project_dict = {k: v for k, v in project_excel.to_dict().items() if
@@ -145,7 +145,7 @@ def get_or_create_labels():
         if label_fs is not None:
             # Print progress information
             i += 1
-            progress = '{:.2%}'.format(i / len(labels_fs))
+            progress = '{:.2%}'.format(i / status['File System'])
             print(f'[{progress}] Adding label {label.type}/{label.name}:', end=' ')
             labels.append(label)
 
@@ -167,7 +167,7 @@ def get_or_create_labels():
     for label_fs in labels_fs.values():
         # Print progress information
         i += 1
-        progress = '{:.2%}'.format(i / len(labels_fs))
+        progress = '{:.2%}'.format(i / status['File System'])
         print(f'[{progress}] Adding label {label_fs["type"]}/{label_fs["name"]}:', end=' ')
 
         label = db.create(db.Label, name=label_fs['name'], type=label_fs['type'])
