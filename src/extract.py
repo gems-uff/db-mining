@@ -4,7 +4,16 @@ import subprocess
 import pandas as pd
 
 import database as db
+from sqlalchemy.orm import load_only, selectinload
 from util import ANNOTATED_FILE, HEURISTICS_DIR, REPOS_DIR, red, green, yellow, CODE_DEBUG
+
+# Git rev-parse command
+REVPARSE_COMMAND = [
+    'git',
+    'rev-parse',
+    '--verify',
+    'HEAD'
+]
 
 # Git grep command
 GREP_COMMAND = [
@@ -20,136 +29,199 @@ GREP_COMMAND = [
     '-f'
 ]
 
-# Git rev-parse command
-REVPARSE_COMMAND = [
-    'git',
-    'rev-parse',
-    '--verify',
-    'HEAD'
-]
+
+def print_results(dict):
+    print('\nResults:')
+    for k, v in dict.items():
+        print(f'{k}: {v}')
+    print()
 
 
-def load_heuristics(directory):
-    heuristics = list()
-    for label_type in os.scandir(directory):
+def get_or_create_projects():
+    projects = []
+
+    # Loading projects from the Excel.
+    df = pd.read_excel(ANNOTATED_FILE, keep_default_na=False)
+    df = df[df.discardReason == ''].reset_index(drop=True)
+    projects_excel = dict()
+    for i, project_excel in df.iterrows():
+        projects_excel[(project_excel['owner'], project_excel['name'])] = project_excel
+
+    # Loading projects from the database.
+    projects_db = db.query(db.Project).options(load_only('id', 'owner', 'name'), selectinload(db.Project.versions).load_only('id')).all()
+
+    status = {
+        'Excel': len(projects_excel),
+        'Database': len(projects_db),
+        'Added': 0,
+        'Deleted': 0,
+        'Repository not found': 0,
+        'Git error': 0
+    }
+
+    # Deleting projects that do not exist in the Excel file
+    for project in projects_db:
+        if projects_excel.pop((project.owner, project.name), None) is not None:
+            projects.append(project)
+        else:
+            db.delete(project)
+            status['Deleted'] += 1
+
+    # Adding missing projects in the database
+    for project_excel in projects_excel.values():
+        project_dict = {k: v for k, v in project_excel.to_dict().items() if
+                        k not in ['url', 'isSoftware', 'discardReason']}
+        project_dict['createdAt'] = str(project_dict['createdAt'])
+        project_dict['pushedAt'] = str(project_dict['pushedAt'])
+        try:
+            os.chdir(REPOS_DIR + os.sep + project_dict['owner'] + os.sep + project_dict['name'])
+            p = subprocess.run(REVPARSE_COMMAND, capture_output=True)
+            if p.stderr:
+                raise subprocess.CalledProcessError(p.returncode, REVPARSE_COMMAND, p.stdout, p.stderr)
+
+            project = db.create(db.Project, **project_dict)
+            db.create(db.Version, sha1=p.stdout.decode().strip(), isLast=True, project=project)
+            projects.append(project)
+            status['Added'] += 1
+        except NotADirectoryError:
+            status['Repository not found'] += 1
+        except subprocess.CalledProcessError as ex:
+            status['Git error'] += 1
+            if CODE_DEBUG:
+                print(ex.stderr)
+
+    db.commit()
+    status['Total'] = len(projects)
+    print_results(status)
+    return sorted(projects, key=lambda item: (item.owner, item.name))
+
+
+def get_or_create_labels():
+    labels = []
+
+    # Loading heuristics from the file system.
+    labels_fs = dict()
+    for label_type in os.scandir(HEURISTICS_DIR):
         if label_type.is_dir():
             for label in os.scandir(label_type.path):
                 if label.is_file() and not label.name.startswith('.'):
                     with open(label.path) as file:
                         pattern = file.read()
-                    heuristic = {
-                        'id': None,
+                    label_fs = {
                         'name': os.path.splitext(label.name)[0],
                         'type': label_type.name,
                         'pattern': pattern,
-                        'pattern_file': label.path
                     }
-                    heuristics.append(heuristic)
-    heuristics.sort(key=lambda item: item['name'])
-    return heuristics
+                    labels_fs[(label_fs['type'], label_fs['name'])] = label_fs
+
+    # Loading labels from the database.
+    labels_db = db.query(db.Label).options(selectinload(db.Label.heuristic).options(selectinload(db.Heuristic.executions).defer('output'))).all()
+
+    status = {
+        'File System': len(labels_fs),
+        'Database': len(labels_db),
+        'Added': 0,
+        'Deleted': 0,
+    }
+
+    # Deleting labels that do not exist in the file system
+    for label in labels_db:
+        label_fs = labels_fs.pop((label.type, label.name), None)
+        if label_fs is not None:
+            labels.append(label)
+
+            # Check if pattern has changed and, in this case, remove executions that are not accepted and verified
+            heuristic = label.heuristic
+            if heuristic.pattern != label_fs['pattern']:
+                heuristic.pattern = label_fs['pattern']
+                for execution in heuristic.executions:
+                    if not (execution.isValidated and execution.isAccepted):
+                        db.delete(execution)
+        else:
+            db.delete(label)
+            status['Deleted'] += 1
+
+    # Adding missing labels in the database
+    for label_fs in labels_fs.values():
+        label = db.create(db.Label, name=label_fs['name'], type=label_fs['type'])
+        db.create(db.Heuristic, pattern=label_fs['pattern'], label=label)
+        labels.append(label)
+        status['Added'] += 1
+
+    db.commit()
+    status['Total'] = len(labels)
+    print_results(status)
+    return sorted(labels, key=lambda item: (item.type, item.name))
+
+
+def index_executions(labels):
+    executions = dict()
+
+    for label in labels:
+        heuristic = label.heuristic
+        for execution in heuristic.executions:
+            executions[(heuristic, execution.version)] = execution
+
+    return executions
 
 
 def main():
-    print(f'Loading repositories from {ANNOTATED_FILE}.')
-    info_repositories = pd.read_excel(ANNOTATED_FILE, keep_default_na=False)
-    info_repositories = info_repositories[info_repositories.discardReason == ''].reset_index(drop=True)
+    db.connect()
+
+    print(f'Loading projects from {ANNOTATED_FILE}.')
+    projects = get_or_create_projects()
 
     print(f'Loading heuristics from {HEURISTICS_DIR}.')
-    info_heuristics = load_heuristics(HEURISTICS_DIR)
+    labels = get_or_create_labels()
 
-    db.connect()
+    # Indexing executions by label heuristic and project version.
+    executions = index_executions(labels)
 
     status = {
         'Success': 0,
         'Skipped': 0,
         'Repository not found': 0,
         'Git error': 0,
-        'Total': len(info_heuristics) * len(info_repositories)
+        'Total': len(labels) * len(projects)
     }
 
-    print(f'Processing {len(info_heuristics)} heuristics over {len(info_repositories)} repositories.')
-    i = 0
-    for info_heuristic in info_heuristics:
-
-        # Retrieve or create the Label and Heuristic objects
-        label = db.get_or_create(db.Label, name=info_heuristic['name'], type=info_heuristic['type'])
+    print(f'Processing {len(labels)} heuristics over {len(projects)} projects.')
+    for i, label in enumerate(labels):
         heuristic = label.heuristic
-        new_pattern = False
-        if heuristic:
-            if heuristic.pattern != info_heuristic['pattern']:
-                new_pattern = True
-                heuristic.pattern = info_heuristic['pattern']
-        else:
-            heuristic = db.create(db.Heuristic, pattern=info_heuristic['pattern'], label=label)
+        for j, project in enumerate(projects):
+            version = project.versions[0]  # TODO: fix this to deal with multiple versions
 
-        # Applies the heuristic over each repository
-        for j, info_repository in info_repositories.iterrows():
-            try:
-                # Retrieve or create the Project object
-                repo_dict = info_repository.to_dict()
-                repo_dict = {k: v for k, v in repo_dict.items() if k not in ['url', 'isSoftware', 'discardReason']}
-                repo_dict['createdAt'] = str(repo_dict['createdAt'])
-                repo_dict['pushedAt'] = str(repo_dict['pushedAt'])
-                project = db.get_or_create(db.Project, **repo_dict)
+            # Print progress information
+            progress = '{:.2%}'.format((i * len(projects) + j) / status['Total'])
+            print(f'[{progress}] Searching for {label.name} in {project.owner}/{project.name}:', end=' ')
 
-                # Print progress information
-                progress = '{:.2%}'.format((i * len(info_repositories) + j) / status['Total'])
-                print(f'[{progress}] Searching for {label.name} in {project.owner}/{project.name}:', end=' ')
-
-                # Enter in the repository workspace
-                os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
-
-                # Retrieve or create the Version object
-                version = db.query(db.Version, isLast=True, project=project).first()
-                if not version:
-                    p = subprocess.run(REVPARSE_COMMAND, capture_output=True)
-                    if p.stderr:
-                        raise subprocess.CalledProcessError(p.returncode, REVPARSE_COMMAND, p.stdout, p.stderr)
-                    version = db.create(db.Version, sha1=p.stdout, isLast=True, project=project)
-
-                # Executes the heuristic over the project if was not executed before or if the pattern has changes
-                # and the execution was not validated ans accepted
-                execution = db.query(db.Execution, version=version, heuristic=heuristic).first()
-                if new_pattern and execution and not (execution.isValidated and execution.isAccepted):
-                    db.delete(execution)
-                if not execution:
-                    cmd = GREP_COMMAND + [info_heuristic['pattern_file']]
+            # Try to get a previous execution
+            execution = executions.get((heuristic, version), None)
+            if not execution:
+                try:
+                    os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
+                    cmd = GREP_COMMAND + [HEURISTICS_DIR + os.sep + label.type + os.sep + label.name + '.txt']
                     p = subprocess.run(cmd, capture_output=True)
                     if p.stderr:
                         raise subprocess.CalledProcessError(p.returncode, cmd, p.stdout, p.stderr)
-                    db.create(db.Execution, output=p.stdout.decode(errors='replace').replace('\x00', '\uFFFD'), version=version, heuristic=heuristic, isValidated=False, isAccepted=False)
-
+                    db.create(db.Execution, output=p.stdout.decode(errors='replace').replace('\x00', '\uFFFD'),
+                              version=version, heuristic=heuristic, isValidated=False, isAccepted=False)
+                    db.commit()
                     print(green('ok.'))
                     status['Success'] += 1
-                    db.commit()
-                else:  # Execution already exists
-                    print(yellow('already done.'))
-                    status['Skipped'] += 1
-            except NotADirectoryError:
-                print(red('repository not found.'))
-                status['Repository not found'] += 1
-            except subprocess.CalledProcessError as ex:
-                print(red('Git error.'))
-                status['Git error'] += 1
-                if CODE_DEBUG:
-                    print(ex.stderr)
-        i += 1
-
-    print('Deleting missing heuristics...', end=' ')
-    dir_labels = {(info_heuristic['name'], info_heuristic['type']) for info_heuristic in info_heuristics}
-    bd_labels = db.query(db.Label).all()
-    for label in bd_labels:
-        if (label.name, label.type) not in dir_labels:
-            print(f'{red(label.name)} ({label.type})', end=' ')
-            db.delete(label)
-    db.commit()
-
+                except NotADirectoryError:
+                    print(red('repository not found.'))
+                    status['Repository not found'] += 1
+                except subprocess.CalledProcessError as ex:
+                    print(red('Git error.'))
+                    status['Git error'] += 1
+                    if CODE_DEBUG:
+                        print(ex.stderr)
+            else:  # Execution already exists
+                print(yellow('already done.'))
+                status['Skipped'] += 1
     db.close()
-
-    print('\n*** Processing results ***')
-    for k, v in status.items():
-        print(f'{k}: {v}')
-
+    print_results(status)
     print("\nFinished.")
 
 
