@@ -7,7 +7,8 @@ CODE_DEBUG = False
 # Directories
 SRC_DIR = os.path.dirname(os.path.realpath(__file__))
 BASE_DIR = os.path.dirname(SRC_DIR)
-REPOS_DIR = BASE_DIR + os.sep + 'repos'
+WORKSPACE_DIR = os.path.dirname(BASE_DIR)
+REPOS_DIR = WORKSPACE_DIR + os.sep + 'repos'
 RESOURCE_DIR = BASE_DIR + os.sep + 'resources'
 HEURISTICS_DIR = RESOURCE_DIR + os.sep + 'heuristics'
 

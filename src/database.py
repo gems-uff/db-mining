@@ -30,7 +30,7 @@ if config['database_type'].lower() == 'sqlite':
 elif config['database_type'].lower() == 'postgresql':
     application.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://' + config['username'] + ':' + config['password'] + '@' + config['host'] + ':' + config['port'] + '/' + config['database_name']
 
-db = SQLAlchemy(application)
+db = SQLAlchemy(application, session_options={"expire_on_commit": False})
 
 
 ###########################################
@@ -164,6 +164,7 @@ def delete(instance):
 
 def main():
     connect()
+
 
 if __name__ == "__main__":
     main()
