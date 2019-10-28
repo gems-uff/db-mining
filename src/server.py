@@ -33,7 +33,8 @@ def get_status():
     result_set = db.query(db.Version.project_id.label('project_id'),
                           db.Heuristic.label_id.label('label_id'),
                           db.Execution.isValidated.label('isValidated'),
-                          db.Execution.isAccepted.label('isAccepted')
+                          db.Execution.isAccepted.label('isAccepted'),
+                          db.Execution.user.label('user')
                           ) \
         .join(db.Version.executions) \
         .join(db.Execution.heuristic) \
@@ -45,7 +46,11 @@ def get_status():
         if not labels:
             labels = {}
             status[row.project_id] = labels
-        labels[row.label_id] = {'isValidated': row.isValidated, 'isAccepted': row.isAccepted}
+        labels[row.label_id] = {
+            'isValidated': row.isValidated,
+            'isAccepted': row.isAccepted,
+            'user': row.user
+        }
 
     return jsonify(status)
 
@@ -64,18 +69,10 @@ def get_projects():
     return jsonify([project._asdict() for project in projects])
 
 
-@application.route('/api/projects/<int:project_id>', methods=['GET'])
-@login_required
-def get_project(project_id):
-    project = db.query(db.Project, id=project_id).first()
-    attrs = vars(project).copy()  # All attributes
-    del attrs['_sa_instance_state']  # But this internal SQLAlchemy attribute
-    return jsonify({a: getattr(project, a) for a in attrs})
-
-
 def labels_query(project_id):
     return db.query(db.Label.id.label('id'),
                     db.Label.name.label('name'),
+                    db.Label.type.label('type'),
                     db.Execution.output.label('output')
                     ) \
         .join(db.Label.heuristic) \
@@ -97,13 +94,6 @@ def label2dict(label, project_id):
 def get_labels(project_id):
     labels = labels_query(project_id).all()
     return jsonify([label2dict(label, project_id) for label in labels])
-
-
-@application.route('/api/projects/<int:project_id>/labels/<int:label_id>', methods=['GET'])
-@login_required
-def get_label(project_id, label_id):
-    label = labels_query(project_id).filter(db.Label.id == label_id).first()
-    return jsonify(label2dict(label, project_id))
 
 
 @application.route('/api/projects/<int:project_id>/labels/<int:label_id>', methods=['PUT'])
