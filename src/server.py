@@ -1,10 +1,12 @@
 import os
 import sys
+
 sys.path.append(os.path.dirname(__file__))
 
+from util import REACT_BUILD_DIR
 from threading import Timer
 import json
-from flask import jsonify, render_template, request, Response, g
+from flask import jsonify, request, Response, g, send_from_directory
 from flask_cors import CORS
 from sqlalchemy import func
 from queue import Queue
@@ -14,17 +16,19 @@ from auth import login_required
 application = db.application
 CORS(application)
 
-queues = []
+queues = []  # TODO: check if it is possible to just eliminate the unused queues (number of pending messages?)
 PING_DELAY = 50  # To avoid timeout after 60 seconds of inactivity
 RESET_DELAY = 24 * 60 * 60  # To clean the resources every day
-# TODO: check if it is possible to just eliminate the unused queues (number of pending messages?)
 
 
-@application.route('/')
-@application.route('/implicit/callback')
-@application.route('/logout')
-def react():
-    return render_template('index.html')
+# Serve React App
+@application.route('/', defaults={'path': ''})
+@application.route('/<path:path>')
+def react(path):
+    if path and os.path.exists(REACT_BUILD_DIR + os.sep + path):
+        return send_from_directory(REACT_BUILD_DIR, path)
+    else:
+        return send_from_directory(REACT_BUILD_DIR, 'index.html')
 
 
 @application.route('/api/status', methods=['GET'])
@@ -153,7 +157,6 @@ def stream():
 db.connect()
 Timer(PING_DELAY, ping).start()
 Timer(RESET_DELAY, reset).start()
-
 
 if __name__ == '__main__':
     application.run(debug=True)
