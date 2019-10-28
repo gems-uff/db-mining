@@ -4,7 +4,7 @@ sys.path.append(os.path.dirname(__file__))
 
 from threading import Timer
 import json
-from flask import jsonify, render_template, request, Response
+from flask import jsonify, render_template, request, Response, g
 from flask_cors import CORS
 from sqlalchemy import func
 from queue import Queue
@@ -118,11 +118,12 @@ def put_label(project_id, label_id):
         .filter(db.Heuristic.label_id == label_id).first()
     execution.isValidated = data['isValidated']
     execution.isAccepted = data['isAccepted']
+    execution.user = g.user
     db.commit()
 
     data['project_id'] = project_id
     data['label_id'] = label_id
-
+    data['user'] = g.user
     publish(json.dumps(data))
 
     return jsonify(success=True)
