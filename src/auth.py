@@ -17,7 +17,7 @@ def verify(authorization):
     token = authorization.split(' ')[1]
     kid = jwt.get_unverified_header(token)['kid']
     resp = decode(token, public_keys[kid], audience=CLIENT_ID, algorithms=ALGORITHMS)
-    return resp['sub']
+    return resp['name']
 
 
 def load_keys():

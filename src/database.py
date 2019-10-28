@@ -104,6 +104,7 @@ class Execution(db.Model):
     output = db.Column(db.String)
     isValidated = db.Column(db.Boolean)
     isAccepted = db.Column(db.Boolean)
+    user = db.Column(db.String)
     heuristic_id = db.Column(db.Integer, db.ForeignKey('heuristic.id'))
     version_id = db.Column(db.Integer, db.ForeignKey('version.id'))
     heuristic = db.relationship('Heuristic', back_populates='executions')
