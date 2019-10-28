@@ -9,6 +9,8 @@ import ThumbUpOutlinedIcon from '@material-ui/icons/ThumbUpOutlined';
 import ThumbDownOutlinedIcon from '@material-ui/icons/ThumbDownOutlined';
 import ClearOutlinedIcon from '@material-ui/icons/ClearOutlined';
 import Ansi from "ansi-to-react";
+import Tooltip from "@material-ui/core/Tooltip";
+import Typography from "@material-ui/core/Typography";
 
 const useStyles = makeStyles(theme => ({
     buttonBox: {
@@ -82,12 +84,23 @@ export default function LabelsPane(props) {
                 <ToggleButtonGroup exclusive onChange={handleToggle} value={props.selectedIndex}>
                     {props.labels.map((label, index) => (
                         <ToggleButton key={index} value={index}>
-                            {label.name}
-                            {props.status[label.project_id][label.id]['isValidated'] &&
-                            (props.status[label.project_id][label.id]['isAccepted'] ?
-                                <ThumbUpOutlinedIcon className={classes.rightIcon} color='primary'/> :
-                                <ThumbDownOutlinedIcon className={classes.rightIcon} color='secondary'/>)
-                            }
+                            <Tooltip title={
+                                <React.Fragment>
+                                    <Typography>Type: {label.type}</Typography>
+                                    {props.status[label.project_id][label.id]['user'] !== null &&
+                                        <Typography>Validated by {props.status[label.project_id][label.id]['user']}</Typography>
+                                    }
+                                </React.Fragment>
+                            } placement={"bottom"}>
+                                <span>
+                                    {label.name}
+                                    {props.status[label.project_id][label.id]['isValidated'] &&
+                                    (props.status[label.project_id][label.id]['isAccepted'] ?
+                                        <ThumbUpOutlinedIcon className={classes.rightIcon} color='primary'/> :
+                                        <ThumbDownOutlinedIcon className={classes.rightIcon} color='secondary'/>)
+                                    }
+                                </span>
+                            </Tooltip>
                         </ToggleButton>
                     ))}
                 </ToggleButtonGroup>

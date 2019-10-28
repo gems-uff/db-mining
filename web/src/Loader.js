@@ -51,7 +51,8 @@ export default function Loader() {
                                     let new_status = Object.assign({}, old_status);
                                     new_status[data['project_id']][data['label_id']] = {
                                         isValidated: data['isValidated'],
-                                        isAccepted: data['isAccepted']
+                                        isAccepted: data['isAccepted'],
+                                        user: data['user']
                                     };
                                     return new_status;
                                 })
