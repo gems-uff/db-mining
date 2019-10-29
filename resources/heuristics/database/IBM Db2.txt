@@ -1,4 +1,3 @@
-jdbc:db2
-import ibm_db
+db2
 IBM_DB\.connect
 ibm_db
