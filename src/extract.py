@@ -129,7 +129,7 @@ def get_or_create_labels():
                     labels_fs[(label_fs['type'], label_fs['name'])] = label_fs
 
     # Loading labels from the database.
-    labels_db = db.query(db.Label).options(selectinload(db.Label.heuristic).options(selectinload(db.Heuristic.executions).defer('output'))).all()
+    labels_db = db.query(db.Label).options(selectinload(db.Label.heuristic).options(selectinload(db.Heuristic.executions).load_only('id', 'isValidated', 'isAccepted'))).all()
 
     status = {
         'File System': len(labels_fs),
@@ -153,14 +153,19 @@ def get_or_create_labels():
             heuristic = label.heuristic
             if heuristic.pattern != label_fs['pattern']:
                 heuristic.pattern = label_fs['pattern']
+                count = 0
                 for execution in heuristic.executions:
                     if not (execution.isValidated and execution.isAccepted):
+                        count += 1
+
                         # The commit does not invalidate the objects for performance reasons,
                         # so we need to remove the relationships before deleting the execution.
                         execution.heuristic = None
                         execution.version = None
+
                         db.delete(execution)
-                print(green('heuristic updated.'))
+                print(green(f'heuristic updated ({count} executions removed).'))
+                db.commit()
             else:
                 print(yellow('already done.'))
         else:
