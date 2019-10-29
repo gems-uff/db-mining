@@ -129,7 +129,7 @@ def get_or_create_labels():
                     labels_fs[(label_fs['type'], label_fs['name'])] = label_fs
 
     # Loading labels from the database.
-    labels_db = db.query(db.Label).options(selectinload(db.Label.heuristic).options(selectinload(db.Heuristic.executions).defer('output', 'user'))).all()
+    labels_db = db.query(db.Label).options(selectinload(db.Label.heuristic).options(selectinload(db.Heuristic.executions).defer('output').defer('user'))).all()
 
     status = {
         'File System': len(labels_fs),
