@@ -155,6 +155,7 @@ def get_or_create_labels():
                 heuristic.pattern = label_fs['pattern']
                 for execution in heuristic.executions:
                     if not (execution.isValidated and execution.isAccepted):
+                        heuristic.executions.remove(execution)  # The commit does not invalidate the objects for performance reasons, so we need to remove the relationships.
                         db.delete(execution)
                 print(green('heuristic updated.'))
             else:
