@@ -1,3 +1,1 @@
 [Ii]nflux[Dd][Bb]
-InfluxDBClient
-InfluxDBFactory

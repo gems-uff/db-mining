@@ -1,3 +1,1 @@
-python-memcached
-memcache
-[Mm]emcached
+[Mm]emcache

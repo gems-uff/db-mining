@@ -1,3 +1,2 @@
 [Ii]mpala
-jdbc:impala://
 impyla

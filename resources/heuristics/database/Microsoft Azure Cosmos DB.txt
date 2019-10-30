@@ -1,5 +1,2 @@
 [Cc]osmos
-azure-cosmos
 azure-documentdb
-Microsoft\.Azure\.Cosmos
-azure\.cosmos

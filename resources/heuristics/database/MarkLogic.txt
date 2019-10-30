@@ -1,3 +1,2 @@
 [Mm]ark[Ll]ogic
 mlclientpython
-marklogic-client-api

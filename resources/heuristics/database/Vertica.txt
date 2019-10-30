@@ -1,4 +1,1 @@
 [Vv]ertica
-vertica-python
-com\.vertica\.jdbc\.Driver
-vertica-sql

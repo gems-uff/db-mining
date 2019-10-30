@@ -1,3 +1,2 @@
-mongodb://
 pymongo
-MongoBD
+[Mm]ongo[Bb][Dd]
