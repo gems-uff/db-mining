@@ -136,6 +136,7 @@ def get_or_create_labels():
         'Database': len(labels_db),
         'Added': 0,
         'Deleted': 0,
+        'Updated': 0,
     }
 
     i = 0
@@ -154,17 +155,17 @@ def get_or_create_labels():
             if heuristic.pattern != label_fs['pattern']:
                 heuristic.pattern = label_fs['pattern']
                 count = 0
-                for execution in heuristic.executions:
+                for execution in list(heuristic.executions):
                     if not (execution.isValidated and execution.isAccepted):
-                        count += 1
-
                         # The commit does not invalidate the objects for performance reasons,
                         # so we need to remove the relationships before deleting the execution.
                         execution.heuristic = None
                         execution.version = None
 
                         db.delete(execution)
+                        count += 1
                 print(green(f'heuristic updated ({count} executions removed).'))
+                status['Updated'] += 1
                 db.commit()
             else:
                 print(yellow('already done.'))
@@ -229,7 +230,7 @@ def main():
             version = project.versions[0]  # TODO: fix this to deal with multiple versions
 
             # Print progress information
-            progress = '{:.2%}'.format((i * len(projects) + j) / status['Total'])
+            progress = '{:.2%}'.format((i * len(projects) + (j + 1)) / status['Total'])
             print(f'[{progress}] Searching for {label.name} in {project.owner}/{project.name}:', end=' ')
 
             # Try to get a previous execution
