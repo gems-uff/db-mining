@@ -1,1 +1,4 @@
-[Vv]ertica
+\b[Vv]ertica\b
+vertica-python
+com\.vertica\.jdbc\.Driver
+vertica-sql
