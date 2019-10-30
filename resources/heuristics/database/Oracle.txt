@@ -1,9 +1,3 @@
+[Oo]racle
 OCI8
-jdbc:oracle
-cx_Oracle
-oracle_enhanced
-OracleConnection
-goracle
-oracle:\/\/
-oracle\.jdbc
 ojdbc
