@@ -1,0 +1,5 @@
+jdbc:q:
+pyq
+qConnection
+khpu(
+k.h

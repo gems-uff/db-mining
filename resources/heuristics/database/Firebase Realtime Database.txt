@@ -1,6 +1,2 @@
 [Ff]irebase
-firebase_admin
 pyrebase
-com\.firebase\.client
-mule-firebase-connector
-firebase\.google\.com/go

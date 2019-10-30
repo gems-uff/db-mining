@@ -1,6 +1,2 @@
 [Hh][Bb]ase
-hbase-python
-import hbase
 happybase
-org\.apache\.hbase
-org\.apache\.hadoop\.hbase.

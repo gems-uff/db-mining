@@ -1,6 +1,2 @@
-couchbase.cluster
-couchbase
-CouchbaseCluster
-couchbases://
-couchbase://
+[Cc]ouchbase
 gocb

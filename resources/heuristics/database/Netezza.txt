@@ -1,4 +1,1 @@
 [Nn]etezza
-NetezzaSQL
-jdbc:netezza://
-org\.netezza\.Driver

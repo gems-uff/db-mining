@@ -1,4 +1,3 @@
-HANA
-hana
+[Hh][Aa][Nn][Aa]
 hdbcli
 jdbc:sap:

@@ -1,3 +1,2 @@
 [Ii]nterbase
 \.gdb
-jdbc:interbase://

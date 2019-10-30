@@ -1,4 +1,1 @@
-EhCache
-ehcache
-ehCache
-ehcache-core
+[Ee]h[Cc]ache

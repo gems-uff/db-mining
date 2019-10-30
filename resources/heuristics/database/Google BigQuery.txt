@@ -1,3 +1,1 @@
-google-cloud-bigquery
 bigquery
-com\.google\.api\.services\.bigquery
