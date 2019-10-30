@@ -1,2 +1,0 @@
-database\.windows\.net
-ODBC Driver 13 for SQL Server

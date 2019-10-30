@@ -1,3 +1,0 @@
-SQL Server Native Client
-database\.windows\.net
-jdbc:sqlserver
