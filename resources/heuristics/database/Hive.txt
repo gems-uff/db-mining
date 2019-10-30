@@ -1,1 +1,7 @@
-[Hh]ive
+\b[Hh]ive\b
+ThriftHive
+hive_service
+HiveDriver
+RBHive\.connect
+jdbc:hive2:
+gohive\.Connect
