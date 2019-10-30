@@ -1,1 +1,1 @@
-mybatis\.org
+\bmybatis\b
