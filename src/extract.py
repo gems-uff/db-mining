@@ -39,9 +39,8 @@ def print_results(status):
 
 
 def commit():
-    print('Committing changes...', end=' ')
+    print('Committing changes...')
     db.commit()
-    print(green('ok.'))
 
 
 def get_or_create_projects():
@@ -231,7 +230,6 @@ def main():
 
     print(f'\nProcessing {len(labels)} heuristics over {len(projects)} projects.')
     for i, label in enumerate(labels):
-        before = time()
         heuristic = label.heuristic
         for j, project in enumerate(projects):
             version = project.versions[0]  # TODO: fix this to deal with multiple versions
@@ -264,10 +262,7 @@ def main():
             else:  # Execution already exists
                 print(yellow('already done.'))
                 status['Skipped'] += 1
-        print(time() - before)
-        before = time()
         commit()
-        print(time() - before)
 
     print_results(status)
     db.close()
