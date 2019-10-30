@@ -1,5 +1,5 @@
 jdbc:q:
 pyq
 qConnection
-khpu(
+khpu
 k.h
