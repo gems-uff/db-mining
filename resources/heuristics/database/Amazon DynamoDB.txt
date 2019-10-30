@@ -1,2 +1,1 @@
 dynamodb
-boto3
