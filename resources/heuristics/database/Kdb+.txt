@@ -2,4 +2,4 @@ jdbc:q:
 pyq
 qConnection
 khpu
-k.h
+\bk\.h\b
