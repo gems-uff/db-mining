@@ -163,6 +163,10 @@ def delete(instance):
     db.session.delete(instance)
 
 
+def bulk_save_objects(instances, **kwargs):
+    db.session.bulk_save_objects(instances, **kwargs)
+
+
 def main():
     connect()
 
