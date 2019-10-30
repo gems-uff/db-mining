@@ -114,7 +114,7 @@ def get_or_create_projects():
     status['Total'] = len(projects)
     print_results(status)
     commit()
-    return sorted(projects, key=lambda item: (item.owner, item.name))
+    return sorted(projects, key=lambda item: (item.owner.lower(), item.name.lower()))
 
 
 def get_or_create_labels():
@@ -195,7 +195,7 @@ def get_or_create_labels():
     status['Total'] = len(labels)
     print_results(status)
     commit()
-    return sorted(labels, key=lambda item: (item.type, item.name))
+    return sorted(labels, key=lambda item: (item.type.lower(), item.name.lower()))
 
 
 def index_executions(labels):
@@ -212,7 +212,7 @@ def index_executions(labels):
 def main():
     db.connect()
 
-    print(f'\nLoading projects from {ANNOTATED_FILE}.')
+    print(f'Loading projects from {ANNOTATED_FILE}.')
     projects = get_or_create_projects()
 
     print(f'\nLoading heuristics from {HEURISTICS_DIR}.')
