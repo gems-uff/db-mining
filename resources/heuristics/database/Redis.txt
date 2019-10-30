@@ -1,2 +1,2 @@
-[Rr]edis
+\b[Rr]edis\b
 jedis

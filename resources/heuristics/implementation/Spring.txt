@@ -1,1 +1,1 @@
-springframework
+org\.springframework
