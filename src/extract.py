@@ -39,7 +39,7 @@ def print_results(status):
 
 
 def commit():
-    print('Committing changes...', end=' ')
+    print('Committing changes...', end=' ', flush=True)
     db.commit()
     print(green('ok.'))
 
@@ -73,7 +73,7 @@ def get_or_create_projects():
             # Print progress information
             i += 1
             progress = '{:.2%}'.format(i / status['Excel'])
-            print(f'[{progress}] Adding project {project.owner}/{project.name}:', end=' ')
+            print(f'[{progress}] Adding project {project.owner}/{project.name}:', end=' ', flush=True)
             projects.append(project)
             print(yellow('already done.'))
         else:
@@ -85,7 +85,7 @@ def get_or_create_projects():
         # Print progress information
         i += 1
         progress = '{:.2%}'.format(i / status['Excel'])
-        print(f'[{progress}] Adding project {project_excel["owner"]}/{project_excel["name"]}:', end=' ')
+        print(f'[{progress}] Adding project {project_excel["owner"]}/{project_excel["name"]}:', end=' ', flush=True)
 
         project_dict = {k: v for k, v in project_excel.to_dict().items() if
                         k not in ['url', 'isSoftware', 'discardReason']}
@@ -114,7 +114,7 @@ def get_or_create_projects():
     status['Total'] = len(projects)
     print_results(status)
     commit()
-    return sorted(projects, key=lambda item: (item.owner, item.name))
+    return sorted(projects, key=lambda item: (item.owner.lower(), item.name.lower()))
 
 
 def get_or_create_labels():
@@ -154,7 +154,7 @@ def get_or_create_labels():
             # Print progress information
             i += 1
             progress = '{:.2%}'.format(i / status['File System'])
-            print(f'[{progress}] Adding label {label.type}/{label.name}:', end=' ')
+            print(f'[{progress}] Adding label {label.type}/{label.name}:', end=' ', flush=True)
             labels.append(label)
 
             # Check if pattern has changed and, in this case, remove executions that are not accepted and verified
@@ -184,7 +184,7 @@ def get_or_create_labels():
         # Print progress information
         i += 1
         progress = '{:.2%}'.format(i / status['File System'])
-        print(f'[{progress}] Adding label {label_fs["type"]}/{label_fs["name"]}:', end=' ')
+        print(f'[{progress}] Adding label {label_fs["type"]}/{label_fs["name"]}:', end=' ', flush=True)
 
         label = db.create(db.Label, name=label_fs['name'], type=label_fs['type'])
         db.create(db.Heuristic, pattern=label_fs['pattern'], label=label, executions=[])
@@ -195,7 +195,7 @@ def get_or_create_labels():
     status['Total'] = len(labels)
     print_results(status)
     commit()
-    return sorted(labels, key=lambda item: (item.type, item.name))
+    return sorted(labels, key=lambda item: (item.type.lower(), item.name.lower()))
 
 
 def index_executions(labels):
@@ -212,7 +212,7 @@ def index_executions(labels):
 def main():
     db.connect()
 
-    print(f'\nLoading projects from {ANNOTATED_FILE}.')
+    print(f'Loading projects from {ANNOTATED_FILE}.')
     projects = get_or_create_projects()
 
     print(f'\nLoading heuristics from {HEURISTICS_DIR}.')
@@ -230,6 +230,7 @@ def main():
     }
 
     print(f'\nProcessing {len(labels)} heuristics over {len(projects)} projects.')
+    new_executions = []  # Use bulk save to speed up the execution
     for i, label in enumerate(labels):
         before = time()
         heuristic = label.heuristic
@@ -238,7 +239,7 @@ def main():
 
             # Print progress information
             progress = '{:.2%}'.format((i * len(projects) + (j + 1)) / status['Total'])
-            print(f'[{progress}] Searching for {label.name} in {project.owner}/{project.name}:', end=' ')
+            print(f'[{progress}] Searching for {label.name} in {project.owner}/{project.name}:', end=' ', flush=True)
 
             # Try to get a previous execution
             execution = executions.get((heuristic, version), None)
@@ -249,8 +250,7 @@ def main():
                     p = subprocess.run(cmd, capture_output=True)
                     if p.stderr:
                         raise subprocess.CalledProcessError(p.returncode, cmd, p.stdout, p.stderr)
-                    db.create(db.Execution, output=p.stdout.decode(errors='replace').replace('\x00', '\uFFFD'),
-                              version=version, heuristic=heuristic, isValidated=False, isAccepted=False)
+                    new_executions.append(db.Execution(output=p.stdout.decode(errors='replace').replace('\x00', '\uFFFD'), version=version, heuristic=heuristic, isValidated=False, isAccepted=False))
                     print(green('ok.'))
                     status['Success'] += 1
                 except NotADirectoryError:
@@ -266,6 +266,7 @@ def main():
                 status['Skipped'] += 1
         print(time() - before)
         before = time()
+        db.bulk_save_objects(new_executions)
         commit()
         print(time() - before)
 
