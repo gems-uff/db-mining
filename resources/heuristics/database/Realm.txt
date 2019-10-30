@@ -1,1 +1,3 @@
-[Rr]ealm
+\b[Rr]ealm\b
+RealmObject
+RLMRealm
