@@ -1,5 +1,6 @@
 import os
 import subprocess
+from time import time
 
 import pandas as pd
 
@@ -30,11 +31,17 @@ GREP_COMMAND = [
 ]
 
 
-def print_results(dict):
-    print('\nResults:')
-    for k, v in dict.items():
+def print_results(status):
+    print('\nRESULTS')
+    for k, v in status.items():
         print(f'{k}: {v}')
     print()
+
+
+def commit():
+    print('Committing changes...', end=' ')
+    db.commit()
+    print(green('ok.'))
 
 
 def get_or_create_projects():
@@ -104,9 +111,9 @@ def get_or_create_projects():
             if CODE_DEBUG:
                 print(ex.stderr)
 
-    db.commit()
     status['Total'] = len(projects)
     print_results(status)
+    commit()
     return sorted(projects, key=lambda item: (item.owner, item.name))
 
 
@@ -166,7 +173,6 @@ def get_or_create_labels():
                         count += 1
                 print(green(f'heuristic updated ({count} executions removed).'))
                 status['Updated'] += 1
-                db.commit()
             else:
                 print(yellow('already done.'))
         else:
@@ -186,9 +192,9 @@ def get_or_create_labels():
         print(green('ok.'))
         status['Added'] += 1
 
-    db.commit()
     status['Total'] = len(labels)
     print_results(status)
+    commit()
     return sorted(labels, key=lambda item: (item.type, item.name))
 
 
@@ -206,10 +212,10 @@ def index_executions(labels):
 def main():
     db.connect()
 
-    print(f'Loading projects from {ANNOTATED_FILE}.')
+    print(f'\nLoading projects from {ANNOTATED_FILE}.')
     projects = get_or_create_projects()
 
-    print(f'Loading heuristics from {HEURISTICS_DIR}.')
+    print(f'\nLoading heuristics from {HEURISTICS_DIR}.')
     labels = get_or_create_labels()
 
     # Indexing executions by label heuristic and project version.
@@ -223,8 +229,9 @@ def main():
         'Total': len(labels) * len(projects)
     }
 
-    print(f'Processing {len(labels)} heuristics over {len(projects)} projects.')
+    print(f'\nProcessing {len(labels)} heuristics over {len(projects)} projects.')
     for i, label in enumerate(labels):
+        before = time()
         heuristic = label.heuristic
         for j, project in enumerate(projects):
             version = project.versions[0]  # TODO: fix this to deal with multiple versions
@@ -244,7 +251,6 @@ def main():
                         raise subprocess.CalledProcessError(p.returncode, cmd, p.stdout, p.stderr)
                     db.create(db.Execution, output=p.stdout.decode(errors='replace').replace('\x00', '\uFFFD'),
                               version=version, heuristic=heuristic, isValidated=False, isAccepted=False)
-                    db.commit()
                     print(green('ok.'))
                     status['Success'] += 1
                 except NotADirectoryError:
@@ -258,9 +264,13 @@ def main():
             else:  # Execution already exists
                 print(yellow('already done.'))
                 status['Skipped'] += 1
-    db.close()
+        print(time() - before)
+        before = time()
+        commit()
+        print(time() - before)
+
     print_results(status)
-    print("\nFinished.")
+    db.close()
 
 
 if __name__ == "__main__":
