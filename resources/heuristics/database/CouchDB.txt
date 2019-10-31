@@ -1,3 +1,2 @@
-[Cc]ouch[Dd][Bb]
-nano
-couch\.db
+\b[Cc]ouch\.?[Dd][Bb]\b
+\bnano\b
