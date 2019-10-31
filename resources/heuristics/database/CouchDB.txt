@@ -1,1 +1,3 @@
 [Cc]ouch[Dd][Bb]
+nano
+couch\.db
