@@ -1,4 +1,4 @@
-HANA
-[Hh]ana
+\bHANA\b
+\b[Hh]ana\b
 hdbcli
 jdbc:sap:
