@@ -1,2 +1,2 @@
-[Ii]ngres
+\b[Ii]ngres\b
 Database=iidbdb
