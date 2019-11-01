@@ -1,5 +1,8 @@
 jdbc:q:
 pyq
+embedpy
 qConnection
 khpu
 \bk\.h\b
+[Kk]db
+kx\.c
