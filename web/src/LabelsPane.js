@@ -13,6 +13,11 @@ import Tooltip from "@material-ui/core/Tooltip";
 import Typography from "@material-ui/core/Typography";
 
 const useStyles = makeStyles(theme => ({
+    span: {
+        whiteSpace: 'nowrap',
+        verticalAlign: 'middle',
+        display: 'inline-flex'
+    },
     buttonBox: {
         position: 'fixed',
         width: 'inherit',
@@ -92,7 +97,7 @@ export default function LabelsPane(props) {
                                     }
                                 </React.Fragment>
                             } placement={"bottom"}>
-                                <span>
+                                <span className={classes.span}>
                                     {label.name}
                                     {props.status[label.project_id][label.id]['isValidated'] &&
                                     (props.status[label.project_id][label.id]['isAccepted'] ?
