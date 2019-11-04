@@ -1,1 +1,1 @@
-[Ff]ile[Mm]aker
+\b[Ff]ile[Mm]aker\b

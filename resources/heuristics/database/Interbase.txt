@@ -1,2 +1,2 @@
-[Ii]nterbase
-\.gdb
+\b[Ii]nterbase\b
+\b\.gdb\b

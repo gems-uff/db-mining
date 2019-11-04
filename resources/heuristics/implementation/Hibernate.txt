@@ -1,1 +1,1 @@
-[Hh]ibernate
+\b[Hh]ibernate\b

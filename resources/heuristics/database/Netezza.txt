@@ -1,1 +1,1 @@
-[Nn]etezza
+\b[Nn]etezza\b

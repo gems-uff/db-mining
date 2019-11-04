@@ -1,2 +1,2 @@
-[Aa]urora
-com\.amazonaws
+\b[Aa]urora\b
+\bcom\.amazonaws\b

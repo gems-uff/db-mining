@@ -1,1 +1,1 @@
-[Rr]iak
+\b[Rr]iak\b

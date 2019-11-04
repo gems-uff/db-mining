@@ -1,8 +1,8 @@
-jdbc:q:
-pyq
-embedpy
-qConnection
-khpu
+\bjdbc:q\b
+\bpyq\b
+\bembedpy\b
+\bqConnection\b
+\bkhpu\b
 \bk\.h\b
-[Kk]db
-kx\.c
+\b[Kk]db\b
+\bkx\.c\b

@@ -1,1 +1,1 @@
-[Aa]erospike
+\b[Aa]erospike\b

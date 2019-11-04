@@ -1,2 +1,2 @@
-[Cc]assandra
-gocql
+\b[Cc]assandra\b
+\bgocql\b
