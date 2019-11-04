@@ -1,1 +1,1 @@
-elasticsearch
+\belasticsearch\b

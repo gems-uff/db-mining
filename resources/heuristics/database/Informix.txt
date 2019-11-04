@@ -1,1 +1,1 @@
-informix
+\b[Ii]nformix\b

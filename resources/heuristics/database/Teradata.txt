@@ -1,1 +1,1 @@
-[Tt]eradata
+\b[Tt]eradata\b
