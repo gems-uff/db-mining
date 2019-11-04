@@ -84,6 +84,7 @@ def labels_query(project_id):
         .join(db.Execution.version) \
         .filter(db.Version.project_id == project_id) \
         .filter(db.Execution.output != '') \
+        .order_by(func.lower(db.Label.type)) \
         .order_by(func.lower(db.Label.name))
 
 
