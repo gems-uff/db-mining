@@ -1,1 +1,1 @@
-[Ee]ssbase
+\b[Ee]ssbase\b

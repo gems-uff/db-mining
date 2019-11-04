@@ -1,2 +1,2 @@
-[Ff]irebase
-pyrebase
+\b[Ff]irebase\b
+\bpyrebase\b

@@ -1,1 +1,1 @@
-[Ff]irebird
+\b[Ff]irebird\b

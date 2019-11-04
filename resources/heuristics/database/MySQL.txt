@@ -1,2 +1,2 @@
-import pymyssql
-[Mm]y[Ss]ql
+\bpymysql\b
+\b[Mm]y[Ss]ql\b

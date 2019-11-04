@@ -1,2 +1,2 @@
-pymongo
-[Mm]ongo[Bb][Dd]
+\bpymongo\b
+\b[Mm]ongo[Bb][Dd]\b

@@ -1,2 +1,2 @@
 \b[Ii]ngres\b
-Database=iidbdb
+\bDatabase=iidbdb\b

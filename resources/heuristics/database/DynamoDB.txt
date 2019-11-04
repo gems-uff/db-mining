@@ -1,1 +1,1 @@
-dynamodb
+\bdynamodb\b

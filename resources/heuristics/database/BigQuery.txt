@@ -1,1 +1,1 @@
-bigquery
+\bbigquery\b
