@@ -60,6 +60,7 @@ export default function LabelsPane(props) {
 
     function handleToggle(event, index) {
         props.setSelectedIndex(index);
+        window.scrollTo(0, 0)
     }
 
     const auth = props.auth;
