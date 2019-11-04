@@ -87,7 +87,7 @@ export default function LabelsPane(props) {
     return (
         <MuiThemeProvider theme={trafficLightTheme}>
             <Box className={classes.buttonBox}>
-                <ToggleButtonGroup exclusive onChange={handleToggle} value={props.selectedIndex}>
+                <ToggleButtonGroup size="small" exclusive onChange={handleToggle} value={props.selectedIndex}>
                     {props.labels.map((label, index) => (
                         <ToggleButton key={index} value={index}>
                             <Tooltip title={
