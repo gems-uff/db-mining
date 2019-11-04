@@ -1,1 +1,1 @@
-[Ee]h[Cc]ache
+\b[Ee]h[Cc]ache\b

@@ -1,3 +1,3 @@
 \bH[Bb]ase\b
 \bhbase\b
-happybase
+\bhappybase\b

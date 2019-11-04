@@ -1,1 +1,1 @@
-[Gg]reenplum
+\b[Gg]reenplum\b

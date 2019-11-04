@@ -1,1 +1,1 @@
-[Hh]azelcast
+\b[Hh]azelcast\b

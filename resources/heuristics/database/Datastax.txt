@@ -1,1 +1,1 @@
-dse.cqlengine
+\bdse.cqlengine\b

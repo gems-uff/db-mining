@@ -1,1 +1,1 @@
-[Pp]resto
+\b[Pp]resto\b

@@ -1,3 +1,3 @@
-[Oo]racle
-OCI8
-ojdbc
+\b[Oo]racle\b
+\bOCI8\b
+\bojdbc\b

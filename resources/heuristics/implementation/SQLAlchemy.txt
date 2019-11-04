@@ -1,1 +1,1 @@
-[Ss][Qq][Ll][Aa]lchemy
+\b[Ss][Qq][Ll][Aa]lchemy\b

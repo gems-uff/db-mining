@@ -1,2 +1,2 @@
-[Cc]osmos
-azure-documentdb
+\b[Cc]osmos\b
+\bazure-documentdb\b
