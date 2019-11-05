@@ -1,1 +1,1 @@
-\b[Mm]emcache\b
+\b[Mm]emcached?\b
