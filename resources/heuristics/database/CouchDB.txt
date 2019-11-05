@@ -1,2 +1,3 @@
 \b[Cc]ouch\.?[Dd][Bb]\b
 \bnano\b
+\bcouchClient\b
