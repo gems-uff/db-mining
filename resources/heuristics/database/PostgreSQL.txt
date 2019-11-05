@@ -1,3 +1,4 @@
 \bpsycopg\b
 \bPG\.connect\b
-\b[Pp]ostgres\b
+\b[Pp]ostgre(s|[Ss]ql|SQL)?\b
+\bpgsql\b
