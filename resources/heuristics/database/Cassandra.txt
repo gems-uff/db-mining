@@ -1,2 +1,4 @@
 \b[Cc]assandra\b
 \bgocql\b
+\bcom\.datastax\.driver\b
+\bcom\.datastax\.oss\.driver\b
