@@ -122,7 +122,7 @@ def get_or_create_labels():
     # Loading heuristics from the file system.
     labels_fs = dict()
     for label_type in os.scandir(HEURISTICS_DIR):
-        if label_type.is_dir():
+        if label_type.is_dir() and not label_type.name.startswith('.'):
             for label in os.scandir(label_type.path):
                 if label.is_file() and not label.name.startswith('.'):
                     with open(label.path) as file:
