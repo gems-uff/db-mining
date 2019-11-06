@@ -1,2 +1,2 @@
 \bpymongo\b
-\b[Mm]ongo[Bb][Dd]\b
+\b[Mm]ongo[Db][Bb]\b
