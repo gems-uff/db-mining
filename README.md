@@ -164,7 +164,8 @@ As with the spreadsheets, we also have two sets of scripts: one for the corpus a
 | filter.ipynb  | Applies some extra filters                          | projects.xlsx  | filtered.xlsx |
 | analyze.ipynb | Produces statistics about the final corpus          | annotated.xlsx | None          |
 | download.py   | Clones all repositories in the corpus               | annotated.xlsx | None          |
-| reset.py      | Try to fix name colisions for case-insensitive FS   | annotated.xlsx | None          |
+| reset.py      | Tries to fix name colisions for case-insensitive FS | annotated.xlsx | None          |
+| extract.py    | Runs git grep and populates the databese            | annotated.xlsx | None          |
 
 ## Related Work 
 
