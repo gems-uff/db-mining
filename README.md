@@ -33,7 +33,7 @@ We assume you have Python 3.7+, Node 12.10+ and Git 2.23+ installed on your comp
 
 `~$ cd db-mining`
 
-3. Install pipenv:
+3. Install pipenv (if it is not already installed):
 
 `~/db-mining$ python3.7 -m pip install pipenv`
 
