@@ -19,7 +19,7 @@ Marco Aurélio Gerosa (NAU, USA)
 
 ## Requirements
 
-We assume you have Python 3.7+, Node 12.10+, Git 2.23+ and SQLite or PostgreSQL installed on your computer. 
+We assume you have Python 3.7+, Node 12.10+ and Git 2.23+ installed on your computer. 
 
 ## Steps for setting up the environment (needs to do just once) 
 
