@@ -35,7 +35,7 @@ We assume you have Python 3.7+, Node 12.10+ and Git 2.23+ installed on your comp
 
 3. Install pipenv (if it is not already installed):
 
-`~/db-mining$ python3.7 -m pip install pipenv`
+`~/db-mining$ python -m pip install pipenv`
 
 4. Prepare the Python environment: 
 
@@ -117,15 +117,15 @@ But, if you want to run the project to create your own analysis, go to [Steps fo
 
 3. Run the `download.py` script to clone all the repositories in the corpus:
 
-`~/db-mining$ python3.7 src/download.py`
+`~/db-mining$ python src/download.py`
 
 4. Run the `reset.py` to fix name colisions for case-insensitive file systems:
 
-`~/db-mining$ python3.7 src/reset.py`
+`~/db-mining$ python src/reset.py`
 
 5. Run the `extract.py` to execute the analysis and populate the database:
 
-`~/db-mining$ python3.7 src/extract.py`
+`~/db-mining$ python src/extract.py`
 
 ### Starting the application
 
@@ -143,7 +143,7 @@ But, if you want to run the project to create your own analysis, go to [Steps fo
 
 4. Run the `server.py` to start the Flask server:
 
-`~/db-mining$ python3.7 src/server.py`
+`~/db-mining$ python src/server.py`
 
 5. Access the React app at http://127.0.0.1:5000
 
