@@ -7,12 +7,14 @@ import {AuthProvider} from './Auth';
 import Loader from "./Loader";
 import * as serviceWorker from './serviceWorker';
 
+import authOkta from './authentication.json';
+
 ReactDOM.render((
     <AuthProvider>
         <Router>
             <Security
-                issuer='https://dev-248856.okta.com/oauth2/default'
-                client_id='0oa1ihleszMmGcVAc357'
+                issuer={authOkta.issuer}
+                client_id={authOkta.client_id}
                 redirect_uri={`${window.location.origin}/implicit/callback`}
             >
                 <Switch>

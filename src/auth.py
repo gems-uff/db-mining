@@ -3,12 +3,16 @@ from functools import wraps
 
 import jwt
 import requests
+
 from flask import request, g
 from jwt import decode, exceptions
 from jwt.algorithms import RSAAlgorithm
 
-KEYS_URL = 'https://dev-248856.okta.com/oauth2/default/v1/keys?client_id=0oa1ihleszMmGcVAc357'
-CLIENT_ID = '0oa1ihleszMmGcVAc357'
+with open('./web/src/authentication.json') as json_file:
+    auth_okta = json.load(json_file)
+
+KEYS_URL = auth_okta['issuer'] + '/v1/keys?client_id=' + auth_okta['client_id']
+CLIENT_ID = auth_okta['client_id']
 ALGORITHMS = ['RS256']
 public_keys = {}
 
