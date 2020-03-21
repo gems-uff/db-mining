@@ -23,7 +23,9 @@ We assume you have Python 3.7+, Node 12.10+ and Git 2.23+ installed on your comp
 
 ## Steps for setting up the environment (needs to do just once) 
 
-1. Clone our repository:  
+### Configuring project base
+
+1. Clone our repository: 
 
 `~$ git clone https://github.com/gems-uff/db-mining.git`
 
@@ -31,15 +33,15 @@ We assume you have Python 3.7+, Node 12.10+ and Git 2.23+ installed on your comp
 
 `~$ cd db-mining`
 
-3. Install pipenv (if it is not already installed)
+3. Install pipenv (if it is not already installed):
 
-`~/db-mining$ python3.7 -m pip install pipenv`
+`~/db-mining$ python -m pip install pipenv`
 
 4. Prepare the Python environment: 
 
 `~/db-mining$ pipenv install`
 
-5. Go into the React app directory
+5. Go into the React app directory:
 
 `~/db-mining$ cd web`
 
@@ -47,15 +49,33 @@ We assume you have Python 3.7+, Node 12.10+ and Git 2.23+ installed on your comp
 
 `~/db-mining/web$ npm install`
 
-7. Build the React app:
 
-`~/db-mining/web$ npm run build`
+### Configuring Okta authentication
+This project uses Okta as the authentication mechanism. Follow the steps below to set up your credentials.
 
-8. Configure database access. You can you either SQLite or PostgreSQL database. Go into the resources directory: 
+1. Access https://www.okta.com/ and create an account (if you do not already have one).
 
-`~$ cd resources`
+2. Access your panel and create a new application with the following settings:
 
-9. Edit the database.json file. This JSON file has a drop_database field which indicates whether you would like the application to drop the existing database and create a new empty one. If that is the case, the value of drop_database should be True. The database_type field specifies which database management system will be used: SQLite or PostgreSQL. The remaining fields depend on the type of database you are using. 
+| Parameter | Value |
+| --------- | ----- |
+| Platform | Single-Page App |
+| Base URIs | http://127.0.0.1:5000/ |
+| Login redirect URIs | http://localhost:3000/implicit/callback<br/>http://localhost:5000/implicit/callback<br/> http://127.0.0.1:5000/implicit/callback |
+| Logout redirect URIs | http://localhost:5000/login <br/>http://localhost:3000/login <br/>http://127.0.0.1:5000/login |
+| Implicit checkbox | Marked |
+
+3. Go to the file `authentication.json` and update the variables `issuer` and `client_id` to match your credentials.
+
+
+### Configuring database access
+You can use either SQLite or PostgreSQL database.
+
+1. Go to the file `database.json`.
+
+2. Edit it according to the database you will use:
+
+This JSON file has a drop_database field which indicates whether you would like the application to drop the existing database and create a new empty one. If that is the case, the value of drop_database should be True. The database_type field specifies which database management system will be used: SQLite or PostgreSQL. The remaining fields depend on the type of database you are using. 
 
 If you are using SQLite, these are the mandatory fields of the JSON file: 
 
@@ -80,7 +100,12 @@ If you are using PostgreSQL, these are the mandatory fields:
 }
 ```
 
-## Steps for running the Python and Jupyter scripts 
+Now, if you just want to run the project using the analysis we made with the databases and the projects we selected, follow the steps below.
+But, if you want to run the project to create your own analysis, go to [Steps for creating your own analysis](#own-analysis).
+
+## Steps for running the application
+
+### Running the scripts
 
 1. Go into the project directory:
 
@@ -90,45 +115,62 @@ If you are using PostgreSQL, these are the mandatory fields:
 
 `~/db-mining$ pipenv shell`
 
-3. You are now all set to run the scripts in src directory (check the [scripts description](#script-description) before running). For example:
+3. Run the `download.py` script to clone all the repositories in the corpus:
 
-`~/db-mining$ python3.7 src/extract.py`
+`~/db-mining$ python src/download.py`
 
-or
+4. Run the `reset.py` to fix name colisions for case-insensitive file systems:
 
-`~/db-mining$ jupyter notebook src/analyze.ipynb`
+`~/db-mining$ python src/reset.py`
 
-## Steps for running the React app
+5. Run the `extract.py` to execute the analysis and populate the database:
 
-1. Go into the project directory:
+`~/db-mining$ python src/extract.py`
 
-`~$ cd db-mining`
+### Starting the application
 
-2. Activate the environment: 
-
-`~/db-mining$ pipenv shell`
-
-3. Start the Flask server:
-
-`~/db-mining$ python3.7 src/server.py`
-
-4. Access the React app at http://localhost:5000.
-
-The URL http://localhost:5000 is served by Flask and uses the last build of the React app produced by `npm run build`. If you want to immediately reflect your changes into the React app without the need of rebuilding it every time during development, please follow the remaining steps.
-
-5. Go into the React app directory
+1. Go into the React app directory:
 
 `~/db-mining$ cd web`
 
-6. Start the Node.js server:
+2. Build the application:
+
+`~/db-mining/web$ npm run build`
+
+3. Back to the root directory:
+
+`~/db-mining$ cd ..`
+
+4. Run the `server.py` to start the Flask server:
+
+`~/db-mining$ python src/server.py`
+
+5. Access the React app at http://127.0.0.1:5000
+
+
+In this case, the URL http://127.0.0.1:5000 is served by Flask and uses the last build of the React app produced by `npm run build`. 
+Alternatively, you can run the application with Node.js server if you want to immediately reflect your changes into the React app without the need of rebuilding it every time during development.
+If so, follow the remaining steps.
+
+6. Add http://localhost:3000 as a trusted origin with CORS enabled in the Okta panel, API > Trusted origin.
+
+7. Go into the React app directory:
+
+`~/db-mining$ cd web`
+
+8. Start the Node.js server:
 
 `~/db-mining/web$ npm start`
 
-7. Access the React app at http://localhost:3000.
+9. Access the React app at http://localhost:3000.
 
-The URL http://localhost:3000 is served by Node.js and has hot reload capability. Please, note that it is significantly slower than rebuilding the React app (i.e., `npm run build`) and serving using Flask (http://localhost:5000). As our architecture is based on a REST API, even when accessing unsing Node.js, the Flask server should be online, to respond REST requests.
 
-8. Update the variables `issuer` and `client_id` in the file `index.js` to match your [Okta](https://developer.okta.com) credentials, if you are intend to manage your own users. 
+The URL http://localhost:3000 is served by Node.js and has hot reload capability. Please, note that it is significantly slower than rebuilding the React app (i.e., `npm run build`) and serving using Flask (http://127.0.0.1:5000). As our architecture is based on a REST API, even when accessing unsing Node.js, the Flask server should be online (Step 9), to respond REST requests.
+
+## <a name="own-analysis"></a>Steps for creating your own analysis
+
+*Soon...*
+
 
 # Spreadsheets description
 
