@@ -23,6 +23,7 @@ DBLP_FILE = RESOURCE_DIR + os.sep + 'dblp.xml'
 VENUE_KEYS = RESOURCE_DIR + os.sep + 'venue_keys.txt'
 PAPERS_FILE = RESOURCE_DIR + os.sep + 'papers.xlsx'
 FILTERED_PAPERS_FILE = RESOURCE_DIR + os.sep + 'filtered_papers.xlsx'
+AGREEMENT_FILE = RESOURCE_DIR + os.sep + 'agreement.xlsx'
 
 DATABASE_CONFIG_FILE = BASE_DIR + os.sep + 'database.json'
 

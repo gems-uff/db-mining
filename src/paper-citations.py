@@ -22,9 +22,11 @@ for index, row in df.iterrows():
     print('    ==>', row['citations'], 'citations')
     new_df.append(row)
     i += 1
+    time.sleep(10)
     # Stops once and a while so Google Scholar does not complain
-    if (i % 4) == 0:
-        time.sleep(10)
+    # if (i % 4) == 0:
+    #     print('Sleeping so that Scholar does not complain')
+    #     time.sleep(10)
 
 print(new_df)
 df.to_excel(FILTERED_PAPERS_FILE, index=False)
