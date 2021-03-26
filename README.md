@@ -11,8 +11,17 @@ Igor Steinmacher (NAU, USA)
 Marco Aurélio Gerosa (NAU, USA)  
 
 # Project Corpus
+- In summary, the table below shows the workflow to the selection of projects for our corpus. We have the name of the script, your purpose, the required entry and the output produced.
 
-- [Excel Spreadsheet](https://github.com/gems-uff/db-mining/raw/master/resources/annotated.xlsx)  
+| Name          | Goal                                                | Input          | Output        |
+| ------------- | --------------------------------------------------- | -------------- | ------------- | 
+| collect.py    | Queries projects' metadata from GitHub using API v4 | None           | projects.xlsx |
+| filter.ipynb  | Applies some extra filters                          | projects.xlsx  | filtered.xlsx |
+| analyze.ipynb | Produces statistics about the final corpus          | annotated.xlsx | None          |
+| download.py   | Clones all repositories in the corpus               | annotated.xlsx | None          |
+| reset.py      | Tries to fix name colisions for case-insensitive FS | annotated.xlsx | None          |
+| extract.py    | Runs git grep and populates the databese            | annotated.xlsx | None          |
+- [Excel Spreadsheet](https://github.com/gems-uff/db-mining/raw/master/resources/annotated.xlsx)  (validate that all fields in the spreadsheet are filled in correctly, the convert of formulas may cause an error.)
 - [Collection Scripts](https://github.com/gems-uff/db-mining/tree/master/src) (see the installation instructions bellow to run the scripts in your computer)
 
 # Installation
@@ -20,6 +29,7 @@ Marco Aurélio Gerosa (NAU, USA)
 ## Requirements
 
 We assume you have Python 3.7+, Node 12.10+ and Git 2.23+ installed on your computer. 
+OBS: At the moment, sqlalchemy-utils has a incompatibility with sqlalchemy 1.4.0b1. Change to an older version, for example sqlalchemy 1.3.23.
 
 ## Steps for setting up the environment (needs to do just once) 
 
