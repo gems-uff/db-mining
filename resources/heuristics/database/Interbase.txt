@@ -1,2 +1,0 @@
-\b[Ii]nterbase\b
-\b\.gdb\b
