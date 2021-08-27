@@ -71,7 +71,7 @@ def process(some_repositories, all_repositories):
 def main():
     all_repositories = dict()
     stars = MIN_STARS
-
+    os.environ['GITHUB_TOKEN'] = 'ed7dde7e4fa8785242cb0778e4bf4a23bb2ba3fb'
     token = os.getenv('GITHUB_TOKEN')
     if not token:
         print(
@@ -88,7 +88,7 @@ def main():
     }
 
     request = {
-        'query': open('query.graphql', 'r').read(),
+        'query': open('src/query.graphql', 'r').read(),
         'variables': variables
     }
 

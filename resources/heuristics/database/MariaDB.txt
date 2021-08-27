@@ -1,1 +1,3 @@
-\bmariadb\b
+org\.mariadb\.jdbc\.Driver
+jdbc:mariadb
+mariadb-java-client

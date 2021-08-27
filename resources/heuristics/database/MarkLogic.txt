@@ -1,2 +1,0 @@
-\b[Mm]ark[Ll]ogic\b
-\bmlclientpython\b

@@ -6,7 +6,7 @@ import pandas as pd
 
 import database as db
 from sqlalchemy.orm import load_only, selectinload
-from util import ANNOTATED_FILE, HEURISTICS_DIR, REPOS_DIR, red, green, yellow, CODE_DEBUG
+from util import ANNOTATED_FILE_JAVA, HEURISTICS_DIR, REPOS_DIR, red, green, yellow, CODE_DEBUG
 
 # Git rev-parse command
 REVPARSE_COMMAND = [
@@ -47,7 +47,7 @@ def get_or_create_projects():
     projects = []
 
     # Loading projects from the Excel.
-    df = pd.read_excel(ANNOTATED_FILE, keep_default_na=False)
+    df = pd.read_excel(ANNOTATED_FILE_JAVA, keep_default_na=False)
     df = df[df.discardReason == ''].reset_index(drop=True)
     projects_excel = dict()
     for i, project_excel in df.iterrows():
@@ -211,7 +211,7 @@ def index_executions(labels):
 def main():
     db.connect()
 
-    print(f'Loading projects from {ANNOTATED_FILE}.')
+    print(f'Loading projects from {ANNOTATED_FILE_JAVA}.')
     projects = get_or_create_projects()
 
     print(f'\nLoading heuristics from {HEURISTICS_DIR}.')

@@ -1,2 +1,0 @@
-\b[Ii]ngres\b
-\bDatabase=iidbdb\b

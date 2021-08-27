@@ -1,2 +1,0 @@
-\b[Cc]osmos\b
-\bazure-documentdb\b

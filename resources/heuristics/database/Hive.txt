@@ -1,7 +1,0 @@
-\b[Hh]ive\b
-\bThriftHive\b
-\bhive_service\b
-\bHiveDriver\b
-\bRBHive\.connect\b
-\bjdbc:hive2\b
-\bgohive\.Connect\b
