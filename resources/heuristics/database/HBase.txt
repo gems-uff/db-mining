@@ -1,0 +1,3 @@
+import\s*org\.apache\.hadoop\.hbase
+<\s*artifactId\s*>hbase
+HBaseConfiguration
