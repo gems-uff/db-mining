@@ -1,3 +1,3 @@
-\bH[Bb]ase\b
-\bhbase\b
-\bhappybase\b
+import\s*org\.apache\.hadoop\.hbase
+<\s*artifactId\s*>hbase
+HBaseConfiguration

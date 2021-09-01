@@ -1,4 +1,0 @@
-\bHANA\b
-\b[Hh]ana\b
-\bhdbcli\b
-\bjdbc:sap\b

@@ -1,2 +1,4 @@
-\bpymysql\b
-\b[Mm]y[Ss]ql\b
+com\.mysql\.jdbc\.Driver
+com\.mysql\.cj\.jdbc\.Driver
+jdbc:mysql
+mysql-connector-java

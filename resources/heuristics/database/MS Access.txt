@@ -1,5 +1,2 @@
-Microsoft Access Driver
-\b\.accdb\b
-\b\.mdb\b
-Microsoft\.Jet\.OLEDB
-Microsoft\.ACE\.OLEDB
+jdbc:ucanaccess
+ucanaccess
