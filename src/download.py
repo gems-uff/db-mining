@@ -3,12 +3,12 @@ import subprocess
 
 import pandas as pd
 
-from util import ANNOTATED_FILE, REPOS_DIR
+from util import ANNOTATED_FILE_JAVA, REPOS_DIR
 
 
 def main():
-    print(f'Loading repositories from {ANNOTATED_FILE}.')
-    df = pd.read_excel(ANNOTATED_FILE, keep_default_na=False)
+    print(f'Loading repositories from {ANNOTATED_FILE_JAVA}.')
+    df = pd.read_excel(ANNOTATED_FILE_JAVA, keep_default_na=False)
 
     print('Removing discarded repositories.')
     df = df[df.discardReason == '']

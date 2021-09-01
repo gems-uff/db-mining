@@ -1,1 +1,3 @@
-\bdynamodb\b
+import\s*com\.amazonaws\.services\.dynamodbv2
+DynamoDB
+<\s*artifactId\s*dynamodb

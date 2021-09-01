@@ -1,3 +1,0 @@
-Devart ODBC Driver for ASE
-\b[Ss]ybase\b
-\bSAP ASE\b

@@ -1,1 +1,3 @@
-\bsqlite\b
+SQLite\.JDBCDriver
+jdbc:sqlite
+sqlitejdbc

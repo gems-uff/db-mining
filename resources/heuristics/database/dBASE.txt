@@ -1,2 +1,0 @@
-\b[Ii]mpala\b
-\bimpyla\b

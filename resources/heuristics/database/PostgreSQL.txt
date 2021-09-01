@@ -1,4 +1,3 @@
-\bpsycopg\b
-\bPG\.connect\b
-\b[Pp]ostgre(s|[Ss]ql|SQL)?\b
-\bpgsql\b
+org\.postgresql\.Driver
+jdbc:postgresql
+<\s*artifactId\s*>\s*postgresql

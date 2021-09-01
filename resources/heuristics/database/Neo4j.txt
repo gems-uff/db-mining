@@ -1,1 +1,8 @@
-\b[Nn]eo4j\b
+import\s*org\.neo4j\.driver
+neo4j\-java\-driver
+neo4j://
+bolt://
+neo4j\+s
+neo4j\+ssc
+bolt\+s
+bolt\+ssc 

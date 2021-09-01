@@ -1,2 +1,5 @@
-\bpymongo\b
-\b[Mm]ongo[Dd][Bb]\b
+import\s*com\.mongodb
+MongoClient
+org\.mongodb
+mongodb-driver
+mongodb-java-driver

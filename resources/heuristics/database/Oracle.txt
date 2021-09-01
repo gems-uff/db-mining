@@ -1,3 +1,4 @@
-\b[Oo]racle\b
-\bOCI8\b
-\bojdbc\b
+oracle\.jdbc\.driver\.OracleDriver
+jdbc:oracle
+ojdbc
+com\.oracle
