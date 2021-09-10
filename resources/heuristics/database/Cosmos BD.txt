@@ -1,0 +1,4 @@
+import\s*com\.azure\.cosmos
+import\s*com\.microsoft\.azure\.cosmos
+CosmosClient
+<\s*artifactId\s*>\s*azure\-cosmos
