@@ -182,12 +182,12 @@ repos/
 extraction/log.txt
 dblp.xml
 
-.DS_Store
-dbmining.sqlite
+#.DS_Store
+#dbmining.sqlite
 
 # Local examples for db config
 database.json.postgresql
-database.json.sqlite
+#database.json.sqlite
 
 # Generated files for deploy in Elastic Beanstalk
 # Use pipenv lock -r requirements.txt to update

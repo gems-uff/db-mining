@@ -1,0 +1,3 @@
+com\.teradata\.jdbc\.TeraDriver
+jdbc:teradata
+gt\-jdbc\-teradata
