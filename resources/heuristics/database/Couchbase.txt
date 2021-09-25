@@ -1,0 +1,5 @@
+import\s*com\.couchbase\.client\.java
+CouchbaseCluster
+com\.couchbase\.client
+<\s*artifactId\s*>\s*java\-client
+couchbase\-client"
