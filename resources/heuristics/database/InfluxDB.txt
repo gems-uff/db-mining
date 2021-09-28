@@ -1,0 +1,4 @@
+import\s*com\.influxdb
+InfluxDBClient
+FluxClient
+<\s*artifactId\s*>\s*influxdb\-client\-java
