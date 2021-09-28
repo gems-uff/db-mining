@@ -1,4 +1,6 @@
 
+from sqlalchemy.sql.elements import Null
+from sqlalchemy.sql.expression import null
 import database as db
 from sqlalchemy.orm import load_only, selectinload
 
@@ -27,19 +29,22 @@ def create_characterization():
                 .join(db.Execution.heuristic) \
                 .filter(db.Version.project_id == project.id) \
                 .filter(db.Heuristic.label_id == label.id).first()
-            if(execution.output != ''):
-                results_Label.append(1)
-            else:
+            if(execution is None):
                 results_Label.append(0)
+            else:
+                if(execution.output != ''):
+                    results_Label.append(1)
+                else:
+                    results_Label.append(0)
         if(i==0):
             all_results["Projects"] = index_projects
             all_results["Domains"] = index_domains
         all_results[label.name] = results_Label.copy()
         results_Label.clear()
-    save(all_results, index_projects)
+    save(all_results)
 
 
-def save(all_results, index_projects):
+def save(all_results):
     print(f'Saving all results to {CHARACTERIZATION_FILE}...', end=' ')
     df = pd.DataFrame(all_results)
     df.to_excel(CHARACTERIZATION_FILE, index=False)
