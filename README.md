@@ -31,7 +31,7 @@ Marco Aurélio Gerosa (NAU, USA)
 We assume you have Python 3.7+, Node 12.10+ and Git 2.23+ installed on your computer. 
 OBS: At the moment, sqlalchemy-utils has a incompatibility with sqlalchemy 1.4.0b1. Change to an older version, for example sqlalchemy 1.3.23.
 
-## Steps for setting up the environment (needs to do just once) 
+## Steps for setting up the environment (needs to be done just once) 
 
 ### Configuring project base
 
