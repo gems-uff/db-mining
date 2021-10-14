@@ -1,0 +1,3 @@
+import\s*org\.ektorp
+CouchDbConnector
+<\s*artifactId\s*>\s*org\.ektorp
