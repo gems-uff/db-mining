@@ -1,0 +1,3 @@
+import\s*com\.hazelcast
+HazelcastClient
+<*\sartifactId*\s>*\shazelcast
