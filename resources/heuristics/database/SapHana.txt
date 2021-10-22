@@ -1,0 +1,3 @@
+com\.sap\.db\.jdbc\.Driver
+jdbc:sap
+<\s*artifactId\s*>\s*ngdbc
