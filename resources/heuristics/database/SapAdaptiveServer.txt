@@ -1,0 +1,3 @@
+com\.sybase\.jdbc4\.jdbc\.SybDriver
+jdbc:sybase
+<\s*artifactId\s*>\s*jtds
