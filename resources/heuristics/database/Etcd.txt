@@ -1,0 +1,4 @@
+import\s*com\.ibm\.etcd\.client
+import\s*io\.etcd\.jetcd\.Client
+<\s*artifactId\s*>\s*etcd-java
+<\s*artifactId\s*>\s*jetcd-core
