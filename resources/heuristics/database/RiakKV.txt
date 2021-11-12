@@ -1,0 +1,4 @@
+import\s*com\.basho\.riak\.client
+\sRiakCluster
+\sRiakClient
+<\s*artifactId\s*>riak-client
