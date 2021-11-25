@@ -1,0 +1,2 @@
+org\.eclipse\.persistence\.jpa\.PersistenceProvider
+eclipselink
