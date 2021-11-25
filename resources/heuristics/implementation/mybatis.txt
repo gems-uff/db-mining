@@ -1,0 +1,13 @@
+<\s*artifactId\s*>\s*mybatis
+mybatis\.org\/dtd\/mybatis-3-config\.dtd
+typeAliases
+<\s*mappers\s*>
+<\s*mapper 
+@Select
+@Insert
+@Update
+@Delete
+<\s*select
+<\s*insert
+<\s*update
+<\s*delete

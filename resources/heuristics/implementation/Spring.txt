@@ -1,0 +1,6 @@
+<\s*groupId\s*>\s*org.springframework.boot
+spring\.datasource\.url
+import\s*org\.springframework\.data\.repository
+@SpringBootApplication
+<\s*named-query
+@Query

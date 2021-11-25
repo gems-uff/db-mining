@@ -1,0 +1,13 @@
+@Entity
+@Embeddable
+<\s*entity-mappings
+<\s*entity
+<\s*embeddable
+EntityManagerFactory
+EntityManager
+@QueryHints
+@NamedQuery
+@NamedQueries
+openjpa\.ConnectionDriverName
+@NamedEntityGraph
+<\s*persistence
