@@ -1,0 +1,3 @@
+org\.apache\.ignite\.IgniteJdbcThinDriver
+jdbc:ignite:thin
+<\s*artifactId\s*>\s*ignite
