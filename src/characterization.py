@@ -16,7 +16,7 @@ def create_characterization():
     index_domains = []
     results_Label = []
     projects_db = db.query(db.Project).options(load_only('id', 'owner', 'name'), selectinload(db.Project.versions).load_only('id')).all()
-    labels_db = db.query(db.Label).options(selectinload(db.Label.heuristic).options(selectinload(db.Heuristic.executions).defer('output').defer('user'))).all()
+    labels_db = db.query(db.Label).options(selectinload(db.Label.heuristic).options(selectinload(db.Heuristic.executions).defer('output').defer('user'))).filter(db.Label.type == 'database').all()
     print("Search results in execution for label and project.")
     for i,label in enumerate(labels_db):
         for j, project in enumerate(projects_db):
