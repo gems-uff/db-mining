@@ -1,0 +1,3 @@
+com\.informix\.jdbc\.IfxDriver
+jdbc:informix-sqli
+(com\.ibm\.informix.+)\n(\s*<artifactId\s*>\s*jdbc)
