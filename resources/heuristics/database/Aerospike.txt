@@ -1,0 +1,3 @@
+import\s*com\.aerospike\.client
+AerospikeClient
+<\s*artifactId\s*>\s*aerospike-client
