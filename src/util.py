@@ -29,6 +29,7 @@ AGREEMENT_FILE = RESOURCE_DIR + os.sep + 'agreement.xlsx'
 CHARACTERIZATION_FILE = RESOURCE_DIR + os.sep + 'characterization.xlsx'
 CHARACTERIZATION_FILE_IMP = RESOURCE_DIR + os.sep + 'characterization_implementation.xlsx'
 COUNT_FILE_IMP = RESOURCE_DIR + os.sep + 'count_implementation.xlsx'
+COUNT_LINE_FILE_IMP = RESOURCE_DIR + os.sep + 'count_line_implementation.xlsx'
 HISTORICAL_FILE = RESOURCE_DIR + os.sep + 'historical.xlsx'
 
 DATABASE_CONFIG_FILE = BASE_DIR + os.sep + 'database.json'
