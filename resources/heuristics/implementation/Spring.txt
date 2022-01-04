@@ -1,6 +1,8 @@
-<\s*groupId\s*>\s*org.springframework.boot
+<\s*groupId\s*>\s*org.springframework.boot 
 spring\.datasource\.url
-import\s*org\.springframework\.data\.repository
-@SpringBootApplication
-<\s*named-query
-@Query
+import\s*org\.springframework\.data\.repository 
+@SpringBootApplication 
+@Query 
+www\.springframework\.org\/schema\/
+@QueryHint
+@NamedEntityGraph
