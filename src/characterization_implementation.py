@@ -39,10 +39,8 @@ def create_count_implementation():
                 output = execution.output.split('\n\n')
                 sum = 0
                 for k in output:
-                    #print("K:" + k)
                     sum = sum +1
                 results_Label.append(sum)
-                #print(execution.output)
         if(i==0):
             all_results["Projects"] = index_projects
             all_results["Domains"] = index_domains
@@ -119,7 +117,7 @@ def create_list_implementation():
 
 def save(all_results, file):
     print(f'Saving all results to {file}...', end=' ')
-    df = pd.DataFrame(all_results.items())
+    df = pd.DataFrame(all_results)
     df.to_excel(file, index=False)
     print('Done!')
 
@@ -130,7 +128,7 @@ def print_list_files(list_files):
     
 def main():
     create_count_implementation()
-    create_list_implementation()
+    #create_list_implementation()
 
 if __name__ == "__main__":
     main()
