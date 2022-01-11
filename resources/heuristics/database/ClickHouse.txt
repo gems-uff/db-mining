@@ -1,0 +1,3 @@
+ru\.yandex\.clickhouse\.ClickHouseDriver
+jdbc:clickhouse
+<\s*artifactId\s*>\s*clickhouse
