@@ -67,6 +67,7 @@ class Version(db.Model):
     sha1 = db.Column(db.String)
     isLast = db.Column(db.Boolean)
     project_id = db.Column(db.Integer, db.ForeignKey('project.id'))
+    part_commit = db.Column(db.Integer) #acrescentei
     project = db.relationship('Project', back_populates='versions')
     executions = db.relationship('Execution', back_populates='version', cascade="all, delete-orphan")
 
