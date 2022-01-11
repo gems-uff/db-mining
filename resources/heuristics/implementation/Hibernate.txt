@@ -1,4 +1,4 @@
-<\s*groupId\s*>\s*org.hibernate
+<\s*groupId\s*>\s*org\.hibernate
 www\.hibernate\.org\/dtd\/hibernate-configuration
 <\s*hibernate-configuration\s*>
 <\s*hibernate-mapping
@@ -6,8 +6,12 @@ www\.hibernate\.org\/dtd\/hibernate-configuration
 @SQLInsert
 @SQLUpdate
 @SQLDelete
-@SQLDeleteAll
+@SQLDeleteAll 
 <\s*sql-insert\s*> 
 <\s*sql-update\s*> 
-<\s*sql-delete\s*>
+<\s*sql-delete\s*> 
 createSQLQuery
+<\s*class[\s*]
+<\s*class>
+import\s*org\.hibernate
+@org\.hibernate\.annotations\.Entity

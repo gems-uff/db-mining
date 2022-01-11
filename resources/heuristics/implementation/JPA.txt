@@ -5,9 +5,11 @@
 <\s*embeddable
 EntityManagerFactory
 EntityManager
-@QueryHints
-@NamedQuery
-@NamedQueries
+@QueryHints  
+@NamedQuery  
+@NamedQueries 
 openjpa\.ConnectionDriverName
 @NamedEntityGraph
 <\s*persistence
+<\s*named-query
+JpaSort

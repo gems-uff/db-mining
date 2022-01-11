@@ -133,7 +133,7 @@ def get_or_create_labels():
                         'pattern': pattern,
                     }
                     labels_fs[(label_fs['type'], label_fs['name'])] = label_fs
-
+    print(labels_fs)
     # Loading labels from the database.
     labels_db = db.query(db.Label).options(selectinload(db.Label.heuristic).options(selectinload(db.Heuristic.executions).defer('output').defer('user'))).all()
 
