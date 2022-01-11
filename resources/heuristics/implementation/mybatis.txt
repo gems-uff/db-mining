@@ -1,5 +1,5 @@
 <\s*artifactId\s*>\s*mybatis
-mybatis\.org\/dtd\/mybatis-3-config\.dtd
+mybatis\.org\/dtd\/mybatis
 typeAliases
 <\s*mappers\s*>
 <\s*mapper 
@@ -11,3 +11,10 @@ typeAliases
 <\s*insert
 <\s*update
 <\s*delete
+<\s*resultMap
+<\s*collection
+<\s*discriminator
+<\s*cache
+<\s*cache-ref
+import\s*org\.mybatis
+import\s*org\.apache\.ibatis
