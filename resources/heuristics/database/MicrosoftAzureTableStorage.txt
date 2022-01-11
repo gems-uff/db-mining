@@ -1,0 +1,4 @@
+import\s*com\.azure\.data\.tables
+TableClient
+TableServiceClient
+<\s*artifactId\s*>\s*azure-data-tables​
