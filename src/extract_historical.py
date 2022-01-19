@@ -1,5 +1,6 @@
 import os
 import subprocess
+from sys import version
 from time import time
 
 import pandas as pd
@@ -300,9 +301,8 @@ def main():
     print(f'\nProcessing  {len(projects)} projects over {len(labels)} heuristics.')
     for j, project in enumerate(projects):
         #Ponto q limita as versões para a qtde de projetos
-        version = project.versions[j]  # TODO: fix this to deal with multiple versions
-             
-        
+        #version = project.versions[j]  # TODO: fix this to deal with multiple versions
+                
         # Print progress projects information 
         
         progress = '{:.2%}'.format((j * len(projects) + (j + 1)) / status['Total'])
@@ -316,6 +316,8 @@ def main():
             tam = len(commits)
             #print (tam)
             for i in range (tam):
+                version = project.versions[i]
+                
                 #linha = []
                 cmd = ''
                 #cmd = ''
@@ -332,6 +334,10 @@ def main():
                 print("Commit:",i , commits[i])
                 
                 db.create(db.Version, sha1=commits[i], isLast=True, project=project, part_commit=i+1)
+                #version = db.get_or_create(db.Version, column = id)
+                #version = db.Version.id
+                print(version)
+                #db.add(db.Version, sha1=commits[i], isLast=True, project=project, part_commit=i+1)
                 
                 #print(version_t)
                 for i, label in enumerate(labels):
