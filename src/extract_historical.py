@@ -270,7 +270,7 @@ def list_commits():
 
 def main():
     db.connect()
-    REPOS_DIR = "/home/raquelmax/wsl_projects/repos_test1"
+    REPOS_DIR = "/home/raquelmax/wsl_projects/repos_test"
     #print(f'Loading projects from {ANNOTATED_FILE_JAVA}.')
     print(f'Loading projects from ANNOTATED_FILE_JAVA')
     projects = get_or_create_projects()
