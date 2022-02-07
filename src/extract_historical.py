@@ -38,7 +38,7 @@ REVLIST_COMMAND = ['git','rev-list', '--all','--reverse']
 REVCOUNT_COMMAND = ['git','rev-list','--all','--count']
 #GREP_COMMAND = ['git', 'grep', '-i', '--extended-regexp']
 CHECK_COMMAND = ['git','checkout']
-
+first_commit = ''
 
 def print_results(status):
     print('\nRESULTS')
@@ -57,7 +57,7 @@ def get_or_create_projects():
 
     # Loading projects from the Excel.
     ANNOTATED_FILE_JAVA = "/home/raquelmax/wsl_projects/resources/annotated_test.xlsx"
-    REPOS_DIR = "/home/raquelmax/wsl_projects/repos_test"
+    REPOS_DIR = "/home/raquelmax/wsl_projects/repos_test1"
     df = pd.read_excel(ANNOTATED_FILE_JAVA, keep_default_na=False)
     df = df[df.discardReason == ''].reset_index(drop=True)
     projects_excel = dict()
@@ -114,7 +114,7 @@ def get_or_create_projects():
 
             project = db.create(db.Project, **project_dict)
             #Included part_commit
-            db.create(db.Version, sha1=p.stdout.decode().strip(), isLast=True, project=project, part_commit=0)
+            #db.create(db.Version, sha1=p.stdout.decode().strip(), isLast=True, project=project, part_commit=0)
             #print(p.stdout.decode().strip())
             projects.append(project)
             print(green('ok.'))
@@ -266,11 +266,11 @@ def list_commits():
                 lista_commit.append(line.rstrip())
                 #print(lista_commit[i], c_line, partes)
     return lista_commit
-
+    
 
 def main():
     db.connect()
-    REPOS_DIR = "/home/raquelmax/wsl_projects/repos_test"
+    REPOS_DIR = "/home/raquelmax/wsl_projects/repos_test1"
     #print(f'Loading projects from {ANNOTATED_FILE_JAVA}.')
     print(f'Loading projects from ANNOTATED_FILE_JAVA')
     projects = get_or_create_projects()
@@ -302,12 +302,6 @@ def main():
     for j, project in enumerate(projects):
         #Ponto q limita as versões para a qtde de projetos
         #version = project.versions[j]  # TODO: fix this to deal with multiple versions
-                
-        # Print progress projects information 
-        
-        progress = '{:.2%}'.format((j * len(projects) + (j + 1)) / status['Total'])
-        print(f'[{progress}] Searching for Heuristics in {project.owner}/{project.name}:', end=' ')
-
         try:
             os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
 
@@ -316,45 +310,24 @@ def main():
             tam = len(commits)
             #print (tam)
             for i in range (tam):
-                version = project.versions[i]
-                
-                #linha = []
+      
                 cmd = ''
-                #cmd = ''
                 cmd = CHECK_COMMAND + [commits[i]]
-                #cmd = CHECK_COMMAND + [str(commits[i])[0:8]]
-                #print(str(commits[i])[2:10])
-               
-                # uma solução, porém alterada para utilizar um processo bloqueante:
-                #s = subprocess.Popen(['git', 'checkout', str(commits[i])[2:10]], stdout=subprocess.PIPE, universal_newlines=True)
-                #stdout = s.communicate()[0]
-                
+                        
                 p = subprocess.run(cmd, capture_output=True)
                 #print(p)
                 print("Commit:",i , commits[i])
-                
+                                                
                 db.create(db.Version, sha1=commits[i], isLast=True, project=project, part_commit=i+1)
-                #version = db.get_or_create(db.Version, column = id)
-                #version = db.Version.id
-                print(version)
-                #db.add(db.Version, sha1=commits[i], isLast=True, project=project, part_commit=i+1)
-                
-                #print(version_t)
+                version = project.versions[i]
+                                                
                 for i, label in enumerate(labels):
                     heuristic = label.heuristic
-            
-                   # Print progress information Heuristics #projects * len(labels) + (j + 1))
-                    progress = '{:.2%}'.format((i * len(labels) + (j + 1)) / status['Total'])
+                    # Print progress information Heuristics #projects * len(labels) + (j + 1))
+                    progress = '{:.2%}'.format((j * len(labels) + (i + 1)) / status['Total'])
                     print(f'[{progress}] Searching for {label.name} in {project.owner}/{project.name}:', end=' ')
 
                     # Try to get a previous execution
-                    
-                    #version = str(version_t).split()
-                    #version = db.query(db.Version).options(load_only('id'))
-                   
-                    # version = db.Version.las
-                    #projects_db = db.query(db.Project).options(load_only('id', 'owner', 'name'), selectinload(db.Project.versions).load_only('id')).all()
-                    #print(version)
                     execution = executions.get((heuristic, version), None)
                     if not execution:
                         try:
