@@ -132,8 +132,8 @@ def create_list_fanin():
     projects_db = search_projects()
     print("Search results in execution for label and project.")
 
-    for i,label in enumerate(labels_db):
-        for j, project in enumerate(projects_db):
+    for i,project in enumerate(projects_db):
+        for j, label in enumerate(labels_db):
             if(len(index_projects)< len(projects_db)):
                 index_projects.append(project.name)
                 index_domains.append(project.domain)
@@ -142,7 +142,7 @@ def create_list_fanin():
                 .join(db.Execution.heuristic) \
                 .filter(db.Version.project_id == project.id) \
                 .filter(db.Heuristic.label_id == label.id) \
-                .filter(db.Execution.output != '').first()
+                .filter(db.Execution.output != '').first()            
             if(execution is None):
                 print("Execution is none")
             else:
@@ -155,14 +155,16 @@ def create_list_fanin():
                         status['Opened'] += 1
                     else:
                         status['Not .Java'] += 1
-                        
+
+        save_txt(list_java_files, project.owner+"."+project.name)
+        list_java_files.clear()                
+
     status['Duplicated'] = len(list_java_files)                        
     list_java_files = list(set(list_java_files))
     status['Duplicated'] = status['Duplicated'] - len(list_java_files)
     status['Total'] = status['Opened'] + status['Not .Java']
 
     print_results(status)
-    save_txt(list_java_files)
 
 def save(all_results, file):
     print(f'Saving all results to {file}...', end=' ')
@@ -174,12 +176,15 @@ def print_list_files(list_files):
     for k in list_files:
         print(k, "\n")
 
-def save_txt(list_files):
-    print("Saving file .txt")
-    TextFile = open(HEURISTICS_DIR_CLASS, 'w')
-    for k in list_files:
-        TextFile.write(k +"\n")
-    TextFile.close()
+def save_txt(list_files, project):
+    print("Saving file" +project+".txt")
+    try:
+        TextFile = open(HEURISTICS_DIR_CLASS+ os.sep + project+'.txt', 'w+')
+        for k in list_files:
+            TextFile.write(k +"\n")
+        TextFile.close()
+    except FileNotFoundError:
+        print("The 'docs' directory does not exist")
     
 def find_packege(file_path):
     try:
@@ -208,7 +213,8 @@ def search_labels(labelType):
 def create_package_heuristic(file_path):
     package = find_packege(file_path)
     file_name = file_path.split('/')[-1]
-    heuristic_file = "import\s*"+ str(package).replace("\n", "")+"."+file_name.split('.')[0] +";"
+    heuristic_file = "import\s*"+ str(package).replace("\n", "").replace(".", "\.")+"\."+file_name.split('.')[0] +";"
+    #heuristic_file = "import\s*"+ str(package).replace("\n", "").replace(".", "\.")+"."+"[*];"
     return heuristic_file
     
 if __name__ == "__main__":

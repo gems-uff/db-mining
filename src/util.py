@@ -12,7 +12,7 @@ REPOS_DIR = WORKSPACE_DIR + os.sep + 'repos'
 RESOURCE_DIR = BASE_DIR + os.sep + 'resources'
 HEURISTICS_DIR = RESOURCE_DIR + os.sep + 'heuristics'
 HEURISTICS_DIR_EOI = HEURISTICS_DIR + os.sep + 'eo' 
-HEURISTICS_DIR_CLASS = HEURISTICS_DIR + os.sep + 'classes' + os.sep + 'Fanin.txt'
+HEURISTICS_DIR_CLASS = HEURISTICS_DIR + os.sep + '.classes'
 
 REACT_BUILD_DIR = BASE_DIR + os.sep + 'web' + os.sep + 'build'
 REACT_STATIC_DIR = REACT_BUILD_DIR + os.sep + 'static'
