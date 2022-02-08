@@ -6,7 +6,7 @@ import pandas as pd
 
 import database as db
 from sqlalchemy.orm import load_only, selectinload
-from util import ANNOTATED_FILE_JAVA, HEURISTICS_DIR, REPOS_DIR, red, green, yellow, CODE_DEBUG
+from util import HEURISTICS_DIR_CLASS, REPOS_DIR, red, green, yellow, CODE_DEBUG, ANNOTATED_FILE_JAVA_TEST
 
 # Git rev-parse command
 REVPARSE_COMMAND = [
@@ -47,7 +47,7 @@ def get_or_create_projects():
     projects = []
 
     # Loading projects from the Excel.
-    df = pd.read_excel(ANNOTATED_FILE_JAVA, keep_default_na=False)
+    df = pd.read_excel(ANNOTATED_FILE_JAVA_TEST, keep_default_na=False)
     df = df[df.discardReason == ''].reset_index(drop=True)
     projects_excel = dict()
     for i, project_excel in df.iterrows():
@@ -121,21 +121,18 @@ def get_or_create_labels():
 
     # Loading heuristics from the file system.
     labels_fs = dict()
-    for label_type in os.scandir(HEURISTICS_DIR):
-        if label_type.is_dir() and not label_type.name.startswith('.'):
-            for label in os.scandir(label_type.path):
-                if label.is_file() and not label.name.startswith('.'):
-                    with open(label.path) as file:
-                        pattern = file.read()
-                    label_fs = {
-                        'name': os.path.splitext(label.name)[0],
-                        'type': label_type.name,
-                        'pattern': pattern,
+    for label in os.scandir(HEURISTICS_DIR_CLASS):
+        if label.is_file() and not label.name.startswith('.'):
+            with open(label.path) as file:
+                pattern = file.read()
+                label_fs = {
+                    'name': os.path.splitext(label.name)[0],
+                    'type': 'classes',
+                    'pattern': pattern,
                     }
-                    labels_fs[(label_fs['type'], label_fs['name'])] = label_fs
+        labels_fs[(label_fs['type'], label_fs['name'])] = label_fs
     # Loading labels from the database.
     labels_db = db.query(db.Label).options(selectinload(db.Label.heuristic).options(selectinload(db.Heuristic.executions).defer('output').defer('user'))).all()
-
     status = {
         'File System': len(labels_fs),
         'Database': len(labels_db),
@@ -167,14 +164,14 @@ def get_or_create_labels():
                         execution.heuristic = None
                         execution.version = None
 
-                        db.delete(execution)
+                        #db.delete(execution)
                         count += 1
                 print(green(f'heuristic updated ({count} executions removed).'))
                 status['Updated'] += 1
             else:
                 print(yellow('already done.'))
         else:
-            db.delete(label)
+            #db.delete(label)
             status['Deleted'] += 1
 
     # Adding missing labels in the database
@@ -213,7 +210,7 @@ def main():
     print(f'Loading projects from {ANNOTATED_FILE_JAVA_TEST}.')
     projects = get_or_create_projects()
 
-    print(f'\nLoading heuristics from {HEURISTICS_DIR}.')
+    print(f'\nLoading heuristics from {HEURISTICS_DIR_CLASS}.')
     labels = get_or_create_labels()
 
     # Indexing executions by label heuristic and project version.
@@ -230,37 +227,39 @@ def main():
     print(f'\nProcessing {len(labels)} heuristics over {len(projects)} projects.')
     for i, label in enumerate(labels):
         heuristic = label.heuristic
-        for j, project in enumerate(projects):
-            version = project.versions[0]  # TODO: fix this to deal with multiple versions
+        heuristic_objct_label = db.query(db.Label).filter(db.Label.id == heuristic.label_id).first()
+        project = next((x for x in projects if x.owner == heuristic_objct_label.name.split(".")[0] 
+                        and x.name == heuristic_objct_label.name.split(".")[1]), None)
+        version = project.versions[0]  # TODO: fix this to deal with multiple versions
 
-            # Print progress information
-            progress = '{:.2%}'.format((i * len(projects) + (j + 1)) / status['Total'])
-            print(f'[{progress}] Searching for {label.name} in {project.owner}/{project.name}:', end=' ')
+        # Print progress information
+        progress = '{:.2%}'.format((i * len(projects)) / status['Total'])
+        print(f'[{progress}] Searching for {label.name} in {project.owner}/{project.name}:', end=' ')
 
-            # Try to get a previous execution
-            execution = executions.get((heuristic, version), None)
-            if not execution:
-                try:
-                    os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
-                    cmd = GREP_COMMAND + [HEURISTICS_DIR + os.sep + label.type + os.sep + label.name + '.txt']
-                    p = subprocess.run(cmd, capture_output=True)
-                    if p.stderr:
-                        raise subprocess.CalledProcessError(p.returncode, cmd, p.stdout, p.stderr)
-                    db.create(db.Execution, output=p.stdout.decode(errors='replace').replace('\x00', '\uFFFD'),
-                              version=version, heuristic=heuristic, isValidated=False, isAccepted=False)
-                    print(green('ok.'))
-                    status['Success'] += 1
-                except NotADirectoryError:
-                    print(red('repository not found.'))
-                    status['Repository not found'] += 1
-                except subprocess.CalledProcessError as ex:
-                    print(red('Git error.'))
-                    status['Git error'] += 1
-                    if CODE_DEBUG:
-                        print(ex.stderr)
-            else:  # Execution already exists
-                print(yellow('already done.'))
-                status['Skipped'] += 1
+        # Try to get a previous execution
+        execution = executions.get((heuristic, version), None)
+        if not execution:
+            try:
+                os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
+                cmd = GREP_COMMAND + [HEURISTICS_DIR_CLASS + os.sep + label.name + '.txt']
+                p = subprocess.run(cmd, capture_output=True)
+                if p.stderr:
+                    raise subprocess.CalledProcessError(p.returncode, cmd, p.stdout, p.stderr)
+                db.create(db.Execution, output=p.stdout.decode(errors='replace').replace('\x00', '\uFFFD'),
+                          version=version, heuristic=heuristic, isValidated=False, isAccepted=False)
+                print(green('ok.'))
+                status['Success'] += 1
+            except NotADirectoryError:
+                print(red('repository not found.'))
+                status['Repository not found'] += 1
+            except subprocess.CalledProcessError as ex:
+                print(red('Git error.'))
+                status['Git error'] += 1
+                if CODE_DEBUG:
+                    print(ex.stderr)
+        else:  # Execution already exists
+            print(yellow('already done.'))
+            status['Skipped'] += 1
         commit()
 
     print_results(status)
