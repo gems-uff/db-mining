@@ -1,7 +1,0 @@
-import virtuoso.jena.driver
-import com.hp.hpl.jena
-virtuoso\.jdbc3\.Driver	
-jdbc:virtuoso
-<\s*artifactId\s*>\s*virtjdbc3
-<\s*artifactId\s*>\s*virt_jena
-<\s*artifactIds*>s*virtuoso-jdbc

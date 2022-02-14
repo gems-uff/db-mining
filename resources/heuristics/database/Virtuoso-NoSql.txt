@@ -1,0 +1,4 @@
+import\s*virtuoso\.jena\.driver
+import\s*com\.hp\.hpl\.jena
+<\s*artifactId\s*>\s*virtjdbc3
+<\s*artifactId\s*>\s*virt_jena

@@ -1,4 +1,2 @@
-com\.marklogic\.Driver
-jdbc:\s*marklogic
 <\s*artifactId\s*>\s*marklogic-client-api
 <\s*artifactId\s*>\s*marklogic-xcc

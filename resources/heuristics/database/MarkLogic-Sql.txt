@@ -1,0 +1,2 @@
+com\.marklogic\.Driver
+jdbc:marklogic
