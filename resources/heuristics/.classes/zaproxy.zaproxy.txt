@@ -1,0 +1,2 @@
+import\s*org\.zaproxy\.zap\.extension\.api\.WebUI;
+import\s*org\.zaproxy\.zap\.extension\.autoupdate\.AddOnDependencyChecker;

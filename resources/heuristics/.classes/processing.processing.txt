@@ -1,0 +1,6 @@
+import\s*is\.JEditTextArea;
+import\s*processing\.app\.ui\.Editor;
+import\s*processing\.opengl\.PGraphicsOpenGL;
+import\s*processing\.opengl\.PShapeOpenGL;
+import\s*processing\.mode\.java\.pdex\.ASTUtils;
+import\s*processing\.core\.PApplet;
