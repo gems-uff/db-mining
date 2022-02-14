@@ -5,7 +5,7 @@ import database as db
 from sqlalchemy.orm import load_only, selectinload
 
 import pandas as pd
-from util import CHARACTERIZATION_FILE
+from util import RESOURCE_DIR
 from sqlalchemy import func
 
 
@@ -45,9 +45,9 @@ def create_characterization(type_characterization):
 
 
 def save(all_results, type_characterization):
-    print(f'Saving all results to {CHARACTERIZATION_FILE}...', end=' ')
+    print(f'Saving all results to {RESOURCE_DIR}...', end=' ')
     df = pd.DataFrame(all_results)
-    CHARACTERIZATION_FILE_PATH = CHARACTERIZATION_FILE + type_characterization+ '.xlsx'
+    CHARACTERIZATION_FILE_PATH = RESOURCE_DIR + os.sep + type_characterization+ '.xlsx'
     df.to_excel(CHARACTERIZATION_FILE_PATH, index=False)
     print('Done!')
 
