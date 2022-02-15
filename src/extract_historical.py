@@ -315,7 +315,7 @@ def main():
                         
                 p = subprocess.run(cmd, capture_output=True)
                 #print(p)
-                #print("Commit:",i , commits[i])
+                print("Commit:",i , commits[i])
                                                 
                 db.create(db.Version, sha1=commits[i], isLast=True, project=project, part_commit=i+1)
                 version = project.versions[i]
@@ -347,7 +347,7 @@ def main():
                     else:  # Execution already exists
                         print(yellow('already done.'))
                         status['Skipped'] += 1
-                commit()
+                #commit()
         except NotADirectoryError:
             print(red('repository not found.'))
             status['Repository not found'] += 1

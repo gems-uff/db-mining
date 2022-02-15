@@ -1,5 +1,5 @@
 {
-  "drop_database": "True",
+  "drop_database": "False",
   "database_type": "sqlite",
   "host": "none",
   "port": "none",
