@@ -1,3 +1,0 @@
-import\s*com\.google\.devtools\.build\.lib\.actions\.cache\.CompactPersistentActionCache;
-import\s*proguard\.obfuscate\.SimpleNameFactory;
-import\s*com\.google\.devtools\.build\.android\.resources\.ResourceSymbols;
