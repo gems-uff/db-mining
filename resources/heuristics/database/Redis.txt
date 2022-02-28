@@ -5,4 +5,4 @@ Jedis
 redis:
 <\s*artifactId\s*>\s*lettuce
 <\s*artifactId\s*>\s*jedis
-commons\-pool2
+commons-pool2

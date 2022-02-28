@@ -182,8 +182,8 @@ repos/
 extraction/log.txt
 dblp.xml
 
-#.DS_Store
-#dbmining.sqlite
+.DS_Store
+dbmining.sqlite
 
 # Local examples for db config
 #database.json.postgresql

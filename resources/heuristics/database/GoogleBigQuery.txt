@@ -1,5 +1,5 @@
-import\s*com\.google\.cloud\.bigquery
-com.simba.googlebigquery.jdbc.Driver 
-com.simba.googlebigquery.jdbc.DataSource
+import\s{1,}com\.google\.cloud\.bigquery
+com\.simba\.googlebigquery\.jdbc\.Driver 
+com\.simba\.googlebigquery\.jdbc\.DataSource
 jdbc:bigquery
 <\s*artifactId\s*>\s*google-cloud-bigquery

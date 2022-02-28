@@ -1,5 +1,5 @@
-import\s*com\.google\.firebase\.database
+import\s{1,}com\.google\.firebase\.database
 FirebaseDatabase
 \.firebaseio\.com
 \.firebasedatabase\.app
-firebase\-database
+firebase-database

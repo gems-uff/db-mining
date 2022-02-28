@@ -16,5 +16,5 @@ typeAliases
 <\s*discriminator
 <\s*cache
 <\s*cache-ref
-import\s*org\.mybatis
-import\s*org\.apache\.ibatis
+import\s{1,}org\.mybatis
+import\s{1,}org\.apache\.ibatis

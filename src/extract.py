@@ -210,7 +210,7 @@ def index_executions(labels):
 def main():
     db.connect()
 
-    print(f'Loading projects from {ANNOTATED_FILE_JAVA_TEST}.')
+    print(f'Loading projects from {ANNOTATED_FILE_JAVA}.')
     projects = get_or_create_projects()
 
     print(f'\nLoading heuristics from {HEURISTICS_DIR}.')

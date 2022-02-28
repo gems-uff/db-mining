@@ -1,6 +1,0 @@
-import\s*com\.android\.common\.ide\.common\.xml\.XmlPrettyPrinter;
-import\s*com\.facebook\.buck\.intellij\.ideabuck\.format\.BuckCopyPasteProcessor;
-import\s*com\.facebook\.buck\.cli\.TestSelectorOptions;
-import\s*com\.facebook\.buck\.jvm\.java\.JavacErrorParser;
-import\s*com\.android\.dx\.command\.Main;
-import\s*com\.facebook\.buck\.intellij\.ideabuck\.configurations\.TestConfigurationEditor;
