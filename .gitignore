@@ -191,7 +191,7 @@ dbmining.sqlite
 
 # Generated files for deploy in Elastic Beanstalk
 # Use pipenv lock -r requirements.txt to update
-requirements.txt
+#requirements.txt
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*

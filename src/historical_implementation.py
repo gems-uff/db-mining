@@ -10,7 +10,7 @@ from util import HISTORICAL_FILE
 from sqlalchemy import func
 
 
-def create_characterization():
+def create_historical():
     db.connect()
     all_results = dict()
     index_projects = []
@@ -22,9 +22,8 @@ def create_characterization():
     #print(projects_db)
     labels_db = db.query(db.Label).options(selectinload(db.Label.heuristic).options(selectinload(db.Heuristic.executions).defer('output').defer('user'))).filter(db.Label.type == 'database').all()
     versions_db = db.query(db.Version).options(load_only('id','part_commit','project_id'), selectinload(db.Version.executions).load_only('id')).all()
-    print(versions_db)
+    #print(versions_db)
    
-    print(versions_db)
     print("Search results in execution for label and project.")
     for j, project in enumerate(projects_db):
         if(len(index_projects)< len(projects_db)):
@@ -49,7 +48,6 @@ def create_characterization():
                         #results_Label.append(0)
                         linha.append(0)
                     else:
-                        #if(execution.output != ''):
                         if(execution.output != ''):
                            #results_Label.append(1)
                            linha.append(1)
@@ -66,16 +64,15 @@ def create_characterization():
     #results_Label.clear()
     #print(index_commits)
     
-    print(heuristics)   
     heuristics.insert(0,'COMMITS')
     heuristics.insert(0,'PROJECTS')
-    print(labels_db)
-    print(heuristics)
-    print(results_Label)
-    save(all_results, results_Label, heuristics)
+    #print(labels_db)
+    #print(heuristics)
+    #print(results_Label)
+    save(results_Label, heuristics)
 
 
-def save(all_results, results_Label, heuristics): 
+def save(results_Label, heuristics): 
     print(f'Saving all results to {HISTORICAL_FILE}...', end=' ')
     df = pd.DataFrame(data = results_Label, columns = heuristics)
     
@@ -84,7 +81,7 @@ def save(all_results, results_Label, heuristics):
     print('Done!')
 
 def main():
-    create_characterization()
+    create_historical()
 
 if __name__ == "__main__":
     main()

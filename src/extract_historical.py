@@ -8,8 +8,7 @@ from sqlalchemy.sql.expression import null
 
 import database as db
 from sqlalchemy.orm import load_only, selectinload
-from util import red, green, yellow, CODE_DEBUG
-#ANNOTATED_FILE_JAVA, HEURISTICS_DIR, REPOS_DIR,
+from util import ANNOTATED_FILE_JAVA, HEURISTICS_DIR, REPOS_DIR, red, green, yellow, CODE_DEBUG
 
 # Git rev-parse command
 REVPARSE_COMMAND = [
@@ -56,8 +55,8 @@ def get_or_create_projects():
     projects = []
 
     # Loading projects from the Excel.
-    ANNOTATED_FILE_JAVA = "/home/raquelmax/wsl_projects/resources/annotated_test.xlsx"
-    REPOS_DIR = "/home/raquelmax/wsl_projects/repos_test1"
+    #ANNOTATED_FILE_JAVA = "/home/raquelmax/wsl_projects/resources/annotated_test.xlsx"
+    #REPOS_DIR = "/home/raquelmax/wsl_projects/repos_test1"
     df = pd.read_excel(ANNOTATED_FILE_JAVA, keep_default_na=False)
     df = df[df.discardReason == ''].reset_index(drop=True)
     projects_excel = dict()
@@ -140,7 +139,7 @@ def get_or_create_projects():
 
 def get_or_create_labels():
     labels = []
-    HEURISTICS_DIR = "/home/raquelmax/wsl_projects/heuristic_test"
+    #HEURISTICS_DIR = "/home/raquelmax/wsl_projects/heuristic_test"
     
     # Loading heuristics from the file system.
     labels_fs = dict()
@@ -270,14 +269,14 @@ def list_commits():
 
 def main():
     db.connect()
-    REPOS_DIR = "/home/raquelmax/wsl_projects/repos_test"
-    #print(f'Loading projects from {ANNOTATED_FILE_JAVA}.')
-    print(f'Loading projects from ANNOTATED_FILE_JAVA')
+    print(f'Loading projects from {ANNOTATED_FILE_JAVA}.')
+    #REPOS_DIR = "/home/raquelmax/wsl_projects/repos_test"
+    #print(f'Loading projects from ANNOTATED_FILE_JAVA')
     projects = get_or_create_projects()
 
-    #print(f'\nLoading heuristics from {HEURISTICS_DIR}.')
-    HEURISTICS_DIR = "/home/raquelmax/wsl_projects/heuristic_test"
-    print(f'\nLoading heuristics from HEURISTICS_DIR')
+    print(f'\nLoading heuristics from {HEURISTICS_DIR}.')
+    #HEURISTICS_DIR = "/home/raquelmax/wsl_projects/heuristic_test"
+    #print(f'\nLoading heuristics from HEURISTICS_DIR')
     labels = get_or_create_labels()
 
     # Indexing executions by label heuristic and project version.
@@ -348,7 +347,7 @@ def main():
                     else:  # Execution already exists
                         print(yellow('already done.'))
                         status['Skipped'] += 1
-                commit()
+                #commit()
         except NotADirectoryError:
             print(red('repository not found.'))
             status['Repository not found'] += 1

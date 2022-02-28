@@ -1,3 +1,2 @@
 import\s{1,}org\.apache\.ignite
 IgniteCache
-<\s*artifactId\s*>\s*ignite
