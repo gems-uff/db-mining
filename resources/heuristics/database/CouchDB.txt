@@ -1,4 +1,3 @@
-import\s*com\.datastax
-CassandraConnector
-<\s*artifactId\s*>\s*cassandra
-com\.datastax\.oss
+import\s{1,}}org\.ektorp
+CouchDbConnector
+<\s*artifactId\s*>\s*org\.ektorp

@@ -12,6 +12,6 @@ www\.hibernate\.org\/dtd\/hibernate-configuration
 <\s*sql-delete\s*> 
 createSQLQuery
 <\s*class[\s*]
-<\s*class>
-import\s*org\.hibernate
+<\s*class\s*>
+import\s{1,}org\.hibernate
 @org\.hibernate\.annotations\.Entity

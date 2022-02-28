@@ -1,4 +1,4 @@
-import\s*com\.navercorp\.pinpoint\.batch\.alarm\.WebhookSenderImpl;
-import\s*com\.navercorp\.pinpoint\.web\.AuthorizationConfig;
-import\s*com\.navercorp\.pinpoint\.web\.controller\.UserGroupControllerTest;
-import\s*com\.navercorp\.pinpoint\.web\.dao\.memory\.MemoryUserGroupDaoTest;
+import\s{1,}com\.navercorp\.pinpoint\.batch\.alarm\.WebhookSenderImpl\s*;
+import\s{1,}com\.navercorp\.pinpoint\.web\.AuthorizationConfig\s*;
+import\s{1,}com\.navercorp\.pinpoint\.web\.controller\.UserGroupControllerTest\s*;
+import\s{1,}com\.navercorp\.pinpoint\.web\.dao\.memory\.MemoryUserGroupDaoTest\s*;

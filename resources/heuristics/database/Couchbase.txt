@@ -1,4 +1,4 @@
-import\s*com\.couchbase\.client\.java
+import\s{1,}com\.couchbase\.client\.java
 CouchbaseCluster
-(com\.couchbase\.client.+)\n(\s*<artifactId\s*>\s*java-client)
-couchbase\-client"
+(com\.couchbase\.client\.+)\n(\s*<artifactId\s*>\s*java-client)
+couchbase-client

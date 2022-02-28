@@ -1,4 +1,4 @@
-import\s*com\.datastax
+import\s{1,}com\.datastax
 CassandraConnector
 <\s*artifactId\s*>\s*cassandra
 com\.datastax\.oss
