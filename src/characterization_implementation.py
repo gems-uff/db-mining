@@ -155,6 +155,8 @@ def create_list_fanin():
                         #list_java_files.append(create_package_heuristic_constructor_clone(file_path))
                         #list_java_files.append(create_package_heuristic_constructor_newInstanceClass(file_path))
                         #list_java_files.append(create_package_heuristic_constructor_newInstanceConstructor(file_path))
+                        #list_java_files.append(create_package_heuristic_constructor_abstractMethod(file_path))
+                        
                         status['Opened'] += 1
                     else:
                         status['Not .Java'] += 1
@@ -216,29 +218,35 @@ def search_labels(labelType):
 def create_package_heuristic_import(file_path):
     package = find_packege(file_path)
     file_name = file_path.split('/')[-1]
-    heuristic_file = "import\s*"+ str(package).replace("\n", "").replace(".", "\.")+"\."+file_name.split('.')[0] +";"
-    #heuristic_file = "import\s*"+ str(package).replace("\n", "").replace(".", "\.")+"."+"[*];"
+    heuristic_file = "import\s{1,}"+ str(package).replace("\n", "").replace(".", "\.")+"\."+file_name.split('.')[0] +"\s*;"
+    #heuristic_file = "import\s{1,}"+ str(package).replace("\n", "").replace(".", "\.")+"\."+"\*"
     return heuristic_file
 
 def create_package_heuristic_constructor_new(file_path):
     file_name = file_path.split('/')[-1]
-    heuristic_file = "new\s*"+file_name.split('.')[0] +"\("
+    heuristic_file = "new\s{1,}"+file_name.split('.')[0] +"\s*\("
     return heuristic_file
 
 def create_package_heuristic_constructor_clone(file_path):
     file_name = file_path.split('/')[-1]
-    heuristic_file = "(\(\s*"+file_name.split('.')[0]+"\s*\))(.*)(\.clone\(\);)"
+    heuristic_file = "(\(\s{1,}"+file_name.split('.')[0]+"\s{1,}\))(.*)(\.clone\(\);)"
     return heuristic_file
 
 def create_package_heuristic_constructor_newInstanceClass(file_path):
     file_name = file_path.split('/')[-1]
-    heuristic_file = "(\(\s*"+file_name.split('.')[0]+"\s*\))(.*)(\.newInstance\(\);)"
+    heuristic_file = "(\(\s{1,}"+file_name.split('.')[0]+"\s{1,}\))(.*)(\.newInstance\(\);)"
     return heuristic_file
 
 def create_package_heuristic_constructor_newInstanceConstructor(file_path):
     file_name = file_path.split('/')[-1]
     heuristic_file = file_name.split('.')[0]+"\.class\.getDeclaredConstructor\("
     return heuristic_file
+
+def create_package_heuristic_constructor_abstractMethod(file_path):
+    file_name = file_path.split('/')[-1]
+    heuristic_file = "[|&{}()s\* + ]("+file_name.split('.')[0]+"\.)(.*)"
+    return heuristic_file
+
     
 if __name__ == "__main__":
     main()

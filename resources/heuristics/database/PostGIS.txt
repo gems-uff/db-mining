@@ -1,4 +1,4 @@
-import\s*org\.postgis
+import\s{1,}org\.postgis
 org\.postgis\.PGgeometry
 org\.postgresql\.PGConnection
-<\s*artifactId\s*>\s*postgis\-jdbc
+<\s*artifactId\s*>\s*postgis-jdbc

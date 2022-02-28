@@ -1,4 +1,4 @@
-import\s*com\.mongodb
+import\s{1,}com\.mongodb
 MongoClient
 org\.mongodb
 mongodb-driver

@@ -1,4 +1,4 @@
-import\s*org\.ehcache
+import\s{1,}org\.ehcache
 CacheManager
 <\s*artifactId\s*>\s*ehcache
 <\s*artifactId\s*>\s*terracotta-toolkit

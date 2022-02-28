@@ -3,5 +3,5 @@
 <\s*artifactId\s*>\s*jooq-codegen
 www\.jooq\.org\/xsd\/jooq-codegen
 org\.jooq\.codegen\.JavaGenerator
-import\s*org\.jooq
-import\s*static\s*org\.jooq
+import\s{1,}org\.jooq
+import\s{1,}static\s{1,}org\.jooq

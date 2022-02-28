@@ -1,6 +1,6 @@
 <\s*groupId\s*>\s*org.springframework.boot 
 spring\.datasource\.url
-import\s*org\.springframework\.data\.repository 
+import\s{1,}org\.springframework\.data\.repository 
 @SpringBootApplication 
 @Query 
 www\.springframework\.org\/schema\/
