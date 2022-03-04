@@ -3,7 +3,7 @@ import subprocess
 
 import pandas as pd
 
-from util import ANNOTATED_FILE_JAVA_SAMPLE, REPOS_DIR, green, red, CODE_DEBUG, yellow
+from util import ANNOTATED_FILE_JAVA, REPOS_DIR, green, red, CODE_DEBUG, yellow
 
 
 def main():
@@ -11,8 +11,8 @@ def main():
     This program can be useful to fix collisions (due to data migrated from case insensitive to case sensitive file
     systems) and to update the workspace to the most recent version.
     """
-    print(f'Loading repositories from {ANNOTATED_FILE_JAVA_SAMPLE}.')
-    info_repositories = pd.read_excel(ANNOTATED_FILE_JAVA_SAMPLE, keep_default_na=False)
+    print(f'Loading repositories from {ANNOTATED_FILE_JAVA}.')
+    info_repositories = pd.read_excel(ANNOTATED_FILE_JAVA, keep_default_na=False)
     info_repositories = info_repositories[info_repositories.discardReason == ''].reset_index(drop=True)
 
     status = {
