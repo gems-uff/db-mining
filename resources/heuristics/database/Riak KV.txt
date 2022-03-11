@@ -1,0 +1,4 @@
+import\s{1,}com\.basho\.riak\.client
+[^a-zA-Z|^\/"\_#|0-9]RiakCluster[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]RiakClient[^a-zA-Z|^\/"\_#|0-9]
+<\s*artifactId\s*>riak-client

@@ -1,2 +1,3 @@
 jdbc:ucanaccess
-ucanaccess
+<\s*artifactId\s*>\s*ucanaccess
+sun\.jdbc\.odbc\.JdbcOdbcDriver
