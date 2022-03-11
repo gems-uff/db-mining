@@ -1,4 +1,5 @@
 import\s{1,}org\.apache\.hadoop
+com\.cloudera\.impala\.jdbc
 jdbc:verdict:impala
 jdbc:impala:
 <\s*artifactId\s*>\s*ImpalaJDBC
