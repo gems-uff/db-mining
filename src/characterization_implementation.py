@@ -10,7 +10,7 @@ from sqlalchemy.orm import load_only, selectinload
 
 import pandas as pd
 from extract import print_results
-from util import COUNT_FILE_IMP, REPOS_DIR, HEURISTICS_DIR_CLASS, REPOS_DIR, red, green, yellow
+from util import COUNT_FILE_IMP, REPOS_DIR, HEURISTICS_DIR_FIRST_LEVEL, red, green, yellow
 from sqlalchemy import func
 
 
@@ -150,18 +150,13 @@ def create_list_fanin():
                 for k in output:
                     file_path = REPOS_DIR + os.sep + project.owner + os.sep + project.name + os.sep + k.split('\n', 1)[0]
                     if file_path.endswith('.java'):
-                        list_java_files.append(create_package_heuristic_import(file_path))
-                        #list_java_files.append(create_package_heuristic_constructor_new(file_path))
-                        #list_java_files.append(create_package_heuristic_constructor_clone(file_path))
-                        #list_java_files.append(create_package_heuristic_constructor_newInstanceClass(file_path))
-                        #list_java_files.append(create_package_heuristic_constructor_newInstanceConstructor(file_path))
-                        #list_java_files.append(create_package_heuristic_constructor_abstractMethod(file_path))
-                        
+                        list_java_files.append(create_package_heuristic_import(file_path)) 
+                        #list_java_files.append(create_package_heuristic_constructor_new(file_path))                      
                         status['Opened'] += 1
                     else:
                         status['Not .Java'] += 1
 
-        save_txt(list_java_files, project.owner+"."+project.name)
+        save_txt(list_java_files, project.owner+"."+project.name, HEURISTICS_DIR_FIRST_LEVEL)
         list_java_files.clear()                
 
     status['Duplicated'] = len(list_java_files)                        
@@ -181,10 +176,10 @@ def print_list_files(list_files):
     for k in list_files:
         print(k, "\n")
 
-def save_txt(list_files, project):
+def save_txt(list_files, project, HEURISTICS_DIR):
     print("Saving file" +project+".txt")
     try:
-        TextFile = open(HEURISTICS_DIR_CLASS+ os.sep + project+'.txt', 'w+')
+        TextFile = open(HEURISTICS_DIR+ os.sep + project+'.txt', 'w+')
         for k in list_files:
             TextFile.write(k +"\n")
         TextFile.close()
@@ -218,7 +213,9 @@ def search_labels(labelType):
 def create_package_heuristic_import(file_path):
     package = find_packege(file_path)
     file_name = file_path.split('/')[-1]
-    heuristic_file = "import\s{1,}"+ str(package).replace("\n", "").replace(".", "\.")+"\."+file_name.split('.')[0] +"\s*;"
+    heuristic_file = "[^a-zA-Z|^\/\"\_#|0-9]" + file_name.split('.')[0] + "[^a-zA-Z|^\/\"\_#|0-9]" #[^a-zA-Z|^\/"\_#|0-9]
+    #heuristic_file = "[\s\.\/*}{,^?~=+_*+|;()]" + file_name.split('.')[0] + "[\s\.\/*}{,^?~=+_*+|;()]"
+    #heuristic_file = "'import\s{1,}"+ str(package).replace("\n", "").replace(".", "\.")+"\."+file_name.split('.')[0] +"\s*;',"
     #heuristic_file = "import\s{1,}"+ str(package).replace("\n", "").replace(".", "\.")+"\."+"\*"
     return heuristic_file
 
