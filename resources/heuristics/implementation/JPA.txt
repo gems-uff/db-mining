@@ -3,8 +3,8 @@
 <\s*entity-mappings
 <\s*entity
 <\s*embeddable
-[\s* + }{,.^?~=+\-_\/*\-+.\|;()]EntityManagerFactory[\s* + }{,.^?~=+\-_\/*\-+.\|;()]
-[\s* + }{,.^?~=+\-_\/*\-+.\|;()]EntityManager[\s* + }{,.^?~=+\-_\/*\-+.\|;()]
+[^a-zA-Z|^\/"\_#|0-9]EntityManagerFactory[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]EntityManager[^a-zA-Z|^\/"\_#|0-9]
 @QueryHints  
 @NamedQuery  
 @NamedQueries 

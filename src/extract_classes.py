@@ -6,7 +6,7 @@ import pandas as pd
 
 import database as db
 from sqlalchemy.orm import load_only, selectinload
-from util import HEURISTICS_DIR_CLASS, REPOS_DIR, red, green, yellow, CODE_DEBUG, ANNOTATED_FILE_JAVA_TEST
+from util import HEURISTICS_DIR_FIRST_LEVEL, REPOS_DIR, red, green, yellow, CODE_DEBUG, ANNOTATED_FILE_JAVA_TEST
 
 # Git rev-parse command
 REVPARSE_COMMAND = [
@@ -121,7 +121,7 @@ def get_or_create_labels():
 
     # Loading heuristics from the file system.
     labels_fs = dict()
-    for label in os.scandir(HEURISTICS_DIR_CLASS):
+    for label in os.scandir(HEURISTICS_DIR_FIRST_LEVEL):
         if label.is_file() and not label.name.startswith('.'):
             with open(label.path) as file:
                 pattern = file.read()
@@ -210,7 +210,7 @@ def main():
     print(f'Loading projects from {ANNOTATED_FILE_JAVA_TEST}.')
     projects = get_or_create_projects()
 
-    print(f'\nLoading heuristics from {HEURISTICS_DIR_CLASS}.')
+    print(f'\nLoading heuristics from {HEURISTICS_DIR_FIRST_LEVEL}.')
     labels = get_or_create_labels()
 
     # Indexing executions by label heuristic and project version.
@@ -241,7 +241,7 @@ def main():
         if not execution:
             try:
                 os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
-                cmd = GREP_COMMAND + [HEURISTICS_DIR_CLASS + os.sep + label.name + '.txt']
+                cmd = GREP_COMMAND + [HEURISTICS_DIR_FIRST_LEVEL + os.sep + label.name + '.txt']
                 p = subprocess.run(cmd, capture_output=True)
                 if p.stderr:
                     raise subprocess.CalledProcessError(p.returncode, cmd, p.stdout, p.stderr)

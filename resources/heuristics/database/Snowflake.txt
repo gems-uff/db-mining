@@ -1,3 +1,4 @@
-import\s{1,}org\.ektorp
-CouchDbConnector
-<\s*artifactId\s*>\s*org\.ektorp
+import\s{1,}net\.snowflake\.client\.jdbc
+net\.snowflake\.client\.jdbc\.SnowflakeDriver
+jdbc:snowflake
+<*\sartifactId*\s>*\ssnowflake-jdbc

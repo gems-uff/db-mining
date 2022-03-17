@@ -1,4 +1,4 @@
 import\s{1,}org\.neo4j\.
-Neo4jRule
-DatabaseManagementService
+[^a-zA-Z|^\/"\_#|0-9]Neo4jRule[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]DatabaseManagementService[^a-zA-Z|^\/"\_#|0-9]
 <\s*artifactId\s*>\s*neo4j
