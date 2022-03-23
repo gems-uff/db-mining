@@ -11,5 +11,5 @@
 openjpa\.ConnectionDriverName
 @NamedEntityGraph
 <\s*persistence
-<\s*named-query
+<\s*named-query\s{1,}
 JpaSort

@@ -30,7 +30,6 @@
 [^a-zA-Z|^\/"\_#|0-9]PostgreSqlTckModule[^a-zA-Z|^\/"\_#|0-9]
 [^a-zA-Z|^\/"\_#|0-9]UserDevfilePermissionImpl[^a-zA-Z|^\/"\_#|0-9]
 [^a-zA-Z|^\/"\_#|0-9]WorkerImpl[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]PersistTestModuleBuilder[^a-zA-Z|^\/"\_#|0-9]
 [^a-zA-Z|^\/"\_#|0-9]DBInitializer[^a-zA-Z|^\/"\_#|0-9]
 [^a-zA-Z|^\/"\_#|0-9]DBTermination[^a-zA-Z|^\/"\_#|0-9]
 [^a-zA-Z|^\/"\_#|0-9]PersistTestModuleBuilder[^a-zA-Z|^\/"\_#|0-9]

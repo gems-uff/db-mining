@@ -1,7 +1,8 @@
 
 import database as db
 import os
-from util import  REPOS_DIR, HEURISTICS_DIR_FIRST_LEVEL, HEURISTICS_DIR_SECOND_LEVEL, red, green, yellow
+import pandas as pd
+from util import  REPOS_DIR, HEURISTICS_DIR_FIRST_LEVEL, HEURISTICS_DIR_SECOND_LEVEL, USAGE_FAN_IN_FILE, red, green, yellow
 from characterization_implementation import search_labels, search_projects, create_package_heuristic_import, save_txt, print_results
 
 
@@ -54,6 +55,8 @@ def create_list_fanin_second_level():
     print_results(status)
 
 def create_separate_file_level():
+    results = dict()
+    all_results = []
     first_level=[]
     second_level = []
     second_level_pure=[]
@@ -92,12 +95,26 @@ def create_separate_file_level():
 
         save_txt(second_level_pure, project.owner+"."+project.name, HEURISTICS_DIR_SECOND_LEVEL)
         status['Total'] = status['First-Level'] + status['Second-Level']
-        print_results(status)
+
+        results["Projects"] = project.name
+        results["First-Level"] = status['First-Level']
+        results["Second-Level"] = status['Second-Level']
+        results["Total"] = status['Total']
+        all_results.append(results.copy())
+        #print_results(status)
+
         status.clear()
         second_level_pure.clear()
+        results.clear()
+    save(all_results)
+    #print(all_results)
 
     
-
+def save(all_results):
+    print(f'Saving all results to {USAGE_FAN_IN_FILE}...', end=' ')
+    df = pd.DataFrame(all_results)
+    df.to_excel(USAGE_FAN_IN_FILE, index=False)
+    print('Done!')
     
 def main():
     create_list_fanin_second_level()

@@ -177,7 +177,7 @@ def print_list_files(list_files):
         print(k, "\n")
 
 def save_txt(list_files, project, HEURISTICS_DIR):
-    print("Saving file" +project+".txt")
+    print("Saving file " +project+".txt")
     try:
         TextFile = open(HEURISTICS_DIR+ os.sep + project+'.txt', 'w+')
         for k in list_files:
