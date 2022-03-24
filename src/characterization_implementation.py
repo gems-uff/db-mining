@@ -125,6 +125,7 @@ def create_list_fanin():
         'Opened': 0,
         'Not .Java': 0,
         'Duplicated': 0,
+        'None': 0,
         'Total': 0
     }
 
@@ -144,20 +145,20 @@ def create_list_fanin():
                 .filter(db.Heuristic.label_id == label.id) \
                 .filter(db.Execution.output != '').first()            
             if(execution is None):
-                print("Execution is none")
+                status['None'] += 1
             else:
                 output = execution.output.split('\n\n')
                 for k in output:
                     file_path = REPOS_DIR + os.sep + project.owner + os.sep + project.name + os.sep + k.split('\n', 1)[0]
-                    print(file_path+"\n")
+                    file_path = file_path.replace('\x1b[m', '')
                     if file_path.endswith('.java'):
-                        list_java_files.append(create_package_heuristic_import(file_path)) 
-                        #list_java_files.append(create_package_heuristic_constructor_new(file_path))                      
+                        list_java_files.append(create_package_heuristic_import(file_path))                      
                         status['Opened'] += 1
                     else:
                         status['Not .Java'] += 1
 
-        save_txt(list_java_files, project.owner+"."+project.name, HEURISTICS_DIR_FIRST_LEVEL)
+        if len(list_java_files)>0:
+            save_txt(list_java_files, project.owner+"."+project.name, HEURISTICS_DIR_FIRST_LEVEL)
         list_java_files.clear()                
 
     status['Duplicated'] = len(list_java_files)                        
@@ -212,7 +213,7 @@ def search_labels(labelType):
     return labels_db
 
 def create_package_heuristic_import(file_path):
-    package = find_packege(file_path)
+    #package = find_packege(file_path)
     file_name = file_path.split('/')[-1]
     heuristic_file = "[^a-zA-Z|^\/\"\_#|0-9]" + file_name.split('.')[0] + "[^a-zA-Z|^\/\"\_#|0-9]" #[^a-zA-Z|^\/"\_#|0-9]
     #heuristic_file = "[\s\.\/*}{,^?~=+_*+|;()]" + file_name.split('.')[0] + "[\s\.\/*}{,^?~=+_*+|;()]"
