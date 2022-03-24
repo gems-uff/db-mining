@@ -1,3 +1,3 @@
 import\s{1,}io\.realm
-RealmConfiguration
+[^a-zA-Z|^\/"\_#|0-9]RealmConfiguration[^a-zA-Z|^\/"\_#|0-9]
 <\s*artifactId\s*>\s*realm-android

@@ -1,0 +1,4 @@
+import\s{1,}com\.azure\.data\.tables
+[^a-zA-Z|^\/"\_#|0-9]TableClient[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]TableServiceClient[^a-zA-Z|^\/"\_#|0-9]
+<\s*artifactId\s*>\s*azure-data-tables​
