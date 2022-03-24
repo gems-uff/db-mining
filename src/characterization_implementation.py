@@ -149,6 +149,7 @@ def create_list_fanin():
                 output = execution.output.split('\n\n')
                 for k in output:
                     file_path = REPOS_DIR + os.sep + project.owner + os.sep + project.name + os.sep + k.split('\n', 1)[0]
+                    print(file_path+"\n")
                     if file_path.endswith('.java'):
                         list_java_files.append(create_package_heuristic_import(file_path)) 
                         #list_java_files.append(create_package_heuristic_constructor_new(file_path))                      
