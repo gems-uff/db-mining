@@ -14,6 +14,7 @@ def create_list_fanin_second_level():
         'Opened': 0,
         'Not .Java': 0,
         'Duplicated': 0,
+        'None' : 0,
         'Total': 0
     }
 
@@ -33,7 +34,7 @@ def create_list_fanin_second_level():
                 .filter(db.Heuristic.label_id == label.id) \
                 .filter(db.Execution.output != '').first()            
             if(execution is None):
-                print("Execution is none")
+                status['None'] += 1
             else:
                 output = execution.output.split('\n\n')
                 for k in output:
