@@ -6,7 +6,7 @@ import pandas as pd
 
 import database as db
 from sqlalchemy.orm import load_only, selectinload
-from util import HEURISTICS_DIR_FIRST_LEVEL, REPOS_DIR, red, green, yellow, CODE_DEBUG, ANNOTATED_FILE_JAVA
+from util import ANNOTATED_FILE_JAVA, HEURISTICS_DIR_FIRST_LEVEL, REPOS_DIR, red, green, yellow, CODE_DEBUG
 
 # Git rev-parse command
 REVPARSE_COMMAND = [
@@ -230,7 +230,7 @@ def main():
         heuristic_objct_label = db.query(db.Label).filter(db.Label.id == heuristic.label_id).first()
         project = next((x for x in projects if x.owner == heuristic_objct_label.name.split(".")[0] 
                         and x.name == heuristic_objct_label.name.split(".")[1]), None)
-        if (project is None):
+        if (project is None or (project.name=='languagetool' and project.owner=='languagetool-org')):
             continue
         version = project.versions[0]  # TODO: fix this to deal with multiple versions
 
