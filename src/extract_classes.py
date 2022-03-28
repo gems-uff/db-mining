@@ -230,7 +230,7 @@ def main():
         heuristic_objct_label = db.query(db.Label).filter(db.Label.id == heuristic.label_id).first()
         project = next((x for x in projects if x.owner == heuristic_objct_label.name.split(".")[0] 
                         and x.name == heuristic_objct_label.name.split(".")[1]), None)
-        if (project is None or (project.name=='languagetool' and project.owner=='languagetool-org')):
+        if (project is None ):
             continue
         version = project.versions[0]  # TODO: fix this to deal with multiple versions
 
