@@ -1,0 +1,8 @@
+[^a-zA-Z|^\/"\_#|0-9]DataSourceDecoratorAutoConfigurationTests[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]P6SpyConfigurationTests[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]ProxyDataSourceConfigurationTests[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]SleuthP6SpyListenerAutoConfigurationTests[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]SleuthProxyDataSourceListenerAutoConfigurationTests[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]TracingJdbcEventListenerTests[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]TracingListenerStrategyTests[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]TracingQueryExecutionListenerTests[^a-zA-Z|^\/"\_#|0-9]

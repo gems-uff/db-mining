@@ -1,0 +1,7 @@
+[^a-zA-Z|^\/"\_#|0-9]ClientFunctionalTestSuite[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]SparkClientFunctionalTestSuite[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]HoodieSparkFunctionalTestSuite[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]HiveSyncFunctionalTestSuite[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]UtilitiesFunctionalTestSuite[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]HoodieDLAClient[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]QueryBasedDDLExecutor[^a-zA-Z|^\/"\_#|0-9]

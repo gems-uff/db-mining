@@ -1,0 +1,4 @@
+[^a-zA-Z|^\/"\_#|0-9]AddressBookDao[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]ExchangeRateDao[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]AddressBookEntry[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]ExchangeRateEntry[^a-zA-Z|^\/"\_#|0-9]

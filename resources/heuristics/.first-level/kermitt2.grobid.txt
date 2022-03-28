@@ -1,0 +1,2 @@
+[^a-zA-Z|^\/"\_#|0-9]GrobidServicePropConfiguration[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]GrobidServiceModuleTest[^a-zA-Z|^\/"\_#|0-9]

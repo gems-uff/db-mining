@@ -1,0 +1,2 @@
+[^a-zA-Z|^\/"\_#|0-9]GrandExchangeController[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]LootTrackerController[^a-zA-Z|^\/"\_#|0-9]

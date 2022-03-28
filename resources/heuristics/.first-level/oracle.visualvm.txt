@@ -1,0 +1,2 @@
+[^a-zA-Z|^\/"\_#|0-9]ExternalSourcesViewer[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]CPUResultsSnapshot[^a-zA-Z|^\/"\_#|0-9]
