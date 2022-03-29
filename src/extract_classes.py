@@ -246,7 +246,7 @@ def main():
                 os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
                 cmd = GREP_COMMAND + [HEURISTICS_DIR_FIRST_LEVEL + os.sep + label.name + '.txt']
                 print(cmd)
-                p = subprocess.run(cmd, capture_output=True)
+                p = subprocess.run(cmd, capture_output=True, timeout=120)
                 print(p)
                 if p.stderr:
                     raise subprocess.CalledProcessError(p.returncode, cmd, p.stdout, p.stderr)
