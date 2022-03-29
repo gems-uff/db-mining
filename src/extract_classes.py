@@ -41,7 +41,6 @@ def print_results(status):
 def commit():
     print('Committing changes...')
     db.commit()
-    print('Commitou')
 
 def get_or_create_projects():
     projects = []
@@ -223,10 +222,9 @@ def main():
         'Git error': 0,
         'Total': len(labels) * len(projects)
     }
-    db.close()
+    
     print(f'\nProcessing {len(labels)} heuristics over {len(projects)} projects.')
     for i, label in enumerate(labels):
-        db.connect()
         heuristic = label.heuristic
         heuristic_objct_label = db.query(db.Label).filter(db.Label.id == heuristic.label_id).first()
         project = next((x for x in projects if x.owner == heuristic_objct_label.name.split(".")[0] 
@@ -245,9 +243,7 @@ def main():
             try:
                 os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
                 cmd = GREP_COMMAND + [HEURISTICS_DIR_FIRST_LEVEL + os.sep + label.name + '.txt']
-                print(cmd)
-                p = subprocess.run(cmd, capture_output=True, timeout=120)
-                print(p)
+                p = subprocess.run(cmd, capture_output=True, timeout=120) 
                 if p.stderr:
                     raise subprocess.CalledProcessError(p.returncode, cmd, p.stdout, p.stderr)
                 db.create(db.Execution, output=p.stdout.decode(errors='replace').replace('\x00', '\uFFFD'),
@@ -257,7 +253,7 @@ def main():
             except NotADirectoryError:
                 print(red('repository not found.'))
                 status['Repository not found'] += 1
-            except subprocess.CalledProcessError as ex:
+            except subprocess.CalledProcessError or subprocess.TimeoutExpired as ex:
                 print(red('Git error.'))
                 status['Git error'] += 1
                 if CODE_DEBUG:
@@ -267,10 +263,10 @@ def main():
             status['Skipped'] += 1
         print("commit")
         commit()
-        db.close()
+        
 
     print_results(status)
-    
+    db.close()
 
 
 if __name__ == "__main__":
