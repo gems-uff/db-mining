@@ -243,7 +243,12 @@ def main():
             try:
                 os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
                 cmd = GREP_COMMAND + [HEURISTICS_DIR_FIRST_LEVEL + os.sep + label.name + '.txt']
-                p = subprocess.run(cmd, capture_output=True, timeout=120) 
+                try:
+                    p = subprocess.run(cmd, capture_output=True, timeout=120)
+                except subprocess.TimeoutExpired:
+                    print(red('Git error(Timeout).'))
+                    status['Git error'] += 1
+                    continue    
                 if p.stderr:
                     raise subprocess.CalledProcessError(p.returncode, cmd, p.stdout, p.stderr)
                 db.create(db.Execution, output=p.stdout.decode(errors='replace').replace('\x00', '\uFFFD'),
@@ -253,7 +258,7 @@ def main():
             except NotADirectoryError:
                 print(red('repository not found.'))
                 status['Repository not found'] += 1
-            except subprocess.CalledProcessError or subprocess.TimeoutExpired as ex:
+            except subprocess.CalledProcessError as ex:
                 print(red('Git error.'))
                 status['Git error'] += 1
                 if CODE_DEBUG:
