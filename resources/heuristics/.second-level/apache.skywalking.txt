@@ -1,3 +1,5 @@
+[^a-zA-Z|^\/"\_#|0-9]MultiScopesAnalysisListener[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]NodeType[^a-zA-Z|^\/"\_#|0-9]
 [^a-zA-Z|^\/"\_#|0-9]ServiceTopologyBuilder[^a-zA-Z|^\/"\_#|0-9]
 [^a-zA-Z|^\/"\_#|0-9]UserController[^a-zA-Z|^\/"\_#|0-9]
 [^a-zA-Z|^\/"\_#|0-9]UserRepo[^a-zA-Z|^\/"\_#|0-9]

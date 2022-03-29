@@ -1,0 +1,5 @@
+[^a-zA-Z|^\/"\_#|0-9]RedissonCacheTest[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]RedissonCacheMeterBinderProvider[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]RedissonCacheMetrics[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]RedissonCacheStatisticsAutoConfiguration[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]RedissonSpringCacheManager[^a-zA-Z|^\/"\_#|0-9]

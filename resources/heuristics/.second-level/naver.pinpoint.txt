@@ -4,7 +4,6 @@
 [^a-zA-Z|^\/"\_#|0-9]SqlSessionTemplate_1_1_x_IT[^a-zA-Z|^\/"\_#|0-9]
 [^a-zA-Z|^\/"\_#|0-9]SqlSessionTemplate_1_2_x_IT[^a-zA-Z|^\/"\_#|0-9]
 [^a-zA-Z|^\/"\_#|0-9]SqlSessionTemplate_1_3_x_IT[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]AuthorizationConfig[^a-zA-Z|^\/"\_#|0-9]
 [^a-zA-Z|^\/"\_#|0-9]AlarmDao[^a-zA-Z|^\/"\_#|0-9]
 [^a-zA-Z|^\/"\_#|0-9]UserGroupDao[^a-zA-Z|^\/"\_#|0-9]
 [^a-zA-Z|^\/"\_#|0-9]MemoryAlarmDao[^a-zA-Z|^\/"\_#|0-9]

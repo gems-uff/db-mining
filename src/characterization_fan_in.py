@@ -37,14 +37,17 @@ def create_list_fanin_second_level():
                 status['None'] += 1
             else:
                 output = execution.output.split('\n\n')
-                for k in output:
+                for k in output:                    
                     file_path = REPOS_DIR + os.sep + project.owner + os.sep + project.name + os.sep + k.split('\n', 1)[0]
+                    file_path = file_path.replace('\x1b[m', '')
+                    print(file_path)
                     if file_path.endswith('.java'):
+                        print('is Java')
                         list_java_files.append(create_package_heuristic_import(file_path))                        
                         status['Opened'] += 1
                     else:
                         status['Not .Java'] += 1
-
+        print(list_java_files)
         save_txt(list_java_files, project.owner+"."+project.name, HEURISTICS_DIR_SECOND_LEVEL)
         list_java_files.clear()                
 
@@ -102,13 +105,13 @@ def create_separate_file_level():
         results["Second-Level"] = status['Second-Level']
         results["Total"] = status['Total']
         all_results.append(results.copy())
-        #print_results(status)
+        print_results(status)
 
         status.clear()
         second_level_pure.clear()
         results.clear()
     save(all_results)
-    #print(all_results)
+    print(all_results)
 
     
 def save(all_results):

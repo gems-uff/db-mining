@@ -1,0 +1,5 @@
+[^a-zA-Z|^\/"\_#|0-9]CapacityManagementAspect[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]RequestLogAspect[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]UserControllerTest[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]InstanceControllerTest[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]ServiceControllerTest[^a-zA-Z|^\/"\_#|0-9]

@@ -1,0 +1,2 @@
+[^a-zA-Z|^\/"\_#|0-9]RuntimeBundle[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]EntityManagerImplTest[^a-zA-Z|^\/"\_#|0-9]

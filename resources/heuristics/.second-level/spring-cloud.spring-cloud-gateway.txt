@@ -1,0 +1,2 @@
+[^a-zA-Z|^\/"\_#|0-9]GatewayControllerEndpoint[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]GatewayLegacyControllerEndpoint[^a-zA-Z|^\/"\_#|0-9]

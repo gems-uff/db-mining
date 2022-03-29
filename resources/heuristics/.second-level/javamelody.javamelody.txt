@@ -1,0 +1,7 @@
+[^a-zA-Z|^\/"\_#|0-9]FilterContext[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]JpaOverridePersistenceXmlClassLoader[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]MonitoringController[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]HtmlCoreReport[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]HtmlCounterRequestGraphReport[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]HtmlReport[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]Main[^a-zA-Z|^\/"\_#|0-9]
