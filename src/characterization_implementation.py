@@ -7,6 +7,7 @@ from sqlalchemy.sql.elements import Null
 from sqlalchemy.sql.expression import null
 import database as db
 from sqlalchemy.orm import load_only, selectinload
+from strip_ansi import strip_ansi
 
 import pandas as pd
 from extract import print_results
@@ -150,7 +151,8 @@ def create_list_fanin():
                 output = execution.output.split('\n\n')
                 for k in output:
                     file_path = REPOS_DIR + os.sep + project.owner + os.sep + project.name + os.sep + k.split('\n', 1)[0]
-                    file_path = file_path.replace('\x1b[m', '')
+                    file_path = strip_ansi("\x1b[m"+file_path+"\x1b[m")
+                    #file_path = file_path.replace('\x1b[m', '')
                     if file_path.endswith('.java'):
                         list_java_files.append(create_package_heuristic_import(file_path))                      
                         status['Opened'] += 1

@@ -70,8 +70,9 @@ def create_separate_file_level():
 
     for i, project in enumerate(projects_db):
         status = {
-        'First-Level': 0,
-        'Second-Level': 0,
+        'DB-Code(Java)': 0,
+        'DB-Code(XML)': 0,
+        'Dependencies': 0,
         'Error-first':0,
         'Error-second':0,
         'Total': 0
@@ -92,17 +93,18 @@ def create_separate_file_level():
             print("The 'docs' directory does not exist")
         for i in second_level:
             if i in first_level:
-                status['First-Level'] += 1
+                status['DB-Code(Java)'] += 1
             else:
                 second_level_pure.append(i)
-                status['Second-Level'] += 1
+                status['Dependencies'] += 1
 
         save_txt(second_level_pure, project.owner+"."+project.name, HEURISTICS_DIR_SECOND_LEVEL)
-        status['Total'] = status['First-Level'] + status['Second-Level']
+        status['Total'] = status['DB-Code(Java)'] + status['Dependencies']
 
         results["Projects"] = project.name
-        results["First-Level"] = status['First-Level']
-        results["Second-Level"] = status['Second-Level']
+        results["DB-Code(Java)"] = status['DB-Code(Java)']
+        results["DB-Code(XML)"] = count_file_xml(project)
+        results["Dependencies"] = status['Dependencies']
         results["Total"] = status['Total']
         all_results.append(results.copy())
         print_results(status)
@@ -113,6 +115,29 @@ def create_separate_file_level():
     save(all_results)
     print(all_results)
 
+def count_file_xml(project):
+    number_of_xml_files = 0 
+    none = 0
+
+    execution = db.query(db.Execution) \
+                .join(db.Execution.version) \
+                .join(db.Execution.heuristic) \
+                .filter(db.Version.project_id == project.id) \
+                .filter(db.Execution.output != '').first()            
+    if(execution is None):
+            none += 1
+    else:
+        output = execution.output.split('\n\n')
+        for k in output:                    
+            file_path = REPOS_DIR + os.sep + project.owner + os.sep + project.name + os.sep + k.split('\n', 1)[0]
+            file_path = file_path.replace('\x1b[m', '')
+            print(file_path)
+            if file_path.endswith('.xml'):
+                number_of_xml_files += 1
+            else:
+                continue
+
+    return number_of_xml_files
     
 def save(all_results):
     print(f'Saving all results to {USAGE_FAN_IN_FILE}...', end=' ')

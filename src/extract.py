@@ -25,7 +25,7 @@ GREP_COMMAND = [
     '--break',
     '--heading',
     '--line-number',
-    '--color=never',
+    '--color=always',
     '--extended-regexp',
     '-f'
 ]
