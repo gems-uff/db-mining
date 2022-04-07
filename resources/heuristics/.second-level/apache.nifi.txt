@@ -1,0 +1,2 @@
+[^a-zA-Z|^\/"\_#|0-9]SpringContextDelegate[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]SpringContextProcessorTest[^a-zA-Z|^\/"\_#|0-9]

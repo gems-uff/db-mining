@@ -1,0 +1,4 @@
+(SELECT|Select|select).*(FROM|From|from).*(WHERE|Where|where)
+(INSERT|Insert|insert).*(INTO|Into|into).*(VALUES|Values|values)
+(UPDATE|Update|update).*(SET).*(WHERE|Where|where)
+(DELETE|Delete|delete).*(FROM|From|from).*(WHERE|Where|where)

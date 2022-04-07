@@ -1,4 +1,3 @@
-[^a-zA-Z|^\/"\_#|0-9]Nimbus[^a-zA-Z|^\/"\_#|0-9]
 [^a-zA-Z|^\/"\_#|0-9]LogviewerLogPageHandler[^a-zA-Z|^\/"\_#|0-9]
 [^a-zA-Z|^\/"\_#|0-9]LogviewerLogSearchHandler[^a-zA-Z|^\/"\_#|0-9]
 [^a-zA-Z|^\/"\_#|0-9]LogCleaner[^a-zA-Z|^\/"\_#|0-9]

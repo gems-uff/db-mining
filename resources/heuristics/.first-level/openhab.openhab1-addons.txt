@@ -1,0 +1,2 @@
+[^a-zA-Z|^\/"\_#|0-9]JpaPersistenceService[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]JpaPersistentItem[^a-zA-Z|^\/"\_#|0-9]

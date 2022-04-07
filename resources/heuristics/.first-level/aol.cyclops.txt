@@ -1,0 +1,4 @@
+[^a-zA-Z|^\/"\_#|0-9]HibernateManagedTest[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]HibernateManagedTest[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]HibernateManagedTest[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]HibernateManagedTest[^a-zA-Z|^\/"\_#|0-9]

@@ -1,0 +1,5 @@
+[^a-zA-Z|^\/"\_#|0-9]ConsumersResource[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]ConsumerPerformance[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]AbstractConsumerTest[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]AuthorizationErrorTest[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]SchemaProduceConsumeTest[^a-zA-Z|^\/"\_#|0-9]

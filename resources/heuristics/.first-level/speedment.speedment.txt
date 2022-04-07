@@ -1,0 +1,3 @@
+[^a-zA-Z|^\/"\_#|0-9]EntityManager[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]EntityManagerImpl[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]DelegateEntityManager[^a-zA-Z|^\/"\_#|0-9]

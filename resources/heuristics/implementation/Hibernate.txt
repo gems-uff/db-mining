@@ -2,7 +2,7 @@
 www\.hibernate\.org\/dtd\/hibernate-configuration
 <\s*hibernate-configuration\s*>
 <\s*hibernate-mapping
-<\s*sql-query
+<\s*sql-query\s{1,}
 @SQLInsert
 @SQLUpdate
 @SQLDelete
@@ -11,6 +11,6 @@ www\.hibernate\.org\/dtd\/hibernate-configuration
 <\s*sql-update\s*> 
 <\s*sql-delete\s*> 
 createSQLQuery
-<\s*class
+<\s*class\s{1,}
 import\s{1,}org\.hibernate
 @org\.hibernate\.annotations\.Entity

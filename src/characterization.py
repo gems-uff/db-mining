@@ -7,6 +7,7 @@ from sqlalchemy.orm import load_only, selectinload
 import pandas as pd
 from util import RESOURCE_DIR
 from sqlalchemy import func
+import os
 
 
 def create_characterization(type_characterization):

@@ -34,9 +34,13 @@ CHARACTERIZATION_FILE_IMP = RESOURCE_DIR + os.sep + 'characterization_implementa
 COUNT_FILE_IMP = RESOURCE_DIR + os.sep + 'count_implementation.xlsx'
 COUNT_LINE_FILE_IMP = RESOURCE_DIR + os.sep + 'count_line_implementation.xlsx'
 HISTORICAL_FILE = RESOURCE_DIR + os.sep + 'historical.xlsx'
+<<<<<<< HEAD
+USAGE_FAN_IN_FILE = RESOURCE_DIR + os.sep + 'usage_fan_in_file.xlsx'
+=======
 HISTORICAL_FILE_SAMPLE = RESOURCE_DIR + os.sep + 'historical_sample.xlsx'
 HISTORICAL_FILE_JOIN = RESOURCE_DIR + os.sep + 'historical_join.xlsx'
 HISTORICAL_RULES_FILE = RESOURCE_DIR + os.sep + 'historical_rules.xlsx'
+>>>>>>> master
 
 DATABASE_CONFIG_FILE = BASE_DIR + os.sep + 'database.json'
 

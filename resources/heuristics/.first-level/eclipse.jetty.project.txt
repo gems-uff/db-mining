@@ -1,0 +1,6 @@
+[^a-zA-Z|^\/"\_#|0-9]Dump[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]RequestTest[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]EmbeddedQueryManagerTest[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]RemoteQueryManagerTest[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]InfinispanTestSupport[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]RemoteInfinispanTestSupport[^a-zA-Z|^\/"\_#|0-9]

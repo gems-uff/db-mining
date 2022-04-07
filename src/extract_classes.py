@@ -6,7 +6,7 @@ import pandas as pd
 
 import database as db
 from sqlalchemy.orm import load_only, selectinload
-from util import HEURISTICS_DIR_FIRST_LEVEL, REPOS_DIR, red, green, yellow, CODE_DEBUG, ANNOTATED_FILE_JAVA_TEST
+from util import ANNOTATED_FILE_JAVA, HEURISTICS_DIR_FIRST_LEVEL, REPOS_DIR, red, green, yellow, CODE_DEBUG
 
 # Git rev-parse command
 REVPARSE_COMMAND = [
@@ -42,12 +42,11 @@ def commit():
     print('Committing changes...')
     db.commit()
 
-
 def get_or_create_projects():
     projects = []
 
     # Loading projects from the Excel.
-    df = pd.read_excel(ANNOTATED_FILE_JAVA_TEST, keep_default_na=False)
+    df = pd.read_excel(ANNOTATED_FILE_JAVA, keep_default_na=False)
     df = df[df.discardReason == ''].reset_index(drop=True)
     projects_excel = dict()
     for i, project_excel in df.iterrows():
@@ -207,7 +206,7 @@ def index_executions(labels):
 def main():
     db.connect()
 
-    print(f'Loading projects from {ANNOTATED_FILE_JAVA_TEST}.')
+    print(f'Loading projects from {ANNOTATED_FILE_JAVA}.')
     projects = get_or_create_projects()
 
     print(f'\nLoading heuristics from {HEURISTICS_DIR_FIRST_LEVEL}.')
@@ -223,13 +222,15 @@ def main():
         'Git error': 0,
         'Total': len(labels) * len(projects)
     }
-
+    
     print(f'\nProcessing {len(labels)} heuristics over {len(projects)} projects.')
     for i, label in enumerate(labels):
         heuristic = label.heuristic
         heuristic_objct_label = db.query(db.Label).filter(db.Label.id == heuristic.label_id).first()
         project = next((x for x in projects if x.owner == heuristic_objct_label.name.split(".")[0] 
                         and x.name == heuristic_objct_label.name.split(".")[1]), None)
+        if (project is None ):
+            continue
         version = project.versions[0]  # TODO: fix this to deal with multiple versions
 
         # Print progress information
@@ -242,7 +243,12 @@ def main():
             try:
                 os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
                 cmd = GREP_COMMAND + [HEURISTICS_DIR_FIRST_LEVEL + os.sep + label.name + '.txt']
-                p = subprocess.run(cmd, capture_output=True)
+                try:
+                    p = subprocess.run(cmd, capture_output=True, timeout=120)
+                except subprocess.TimeoutExpired:
+                    print(red('Git error(Timeout).'))
+                    status['Git error'] += 1
+                    continue    
                 if p.stderr:
                     raise subprocess.CalledProcessError(p.returncode, cmd, p.stdout, p.stderr)
                 db.create(db.Execution, output=p.stdout.decode(errors='replace').replace('\x00', '\uFFFD'),
@@ -260,7 +266,9 @@ def main():
         else:  # Execution already exists
             print(yellow('already done.'))
             status['Skipped'] += 1
+        print("commit")
         commit()
+        
 
     print_results(status)
     db.close()

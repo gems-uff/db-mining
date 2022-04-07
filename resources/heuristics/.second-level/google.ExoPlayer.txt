@@ -1,0 +1,3 @@
+[^a-zA-Z|^\/"\_#|0-9]MediaParserExtractorAdapter[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]MediaParserChunkExtractor[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]MediaParserHlsMediaChunkExtractor[^a-zA-Z|^\/"\_#|0-9]
