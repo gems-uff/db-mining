@@ -244,6 +244,7 @@ def main():
                 os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
                 cmd = GREP_COMMAND + [HEURISTICS_DIR_FIRST_LEVEL + os.sep + label.name + '.txt']
                 try:
+                    print(cmd)
                     p = subprocess.run(cmd, capture_output=True, timeout=120)
                 except subprocess.TimeoutExpired:
                     print(red('Git error(Timeout).'))
