@@ -245,8 +245,8 @@ def main():
                 cmd = GREP_COMMAND + [HEURISTICS_DIR_FIRST_LEVEL + os.sep + label.name + '.txt']
                 #try:
                 print(cmd)
-                p = subprocess.run(cmd, capture_output=True, timeout=120)
-                #except subprocess.TimeoutExpired:
+                p = subprocess.run(cmd, capture_output=True)
+                #except subprocess.TimeoutExpired: , timeout=120
                 #    print(red('Git error(Timeout).'))
                 #    status['Git error'] += 1
                 #    continue    
