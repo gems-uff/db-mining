@@ -6,7 +6,7 @@ import pandas as pd
 
 import database as db
 from sqlalchemy.orm import load_only, selectinload
-from util import ANNOTATED_FILE_JAVA, HEURISTICS_DIR_FIRST_LEVEL, REPOS_DIR, red, green, yellow, CODE_DEBUG
+from util import ANNOTATED_FILE_JAVA_TEST, HEURISTICS_DIR_FIRST_LEVEL, REPOS_DIR, red, green, yellow, CODE_DEBUG
 
 # Git rev-parse command
 REVPARSE_COMMAND = [
@@ -46,7 +46,7 @@ def get_or_create_projects():
     projects = []
 
     # Loading projects from the Excel.
-    df = pd.read_excel(ANNOTATED_FILE_JAVA, keep_default_na=False)
+    df = pd.read_excel(ANNOTATED_FILE_JAVA_TEST, keep_default_na=False)
     df = df[df.discardReason == ''].reset_index(drop=True)
     projects_excel = dict()
     for i, project_excel in df.iterrows():
@@ -206,7 +206,7 @@ def index_executions(labels):
 def main():
     db.connect()
 
-    print(f'Loading projects from {ANNOTATED_FILE_JAVA}.')
+    print(f'Loading projects from {ANNOTATED_FILE_JAVA_TEST}.')
     projects = get_or_create_projects()
 
     print(f'\nLoading heuristics from {HEURISTICS_DIR_FIRST_LEVEL}.')
@@ -244,15 +244,16 @@ def main():
                 os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
                 cmd = GREP_COMMAND + [HEURISTICS_DIR_FIRST_LEVEL + os.sep + label.name + '.txt']
                 #try:
-                print(cmd)
-                p = subprocess.run(cmd, capture_output=True)
+                #print(cmd)
+                #p = subprocess.run(cmd, capture_output=True)
+                stdoutdata, stderrdata = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()
                 #except subprocess.TimeoutExpired: , timeout=120
                 #    print(red('Git error(Timeout).'))
                 #    status['Git error'] += 1
-                #    continue    
-                if p.stderr:
-                    raise subprocess.CalledProcessError(p.returncode, cmd, p.stdout, p.stderr)
-                db.create(db.Execution, output=p.stdout.decode(errors='replace').replace('\x00', '\uFFFD'),
+                #    continue  
+                if stderrdata:
+                    raise subprocess.CalledProcessError(stderrdata.returncode, cmd, stdoutdata, stderrdata)
+                db.create(db.Execution, output=stdoutdata.decode(errors='replace').replace('\x00', '\uFFFD'),
                           version=version, heuristic=heuristic, isValidated=False, isAccepted=False)
                 print(green('ok.'))
                 status['Success'] += 1
@@ -267,7 +268,6 @@ def main():
         else:  # Execution already exists
             print(yellow('already done.'))
             status['Skipped'] += 1
-        print("commit")
         commit()
         
 
