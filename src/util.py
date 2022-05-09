@@ -15,6 +15,7 @@ HEURISTICS_DIR_EOI = HEURISTICS_DIR + os.sep + 'eo'
 HEURISTICS_DIR_FIRST_LEVEL = HEURISTICS_DIR + os.sep + '.first-level'
 HEURISTICS_DIR_SECOND_LEVEL = HEURISTICS_DIR + os.sep + '.second-level'
 
+
 REACT_BUILD_DIR = BASE_DIR + os.sep + 'web' + os.sep + 'build'
 REACT_STATIC_DIR = REACT_BUILD_DIR + os.sep + 'static'
 
@@ -38,6 +39,9 @@ USAGE_FAN_IN_FILE = RESOURCE_DIR + os.sep + 'usage_fan_in_file.xlsx'
 HISTORICAL_FILE_SAMPLE = RESOURCE_DIR + os.sep + 'historical_sample.xlsx'
 HISTORICAL_FILE_JOIN = RESOURCE_DIR + os.sep + 'historical_join.xlsx'
 HISTORICAL_RULES_FILE = RESOURCE_DIR + os.sep + 'historical_rules.xlsx'
+HISTORICAL_FILE_JOIN_DB = RESOURCE_DIR + os.sep + 'historical_join_db.xlsx'
+DATABASES_MODELS = RESOURCE_DIR + os.sep + 'databases_models.xlsx'
+
 
 DATABASE_CONFIG_FILE = BASE_DIR + os.sep + 'database.json'
 
