@@ -41,7 +41,8 @@ HISTORICAL_FILE_JOIN = RESOURCE_DIR + os.sep + 'historical_join.xlsx'
 HISTORICAL_RULES_FILE = RESOURCE_DIR + os.sep + 'historical_rules.xlsx'
 HISTORICAL_FILE_JOIN_DB = RESOURCE_DIR + os.sep + 'historical_join_db.xlsx'
 DATABASES_MODELS = RESOURCE_DIR + os.sep + 'databases_models.xlsx'
-
+HISTORICAL_INPUT_SEQUENCIAL = RESOURCE_DIR + os.sep + 'input_sequencial.txt'
+HISTORICAL_INPUT_SEQUENCIAL_NEG = RESOURCE_DIR + os.sep + 'input_sequencial_neg.txt'
 
 DATABASE_CONFIG_FILE = BASE_DIR + os.sep + 'database.json'
 
