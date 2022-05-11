@@ -2,9 +2,10 @@
 import database as db
 import os
 import pandas as pd
+import subprocess
+import sys
 from util import  REPOS_DIR, HEURISTICS_DIR_FIRST_LEVEL, HEURISTICS_DIR_SECOND_LEVEL, USAGE_FAN_IN_FILE, red, green, yellow
 from characterization_implementation import search_labels, search_projects, create_package_heuristic_import, save_txt, print_results
-
 
 def create_list_fanin_second_level():
     index_projects = []
@@ -40,14 +41,14 @@ def create_list_fanin_second_level():
                 for k in output:                    
                     file_path = REPOS_DIR + os.sep + project.owner + os.sep + project.name + os.sep + k.split('\n', 1)[0]
                     file_path = file_path.replace('\x1b[m', '')
-                    print(file_path)
+                    #print(file_path)
                     if file_path.endswith('.java'):
-                        print('is Java')
+                        #print('is Java')
                         list_java_files.append(create_package_heuristic_import(file_path))                        
                         status['Opened'] += 1
                     else:
                         status['Not .Java'] += 1
-        print(list_java_files)
+        #print(list_java_files)
         save_txt(list_java_files, project.owner+"."+project.name, HEURISTICS_DIR_SECOND_LEVEL)
         list_java_files.clear()                
 
@@ -75,7 +76,8 @@ def create_separate_file_level():
         'Dependencies': 0,
         'Error-first':0,
         'Error-second':0,
-        'Total': 0
+        'Total': 0,
+        'Total-Project': 0
         }
         file_path = HEURISTICS_DIR_FIRST_LEVEL + os.sep + project.owner + "." + project.name + ".txt"
         try:
@@ -99,21 +101,20 @@ def create_separate_file_level():
                 status['Dependencies'] += 1
 
         save_txt(second_level_pure, project.owner+"."+project.name, HEURISTICS_DIR_SECOND_LEVEL)
-        status['Total'] = status['DB-Code(Java)'] + status['Dependencies']
 
         results["Projects"] = project.name
         results["DB-Code(Java)"] = status['DB-Code(Java)']
         results["DB-Code(XML)"] = count_file_xml(project)
         results["Dependencies"] = status['Dependencies']
-        results["Total"] = status['Total']
+        results["Total-DB"] = status['DB-Code(Java)'] + results["DB-Code(XML)"] + status['Dependencies']
+        results["Total-Project"] = int(count_number_files_project(project))
+        results["Rate"] = (results["Total-DB"] / int(results["Total-Project"]))*100
         all_results.append(results.copy())
-        print_results(status)
 
         status.clear()
         second_level_pure.clear()
         results.clear()
     save(all_results)
-    print(all_results)
 
 def count_file_xml(project):
     number_of_xml_files = 0 
@@ -131,7 +132,7 @@ def count_file_xml(project):
         for k in output:                    
             file_path = REPOS_DIR + os.sep + project.owner + os.sep + project.name + os.sep + k.split('\n', 1)[0]
             file_path = file_path.replace('\x1b[m', '')
-            print(file_path)
+            #print(file_path)
             if file_path.endswith('.xml'):
                 number_of_xml_files += 1
             else:
@@ -144,6 +145,20 @@ def save(all_results):
     df = pd.DataFrame(all_results)
     df.to_excel(USAGE_FAN_IN_FILE, index=False)
     print('Done!')
+
+def count_number_files_project(project):
+    try:
+        os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
+        p = subprocess.run("git ls-files | wc -l", capture_output=True, text=True, shell=True)
+        #p = os.system("git ls-files | wc -l")
+        #stdoutdata, stderrdata = subprocess.Popen(COUNT_FILES_COMMAND, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate() 
+        #p = subprocess.call(COUNT_FILES_COMMAND) #ls -Rl | grep " + "\"^-\"" + " |wc -l
+        return p.stdout
+    except NotADirectoryError:
+        return 0
+    except subprocess.CalledProcessError as ex:
+        return 0
+                        
     
 def main():
     create_list_fanin_second_level()
