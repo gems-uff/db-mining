@@ -15,6 +15,8 @@ HEURISTICS_DIR_EOI = HEURISTICS_DIR + os.sep + 'eo'
 HEURISTICS_DIR_FIRST_LEVEL = HEURISTICS_DIR + os.sep + '.first-level'
 HEURISTICS_DIR_SECOND_LEVEL = HEURISTICS_DIR + os.sep + '.second-level'
 
+SEQ_PATTERNS_DIR = RESOURCE_DIR + os.sep + 'seq_patterns'
+
 
 REACT_BUILD_DIR = BASE_DIR + os.sep + 'web' + os.sep + 'build'
 REACT_STATIC_DIR = REACT_BUILD_DIR + os.sep + 'static'
@@ -41,8 +43,10 @@ HISTORICAL_FILE_JOIN = RESOURCE_DIR + os.sep + 'historical_join.xlsx'
 HISTORICAL_RULES_FILE = RESOURCE_DIR + os.sep + 'historical_rules.xlsx'
 HISTORICAL_FILE_JOIN_DB = RESOURCE_DIR + os.sep + 'historical_join_db.xlsx'
 DATABASES_MODELS = RESOURCE_DIR + os.sep + 'databases_models.xlsx'
-HISTORICAL_INPUT_SEQUENCIAL = RESOURCE_DIR + os.sep + 'input_sequencial.txt'
-HISTORICAL_INPUT_SEQUENCIAL_NEG = RESOURCE_DIR + os.sep + 'input_sequencial_neg.txt'
+HISTORICAL_INPUT_SEQUENCIAL = SEQ_PATTERNS_DIR + os.sep + 'input_sequencial.txt'
+HISTORICAL_INPUT_SEQUENCIAL_NEG = SEQ_PATTERNS_DIR + os.sep + 'input_sequencial_neg.txt'
+HISTORICAL_INPUT_SEQUENCIAL_NUMBERS = SEQ_PATTERNS_DIR + os.sep + 'input_sequencial_numbers.txt'
+HISTORICAL_INPUT_SEQUENCIAL_NUMBERSNEG = SEQ_PATTERNS_DIR + os.sep + 'input_sequencial_numbersneg.txt'
 
 DATABASE_CONFIG_FILE = BASE_DIR + os.sep + 'database.json'
 
