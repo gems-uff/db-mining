@@ -7,7 +7,7 @@ from sqlalchemy.sql.elements import Null
 from sqlalchemy.sql.expression import null
 import database as db
 from sqlalchemy.orm import load_only, selectinload
-#from strip_ansi import strip_ansi
+from strip_ansi import strip_ansi
 
 import pandas as pd
 from extract import print_results
