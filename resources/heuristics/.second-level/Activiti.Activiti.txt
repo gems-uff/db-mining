@@ -69,6 +69,7 @@
 [^a-zA-Z|^\/"\_#|0-9]StandaloneProcessEngineConfiguration[^a-zA-Z|^\/"\_#|0-9]
 [^a-zA-Z|^\/"\_#|0-9]ExecuteSchemaOperationCommand[^a-zA-Z|^\/"\_#|0-9]
 [^a-zA-Z|^\/"\_#|0-9]MultiSchemaMultiTenantProcessEngineConfiguration[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]StandaloneMybatisTransactionContextFactory[^a-zA-Z|^\/"\_#|0-9]
 [^a-zA-Z|^\/"\_#|0-9]AbstractSetProcessDefinitionStateCmd[^a-zA-Z|^\/"\_#|0-9]
 [^a-zA-Z|^\/"\_#|0-9]AddIdentityLinkForProcessInstanceCmd[^a-zA-Z|^\/"\_#|0-9]
 [^a-zA-Z|^\/"\_#|0-9]CompleteAdhocSubProcessCmd[^a-zA-Z|^\/"\_#|0-9]

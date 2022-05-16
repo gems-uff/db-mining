@@ -68,6 +68,7 @@ def main():
     create_characterization('database', False, 'database')
     create_characterization('implementation', False, 'implementation')
     create_characterization('implementation', True, 'implementation_names')
+    create_characterization('query', False, 'query')
 
 if __name__ == "__main__":
     main()
