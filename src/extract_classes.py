@@ -244,12 +244,13 @@ def main():
                 os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
                 cmd = GREP_COMMAND + [HEURISTICS_DIR_FIRST_LEVEL + os.sep + label.name + '.txt']
                 print(cmd)
-                stdoutdata, stderrdata = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate() 
-                print("Erro subprocess.popen")
-                if stderrdata:
-                    print("raise")
-                    raise subprocess.CalledProcessError(stderrdata.returncode, cmd, stdoutdata, stderrdata)
-                db.create(db.Execution, output=stdoutdata.decode(errors='replace').replace('\x00', '\uFFFD'),
+                p = subprocess.run(cmd, capture_output=True)
+                if p.stderr:
+                    print("if")
+                    raise subprocess.CalledProcessError(p.returncode, cmd, p.stdout, p.stderr)
+                #stdoutdata, stderrdata = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate() if stderrdata:
+                    #raise subprocess.CalledProcessError(stderrdata.returncode, cmd, stdoutdata, stderrdata)
+                db.create(db.Execution, output=p.stdout.decode(errors='replace').replace('\x00', '\uFFFD'),
                           version=version, heuristic=heuristic, isValidated=False, isAccepted=False)
                 print("Create DB")
                 print(green('ok.'))
