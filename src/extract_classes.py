@@ -203,6 +203,8 @@ def index_executions(labels):
 
     return executions
 
+def run (cmd):
+    return subprocess.run(cmd, capture_output=True, timeout=240)
 
 def main():
     db.connect()
@@ -247,16 +249,12 @@ def main():
                 print(cmd)
                 try:
                     print("RUN")
-                    p = subprocess.run(cmd, capture_output=True, timeout=120)
+                    p = run(cmd) 
                 except subprocess.TimeoutExpired:
-                    print(red('Git error.'))
-                    status['Git error'] += 1
-                    continue
+                    p = run(cmd)
                 if p.stderr:
                     print("if")
                     raise subprocess.CalledProcessError(p.returncode, cmd, p.stdout, p.stderr)
-                #stdoutdata, stderrdata = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate() if stderrdata:
-                    #raise subprocess.CalledProcessError(stderrdata.returncode, cmd, stdoutdata, stderrdata)
                 db.create(db.Execution, output=p.stdout.decode(errors='replace').replace('\x00', '\uFFFD'),
                           version=version, heuristic=heuristic, isValidated=False, isAccepted=False)
                 print("Create DB")
