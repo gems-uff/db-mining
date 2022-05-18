@@ -13,6 +13,7 @@ import pandas as pd
 from extract import print_results
 from util import COUNT_FILE_IMP, REPOS_DIR, HEURISTICS_DIR_FIRST_LEVEL, red, green, yellow
 from sqlalchemy import func
+from pathlib import Path
 
 
 def create_count_implementation():
@@ -156,13 +157,10 @@ def create_list_fanin():
                     file_path = file_path.replace('\x1b[m', '')
                     if file_path.endswith('.java'):
                         if not list_java_files:
-                            print("is clear")
                             list_java_files.append(file_path)
                         else:
                             if file_path in list_java_files:
                                 list_java_files_duplicates.append(file_path)
-                                print(file_path)
-                                #print(yellow('Duplicated.'))
                                 status['Duplicated'] += 1
                             else:
                                 list_java_files.append(file_path)
@@ -192,13 +190,15 @@ def print_list_files(list_files):
 
 def save_txt(list_files, project, HEURISTICS_DIR):
     print("Saving file " +project+".txt")
+    os.chdir(HEURISTICS_DIR_FIRST_LEVEL)
     try:
-        TextFile = open(HEURISTICS_DIR+ os.sep + project+'.txt', 'w+')
+        TextFile = open(project+'.txt', 'w+')
         for k in list_files:
             TextFile.write(create_package_heuristic_import(k) +"\n")
-        TextFile.close()
+        TextFile.close()    
     except FileNotFoundError:
         print("The 'docs' directory does not exist")
+        #Path("/my/directory").mkdir(parents=True, exist_ok=True)
     
 def find_packege(file_path):
     try:
