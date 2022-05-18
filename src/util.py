@@ -12,7 +12,7 @@ REPOS_DIR = WORKSPACE_DIR + os.sep + 'repos'
 RESOURCE_DIR = BASE_DIR + os.sep + 'resources'
 HEURISTICS_DIR = RESOURCE_DIR + os.sep + 'heuristics'
 HEURISTICS_DIR_EOI = HEURISTICS_DIR + os.sep + 'eo' 
-HEURISTICS_DIR_FIRST_LEVEL = HEURISTICS_DIR + os.sep + '.first-level'
+HEURISTICS_DIR_FIRST_LEVEL = HEURISTICS_DIR + os.sep + 'first-level'
 HEURISTICS_DIR_SECOND_LEVEL = HEURISTICS_DIR + os.sep + '.second-level'
 
 
