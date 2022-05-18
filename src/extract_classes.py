@@ -253,6 +253,7 @@ def main():
                 except subprocess.TimeoutExpired:
                     print(red('Git error.'))
                     status['Git error'] += 1
+                    continue
                 if p.stderr:
                     print("if")
                     raise subprocess.CalledProcessError(p.returncode, cmd, p.stdout, p.stderr)
