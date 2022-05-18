@@ -1,4 +1,0 @@
-[^a-zA-Z|^\/"\_#|0-9]GlowWorld[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]EntityManager[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]GlowEntityTest[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]UseItemHandlerTest[^a-zA-Z|^\/"\_#|0-9]

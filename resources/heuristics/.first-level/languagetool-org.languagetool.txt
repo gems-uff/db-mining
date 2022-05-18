@@ -1,3 +1,0 @@
-[^a-zA-Z|^\/"\_#|0-9]DatabaseAccess[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]DatabaseAccessOpenSource[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]DatabaseLogger[^a-zA-Z|^\/"\_#|0-9]

@@ -1,3 +1,0 @@
-[^a-zA-Z|^\/"\_#|0-9]QualfierMessageTest[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]Context[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]ObjectFactory[^a-zA-Z|^\/"\_#|0-9]

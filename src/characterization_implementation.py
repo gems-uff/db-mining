@@ -121,7 +121,8 @@ def create_list_implementation():
 def create_list_fanin():
     index_projects = []
     index_domains = []
-    list_java_files = [] 
+    list_java_files = []
+    list_java_files_duplicates = [] 
     status = {
         'Opened': 0,
         'Not .Java': 0,
@@ -151,11 +152,21 @@ def create_list_fanin():
                 output = execution.output.split('\n\n')
                 for k in output:
                     file_path = REPOS_DIR + os.sep + project.owner + os.sep + project.name + os.sep + k.split('\n', 1)[0]
-                    file_path = strip_ansi("\x1b[m"+file_path+"\x1b[m")
-                    #file_path = file_path.replace('\x1b[m', '')
+                    #file_path = strip_ansi("\x1b[m"+file_path+"\x1b[m")
+                    file_path = file_path.replace('\x1b[m', '')
                     if file_path.endswith('.java'):
-                        list_java_files.append(create_package_heuristic_import(file_path))                      
-                        status['Opened'] += 1
+                        if not list_java_files:
+                            print("is clear")
+                            list_java_files.append(file_path)
+                        else:
+                            if file_path in list_java_files:
+                                list_java_files_duplicates.append(file_path)
+                                print(file_path)
+                                #print(yellow('Duplicated.'))
+                                status['Duplicated'] += 1
+                            else:
+                                list_java_files.append(file_path)
+                                status['Opened'] += 1
                     else:
                         status['Not .Java'] += 1
 
@@ -163,9 +174,8 @@ def create_list_fanin():
             save_txt(list_java_files, project.owner+"."+project.name, HEURISTICS_DIR_FIRST_LEVEL)
         list_java_files.clear()                
 
-    status['Duplicated'] = len(list_java_files)                        
+    status['Duplicated'] = len(list_java_files_duplicates)                        
     list_java_files = list(set(list_java_files))
-    status['Duplicated'] = status['Duplicated'] - len(list_java_files)
     status['Total'] = status['Opened'] + status['Not .Java']
 
     print_results(status)
@@ -185,7 +195,7 @@ def save_txt(list_files, project, HEURISTICS_DIR):
     try:
         TextFile = open(HEURISTICS_DIR+ os.sep + project+'.txt', 'w+')
         for k in list_files:
-            TextFile.write(k +"\n")
+            TextFile.write(create_package_heuristic_import(k) +"\n")
         TextFile.close()
     except FileNotFoundError:
         print("The 'docs' directory does not exist")
@@ -215,37 +225,8 @@ def search_labels(labelType):
     return labels_db
 
 def create_package_heuristic_import(file_path):
-    #package = find_packege(file_path)
     file_name = file_path.split('/')[-1]
     heuristic_file = "[^a-zA-Z|^\/\"\_#|0-9]" + file_name.split('.')[0] + "[^a-zA-Z|^\/\"\_#|0-9]" #[^a-zA-Z|^\/"\_#|0-9]
-    #heuristic_file = "[\s\.\/*}{,^?~=+_*+|;()]" + file_name.split('.')[0] + "[\s\.\/*}{,^?~=+_*+|;()]"
-    #heuristic_file = "'import\s{1,}"+ str(package).replace("\n", "").replace(".", "\.")+"\."+file_name.split('.')[0] +"\s*;',"
-    #heuristic_file = "import\s{1,}"+ str(package).replace("\n", "").replace(".", "\.")+"\."+"\*"
-    return heuristic_file
-
-def create_package_heuristic_constructor_new(file_path):
-    file_name = file_path.split('/')[-1]
-    heuristic_file = "new\s{1,}"+file_name.split('.')[0] +"\s*\("
-    return heuristic_file
-
-def create_package_heuristic_constructor_clone(file_path):
-    file_name = file_path.split('/')[-1]
-    heuristic_file = "(\(\s{1,}"+file_name.split('.')[0]+"\s{1,}\))(.*)(\.clone\(\);)"
-    return heuristic_file
-
-def create_package_heuristic_constructor_newInstanceClass(file_path):
-    file_name = file_path.split('/')[-1]
-    heuristic_file = "(\(\s{1,}"+file_name.split('.')[0]+"\s{1,}\))(.*)(\.newInstance\(\);)"
-    return heuristic_file
-
-def create_package_heuristic_constructor_newInstanceConstructor(file_path):
-    file_name = file_path.split('/')[-1]
-    heuristic_file = file_name.split('.')[0]+"\.class\.getDeclaredConstructor\("
-    return heuristic_file
-
-def create_package_heuristic_constructor_abstractMethod(file_path):
-    file_name = file_path.split('/')[-1]
-    heuristic_file = "[|&{}()s\* + ]("+file_name.split('.')[0]+"\.)(.*)"
     return heuristic_file
 
     

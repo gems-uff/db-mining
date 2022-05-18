@@ -1,3 +1,0 @@
-[^a-zA-Z|^\/"\_#|0-9]TestLineReader[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]TimelineStoreTestUtils[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]TestSystemMetricsPublisherForV2[^a-zA-Z|^\/"\_#|0-9]
