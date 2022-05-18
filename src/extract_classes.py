@@ -249,7 +249,7 @@ def main():
                 print(cmd)
                 try:
                     print("RUN")
-                    p = subprocess.run(cmd, capture_output=True, timeout=60)
+                    p = subprocess.run(cmd, capture_output=True, timeout=120)
                 except subprocess.TimeoutExpired:
                     print(red('Git error.'))
                     status['Git error'] += 1
