@@ -1,5 +1,6 @@
 
 from distutils.text_file import TextFile
+from hashlib import new
 import os
 from pickle import TRUE
 import subprocess
@@ -169,7 +170,7 @@ def create_list_fanin():
                         status['Not .Java'] += 1
 
         if len(list_java_files)>0:
-            save_txt(list_java_files, project.owner+"."+project.name, HEURISTICS_DIR_FIRST_LEVEL)
+            save_txt(list_java_files, project.owner+"."+project.name)
         list_java_files.clear()                
 
     status['Duplicated'] = len(list_java_files_duplicates)                        
@@ -188,13 +189,14 @@ def print_list_files(list_files):
     for k in list_files:
         print(k, "\n")
 
-def save_txt(list_files, project, HEURISTICS_DIR):
+def save_txt(list_files, project):
     print("Saving file " +project+".txt")
     os.chdir(HEURISTICS_DIR_FIRST_LEVEL)
+    new_list_files = remove_duplicate_files(list_files)
     try:
         TextFile = open(project+'.txt', 'w+')
-        for k in list_files:
-            TextFile.write(create_package_heuristic_import(k) +"\n")
+        for k in new_list_files:
+            TextFile.write(k +"\n")
         TextFile.close()    
     except FileNotFoundError:
         print("The 'docs' directory does not exist")
@@ -224,11 +226,25 @@ def search_labels(labelType):
     labels_db = db.query(db.Label).options(selectinload(db.Label.heuristic).options(selectinload(db.Heuristic.executions).defer('output').defer('user'))).filter(db.Label.type == labelType).all()
     return labels_db
 
-def create_package_heuristic_import(file_path):
+def create_heuristic_class(file_path):
     file_name = file_path.split('/')[-1]
     heuristic_file = "[^a-zA-Z|^\/\"\_#|0-9]" + file_name.split('.')[0] + "[^a-zA-Z|^\/\"\_#|0-9]" #[^a-zA-Z|^\/"\_#|0-9]
     return heuristic_file
 
+def remove_duplicate_files(list_files):
+    new_list_files = []
+    for file in list_files:
+        file_heuristic = create_heuristic_class(file)
+        if not new_list_files:
+            print("Lista vazia")
+            new_list_files.append(file_heuristic)
+        else:
+            if file_heuristic not in new_list_files:
+                print(file_heuristic)
+                new_list_files.append(file_heuristic)
+                
+    return new_list_files
+    
     
 if __name__ == "__main__":
     main()
