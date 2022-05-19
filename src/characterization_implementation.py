@@ -236,11 +236,9 @@ def remove_duplicate_files(list_files):
     for file in list_files:
         file_heuristic = create_heuristic_class(file)
         if not new_list_files:
-            print("Lista vazia")
             new_list_files.append(file_heuristic)
         else:
             if file_heuristic not in new_list_files:
-                print(file_heuristic)
                 new_list_files.append(file_heuristic)
                 
     return new_list_files
