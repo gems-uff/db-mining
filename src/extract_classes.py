@@ -1,4 +1,5 @@
 import os
+from pickle import TRUE
 from socket import timeout
 import subprocess
 from time import time
@@ -7,7 +8,7 @@ import pandas as pd
 
 import database as db
 from sqlalchemy.orm import load_only, selectinload
-from util import ANNOTATED_FILE_JAVA, HEURISTICS_DIR_FIRST_LEVEL, REPOS_DIR, red, green, yellow, CODE_DEBUG
+from util import ANNOTATED_FILE_JAVA_TEST, HEURISTICS_DIR_FIRST_LEVEL, REPOS_DIR, red, green, yellow, CODE_DEBUG
 
 # Git rev-parse command
 REVPARSE_COMMAND = [
@@ -47,7 +48,7 @@ def get_or_create_projects():
     projects = []
 
     # Loading projects from the Excel.
-    df = pd.read_excel(ANNOTATED_FILE_JAVA, keep_default_na=False)
+    df = pd.read_excel(ANNOTATED_FILE_JAVA_TEST, keep_default_na=False)
     df = df[df.discardReason == ''].reset_index(drop=True)
     projects_excel = dict()
     for i, project_excel in df.iterrows():
@@ -209,7 +210,7 @@ def run (cmd):
 def main():
     db.connect()
 
-    print(f'Loading projects from {ANNOTATED_FILE_JAVA}.')
+    print(f'Loading projects from {ANNOTATED_FILE_JAVA_TEST}.')
     projects = get_or_create_projects()
 
     print(f'\nLoading heuristics from {HEURISTICS_DIR_FIRST_LEVEL}.')
@@ -223,6 +224,7 @@ def main():
         'Skipped': 0,
         'Repository not found': 0,
         'Git error': 0,
+        'Git timeout': 0,
         'Total': len(labels) * len(projects)
     }
     
@@ -246,13 +248,22 @@ def main():
             try:
                 os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
                 cmd = GREP_COMMAND + [HEURISTICS_DIR_FIRST_LEVEL + os.sep + label.name + '.txt']
-                print(cmd)
                 try:
-                    p = subprocess.run(cmd, capture_output=True, timeout=240)
+                    p = subprocess.run(cmd, capture_output=True, timeout=1)
                 except subprocess.TimeoutExpired:
-                    print(red('Git error.'))
-                    status['Git error'] += 1
-                    continue
+                    try:
+                        stdoutdata, stderrdata = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()
+                        if stderrdata:
+                            raise subprocess.CalledProcessError(stderrdata.returncode, cmd, stdoutdata, stderrdata)
+                        db.create(db.Execution, output=stdoutdata.decode(errors='replace').replace('\x00', '\uFFFD'),
+                          version=version, heuristic=heuristic, isValidated=False, isAccepted=False)
+                        print(green('ok.'))
+                        status['Success'] += 1
+                        continue
+                    except subprocess.TimeoutExpired:
+                        print(red('Git timeout.'))
+                        status['Git timeout'] += 1
+                        continue
                 if p.stderr:
                     raise subprocess.CalledProcessError(p.returncode, cmd, p.stdout, p.stderr)
                 db.create(db.Execution, output=p.stdout.decode(errors='replace').replace('\x00', '\uFFFD'),
