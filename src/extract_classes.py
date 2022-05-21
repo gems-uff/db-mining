@@ -249,7 +249,7 @@ def main():
                 os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
                 cmd = GREP_COMMAND + [HEURISTICS_DIR_FIRST_LEVEL + os.sep + label.name + '.txt']
                 try:
-                    p = subprocess.run(cmd, capture_output=True, timeout=1)
+                    p = subprocess.run(cmd, capture_output=True, timeout=240)
                 except subprocess.TimeoutExpired:
                     try:
                         stdoutdata, stderrdata = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()
