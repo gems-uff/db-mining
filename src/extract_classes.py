@@ -252,7 +252,10 @@ def main():
                     p = subprocess.run(cmd, capture_output=True, timeout=240)
                 except subprocess.TimeoutExpired:
                     try:
-                        stdoutdata, stderrdata = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate()
+                        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                        print("Proc ok")
+                        stdoutdata, stderrdata = proc.communicate()
+                        print("Communication ok")
                         if stderrdata:
                             raise subprocess.CalledProcessError(stderrdata.returncode, cmd, stdoutdata, stderrdata)
                         db.create(db.Execution, output=stdoutdata.decode(errors='replace').replace('\x00', '\uFFFD'),
