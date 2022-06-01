@@ -1,4 +1,5 @@
 import os
+from pickle import FALSE, TRUE
 import subprocess
 from time import time
 
@@ -21,6 +22,19 @@ GREP_COMMAND = [
     'git',
     'grep',
     '-I',
+    '--context=5',
+    '--break',
+    '--heading',
+    '--line-number',
+    '--color=always',
+    '--extended-regexp',
+    '-f'
+]
+
+GREP_COMMAND_IGNORE = [
+    'git',
+    'grep',
+    '--ignore-case',
     '--context=5',
     '--break',
     '--heading',
@@ -206,6 +220,11 @@ def index_executions(labels):
 
     return executions
 
+def validade_ignore_case(label):
+    if label.name.startswith('(?i'):
+        return TRUE
+    else:
+        return FALSE
 
 def main():
     db.connect()
@@ -241,8 +260,13 @@ def main():
             execution = executions.get((heuristic, version), None)
             if not execution:
                 try:
+                    ignore_case = validade_ignore_case(label)
                     os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
-                    cmd = GREP_COMMAND + [HEURISTICS_DIR + os.sep + label.type + os.sep + label.name + '.txt']
+                    if ignore_case == TRUE:
+                        cmd = GREP_COMMAND_IGNORE + [HEURISTICS_DIR + os.sep + label.type + os.sep + label.name + '.txt']
+                        print(cmd)
+                    else: 
+                        cmd = GREP_COMMAND + [HEURISTICS_DIR + os.sep + label.type + os.sep + label.name + '.txt']
                     p = subprocess.run(cmd, capture_output=True)
                     if p.stderr:
                         raise subprocess.CalledProcessError(p.returncode, cmd, p.stdout, p.stderr)
