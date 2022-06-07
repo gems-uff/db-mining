@@ -1,5 +1,6 @@
 
 from distutils.text_file import TextFile
+from hashlib import new
 import os
 from pickle import TRUE
 import subprocess
@@ -7,13 +8,12 @@ from sqlalchemy.sql.elements import Null
 from sqlalchemy.sql.expression import null
 import database as db
 from sqlalchemy.orm import load_only, selectinload
-from strip_ansi import strip_ansi
 
 import pandas as pd
 from extract import print_results
 from util import COUNT_FILE_IMP, REPOS_DIR, HEURISTICS_DIR_FIRST_LEVEL, red, green, yellow
 from sqlalchemy import func
-
+from pathlib import Path
 
 def create_count_implementation():
     db.connect()
@@ -43,7 +43,7 @@ def create_count_implementation():
                 sum = 0
                 for k in output:
                     sum = sum +1
-                results_Label.append(sum)
+                results_Label.append(sum/int(count_number_files_project(project)))
         if(i==0):
             all_results["Projects"] = index_projects
             all_results["Domains"] = index_domains
@@ -121,7 +121,8 @@ def create_list_implementation():
 def create_list_fanin():
     index_projects = []
     index_domains = []
-    list_java_files = [] 
+    list_java_files = []
+    list_java_files_duplicates = [] 
     status = {
         'Opened': 0,
         'Not .Java': 0,
@@ -151,21 +152,27 @@ def create_list_fanin():
                 output = execution.output.split('\n\n')
                 for k in output:
                     file_path = REPOS_DIR + os.sep + project.owner + os.sep + project.name + os.sep + k.split('\n', 1)[0]
-                    file_path = strip_ansi("\x1b[m"+file_path+"\x1b[m")
-                    #file_path = file_path.replace('\x1b[m', '')
+                    #file_path = strip_ansi("\x1b[m"+file_path+"\x1b[m")
+                    file_path = file_path.replace('\x1b[m', '')
                     if file_path.endswith('.java'):
-                        list_java_files.append(create_package_heuristic_import(file_path))                      
-                        status['Opened'] += 1
+                        if not list_java_files:
+                            list_java_files.append(file_path)
+                        else:
+                            if file_path in list_java_files:
+                                list_java_files_duplicates.append(file_path)
+                                status['Duplicated'] += 1
+                            else:
+                                list_java_files.append(file_path)
+                                status['Opened'] += 1
                     else:
                         status['Not .Java'] += 1
 
         if len(list_java_files)>0:
-            save_txt(list_java_files, project.owner+"."+project.name, HEURISTICS_DIR_FIRST_LEVEL)
+            save_txt(list_java_files, project.owner+"."+project.name)
         list_java_files.clear()                
 
-    status['Duplicated'] = len(list_java_files)                        
+    status['Duplicated'] = len(list_java_files_duplicates)                        
     list_java_files = list(set(list_java_files))
-    status['Duplicated'] = status['Duplicated'] - len(list_java_files)
     status['Total'] = status['Opened'] + status['Not .Java']
 
     print_results(status)
@@ -180,15 +187,18 @@ def print_list_files(list_files):
     for k in list_files:
         print(k, "\n")
 
-def save_txt(list_files, project, HEURISTICS_DIR):
+def save_txt(list_files, project):
     print("Saving file " +project+".txt")
+    os.chdir(HEURISTICS_DIR_FIRST_LEVEL)
+    new_list_files = remove_duplicate_files(list_files)
     try:
-        TextFile = open(HEURISTICS_DIR+ os.sep + project+'.txt', 'w+')
-        for k in list_files:
+        TextFile = open(project+'.txt', 'w+')
+        for k in new_list_files:
             TextFile.write(k +"\n")
-        TextFile.close()
+        TextFile.close()    
     except FileNotFoundError:
         print("The 'docs' directory does not exist")
+        #Path("/my/directory").mkdir(parents=True, exist_ok=True)
     
 def find_packege(file_path):
     try:
@@ -201,7 +211,7 @@ def find_packege(file_path):
         print(red('File not found.'))
     
 def main():
-    #create_count_implementation()
+    create_count_implementation()
     create_list_fanin()
 
 def search_projects():
@@ -214,40 +224,33 @@ def search_labels(labelType):
     labels_db = db.query(db.Label).options(selectinload(db.Label.heuristic).options(selectinload(db.Heuristic.executions).defer('output').defer('user'))).filter(db.Label.type == labelType).all()
     return labels_db
 
-def create_package_heuristic_import(file_path):
-    #package = find_packege(file_path)
+def create_heuristic_class(file_path):
     file_name = file_path.split('/')[-1]
     heuristic_file = "[^a-zA-Z|^\/\"\_#|0-9]" + file_name.split('.')[0] + "[^a-zA-Z|^\/\"\_#|0-9]" #[^a-zA-Z|^\/"\_#|0-9]
-    #heuristic_file = "[\s\.\/*}{,^?~=+_*+|;()]" + file_name.split('.')[0] + "[\s\.\/*}{,^?~=+_*+|;()]"
-    #heuristic_file = "'import\s{1,}"+ str(package).replace("\n", "").replace(".", "\.")+"\."+file_name.split('.')[0] +"\s*;',"
-    #heuristic_file = "import\s{1,}"+ str(package).replace("\n", "").replace(".", "\.")+"\."+"\*"
     return heuristic_file
 
-def create_package_heuristic_constructor_new(file_path):
-    file_name = file_path.split('/')[-1]
-    heuristic_file = "new\s{1,}"+file_name.split('.')[0] +"\s*\("
-    return heuristic_file
+def remove_duplicate_files(list_files):
+    new_list_files = []
+    for file in list_files:
+        file_heuristic = create_heuristic_class(file)
+        if not new_list_files:
+            new_list_files.append(file_heuristic)
+        else:
+            if file_heuristic not in new_list_files:
+                new_list_files.append(file_heuristic)
+                
+    return new_list_files
 
-def create_package_heuristic_constructor_clone(file_path):
-    file_name = file_path.split('/')[-1]
-    heuristic_file = "(\(\s{1,}"+file_name.split('.')[0]+"\s{1,}\))(.*)(\.clone\(\);)"
-    return heuristic_file
-
-def create_package_heuristic_constructor_newInstanceClass(file_path):
-    file_name = file_path.split('/')[-1]
-    heuristic_file = "(\(\s{1,}"+file_name.split('.')[0]+"\s{1,}\))(.*)(\.newInstance\(\);)"
-    return heuristic_file
-
-def create_package_heuristic_constructor_newInstanceConstructor(file_path):
-    file_name = file_path.split('/')[-1]
-    heuristic_file = file_name.split('.')[0]+"\.class\.getDeclaredConstructor\("
-    return heuristic_file
-
-def create_package_heuristic_constructor_abstractMethod(file_path):
-    file_name = file_path.split('/')[-1]
-    heuristic_file = "[|&{}()s\* + ]("+file_name.split('.')[0]+"\.)(.*)"
-    return heuristic_file
-
+def count_number_files_project(project):
+    try:
+        os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
+        p = subprocess.run("git ls-files | wc -l", capture_output=True, text=True, shell=True)
+        return p.stdout
+    except NotADirectoryError:
+        return 0
+    except subprocess.CalledProcessError as ex:
+        return 0
+    
     
 if __name__ == "__main__":
     main()

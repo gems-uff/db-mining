@@ -1,4 +1,0 @@
-(SELECT|Select|select)\s{1,}.*(FROM|From|from)\s{1,}.*
-(INSERT|Insert|insert)\s{1,}.*(INTO|Into|into)\s{1,}.*(VALUES|Values|values)
-(UPDATE|Update|update)\s{1,}.*(SET|set}Set)\s{1,}.*
-(DELETE|Delete|delete)\s{1,}.*(FROM|From|from)\s{1,}.*

@@ -5,7 +5,7 @@ import pandas as pd
 import subprocess
 import sys
 from util import  REPOS_DIR, HEURISTICS_DIR_FIRST_LEVEL, HEURISTICS_DIR_SECOND_LEVEL, USAGE_FAN_IN_FILE, red, green, yellow
-from characterization_implementation import search_labels, search_projects, create_package_heuristic_import, save_txt, print_results
+from characterization_implementation import search_labels, search_projects, create_heuristic_class, print_results, remove_duplicate_files
 
 def create_list_fanin_second_level():
     index_projects = []
@@ -44,12 +44,12 @@ def create_list_fanin_second_level():
                     #print(file_path)
                     if file_path.endswith('.java'):
                         #print('is Java')
-                        list_java_files.append(create_package_heuristic_import(file_path))                        
+                        list_java_files.append(create_heuristic_class(file_path))                        
                         status['Opened'] += 1
                     else:
                         status['Not .Java'] += 1
         #print(list_java_files)
-        save_txt(list_java_files, project.owner+"."+project.name, HEURISTICS_DIR_SECOND_LEVEL)
+        save_txt(list_java_files, project.owner+"."+project.name)
         list_java_files.clear()                
 
     status['Duplicated'] = len(list_java_files)                        
@@ -100,7 +100,7 @@ def create_separate_file_level():
                 second_level_pure.append(i)
                 status['Dependencies'] += 1
 
-        save_txt(second_level_pure, project.owner+"."+project.name, HEURISTICS_DIR_SECOND_LEVEL)
+        save_txt(second_level_pure, project.owner+"."+project.name)
 
         results["Projects"] = project.name
         results["DB-Code(Java)"] = status['DB-Code(Java)']
@@ -158,7 +158,18 @@ def count_number_files_project(project):
         return 0
     except subprocess.CalledProcessError as ex:
         return 0
-                        
+
+def save_txt(list_files, project):
+    print("Saving file " +project+".txt")
+    os.chdir(HEURISTICS_DIR_SECOND_LEVEL)
+    new_list_files = remove_duplicate_files(list_files)
+    try:
+        TextFile = open(project+'.txt', 'w+')
+        for k in new_list_files:
+            TextFile.write(k +"\n")
+        TextFile.close()    
+    except FileNotFoundError:
+        print("The 'docs' directory does not exist")                       
     
 def main():
     create_list_fanin_second_level()
