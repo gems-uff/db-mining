@@ -264,7 +264,6 @@ def main():
                     os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
                     if ignore_case == TRUE:
                         cmd = GREP_COMMAND_IGNORE + [HEURISTICS_DIR + os.sep + label.type + os.sep + label.name + '.txt']
-                        print(cmd)
                     else: 
                         cmd = GREP_COMMAND + [HEURISTICS_DIR + os.sep + label.type + os.sep + label.name + '.txt']
                     p = subprocess.run(cmd, capture_output=True)

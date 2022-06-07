@@ -8,14 +8,12 @@ from sqlalchemy.sql.elements import Null
 from sqlalchemy.sql.expression import null
 import database as db
 from sqlalchemy.orm import load_only, selectinload
-from strip_ansi import strip_ansi
 
 import pandas as pd
 from extract import print_results
 from util import COUNT_FILE_IMP, REPOS_DIR, HEURISTICS_DIR_FIRST_LEVEL, red, green, yellow
 from sqlalchemy import func
 from pathlib import Path
-
 
 def create_count_implementation():
     db.connect()
@@ -45,7 +43,7 @@ def create_count_implementation():
                 sum = 0
                 for k in output:
                     sum = sum +1
-                results_Label.append(sum)
+                results_Label.append(sum/int(count_number_files_project(project)))
         if(i==0):
             all_results["Projects"] = index_projects
             all_results["Domains"] = index_domains
@@ -213,7 +211,7 @@ def find_packege(file_path):
         print(red('File not found.'))
     
 def main():
-    #create_count_implementation()
+    create_count_implementation()
     create_list_fanin()
 
 def search_projects():
@@ -242,6 +240,16 @@ def remove_duplicate_files(list_files):
                 new_list_files.append(file_heuristic)
                 
     return new_list_files
+
+def count_number_files_project(project):
+    try:
+        os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
+        p = subprocess.run("git ls-files | wc -l", capture_output=True, text=True, shell=True)
+        return p.stdout
+    except NotADirectoryError:
+        return 0
+    except subprocess.CalledProcessError as ex:
+        return 0
     
     
 if __name__ == "__main__":
