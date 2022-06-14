@@ -2,11 +2,11 @@
 import database as db
 import os
 import pandas as pd
-import subprocess
-import sys
-from util import  REPOS_DIR, HEURISTICS_DIR_FIRST_LEVEL, HEURISTICS_DIR_SECOND_LEVEL, USAGE_FAN_IN_FILE, red, green, yellow
-from characterization_implementation import search_labels, search_projects, create_heuristic_class, print_results, remove_duplicate_files
+from util import  REPOS_DIR, HEURISTICS_DIR_FIRST_LEVEL, HEURISTICS_DIR_SECOND_LEVEL, USAGE_FAN_IN_FILE
+from create_file_dbCode import search_labels, search_projects, create_heuristic_class, print_results, remove_duplicate_files
+from results_in_xlsx import count_number_files_project
 
+#conta os resultados obtidos através do dbCode e suas dependencias para cada projeto
 def create_list_fanin_second_level():
     index_projects = []
     index_domains = []
@@ -145,19 +145,6 @@ def save(all_results):
     df = pd.DataFrame(all_results)
     df.to_excel(USAGE_FAN_IN_FILE, index=False)
     print('Done!')
-
-def count_number_files_project(project):
-    try:
-        os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
-        p = subprocess.run("git ls-files | wc -l", capture_output=True, text=True, shell=True)
-        #p = os.system("git ls-files | wc -l")
-        #stdoutdata, stderrdata = subprocess.Popen(COUNT_FILES_COMMAND, stdout=subprocess.PIPE, stderr=subprocess.STDOUT).communicate() 
-        #p = subprocess.call(COUNT_FILES_COMMAND) #ls -Rl | grep " + "\"^-\"" + " |wc -l
-        return p.stdout
-    except NotADirectoryError:
-        return 0
-    except subprocess.CalledProcessError as ex:
-        return 0
 
 def save_txt(list_files, project):
     print("Saving file " +project+".txt")

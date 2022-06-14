@@ -10,6 +10,7 @@ import database as db
 from sqlalchemy.orm import load_only, selectinload
 from util import ANNOTATED_FILE_JAVA, HEURISTICS_DIR_FIRST_LEVEL, REPOS_DIR, HEURISTICS_DIR_TEMP_FILES, red, green, yellow, CODE_DEBUG
 
+#busca as heurísticas(em lote) de dbcode nos respectivos projetos, permitindo encontrarmos suas dependencias, ou seja, os arquivos de dependência ou segundo nível
 # Git rev-parse command
 REVPARSE_COMMAND = [
     'git',
@@ -272,13 +273,16 @@ def main():
                     print(f'[{progress}] Searching for {project.name + str(part)} in {project.owner}/{project.name}:', end=' ')
                     cmd_temp_files = GREP_COMMAND + [HEURISTICS_DIR_TEMP_FILES + os.sep + project.name + str(part)+ '.txt']
                     p = subprocess.run(cmd_temp_files, capture_output=True)
+                    #proc = subprocess.Popen(cmd_temp_files, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                    #stdout, stderr = proc.communicate()
                     if p.stderr:
-                        raise subprocess.CalledProcessError(p.returncode, cmd_temp_files, p.stdout, p.stderr)
+                        raise subprocess.CalledProcessError(p.stauscode, cmd_temp_files, p.stdout, p.stderr)
+                    print(p.stdout)
                     db.create(db.Execution, output=p.stdout.decode(errors='replace').replace('\x00', '\uFFFD'),
                               version=version, heuristic=heuristic, isValidated=False, isAccepted=False)
                     print(green('ok.'))
                     status['Success'] += 1
-                    commit()
+                commit()
             except NotADirectoryError:
                 print(red('repository not found.'))
                 status['Repository not found'] += 1
