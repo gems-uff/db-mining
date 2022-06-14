@@ -221,7 +221,7 @@ def index_executions(labels):
     return executions
 
 def validade_ignore_case(label):
-    if label.name.startswith('(?i'):
+    if label.name.startswith('(Ignore'):
         return TRUE
     else:
         return FALSE

@@ -204,7 +204,7 @@ def index_executions(labels):
 
     return executions
 
-
+#busca as heurísticas de dbcode nos respectivos projetos, permitindo encontrarmos suas dependencias, ou seja, os arquivos de dependência ou segundo nível
 def main():
     db.connect()
 

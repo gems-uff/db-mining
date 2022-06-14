@@ -1,56 +1,16 @@
 
-from distutils.text_file import TextFile
-from hashlib import new
 import os
-from pickle import TRUE
-import subprocess
-from sqlalchemy.sql.elements import Null
-from sqlalchemy.sql.expression import null
 import database as db
-from sqlalchemy.orm import load_only, selectinload
-
 import pandas as pd
+
+from sqlalchemy.orm import load_only, selectinload
 from extract import print_results
-from util import COUNT_FILE_IMP, REPOS_DIR, HEURISTICS_DIR_FIRST_LEVEL, red, green, yellow
+from util import REPOS_DIR, HEURISTICS_DIR_FIRST_LEVEL, COUNT_LINE_FILE_IMP, red, green, yellow
 from sqlalchemy import func
 from pathlib import Path
 
-def create_count_implementation():
-    db.connect()
-    all_results = dict()
-    index_projects = []
-    index_domains = []
-    results_Label = []
-    projects_db = db.query(db.Project).options(load_only('id', 'owner', 'name'), selectinload(db.Project.versions).load_only('id')).all()
-    labels_db = db.query(db.Label).options(selectinload(db.Label.heuristic).options(selectinload(db.Heuristic.executions).defer('output').defer('user'))).filter(db.Label.type == 'implementation').all()
-    print("Search results in execution for label and project.")
-    for i,label in enumerate(labels_db):
-        for j, project in enumerate(projects_db):
-            if(len(index_projects)< len(projects_db)):
-                index_projects.append(project.name)
-                index_domains.append(project.domain)
-            # Search results in execution for label and project
-            execution = db.query(db.Execution) \
-                .join(db.Execution.version) \
-                .join(db.Execution.heuristic) \
-                .filter(db.Version.project_id == project.id) \
-                .filter(db.Heuristic.label_id == label.id) \
-                .filter(db.Execution.output != '').first()
-            if(execution is None):
-                results_Label.append(0)
-            else:
-                output = execution.output.split('\n\n')
-                sum = 0
-                for k in output:
-                    sum = sum +1
-                results_Label.append(sum/int(count_number_files_project(project)))
-        if(i==0):
-            all_results["Projects"] = index_projects
-            all_results["Domains"] = index_domains
-        all_results[label.name] = results_Label.copy()
-        results_Label.clear()
-    save(all_results, COUNT_FILE_IMP)
 
+#conta quantos linhas foram retornados para o uso de frameworks ORM (Validar se o método está correto)
 def create_list_implementation():
     db.connect()
     full_string_result = dict()
@@ -115,10 +75,11 @@ def create_list_implementation():
                                 status['Repository not found'] += 1
     status['Total'] = status['Opened'] + status['Duplicated']
     print_results(status)
-    print_list_files(list_results)
-    #save(full_string_result, COUNT_LINE_FILE_IMP)
+    #print_list_files(list_results)
+    save(full_string_result, COUNT_LINE_FILE_IMP)
 
-def create_list_fanin():
+#cria os dos arquivos de primeiro nível, removendo os duplicados, criando as heuristicas da forma estabelecida, no caso em classes
+def create_list_dbCode():
     index_projects = []
     index_domains = []
     list_java_files = []
@@ -209,10 +170,6 @@ def find_packege(file_path):
                 return package.split(" ")[-1]
     except FileNotFoundError:
         print(red('File not found.'))
-    
-def main():
-    create_count_implementation()
-    create_list_fanin()
 
 def search_projects():
     db.connect()
@@ -240,17 +197,10 @@ def remove_duplicate_files(list_files):
                 new_list_files.append(file_heuristic)
                 
     return new_list_files
-
-def count_number_files_project(project):
-    try:
-        os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
-        p = subprocess.run("git ls-files | wc -l", capture_output=True, text=True, shell=True)
-        return p.stdout
-    except NotADirectoryError:
-        return 0
-    except subprocess.CalledProcessError as ex:
-        return 0
     
+def main():
+    create_list_dbCode()
+    #create_list_implementation()
     
 if __name__ == "__main__":
     main()
