@@ -1,2 +1,0 @@
-[^a-zA-Z|^\/"\_#|0-9]CompareWriter[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]DbWriteTest[^a-zA-Z|^\/"\_#|0-9]

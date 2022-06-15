@@ -1,2 +1,0 @@
-[^a-zA-Z|^\/"\_#|0-9]SpoonPluginManager[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]CarteStatusCache[^a-zA-Z|^\/"\_#|0-9]

@@ -10,6 +10,7 @@ import database as db
 from sqlalchemy.orm import load_only, selectinload
 from util import ANNOTATED_FILE_JAVA, HEURISTICS_DIR_FIRST_LEVEL, REPOS_DIR, HEURISTICS_DIR_TEMP_FILES, red, green, yellow, CODE_DEBUG
 
+#busca as heurísticas(em lote) de dbcode nos respectivos projetos, permitindo encontrarmos suas dependencias, ou seja, os arquivos de dependência ou segundo nível
 # Git rev-parse command
 REVPARSE_COMMAND = [
     'git',
@@ -204,7 +205,28 @@ def index_executions(labels):
 
     return executions
 
-#busca as heurísticas de dbcode nos respectivos projetos, permitindo encontrarmos suas dependencias, ou seja, os arquivos de dependência ou segundo nível
+def read_file_in_split(file_path, project):
+    size = 50  
+    at = 1
+    input = open(file_path).readlines(  )
+
+    for lines in range(0, len(input), size):        
+        outputData = input[lines:lines+size]
+        save_txt(outputData, project, at)
+        at += 1
+
+    return at
+
+def save_txt(outputData, project, at):
+    os.chdir(HEURISTICS_DIR_TEMP_FILES)
+    try:
+        TextFile = open(project+str(at)+'.txt', 'w+')
+        for k in outputData:
+            TextFile.write(k)
+        TextFile.close()    
+    except FileNotFoundError:
+        print("The 'docs' directory does not exist") 
+        
 def main():
     db.connect()
 
@@ -239,25 +261,28 @@ def main():
         # Print progress information
         progress = '{:.2%}'.format((i * len(projects)) / status['Total'])
         print(f'[{progress}] Searching for {label.name} in {project.owner}/{project.name}:', end=' ')
-
+        
         # Try to get a previous execution
         execution = executions.get((heuristic, version), None)
         if not execution:
             try:
                 os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
-                cmd = GREP_COMMAND + [HEURISTICS_DIR_FIRST_LEVEL + os.sep + label.name + '.txt']
-                try:
-                    p = subprocess.run(cmd, capture_output=True, timeout=200)
+                lisf_of_parts = read_file_in_split(HEURISTICS_DIR_FIRST_LEVEL + os.sep + label.name + '.txt', project.name)
+                print("\n")
+                for part in range(1, lisf_of_parts):
+                    print(f'[{progress}] Searching for {project.name + str(part)} in {project.owner}/{project.name}:', end=' ')
+                    cmd_temp_files = GREP_COMMAND + [HEURISTICS_DIR_TEMP_FILES + os.sep + project.name + str(part)+ '.txt']
+                    p = subprocess.run(cmd_temp_files, capture_output=True)
+                    #proc = subprocess.Popen(cmd_temp_files, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                    #stdout, stderr = proc.communicate()
                     if p.stderr:
-                        raise subprocess.CalledProcessError(p.returncode, cmd, p.stdout, p.stderr)
+                        raise subprocess.CalledProcessError(p.stauscode, cmd_temp_files, p.stdout, p.stderr)
+                    print(p.stdout)
                     db.create(db.Execution, output=p.stdout.decode(errors='replace').replace('\x00', '\uFFFD'),
-                          version=version, heuristic=heuristic, isValidated=False, isAccepted=False)                
+                              version=version, heuristic=heuristic, isValidated=False, isAccepted=False)
                     print(green('ok.'))
                     status['Success'] += 1
-                    commit()
-                except subprocess.TimeoutExpired:
-                    print(red('Git error.'))
-                    status['Git error'] += 1
+                commit()
             except NotADirectoryError:
                 print(red('repository not found.'))
                 status['Repository not found'] += 1
@@ -270,7 +295,6 @@ def main():
             print(yellow('already done.'))
             status['Skipped'] += 1
         
-
     print_results(status)
     db.close()
 

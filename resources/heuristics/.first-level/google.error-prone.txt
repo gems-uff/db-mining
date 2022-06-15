@@ -1,1 +1,0 @@
-[^a-zA-Z|^\/"\_#|0-9]FieldCanBeFinalTest[^a-zA-Z|^\/"\_#|0-9]

@@ -1,4 +1,0 @@
-[^a-zA-Z|^\/"\_#|0-9]EntityManager[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]EntityManagerTest[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]Statistics[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]FeedbackServiceImpl[^a-zA-Z|^\/"\_#|0-9]

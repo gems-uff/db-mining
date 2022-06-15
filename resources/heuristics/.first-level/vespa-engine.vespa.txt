@@ -1,4 +1,0 @@
-[^a-zA-Z|^\/"\_#|0-9]VespaXmlUpdateReaderTestCase[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]XmlFeedReaderTest[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]SimpleFeederTest[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]StorageClusterTest[^a-zA-Z|^\/"\_#|0-9]
