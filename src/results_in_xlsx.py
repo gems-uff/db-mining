@@ -1,6 +1,6 @@
 
 from sqlalchemy.orm import load_only, selectinload
-from util import RESOURCE_DIR, COUNT_FILE_IMP, REPOS_DIR, COUNT_FILE_SQL
+from util import RESOURCE_DIR, COUNT_FILE_IMP, REPOS_DIR, COUNT_FILE_SQL, COUNT_FILE_IMP_RATE
 
 import pandas as pd
 import os
@@ -55,7 +55,7 @@ def create_characterization(type_characterization, names, nameFile):
     save(all_results, nameFile)
 
 #conta quantos arquivos foram retornados para o uso de frameworks ORM 
-def create_count_implementation():
+def create_count_implementation(rate):
     db.connect()
     all_results = dict()
     index_projects = []
@@ -83,13 +83,20 @@ def create_count_implementation():
                 sum = 0
                 for k in output:
                     sum = sum +1
-                results_Label.append(sum/int(count_number_files_project(project)))
+                if(rate == True): 
+                    results_Label.append(round(sum/int(count_number_files_project(project))), 4)
+                else:
+                    results_Label.append(sum)
         if(i==0):
             all_results["Projects"] = index_projects
             all_results["Domains"] = index_domains
+            all_results["Total"] = int(count_number_files_project(project))
         all_results[label.name] = results_Label.copy()
         results_Label.clear()
-    save_local(all_results, COUNT_FILE_IMP)
+    if(rate == True):    
+        save_local(all_results, COUNT_FILE_IMP_RATE)
+    else:
+        save_local(all_results, COUNT_FILE_IMP)
 
 #conta quantos arquivos foram retornados para o uso de SQL e Builder 
 def create_count_sql():
@@ -159,7 +166,8 @@ def main():
     create_characterization('implementation', True, 'implementation_names')
     create_characterization('query', False, 'query')
     create_count_sql()
-    create_count_implementation()
+    create_count_implementation(True)
+    create_count_implementation(False)
     
 
 if __name__ == "__main__":
