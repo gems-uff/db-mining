@@ -61,6 +61,7 @@ def create_count_implementation(rate):
     index_projects = []
     index_domains = []
     results_Label = []
+    list_total_projects=[]
     projects_db = db.query(db.Project).options(load_only('id', 'owner', 'name'), selectinload(db.Project.versions).load_only('id')).all()
     labels_db = db.query(db.Label).options(selectinload(db.Label.heuristic).options(selectinload(db.Heuristic.executions).defer('output').defer('user'))).filter(db.Label.type == 'implementation').all()
     print("Search results in execution for label and project.")
@@ -83,19 +84,23 @@ def create_count_implementation(rate):
                 sum = 0
                 for k in output:
                     sum = sum +1
-                if(rate == True): 
-                    results_Label.append(round(sum/int(count_number_files_project(project))), 4)
+                if(rate == True):
+                    value = sum/int(count_number_files_project(project))
+                    results_Label.append(round(value, 4))
                 else:
                     results_Label.append(sum)
+            if(len(list_total_projects)< len(projects_db)):
+                list_total_projects.append(count_number_files_project(project))
         if(i==0):
             all_results["Projects"] = index_projects
             all_results["Domains"] = index_domains
-            all_results["Total"] = int(count_number_files_project(project))
         all_results[label.name] = results_Label.copy()
         results_Label.clear()
     if(rate == True):    
         save_local(all_results, COUNT_FILE_IMP_RATE)
     else:
+        #print(list_total_projects)
+        all_results["Number total od files"] = list_total_projects
         save_local(all_results, COUNT_FILE_IMP)
 
 #conta quantos arquivos foram retornados para o uso de SQL e Builder 
