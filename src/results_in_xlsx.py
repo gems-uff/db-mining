@@ -85,8 +85,8 @@ def create_count_implementation(rate):
                 for k in output:
                     sum = sum +1
                 if(rate == True):
-                    value = sum/int(count_number_files_project(project))
-                    results_Label.append(round(value, 4))
+                    value = sum/int(count_number_files_project(project))*100
+                    results_Label.append(value)
                 else:
                     results_Label.append(sum)
             if(len(list_total_projects)< len(projects_db)):
@@ -100,7 +100,7 @@ def create_count_implementation(rate):
         save_local(all_results, COUNT_FILE_IMP_RATE)
     else:
         #print(list_total_projects)
-        all_results["Number total od files"] = list_total_projects
+        all_results["Number total of files"] = list_total_projects
         save_local(all_results, COUNT_FILE_IMP)
 
 #conta quantos arquivos foram retornados para o uso de SQL e Builder 
@@ -166,12 +166,12 @@ def count_number_files_project(project):
         return 0
 
 def main():
-    create_characterization('database', False, 'database')
-    create_characterization('implementation', False, 'implementation')
-    create_characterization('implementation', True, 'implementation_names')
-    create_characterization('query', False, 'query')
-    create_count_sql()
-    create_count_implementation(True)
+    #create_characterization('database', False, 'database')
+    #create_characterization('implementation', False, 'implementation')
+    #create_characterization('implementation', True, 'implementation_names')
+    #create_characterization('query', False, 'query')
+    #create_count_sql()
+    #create_count_implementation(True)
     create_count_implementation(False)
     
 

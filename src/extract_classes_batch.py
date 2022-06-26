@@ -3,6 +3,7 @@ import subprocess
 from pickle import TRUE
 from socket import timeout
 from time import time
+from subprocess import PIPE
 
 import pandas as pd
 from sqlalchemy.orm import load_only, selectinload
@@ -268,22 +269,25 @@ def main():
         if not execution:
             try:
                 os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
+                print(os.getcwd())
                 lisf_of_parts = read_file_in_split(HEURISTICS_DIR_FIRST_LEVEL + os.sep + label.name + '.txt', project.name)
                 print("\n")
                 for part in range(1, lisf_of_parts):
                     print(f'[{progress}] Searching for {project.name + str(part)} in {project.owner}/{project.name}:', end=' ')
                     cmd_temp_files = GREP_COMMAND + [HEURISTICS_DIR_TEMP_FILES + os.sep + project.name + str(part)+ '.txt']
-                    #p = subprocess.run(cmd_temp_files, capture_output=True)
-                    proc = subprocess.Popen(cmd_temp_files, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                    stdout, stderr = proc.communicate()
-                    if stderr:
-                        raise subprocess.CalledProcessError(cmd_temp_files, stdout, stderr)
-                    print(stdout)
-                    db.create(db.Execution, output=stdout.decode(errors='replace').replace('\x00', '\uFFFD'),
+                    p = subprocess.run(cmd_temp_files, capture_output=True, shell=False)
+                    #proc = subprocess.Popen(cmd_temp_files, shell=True, stderr=PIPE, text=True)
+                    #stdout, stderr = proc.communicate()
+                    #my_env = os.environ.copy()
+                    #result = subprocess.check_output(cmd_temp_files, stderr=subprocess.STDOUT)
+                    #output = '{} ### {}'.format(time.ctime(), result)
+                    if p.stderr:
+                        raise subprocess.CalledProcessError(cmd_temp_files, p.output, p.stderr)
+                    db.create(db.Execution, output=p.stdout.decode(errors='replace').replace('\x00', '\uFFFD'),
                               version=version, heuristic=heuristic, isValidated=False, isAccepted=False)
                     print(green('ok.'))
                     status['Success'] += 1
-                commit()
+                    commit()
             except NotADirectoryError:
                 print(red('repository not found.'))
                 status['Repository not found'] += 1

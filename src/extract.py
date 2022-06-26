@@ -31,7 +31,7 @@ GREP_COMMAND = [
     '-f'
 ]
 
-GREP_COMMAND_IGNORE = [
+GREP_COMMAND_IGNORECASE = [
     'git',
     'grep',
     '--ignore-case',
@@ -221,7 +221,7 @@ def index_executions(labels):
     return executions
 
 def validade_ignore_case(label):
-    if label.name.startswith('(Ignore'):
+    if label.name.startswith('(IgnoreCase'):
         return TRUE
     else:
         return FALSE
@@ -263,7 +263,7 @@ def main():
                     ignore_case = validade_ignore_case(label)
                     os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
                     if ignore_case == TRUE:
-                        cmd = GREP_COMMAND_IGNORE + [HEURISTICS_DIR + os.sep + label.type + os.sep + label.name + '.txt']
+                        cmd = GREP_COMMAND_IGNORECASE + [HEURISTICS_DIR + os.sep + label.type + os.sep + label.name + '.txt']
                     else: 
                         cmd = GREP_COMMAND + [HEURISTICS_DIR + os.sep + label.type + os.sep + label.name + '.txt']
                     p = subprocess.run(cmd, capture_output=True)
