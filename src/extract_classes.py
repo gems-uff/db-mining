@@ -247,7 +247,7 @@ def main():
                 os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
                 cmd = GREP_COMMAND + [HEURISTICS_DIR_FIRST_LEVEL + os.sep + label.name + '.txt']
                 try:
-                    p = subprocess.run(cmd, capture_output=True, timeout=260)
+                    p = subprocess.run(cmd, capture_output=True, timeout=360)
                     if p.stderr:
                         raise subprocess.CalledProcessError(p.returncode, cmd, p.stdout, p.stderr)
                     db.create(db.Execution, output=p.stdout.decode(errors='replace').replace('\x00', '\uFFFD'),
