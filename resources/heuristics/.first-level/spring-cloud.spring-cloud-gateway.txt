@@ -1,3 +1,0 @@
-[^a-zA-Z|^\/"\_#|0-9]ProductionConfigurationTests[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]AbstractGatewayControllerEndpoint[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]ProductionConfigurationTests[^a-zA-Z|^\/"\_#|0-9]

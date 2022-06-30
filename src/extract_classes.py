@@ -1,4 +1,6 @@
 import os
+from pickle import TRUE
+from socket import timeout
 import subprocess
 from time import time
 
@@ -6,7 +8,7 @@ import pandas as pd
 
 import database as db
 from sqlalchemy.orm import load_only, selectinload
-from util import ANNOTATED_FILE_JAVA, HEURISTICS_DIR_FIRST_LEVEL, REPOS_DIR, red, green, yellow, CODE_DEBUG
+from util import ANNOTATED_FILE_JAVA, HEURISTICS_DIR_FIRST_LEVEL, REPOS_DIR, HEURISTICS_DIR_TEMP_FILES, red, green, yellow, CODE_DEBUG
 
 # Git rev-parse command
 REVPARSE_COMMAND = [
@@ -202,7 +204,7 @@ def index_executions(labels):
 
     return executions
 
-
+#busca as heurísticas de dbcode nos respectivos projetos, permitindo encontrarmos suas dependencias, ou seja, os arquivos de dependência ou segundo nível
 def main():
     db.connect()
 
@@ -220,6 +222,7 @@ def main():
         'Skipped': 0,
         'Repository not found': 0,
         'Git error': 0,
+        'Git timeout': 0,
         'Total': len(labels) * len(projects)
     }
     
@@ -244,18 +247,17 @@ def main():
                 os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
                 cmd = GREP_COMMAND + [HEURISTICS_DIR_FIRST_LEVEL + os.sep + label.name + '.txt']
                 try:
-                    print(cmd)
-                    p = subprocess.run(cmd, capture_output=True, timeout=120)
+                    p = subprocess.run(cmd, capture_output=True, timeout=360)
+                    if p.stderr:
+                        raise subprocess.CalledProcessError(p.returncode, cmd, p.stdout, p.stderr)
+                    db.create(db.Execution, output=p.stdout.decode(errors='replace').replace('\x00', '\uFFFD'),
+                          version=version, heuristic=heuristic, isValidated=False, isAccepted=False)                
+                    print(green('ok.'))
+                    status['Success'] += 1
+                    commit()
                 except subprocess.TimeoutExpired:
-                    print(red('Git error(Timeout).'))
+                    print(red('Git error.'))
                     status['Git error'] += 1
-                    continue    
-                if p.stderr:
-                    raise subprocess.CalledProcessError(p.returncode, cmd, p.stdout, p.stderr)
-                db.create(db.Execution, output=p.stdout.decode(errors='replace').replace('\x00', '\uFFFD'),
-                          version=version, heuristic=heuristic, isValidated=False, isAccepted=False)
-                print(green('ok.'))
-                status['Success'] += 1
             except NotADirectoryError:
                 print(red('repository not found.'))
                 status['Repository not found'] += 1
@@ -267,8 +269,6 @@ def main():
         else:  # Execution already exists
             print(yellow('already done.'))
             status['Skipped'] += 1
-        print("commit")
-        commit()
         
 
     print_results(status)

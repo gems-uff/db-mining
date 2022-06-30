@@ -1,3 +1,0 @@
-[^a-zA-Z|^\/"\_#|0-9]ClipboardCommands[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]GenerationCommands[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]RegionCommands[^a-zA-Z|^\/"\_#|0-9]

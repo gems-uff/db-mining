@@ -1,5 +1,0 @@
-[^a-zA-Z|^\/"\_#|0-9]EventResource[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]MetadataResource[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]WorkflowResource[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]MySQLGrpcEndToEndTest[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]PostgresGrpcEndToEndTest[^a-zA-Z|^\/"\_#|0-9]

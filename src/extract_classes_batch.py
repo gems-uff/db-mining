@@ -1,14 +1,18 @@
 import os
-from pickle import FALSE, TRUE
 import subprocess
+from pickle import TRUE
+from socket import timeout
 from time import time
+from subprocess import PIPE
 
 import pandas as pd
+from sqlalchemy.orm import load_only, selectinload
 
 import database as db
-from sqlalchemy.orm import load_only, selectinload
-from util import ANNOTATED_FILE_JAVA, HEURISTICS_DIR, REPOS_DIR, red, green, yellow, CODE_DEBUG
+from util import (ANNOTATED_FILE_JAVA, CODE_DEBUG, HEURISTICS_DIR_FIRST_LEVEL,
+                  HEURISTICS_DIR_TEMP_FILES, REPOS_DIR, green, red, yellow)
 
+#busca as heurísticas(em lote) de dbcode nos respectivos projetos, permitindo encontrarmos suas dependencias, ou seja, os arquivos de dependência ou segundo nível
 # Git rev-parse command
 REVPARSE_COMMAND = [
     'git',
@@ -31,19 +35,6 @@ GREP_COMMAND = [
     '-f'
 ]
 
-GREP_COMMAND_IGNORECASE = [
-    'git',
-    'grep',
-    '--ignore-case',
-    '--context=5',
-    '--break',
-    '--heading',
-    '--line-number',
-    '--color=always',
-    '--extended-regexp',
-    '-f'
-]
-
 
 def print_results(status):
     print('\nRESULTS')
@@ -55,7 +46,6 @@ def print_results(status):
 def commit():
     print('Committing changes...')
     db.commit()
-
 
 def get_or_create_projects():
     projects = []
@@ -135,21 +125,18 @@ def get_or_create_labels():
 
     # Loading heuristics from the file system.
     labels_fs = dict()
-    for label_type in os.scandir(HEURISTICS_DIR):
-        if label_type.is_dir() and not label_type.name.startswith('.'):
-            for label in os.scandir(label_type.path):
-                if label.is_file() and not label.name.startswith('.'):
-                    with open(label.path) as file:
-                        pattern = file.read()
-                    label_fs = {
-                        'name': os.path.splitext(label.name)[0],
-                        'type': label_type.name,
-                        'pattern': pattern,
+    for label in os.scandir(HEURISTICS_DIR_FIRST_LEVEL):
+        if label.is_file() and not label.name.startswith('.'):
+            with open(label.path) as file:
+                pattern = file.read()
+                label_fs = {
+                    'name': os.path.splitext(label.name)[0],
+                    'type': 'classes',
+                    'pattern': pattern,
                     }
-                    labels_fs[(label_fs['type'], label_fs['name'])] = label_fs
+        labels_fs[(label_fs['type'], label_fs['name'])] = label_fs
     # Loading labels from the database.
     labels_db = db.query(db.Label).options(selectinload(db.Label.heuristic).options(selectinload(db.Heuristic.executions).defer('output').defer('user'))).all()
-
     status = {
         'File System': len(labels_fs),
         'Database': len(labels_db),
@@ -181,14 +168,14 @@ def get_or_create_labels():
                         execution.heuristic = None
                         execution.version = None
 
-                        db.delete(execution)
+                        #db.delete(execution)
                         count += 1
                 print(green(f'heuristic updated ({count} executions removed).'))
                 status['Updated'] += 1
             else:
                 print(yellow('already done.'))
         else:
-            db.delete(label)
+            #db.delete(label)
             status['Deleted'] += 1
 
     # Adding missing labels in the database
@@ -220,19 +207,35 @@ def index_executions(labels):
 
     return executions
 
-def validade_ignore_case(label):
-    if label.name.startswith('(IgnoreCase'):
-        return TRUE
-    else:
-        return FALSE
+def read_file_in_split(file_path, project):
+    size = 50  
+    at = 1
+    input = open(file_path).readlines(  )
 
+    for lines in range(0, len(input), size):        
+        outputData = input[lines:lines+size]
+        save_txt(outputData, project, at)
+        at += 1
+
+    return at
+
+def save_txt(outputData, project, at):
+    os.chdir(HEURISTICS_DIR_TEMP_FILES)
+    try:
+        TextFile = open(project+str(at)+'.txt', 'w+')
+        for k in outputData:
+            TextFile.write(k)
+        TextFile.close()    
+    except FileNotFoundError:
+        print("The 'docs' directory does not exist") 
+        
 def main():
     db.connect()
 
     print(f'Loading projects from {ANNOTATED_FILE_JAVA}.')
     projects = get_or_create_projects()
 
-    print(f'\nLoading heuristics from {HEURISTICS_DIR}.')
+    print(f'\nLoading heuristics from {HEURISTICS_DIR_FIRST_LEVEL}.')
     labels = get_or_create_labels()
 
     # Indexing executions by label heuristic and project version.
@@ -243,49 +246,60 @@ def main():
         'Skipped': 0,
         'Repository not found': 0,
         'Git error': 0,
+        'Git timeout': 0,
         'Total': len(labels) * len(projects)
     }
-
+    
     print(f'\nProcessing {len(labels)} heuristics over {len(projects)} projects.')
     for i, label in enumerate(labels):
         heuristic = label.heuristic
-        for j, project in enumerate(projects):
-            version = project.versions[0]  # TODO: fix this to deal with multiple versions
+        heuristic_objct_label = db.query(db.Label).filter(db.Label.id == heuristic.label_id).first()
+        project = next((x for x in projects if x.owner == heuristic_objct_label.name.split(".")[0] 
+                        and x.name == heuristic_objct_label.name.split(".")[1]), None)
+        if (project is None ):
+            continue
+        version = project.versions[0]  # TODO: fix this to deal with multiple versions
 
-            # Print progress information
-            progress = '{:.2%}'.format((i * len(projects) + (j + 1)) / status['Total'])
-            print(f'[{progress}] Searching for {label.name} in {project.owner}/{project.name}:', end=' ')
-
-            # Try to get a previous execution
-            execution = executions.get((heuristic, version), None)
-            if not execution:
-                try:
-                    ignore_case = validade_ignore_case(label)
-                    os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
-                    if ignore_case == TRUE:
-                        cmd = GREP_COMMAND_IGNORECASE + [HEURISTICS_DIR + os.sep + label.type + os.sep + label.name + '.txt']
-                    else: 
-                        cmd = GREP_COMMAND + [HEURISTICS_DIR + os.sep + label.type + os.sep + label.name + '.txt']
-                    p = subprocess.run(cmd, capture_output=True)
+        # Print progress information
+        progress = '{:.2%}'.format((i * len(projects)) / status['Total'])
+        print(f'[{progress}] Searching for {label.name} in {project.owner}/{project.name}:', end=' ')
+        
+        # Try to get a previous execution
+        execution = executions.get((heuristic, version), None)
+        if not execution:
+            try:
+                os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
+                print(os.getcwd())
+                lisf_of_parts = read_file_in_split(HEURISTICS_DIR_FIRST_LEVEL + os.sep + label.name + '.txt', project.name)
+                print("\n")
+                for part in range(1, lisf_of_parts):
+                    print(f'[{progress}] Searching for {project.name + str(part)} in {project.owner}/{project.name}:', end=' ')
+                    cmd_temp_files = GREP_COMMAND + [HEURISTICS_DIR_TEMP_FILES + os.sep + project.name + str(part)+ '.txt']
+                    p = subprocess.run(cmd_temp_files, capture_output=True, shell=False)
+                    #proc = subprocess.Popen(cmd_temp_files, shell=True, stderr=PIPE, text=True)
+                    #stdout, stderr = proc.communicate()
+                    #my_env = os.environ.copy()
+                    #result = subprocess.check_output(cmd_temp_files, stderr=subprocess.STDOUT)
+                    #output = '{} ### {}'.format(time.ctime(), result)
                     if p.stderr:
-                        raise subprocess.CalledProcessError(p.returncode, cmd, p.stdout, p.stderr)
+                        raise subprocess.CalledProcessError(cmd_temp_files, p.output, p.stderr)
                     db.create(db.Execution, output=p.stdout.decode(errors='replace').replace('\x00', '\uFFFD'),
                               version=version, heuristic=heuristic, isValidated=False, isAccepted=False)
                     print(green('ok.'))
                     status['Success'] += 1
-                except NotADirectoryError:
-                    print(red('repository not found.'))
-                    status['Repository not found'] += 1
-                except subprocess.CalledProcessError as ex:
-                    print(red('Git error.'))
-                    status['Git error'] += 1
-                    if CODE_DEBUG:
-                        print(ex.stderr)
-            else:  # Execution already exists
-                print(yellow('already done.'))
-                status['Skipped'] += 1
-        commit()
-
+                    commit()
+            except NotADirectoryError:
+                print(red('repository not found.'))
+                status['Repository not found'] += 1
+            except subprocess.CalledProcessError as ex:
+                print(red('Git error.'))
+                status['Git error'] += 1
+                if CODE_DEBUG:
+                    print(ex.stderr)
+        else:  # Execution already exists
+            print(yellow('already done.'))
+            status['Skipped'] += 1
+        
     print_results(status)
     db.close()
 
