@@ -47,6 +47,8 @@ HISTORICAL_INPUT_SEQUENCIAL = SEQ_PATTERNS_DIR + os.sep + 'input_sequencial.txt'
 HISTORICAL_INPUT_SEQUENCIAL_NEG = SEQ_PATTERNS_DIR + os.sep + 'input_sequencial_neg.txt'
 HISTORICAL_INPUT_SEQUENCIAL_NUMBERS = SEQ_PATTERNS_DIR + os.sep + 'input_sequencial_numbers.txt'
 HISTORICAL_INPUT_SEQUENCIAL_NUMBERSNEG = SEQ_PATTERNS_DIR + os.sep + 'input_sequencial_numbersneg.txt'
+HISTORICAL_OUTPUT_SEQUENCIAL_NUMBERS = SEQ_PATTERNS_DIR + os.sep + '"output_seq.txt'
+HISTORICAL_OUTPUT_SEQUENCIAL_NUMBERSNEG = SEQ_PATTERNS_DIR + os.sep + '"output_seq_neg.txt'
 
 DATABASE_CONFIG_FILE = BASE_DIR + os.sep + 'database.json'
 
