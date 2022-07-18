@@ -1,0 +1,1692 @@
+Memcached | #SUP: 8 #SID: 8 9 36 37 63 120 130 192
+Memcached Redis | #SUP: 5 #SID: 8 9 37 120 130
+Memcached GoogleCloudDatastore | #SUP: 2 #SID: 63 192
+Memcached MariaDB | #SUP: 5 #SID: 9 37 63 120 130
+Memcached H2 | #SUP: 4 #SID: 9 37 63 120
+Memcached HBase | #SUP: 3 #SID: 9 120 130
+Memcached Elasticsearch | #SUP: 3 #SID: 9 120 130
+Memcached Oracle | #SUP: 5 #SID: 9 37 63 120 130
+Memcached IBM_DB2 | #SUP: 2 #SID: 63 120
+Memcached MongoDB | #SUP: 5 #SID: 9 37 63 120 130
+Memcached Hazelcast | #SUP: 2 #SID: 37 63
+Memcached Solr | #SUP: 2 #SID: 9 120
+Memcached PostgreSQL | #SUP: 4 #SID: 9 37 120 130
+Memcached Cassandra | #SUP: 4 #SID: 9 37 120 130
+Memcached MS_SQL_Server | #SUP: 4 #SID: 9 37 120 130
+Memcached Ehcache | #SUP: 6 #SID: 8 9 36 37 120 130
+Memcached SAPAdaptiveServer | #SUP: 3 #SID: 9 120 130
+Memcached MySQL | #SUP: 6 #SID: 8 9 37 63 120 130
+Memcached | Memcached | #SUP: 8 #SID: 8 9 36 37 63 120 130 192
+Memcached | Redis | #SUP: 5 #SID: 8 9 37 120 130
+Memcached | GoogleCloudDatastore | #SUP: 2 #SID: 63 192
+Memcached | MariaDB | #SUP: 5 #SID: 9 37 63 120 130
+Memcached | H2 | #SUP: 4 #SID: 9 37 63 120
+Memcached | HBase | #SUP: 3 #SID: 9 120 130
+Memcached | Elasticsearch | #SUP: 3 #SID: 9 120 130
+Memcached | Oracle | #SUP: 5 #SID: 9 37 63 120 130
+Memcached | IBM_DB2 | #SUP: 2 #SID: 63 120
+Memcached | MongoDB | #SUP: 5 #SID: 9 37 63 120 130
+Memcached | Hazelcast | #SUP: 2 #SID: 37 63
+Memcached | Solr | #SUP: 2 #SID: 9 120
+Memcached | PostgreSQL | #SUP: 4 #SID: 9 37 120 130
+Memcached | Cassandra | #SUP: 4 #SID: 9 37 120 130
+Memcached | MS_SQL_Server | #SUP: 4 #SID: 9 37 120 130
+Memcached | Ehcache | #SUP: 6 #SID: 8 9 36 37 120 130
+Memcached | SAPAdaptiveServer | #SUP: 3 #SID: 9 120 130
+Memcached | Etcd | #SUP: 2 #SID: 8 9
+Memcached | MySQL | #SUP: 5 #SID: 9 37 63 120 130
+Hive | #SUP: 11 #SID: 5 15 16 21 24 28 33 57 67 90 152
+Hive Redis | #SUP: 6 #SID: 15 16 21 28 33 152
+Hive GoogleCloudDatastore | #SUP: 4 #SID: 16 21 24 33
+Hive MariaDB | #SUP: 3 #SID: 16 28 57
+Hive Neo4j | #SUP: 2 #SID: 16 28
+Hive H2 | #SUP: 8 #SID: 15 16 24 28 33 57 90 152
+Hive GoogleBigQuery | #SUP: 5 #SID: 21 28 57 90 152
+Hive HBase | #SUP: 7 #SID: 15 16 21 24 28 33 152
+Hive Netezza | #SUP: 2 #SID: 57 90
+Hive Elasticsearch | #SUP: 6 #SID: 16 21 28 57 67 152
+Hive Oracle | #SUP: 4 #SID: 15 33 57 152
+Hive DynamoDB | #SUP: 4 #SID: 21 24 28 57
+Hive IBM_DB2 | #SUP: 2 #SID: 15 57
+Hive MongoDB | #SUP: 4 #SID: 16 21 28 152
+Hive Hazelcast | #SUP: 3 #SID: 16 21 28
+Hive Influx_DB | #SUP: 2 #SID: 16 21
+Hive SQLite | #SUP: 2 #SID: 33 57
+Hive Solr | #SUP: 3 #SID: 21 28 33
+Hive Snowflake | #SUP: 2 #SID: 21 57
+Hive AmazonRedshift | #SUP: 2 #SID: 16 57
+Hive PostgreSQL | #SUP: 9 #SID: 15 16 21 24 28 33 57 90 152
+Hive Cassandra | #SUP: 4 #SID: 16 21 28 152
+Hive MS_SQL_Server | #SUP: 4 #SID: 15 33 57 152
+Hive Ehcache | #SUP: 5 #SID: 5 15 21 33 152
+Hive ClickHouse | #SUP: 3 #SID: 15 21 57
+Hive MySQL | #SUP: 10 #SID: 5 15 16 21 24 28 33 57 90 152
+Hive Join_Ignite_NoSql | #SUP: 3 #SID: 16 28 33
+Hive | Hive | #SUP: 11 #SID: 5 15 16 21 24 28 33 57 67 90 152
+Hive | Redis | #SUP: 6 #SID: 15 16 21 28 33 152
+Hive | GoogleCloudDatastore | #SUP: 4 #SID: 16 21 24 33
+Hive | MariaDB | #SUP: 3 #SID: 16 28 57
+Hive | Neo4j | #SUP: 2 #SID: 16 28
+Hive | H2 | #SUP: 8 #SID: 15 16 24 28 33 57 90 152
+Hive | GoogleBigQuery | #SUP: 5 #SID: 21 28 57 90 152
+Hive | HBase | #SUP: 7 #SID: 15 16 21 24 28 33 152
+Hive | Netezza | #SUP: 2 #SID: 57 90
+Hive | Elasticsearch | #SUP: 6 #SID: 16 21 28 57 67 152
+Hive | Oracle | #SUP: 4 #SID: 15 33 57 152
+Hive | DynamoDB | #SUP: 4 #SID: 21 24 28 57
+Hive | IBM_DB2 | #SUP: 2 #SID: 15 57
+Hive | MongoDB | #SUP: 4 #SID: 16 21 28 152
+Hive | Hazelcast | #SUP: 3 #SID: 16 21 28
+Hive | Influx_DB | #SUP: 2 #SID: 16 21
+Hive | SQLite | #SUP: 2 #SID: 33 57
+Hive | Solr | #SUP: 3 #SID: 21 28 33
+Hive | Snowflake | #SUP: 2 #SID: 21 57
+Hive | AmazonRedshift | #SUP: 2 #SID: 16 57
+Hive | PostgreSQL | #SUP: 9 #SID: 15 16 21 24 28 33 57 90 152
+Hive | Cassandra | #SUP: 4 #SID: 16 21 28 152
+Hive | MS_SQL_Server | #SUP: 5 #SID: 15 16 33 57 152
+Hive | Ehcache | #SUP: 5 #SID: 5 15 21 33 152
+Hive | ClickHouse | #SUP: 3 #SID: 15 21 57
+Hive | MySQL | #SUP: 10 #SID: 5 15 16 21 24 28 33 57 90 152
+Hive | Join_Ignite_NoSql | #SUP: 3 #SID: 16 28 33
+Redis | #SUP: 63 #SID: 1 8 9 12 14 15 16 17 18 19 20 21 22 25 28 29 33 37 40 42 43 44 55 58 59 60 61 62 69 70 79 81 83 84 94 97 99 101 102 103 117 118 120 123 125 127 130 132 133 136 137 138 140 142 152 157 161 162 164 171 172 173 183
+Redis GoogleCloudDatastore | #SUP: 8 #SID: 16 21 33 43 79 103 123 164
+Redis MariaDB | #SUP: 20 #SID: 1 9 16 17 20 28 37 61 83 102 117 118 120 123 130 133 137 161 162 172
+Redis Neo4j | #SUP: 3 #SID: 16 20 28
+Redis H2 | #SUP: 34 #SID: 9 12 15 16 17 18 20 22 25 28 33 37 40 42 44 55 60 61 62 69 79 84 99 102 120 123 125 136 137 138 152 157 161 172
+Redis GoogleBigQuery | #SUP: 4 #SID: 1 21 28 152
+Redis HBase | #SUP: 12 #SID: 9 14 15 16 17 21 28 33 120 130 152 173
+Redis Elasticsearch | #SUP: 15 #SID: 1 9 14 16 17 21 25 28 62 120 130 132 152 162 183
+Redis SapHana | #SUP: 2 #SID: 17 61
+Redis Oracle | #SUP: 25 #SID: 1 9 15 17 18 20 28 29 33 37 42 58 59 61 62 79 94 97 99 103 120 130 133 152 157
+Redis OrientDB | #SUP: 2 #SID: 103 162
+Redis DynamoDB | #SUP: 9 #SID: 1 14 17 21 28 37 43 103 137
+Redis Firebird | #SUP: 3 #SID: 17 20 137
+Redis Informix | #SUP: 4 #SID: 17 79 84 130
+Redis IBM_DB2 | #SUP: 10 #SID: 1 15 17 20 42 58 61 94 102 120
+Redis Couchbase | #SUP: 2 #SID: 28 37
+Redis MongoDB | #SUP: 23 #SID: 1 9 14 16 17 20 21 28 37 58 62 79 99 103 120 123 127 130 137 152 161 162 173
+Redis Hazelcast | #SUP: 8 #SID: 16 21 28 37 43 79 94 127
+Redis Influx_DB | #SUP: 4 #SID: 16 17 21 37
+Redis SQLite | #SUP: 10 #SID: 17 33 42 61 79 103 123 125 137 164
+Redis Solr | #SUP: 9 #SID: 9 14 17 21 28 33 79 120 164
+Redis Snowflake | #SUP: 3 #SID: 1 17 21
+Redis AmazonRedshift | #SUP: 3 #SID: 1 16 17
+Redis PostgreSQL | #SUP: 35 #SID: 1 9 15 16 17 18 20 21 25 28 33 37 40 42 58 60 61 62 79 84 94 99 101 102 117 120 123 130 132 133 137 140 152 164 183
+Redis Cassandra | #SUP: 14 #SID: 1 9 14 16 17 21 28 37 58 120 130 132 152 183
+Redis MS_SQL_Server | #SUP: 17 #SID: 1 9 15 17 20 33 37 42 58 61 79 83 94 102 120 130 152
+Redis Ehcache | #SUP: 24 #SID: 8 9 20 21 29 33 37 43 44 61 62 79 84 99 102 103 117 120 127 130 133 152 157 183
+Redis MicrosoftAzureCosmosDB | #SUP: 2 #SID: 28 37
+Redis MS_Access | #SUP: 2 #SID: 79 94
+Redis SAPAdaptiveServer | #SUP: 8 #SID: 9 17 28 40 62 94 120 130
+Redis ClickHouse | #SUP: 6 #SID: 1 15 17 21 61 79
+Redis PostGIS | #SUP: 3 #SID: 61 79 120
+Redis Etcd | #SUP: 4 #SID: 8 9 17 60
+Redis MySQL | #SUP: 44 #SID: 1 8 9 12 14 15 16 17 18 20 21 22 25 28 29 33 37 40 42 44 55 58 60 61 62 79 83 84 94 99 102 103 117 118 120 123 130 132 133 136 137 140 152 161
+Redis Join_Ignite_NoSql | #SUP: 3 #SID: 16 28 33
+Redis | Memcached | #SUP: 5 #SID: 8 9 37 120 130
+Redis | Hive | #SUP: 6 #SID: 15 16 21 28 33 152
+Redis | Redis | #SUP: 54 #SID: 1 8 9 14 15 16 17 18 20 21 25 28 29 33 37 40 42 43 44 55 58 60 61 62 69 70 79 81 84 94 97 99 101 103 117 118 120 123 127 130 132 133 136 138 140 142 152 157 161 162 164 171 172 183
+Redis | GoogleCloudDatastore | #SUP: 9 #SID: 16 21 22 33 43 79 103 123 164
+Redis | MariaDB | #SUP: 18 #SID: 1 9 16 17 20 28 37 42 61 117 118 120 123 130 133 161 162 172
+Redis | Neo4j | #SUP: 3 #SID: 16 20 28
+Redis | H2 | #SUP: 31 #SID: 9 15 16 17 18 20 22 25 28 33 37 40 42 44 55 60 61 62 69 79 84 99 120 123 125 136 138 152 157 161 172
+Redis | GoogleBigQuery | #SUP: 4 #SID: 1 21 28 152
+Redis | HBase | #SUP: 11 #SID: 9 14 15 16 17 21 28 33 120 130 152
+Redis | Elasticsearch | #SUP: 15 #SID: 1 9 14 16 17 21 25 28 62 120 130 132 152 162 183
+Redis | SapHana | #SUP: 2 #SID: 17 61
+Redis | Oracle | #SUP: 25 #SID: 1 9 15 17 18 20 28 29 33 37 42 58 59 61 62 79 94 97 99 103 120 130 133 152 157
+Redis | OrientDB | #SUP: 2 #SID: 103 162
+Redis | DynamoDB | #SUP: 8 #SID: 1 14 17 21 28 37 43 103
+Redis | Firebird | #SUP: 2 #SID: 17 20
+Redis | Informix | #SUP: 4 #SID: 17 79 84 130
+Redis | IBM_DB2 | #SUP: 9 #SID: 1 15 17 20 42 58 61 94 120
+Redis | Couchbase | #SUP: 3 #SID: 22 28 37
+Redis | MongoDB | #SUP: 21 #SID: 1 9 14 16 17 20 21 28 37 58 62 79 99 103 120 123 127 130 152 161 162
+Redis | Hazelcast | #SUP: 8 #SID: 16 21 28 37 43 79 94 127
+Redis | Influx_DB | #SUP: 4 #SID: 16 17 21 37
+Redis | SQLite | #SUP: 9 #SID: 17 33 42 61 79 103 123 125 164
+Redis | Solr | #SUP: 9 #SID: 9 14 17 21 28 33 79 120 164
+Redis | Snowflake | #SUP: 3 #SID: 1 17 21
+Redis | AmazonRedshift | #SUP: 3 #SID: 1 16 17
+Redis | PostgreSQL | #SUP: 33 #SID: 1 9 15 16 17 18 20 21 25 28 33 37 40 42 58 60 61 62 79 84 94 99 101 117 120 123 130 132 133 140 152 164 183
+Redis | Cassandra | #SUP: 14 #SID: 1 9 14 16 17 21 28 37 58 120 130 132 152 183
+Redis | MS_SQL_Server | #SUP: 15 #SID: 1 9 15 17 20 33 37 42 58 61 79 94 120 130 152
+Redis | Ehcache | #SUP: 24 #SID: 8 9 15 20 21 29 33 37 43 44 61 62 79 84 99 103 117 120 127 130 133 152 157 183
+Redis | MicrosoftAzureCosmosDB | #SUP: 2 #SID: 28 37
+Redis | MS_Access | #SUP: 2 #SID: 79 94
+Redis | SAPAdaptiveServer | #SUP: 8 #SID: 9 17 28 40 62 94 120 130
+Redis | ClickHouse | #SUP: 6 #SID: 1 15 17 21 61 79
+Redis | PostGIS | #SUP: 3 #SID: 61 79 120
+Redis | Etcd | #SUP: 4 #SID: 8 9 17 60
+Redis | MySQL | #SUP: 40 #SID: 1 8 9 14 15 16 17 18 20 21 22 25 28 29 33 37 40 42 44 55 58 60 61 62 79 84 94 99 103 117 118 120 123 130 132 133 136 140 152 161
+Redis | Join_Ignite_NoSql | #SUP: 3 #SID: 16 28 33
+GoogleCloudDatastore | #SUP: 22 #SID: 16 19 21 22 24 27 33 39 43 49 63 79 85 86 103 114 115 123 164 168 181 192
+GoogleCloudDatastore MariaDB | #SUP: 4 #SID: 16 63 123 181
+GoogleCloudDatastore H2 | #SUP: 10 #SID: 16 22 24 33 63 79 114 115 123 181
+GoogleCloudDatastore HBase | #SUP: 5 #SID: 16 21 24 27 33
+GoogleCloudDatastore Elasticsearch | #SUP: 2 #SID: 16 21
+GoogleCloudDatastore Oracle | #SUP: 6 #SID: 33 63 79 103 168 181
+GoogleCloudDatastore DynamoDB | #SUP: 4 #SID: 21 24 43 103
+GoogleCloudDatastore IBM_DB2 | #SUP: 3 #SID: 63 114 181
+GoogleCloudDatastore MongoDB | #SUP: 7 #SID: 16 21 27 63 79 103 123
+GoogleCloudDatastore Hazelcast | #SUP: 5 #SID: 16 21 43 63 79
+GoogleCloudDatastore Influx_DB | #SUP: 2 #SID: 16 21
+GoogleCloudDatastore SQLite | #SUP: 5 #SID: 33 79 103 123 164
+GoogleCloudDatastore Solr | #SUP: 5 #SID: 21 33 79 164 181
+GoogleCloudDatastore PostgreSQL | #SUP: 10 #SID: 16 21 24 33 79 86 114 123 164 181
+GoogleCloudDatastore Cassandra | #SUP: 3 #SID: 16 21 27
+GoogleCloudDatastore MS_SQL_Server | #SUP: 4 #SID: 16 33 79 181
+GoogleCloudDatastore Ehcache | #SUP: 6 #SID: 21 33 43 79 103 168
+GoogleCloudDatastore ClickHouse | #SUP: 2 #SID: 21 79
+GoogleCloudDatastore MySQL | #SUP: 11 #SID: 16 21 22 24 33 63 79 103 123 168 181
+GoogleCloudDatastore Join_Ignite_NoSql | #SUP: 2 #SID: 16 33
+GoogleCloudDatastore | Memcached | #SUP: 2 #SID: 63 192
+GoogleCloudDatastore | Hive | #SUP: 4 #SID: 16 21 24 33
+GoogleCloudDatastore | Redis | #SUP: 9 #SID: 16 19 21 33 43 79 103 123 164
+GoogleCloudDatastore | GoogleCloudDatastore | #SUP: 20 #SID: 16 19 21 22 24 27 33 43 49 63 79 85 86 103 114 123 164 168 181 192
+GoogleCloudDatastore | MariaDB | #SUP: 4 #SID: 16 63 123 181
+GoogleCloudDatastore | H2 | #SUP: 11 #SID: 16 22 24 27 33 63 79 114 115 123 181
+GoogleCloudDatastore | HBase | #SUP: 5 #SID: 16 21 24 27 33
+GoogleCloudDatastore | Elasticsearch | #SUP: 3 #SID: 16 21 115
+GoogleCloudDatastore | Oracle | #SUP: 7 #SID: 33 63 79 103 115 168 181
+GoogleCloudDatastore | DynamoDB | #SUP: 4 #SID: 21 24 43 103
+GoogleCloudDatastore | IBM_DB2 | #SUP: 3 #SID: 63 114 181
+GoogleCloudDatastore | MongoDB | #SUP: 7 #SID: 16 21 27 63 79 103 123
+GoogleCloudDatastore | Hazelcast | #SUP: 5 #SID: 16 21 43 63 79
+GoogleCloudDatastore | Influx_DB | #SUP: 2 #SID: 16 21
+GoogleCloudDatastore | SQLite | #SUP: 5 #SID: 33 79 103 123 164
+GoogleCloudDatastore | Solr | #SUP: 5 #SID: 21 33 79 164 181
+GoogleCloudDatastore | PostgreSQL | #SUP: 12 #SID: 16 21 24 27 33 79 86 114 115 123 164 181
+GoogleCloudDatastore | Cassandra | #SUP: 3 #SID: 16 21 27
+GoogleCloudDatastore | MS_SQL_Server | #SUP: 4 #SID: 16 33 79 181
+GoogleCloudDatastore | Ehcache | #SUP: 6 #SID: 21 33 79 103 114 168
+GoogleCloudDatastore | ClickHouse | #SUP: 2 #SID: 21 79
+GoogleCloudDatastore | MySQL | #SUP: 13 #SID: 16 21 22 24 33 63 79 85 103 114 123 168 181
+GoogleCloudDatastore | Join_Ignite_NoSql | #SUP: 2 #SID: 16 33
+MariaDB | #SUP: 43 #SID: 1 2 9 16 17 20 28 35 37 39 42 52 57 61 63 74 75 83 98 102 110 112 116 117 118 120 122 123 130 133 137 139 143 149 161 162 165 167 172 181 182 191 195
+MariaDB Neo4j | #SUP: 3 #SID: 16 20 28
+MariaDB H2 | #SUP: 28 #SID: 9 16 17 20 28 35 37 42 57 61 63 74 75 102 110 112 116 120 122 123 137 149 161 165 167 172 181 182
+MariaDB GoogleBigQuery | #SUP: 5 #SID: 1 28 57 75 149
+MariaDB HBase | #SUP: 7 #SID: 9 16 17 28 75 120 130
+MariaDB Netezza | #SUP: 2 #SID: 57 149
+MariaDB Elasticsearch | #SUP: 11 #SID: 1 9 16 17 28 57 120 130 143 149 162
+MariaDB SapHana | #SUP: 6 #SID: 17 57 61 75 122 149
+MariaDB Oracle | #SUP: 27 #SID: 1 2 9 17 20 28 35 37 42 52 57 61 63 74 75 98 110 112 116 120 122 130 139 149 165 181 182
+MariaDB OrientDB | #SUP: 2 #SID: 57 162
+MariaDB DynamoDB | #SUP: 7 #SID: 1 17 28 37 57 98 137
+MariaDB Firebird | #SUP: 9 #SID: 17 20 35 57 75 122 137 149 181
+MariaDB Informix | #SUP: 7 #SID: 17 35 57 75 122 130 149
+MariaDB IBM_DB2 | #SUP: 16 #SID: 1 17 20 35 42 57 61 63 74 75 102 116 120 122 149 181
+MariaDB Couchbase | #SUP: 3 #SID: 28 37 110
+MariaDB MongoDB | #SUP: 18 #SID: 1 9 16 17 20 28 37 63 110 112 120 123 130 137 149 161 162 191
+MariaDB Hazelcast | #SUP: 4 #SID: 16 28 37 63
+MariaDB Influx_DB | #SUP: 3 #SID: 16 17 37
+MariaDB SQLite | #SUP: 16 #SID: 17 35 42 57 61 75 110 122 123 137 139 143 149 165 167 195
+MariaDB Solr | #SUP: 5 #SID: 9 17 28 120 181
+MariaDB Snowflake | #SUP: 5 #SID: 1 17 57 75 149
+MariaDB AmazonRedshift | #SUP: 6 #SID: 1 16 17 57 75 149
+MariaDB PostgreSQL | #SUP: 34 #SID: 1 2 9 16 17 20 28 35 37 39 42 52 57 61 74 75 98 102 110 112 116 117 120 122 130 133 137 139 149 165 181 182 191 195
+MariaDB Cassandra | #SUP: 10 #SID: 1 9 16 17 28 37 110 120 130 143
+MariaDB MS_SQL_Server | #SUP: 24 #SID: 1 9 16 17 20 35 37 39 42 52 57 61 74 75 83 102 112 120 122 130 149 181 182 191
+MariaDB Ehcache | #SUP: 15 #SID: 2 9 20 37 61 102 110 112 116 117 120 130 133 149 182
+MariaDB MicrosoftAzureCosmosDB | #SUP: 2 #SID: 28 37
+MariaDB MS_Access | #SUP: 3 #SID: 35 57 149
+MariaDB SAPAdaptiveServer | #SUP: 11 #SID: 9 17 28 35 57 74 75 120 122 130 149
+MariaDB ClickHouse | #SUP: 4 #SID: 1 17 57 61
+MariaDB Vertica | #SUP: 3 #SID: 57 75 149
+MariaDB Teradata | #SUP: 2 #SID: 57 149
+MariaDB PostGIS | #SUP: 5 #SID: 57 61 98 120 149
+MariaDB MySQL | #SUP: 39 #SID: 1 2 9 16 17 20 28 35 37 39 42 52 57 61 63 74 75 83 102 110 112 116 117 118 120 122 123 130 133 137 139 143 149 161 165 167 181 182 195
+MariaDB Join_Ignite_NoSql | #SUP: 2 #SID: 16 28
+MariaDB | Memcached | #SUP: 4 #SID: 37 63 120 130
+MariaDB | Hive | #SUP: 3 #SID: 16 28 57
+MariaDB | Redis | #SUP: 19 #SID: 1 9 16 17 20 28 37 42 61 102 117 118 120 123 130 133 137 161 162
+MariaDB | GoogleCloudDatastore | #SUP: 4 #SID: 16 39 63 123
+MariaDB | MariaDB | #SUP: 35 #SID: 1 2 16 17 20 28 35 37 42 52 57 61 63 75 98 102 110 112 116 117 118 120 122 123 130 133 137 139 143 149 161 162 165 182 195
+MariaDB | Neo4j | #SUP: 3 #SID: 16 20 28
+MariaDB | H2 | #SUP: 24 #SID: 9 16 17 20 28 35 37 42 57 61 63 75 102 110 112 116 120 122 123 137 149 161 165 182
+MariaDB | GoogleBigQuery | #SUP: 5 #SID: 1 28 57 75 149
+MariaDB | HBase | #SUP: 6 #SID: 16 17 28 75 120 130
+MariaDB | Netezza | #SUP: 2 #SID: 57 149
+MariaDB | Elasticsearch | #SUP: 11 #SID: 1 9 16 17 28 57 120 130 143 149 162
+MariaDB | SapHana | #SUP: 6 #SID: 17 57 61 75 122 149
+MariaDB | Oracle | #SUP: 24 #SID: 1 2 9 17 20 28 35 37 42 52 57 61 63 75 98 110 112 116 120 122 130 149 165 182
+MariaDB | OrientDB | #SUP: 2 #SID: 57 162
+MariaDB | DynamoDB | #SUP: 7 #SID: 1 17 28 37 57 98 137
+MariaDB | Firebird | #SUP: 8 #SID: 17 20 35 57 75 122 137 149
+MariaDB | Informix | #SUP: 7 #SID: 17 35 57 75 122 130 149
+MariaDB | IBM_DB2 | #SUP: 14 #SID: 1 17 20 35 42 57 61 63 75 102 116 120 122 149
+MariaDB | Couchbase | #SUP: 3 #SID: 28 37 110
+MariaDB | MongoDB | #SUP: 17 #SID: 1 9 16 17 20 28 37 63 110 112 120 123 130 137 149 161 162
+MariaDB | Hazelcast | #SUP: 4 #SID: 16 28 37 63
+MariaDB | Influx_DB | #SUP: 3 #SID: 16 17 37
+MariaDB | SQLite | #SUP: 14 #SID: 17 35 42 57 61 75 110 122 123 137 139 149 165 195
+MariaDB | Solr | #SUP: 3 #SID: 17 28 120
+MariaDB | Snowflake | #SUP: 5 #SID: 1 17 57 75 149
+MariaDB | AmazonRedshift | #SUP: 6 #SID: 1 16 17 57 75 149
+MariaDB | PostgreSQL | #SUP: 30 #SID: 1 2 9 16 17 20 28 35 37 42 52 57 61 75 98 102 110 112 116 117 120 122 130 133 137 139 149 165 182 195
+MariaDB | Cassandra | #SUP: 9 #SID: 1 16 17 28 37 110 120 130 143
+MariaDB | MS_SQL_Server | #SUP: 18 #SID: 1 9 17 20 35 37 42 52 57 61 75 102 112 120 122 130 149 182
+MariaDB | Ehcache | #SUP: 14 #SID: 2 20 37 61 102 110 112 116 117 120 130 133 149 182
+MariaDB | MicrosoftAzureCosmosDB | #SUP: 2 #SID: 28 37
+MariaDB | MS_Access | #SUP: 3 #SID: 35 57 149
+MariaDB | SAPAdaptiveServer | #SUP: 9 #SID: 17 28 35 57 75 120 122 130 149
+MariaDB | ClickHouse | #SUP: 4 #SID: 1 17 57 61
+MariaDB | Vertica | #SUP: 3 #SID: 57 75 149
+MariaDB | Teradata | #SUP: 2 #SID: 57 149
+MariaDB | PostGIS | #SUP: 5 #SID: 57 61 98 120 149
+MariaDB | Etcd | #SUP: 2 #SID: 9 17
+MariaDB | MySQL | #SUP: 34 #SID: 1 2 9 16 17 20 28 35 37 42 52 57 61 63 75 102 110 112 116 117 118 120 122 123 130 133 137 139 143 149 161 165 182 195
+MariaDB | Join_Ignite_NoSql | #SUP: 2 #SID: 16 28
+Neo4j | #SUP: 4 #SID: 16 20 28 73
+Neo4j PostgreSQL | #SUP: 3 #SID: 16 20 28
+Neo4j Cassandra | #SUP: 2 #SID: 16 28
+Neo4j H2 | #SUP: 3 #SID: 16 20 28
+Neo4j HBase | #SUP: 2 #SID: 16 28
+Neo4j Elasticsearch | #SUP: 2 #SID: 16 28
+Neo4j MySQL | #SUP: 4 #SID: 16 20 28 73
+Neo4j Join_Ignite_NoSql | #SUP: 2 #SID: 16 28
+Neo4j MongoDB | #SUP: 3 #SID: 16 20 28
+Neo4j Hazelcast | #SUP: 3 #SID: 16 28 73
+Neo4j | PostgreSQL | #SUP: 2 #SID: 16 28
+Neo4j | Cassandra | #SUP: 2 #SID: 16 28
+Neo4j | Hive | #SUP: 2 #SID: 16 28
+Neo4j | Redis | #SUP: 2 #SID: 16 28
+Neo4j | MariaDB | #SUP: 2 #SID: 16 28
+Neo4j | Neo4j | #SUP: 2 #SID: 16 28
+Neo4j | H2 | #SUP: 2 #SID: 16 28
+Neo4j | HBase | #SUP: 2 #SID: 16 28
+Neo4j | Elasticsearch | #SUP: 2 #SID: 16 28
+Neo4j | MySQL | #SUP: 3 #SID: 16 28 73
+Neo4j | Join_Ignite_NoSql | #SUP: 2 #SID: 16 28
+Neo4j | MongoDB | #SUP: 2 #SID: 16 28
+Neo4j | Hazelcast | #SUP: 3 #SID: 16 28 73
+H2 | #SUP: 76 #SID: 0 9 12 15 16 17 18 20 22 24 25 27 28 31 33 34 35 37 40 41 42 44 55 56 57 60 61 62 63 66 69 74 75 79 84 90 99 102 107 108 110 112 114 115 116 117 120 122 123 125 128 131 136 137 138 143 148 149 152 157 161 165 167 170 172 173 175 178 180 181 182 186 188 189 193 197
+H2 GoogleBigQuery | #SUP: 6 #SID: 28 57 75 90 149 152
+H2 HBase | #SUP: 13 #SID: 9 15 16 17 24 27 28 33 75 120 143 152 173
+H2 Netezza | #SUP: 3 #SID: 57 90 149
+H2 Elasticsearch | #SUP: 11 #SID: 9 16 17 25 28 57 62 115 120 149 152
+H2 SapHana | #SUP: 6 #SID: 17 57 61 75 122 149
+H2 Oracle | #SUP: 34 #SID: 0 9 15 17 18 20 28 33 34 35 37 42 57 61 62 63 74 75 79 99 110 112 115 116 120 122 149 152 157 165 181 182 189 197
+H2 DynamoDB | #SUP: 5 #SID: 17 24 28 57 137
+H2 Firebird | #SUP: 9 #SID: 17 20 35 57 75 122 137 149 181
+H2 Informix | #SUP: 8 #SID: 17 35 57 75 79 84 122 149
+H2 IBM_DB2 | #SUP: 19 #SID: 0 15 17 20 35 42 57 61 63 74 75 102 114 116 120 122 149 181 197
+H2 Couchbase | #SUP: 4 #SID: 22 28 37 110
+H2 MongoDB | #SUP: 21 #SID: 9 16 17 20 27 28 37 41 62 63 79 99 110 112 120 123 137 148 149 152 161
+H2 Hazelcast | #SUP: 9 #SID: 16 28 37 63 74 79 102 131 148
+H2 Influx_DB | #SUP: 3 #SID: 16 17 37
+H2 SQLite | #SUP: 18 #SID: 17 33 34 35 42 57 61 75 79 110 122 123 125 131 137 143 149 167
+H2 Solr | #SUP: 8 #SID: 9 17 28 33 34 79 120 181
+H2 Snowflake | #SUP: 4 #SID: 17 57 75 149
+H2 AmazonRedshift | #SUP: 5 #SID: 16 17 57 75 149
+H2 PostgreSQL | #SUP: 46 #SID: 0 9 15 16 17 18 20 24 25 27 28 33 34 35 37 40 42 57 60 61 62 74 75 79 84 90 99 102 110 112 114 115 116 120 122 123 137 143 149 152 165 175 181 182 186 197
+H2 Cassandra | #SUP: 9 #SID: 9 16 17 28 37 110 120 143 152
+H2 MS_SQL_Server | #SUP: 24 #SID: 0 9 15 17 20 33 35 37 42 57 61 74 75 79 102 112 120 122 149 152 181 182 186 197
+H2 Ehcache | #SUP: 26 #SID: 9 15 20 33 34 37 41 61 62 66 79 84 99 102 110 112 114 116 117 120 131 149 152 157 182 197
+H2 MicrosoftAzureCosmosDB | #SUP: 2 #SID: 28 37
+H2 MS_Access | #SUP: 7 #SID: 34 35 57 79 99 149 197
+H2 SAPAdaptiveServer | #SUP: 14 #SID: 0 9 17 28 35 40 57 62 74 75 120 122 149 197
+H2 CouchDB | #SUP: 2 #SID: 37 148
+H2 ClickHouse | #SUP: 5 #SID: 15 17 57 61 79
+H2 Vertica | #SUP: 3 #SID: 57 75 149
+H2 Teradata | #SUP: 4 #SID: 41 57 79 149
+H2 PostGIS | #SUP: 5 #SID: 57 61 79 120 149
+H2 Etcd | #SUP: 3 #SID: 9 17 60
+H2 MySQL | #SUP: 58 #SID: 0 9 12 15 16 17 18 20 22 24 25 28 33 34 35 37 40 41 42 44 55 57 60 61 62 63 74 75 79 84 90 99 102 110 112 114 116 117 120 122 123 128 131 136 137 143 149 152 161 165 167 173 175 181 182 186 193 197
+H2 Join_Ignite_NoSql | #SUP: 3 #SID: 16 28 33
+H2 | Memcached | #SUP: 3 #SID: 9 63 120
+H2 | Hive | #SUP: 8 #SID: 15 16 24 28 33 57 90 152
+H2 | Redis | #SUP: 34 #SID: 9 12 15 16 17 18 20 22 25 28 33 40 42 44 55 60 61 62 69 79 84 99 102 117 120 123 125 136 137 138 152 157 161 173
+H2 | GoogleCloudDatastore | #SUP: 8 #SID: 16 22 24 33 63 79 114 123
+H2 | MariaDB | #SUP: 26 #SID: 9 16 17 20 28 35 42 57 61 63 74 75 102 110 112 116 117 120 122 123 137 143 149 161 165 182
+H2 | Neo4j | #SUP: 3 #SID: 16 20 28
+H2 | H2 | #SUP: 70 #SID: 0 9 12 15 16 17 18 20 22 24 25 27 28 31 33 34 35 40 41 42 44 55 56 57 60 61 62 63 66 69 74 75 79 84 90 99 102 107 108 110 112 114 115 116 117 120 122 123 125 128 131 136 137 138 143 148 149 152 157 161 165 173 175 178 180 186 188 189 193 197
+H2 | GoogleBigQuery | #SUP: 6 #SID: 28 57 75 90 149 152
+H2 | HBase | #SUP: 12 #SID: 9 15 16 17 24 27 28 33 75 120 152 173
+H2 | Netezza | #SUP: 3 #SID: 57 90 149
+H2 | Elasticsearch | #SUP: 12 #SID: 9 16 17 25 28 57 62 115 120 143 149 152
+H2 | SapHana | #SUP: 6 #SID: 17 57 61 75 122 149
+H2 | Oracle | #SUP: 33 #SID: 0 9 15 17 18 20 28 33 34 35 42 57 61 62 63 74 75 79 99 110 112 115 116 120 122 128 149 152 157 165 182 189 197
+H2 | DynamoDB | #SUP: 5 #SID: 17 24 28 57 137
+H2 | Firebird | #SUP: 8 #SID: 17 20 35 57 75 122 137 149
+H2 | Informix | #SUP: 8 #SID: 17 35 57 75 79 84 122 149
+H2 | IBM_DB2 | #SUP: 18 #SID: 0 15 17 20 35 42 57 61 63 74 75 102 114 116 120 122 149 197
+H2 | Couchbase | #SUP: 3 #SID: 22 28 110
+H2 | MongoDB | #SUP: 21 #SID: 9 16 17 20 27 28 41 62 63 79 99 110 112 120 123 137 148 149 152 161 173
+H2 | Hazelcast | #SUP: 8 #SID: 16 28 63 74 79 102 131 148
+H2 | Influx_DB | #SUP: 2 #SID: 16 17
+H2 | SQLite | #SUP: 17 #SID: 17 33 34 35 42 57 61 75 79 110 122 123 125 137 143 149 165
+H2 | Solr | #SUP: 7 #SID: 9 17 28 33 34 79 120
+H2 | Snowflake | #SUP: 4 #SID: 17 57 75 149
+H2 | AmazonRedshift | #SUP: 5 #SID: 16 17 57 75 149
+H2 | PostgreSQL | #SUP: 45 #SID: 0 9 15 16 17 18 20 24 25 27 28 33 34 35 40 42 57 60 61 62 74 75 79 84 90 99 102 110 112 114 115 116 117 120 122 123 128 137 143 149 152 165 182 186 197
+H2 | Cassandra | #SUP: 8 #SID: 9 16 17 28 110 120 143 152
+H2 | MS_SQL_Server | #SUP: 22 #SID: 0 9 15 17 20 33 35 42 57 61 74 75 79 102 112 120 122 149 152 182 186 197
+H2 | Ehcache | #SUP: 25 #SID: 9 15 20 33 34 41 61 62 66 79 84 99 102 110 112 114 116 117 120 131 149 152 157 182 197
+H2 | MS_Access | #SUP: 7 #SID: 34 35 57 79 99 149 197
+H2 | SAPAdaptiveServer | #SUP: 14 #SID: 0 9 17 28 35 40 57 62 74 75 120 122 149 197
+H2 | ClickHouse | #SUP: 5 #SID: 15 17 57 61 79
+H2 | Vertica | #SUP: 3 #SID: 57 75 149
+H2 | Teradata | #SUP: 4 #SID: 41 57 79 149
+H2 | PostGIS | #SUP: 5 #SID: 57 61 79 120 149
+H2 | Etcd | #SUP: 3 #SID: 9 17 60
+H2 | MySQL | #SUP: 55 #SID: 0 9 12 15 16 17 18 20 22 24 25 28 33 34 35 40 41 42 44 55 57 60 61 62 63 74 75 79 84 90 99 102 110 112 114 116 117 120 122 123 128 131 136 137 143 149 152 161 165 173 175 182 186 193 197
+H2 | Join_Ignite_NoSql | #SUP: 3 #SID: 16 28 33
+GoogleBigQuery | #SUP: 9 #SID: 1 21 28 46 57 75 90 149 152
+GoogleBigQuery HBase | #SUP: 3 #SID: 21 28 152
+GoogleBigQuery Netezza | #SUP: 3 #SID: 57 90 149
+GoogleBigQuery Elasticsearch | #SUP: 6 #SID: 1 21 28 57 149 152
+GoogleBigQuery SapHana | #SUP: 3 #SID: 57 75 149
+GoogleBigQuery Oracle | #SUP: 5 #SID: 1 57 75 149 152
+GoogleBigQuery DynamoDB | #SUP: 4 #SID: 1 21 28 57
+GoogleBigQuery Firebird | #SUP: 3 #SID: 57 75 149
+GoogleBigQuery Informix | #SUP: 3 #SID: 57 75 149
+GoogleBigQuery IBM_DB2 | #SUP: 4 #SID: 1 57 75 149
+GoogleBigQuery MongoDB | #SUP: 5 #SID: 1 21 28 149 152
+GoogleBigQuery Hazelcast | #SUP: 2 #SID: 21 28
+GoogleBigQuery SQLite | #SUP: 4 #SID: 46 57 75 149
+GoogleBigQuery Solr | #SUP: 2 #SID: 21 28
+GoogleBigQuery Snowflake | #SUP: 5 #SID: 1 21 57 75 149
+GoogleBigQuery AmazonRedshift | #SUP: 4 #SID: 1 57 75 149
+GoogleBigQuery PostgreSQL | #SUP: 8 #SID: 1 21 28 57 75 90 149 152
+GoogleBigQuery Cassandra | #SUP: 4 #SID: 1 21 28 152
+GoogleBigQuery MS_SQL_Server | #SUP: 5 #SID: 1 57 75 149 152
+GoogleBigQuery Ehcache | #SUP: 3 #SID: 21 149 152
+GoogleBigQuery MS_Access | #SUP: 2 #SID: 57 149
+GoogleBigQuery SAPAdaptiveServer | #SUP: 3 #SID: 57 75 149
+GoogleBigQuery ClickHouse | #SUP: 3 #SID: 1 21 57
+GoogleBigQuery Vertica | #SUP: 2 #SID: 57 149
+GoogleBigQuery Teradata | #SUP: 2 #SID: 57 149
+GoogleBigQuery PostGIS | #SUP: 2 #SID: 57 149
+GoogleBigQuery MySQL | #SUP: 8 #SID: 1 21 28 57 75 90 149 152
+GoogleBigQuery | Hive | #SUP: 3 #SID: 21 28 57
+GoogleBigQuery | Redis | #SUP: 3 #SID: 1 21 28
+GoogleBigQuery | MariaDB | #SUP: 4 #SID: 1 28 57 149
+GoogleBigQuery | H2 | #SUP: 3 #SID: 28 57 149
+GoogleBigQuery | GoogleBigQuery | #SUP: 6 #SID: 1 21 28 46 57 149
+GoogleBigQuery | HBase | #SUP: 2 #SID: 21 28
+GoogleBigQuery | Netezza | #SUP: 2 #SID: 57 149
+GoogleBigQuery | Elasticsearch | #SUP: 5 #SID: 1 21 28 57 149
+GoogleBigQuery | SapHana | #SUP: 2 #SID: 57 149
+GoogleBigQuery | Oracle | #SUP: 3 #SID: 1 57 149
+GoogleBigQuery | DynamoDB | #SUP: 4 #SID: 1 21 28 57
+GoogleBigQuery | Firebird | #SUP: 2 #SID: 57 149
+GoogleBigQuery | Informix | #SUP: 2 #SID: 57 149
+GoogleBigQuery | IBM_DB2 | #SUP: 3 #SID: 1 57 149
+GoogleBigQuery | MongoDB | #SUP: 4 #SID: 1 21 28 149
+GoogleBigQuery | Hazelcast | #SUP: 2 #SID: 21 28
+GoogleBigQuery | SQLite | #SUP: 3 #SID: 46 57 149
+GoogleBigQuery | Solr | #SUP: 2 #SID: 21 28
+GoogleBigQuery | Snowflake | #SUP: 4 #SID: 1 21 57 149
+GoogleBigQuery | AmazonRedshift | #SUP: 3 #SID: 1 57 149
+GoogleBigQuery | PostgreSQL | #SUP: 5 #SID: 1 21 28 57 149
+GoogleBigQuery | Cassandra | #SUP: 3 #SID: 1 21 28
+GoogleBigQuery | MS_SQL_Server | #SUP: 3 #SID: 1 57 149
+GoogleBigQuery | Ehcache | #SUP: 2 #SID: 21 149
+GoogleBigQuery | MS_Access | #SUP: 2 #SID: 57 149
+GoogleBigQuery | SAPAdaptiveServer | #SUP: 2 #SID: 57 149
+GoogleBigQuery | ClickHouse | #SUP: 3 #SID: 1 21 57
+GoogleBigQuery | Vertica | #SUP: 2 #SID: 57 149
+GoogleBigQuery | Teradata | #SUP: 2 #SID: 57 149
+GoogleBigQuery | PostGIS | #SUP: 2 #SID: 57 149
+GoogleBigQuery | MySQL | #SUP: 5 #SID: 1 21 28 57 149
+HBase | #SUP: 19 #SID: 9 10 14 15 16 17 21 24 26 27 28 33 75 95 120 130 143 152 173
+HBase Elasticsearch | #SUP: 10 #SID: 9 14 16 17 21 26 28 120 130 152
+HBase SapHana | #SUP: 2 #SID: 17 75
+HBase Oracle | #SUP: 9 #SID: 9 15 17 28 33 75 120 130 152
+HBase DynamoDB | #SUP: 6 #SID: 10 14 17 21 24 28
+HBase Informix | #SUP: 2 #SID: 17 130
+HBase IBM_DB2 | #SUP: 4 #SID: 15 17 75 120
+HBase MongoDB | #SUP: 11 #SID: 9 14 16 17 21 27 28 120 130 152 173
+HBase Hazelcast | #SUP: 3 #SID: 16 21 28
+HBase Influx_DB | #SUP: 3 #SID: 16 17 21
+HBase SQLite | #SUP: 5 #SID: 10 17 33 75 143
+HBase Solr | #SUP: 9 #SID: 9 10 14 17 21 26 28 33 120
+HBase Snowflake | #SUP: 2 #SID: 17 21
+HBase AmazonRedshift | #SUP: 3 #SID: 16 17 75
+HBase PostgreSQL | #SUP: 14 #SID: 9 15 16 17 21 24 27 28 33 75 120 130 143 152
+HBase Cassandra | #SUP: 10 #SID: 9 14 16 17 21 27 28 120 130 152
+HBase MS_SQL_Server | #SUP: 9 #SID: 9 10 15 17 33 75 120 130 152
+HBase Ehcache | #SUP: 8 #SID: 9 10 15 21 33 120 130 152
+HBase MicrosoftAzureCosmosDB | #SUP: 2 #SID: 10 28
+HBase SAPAdaptiveServer | #SUP: 6 #SID: 9 17 28 75 120 130
+HBase ClickHouse | #SUP: 3 #SID: 15 17 21
+HBase MySQL | #SUP: 17 #SID: 9 10 14 15 16 17 21 24 26 28 33 75 120 130 143 152 173
+HBase Join_Ignite_NoSql | #SUP: 3 #SID: 16 28 33
+HBase | Memcached | #SUP: 3 #SID: 9 120 130
+HBase | Hive | #SUP: 6 #SID: 15 16 21 24 28 33
+HBase | Redis | #SUP: 11 #SID: 9 14 15 16 17 21 28 33 120 130 173
+HBase | GoogleCloudDatastore | #SUP: 5 #SID: 16 21 24 27 33
+HBase | MariaDB | #SUP: 8 #SID: 9 16 17 28 75 120 130 143
+HBase | Neo4j | #SUP: 2 #SID: 16 28
+HBase | H2 | #SUP: 12 #SID: 9 15 16 17 24 27 28 33 75 120 143 173
+HBase | GoogleBigQuery | #SUP: 3 #SID: 21 28 75
+HBase | HBase | #SUP: 16 #SID: 9 10 14 15 16 17 21 24 26 27 28 33 95 120 130 173
+HBase | Elasticsearch | #SUP: 10 #SID: 9 14 16 17 21 26 28 120 130 143
+HBase | SapHana | #SUP: 2 #SID: 17 75
+HBase | Oracle | #SUP: 7 #SID: 9 15 17 33 75 120 130
+HBase | DynamoDB | #SUP: 6 #SID: 10 14 17 21 24 28
+HBase | Firebird | #SUP: 2 #SID: 17 75
+HBase | Informix | #SUP: 3 #SID: 17 75 130
+HBase | IBM_DB2 | #SUP: 4 #SID: 15 17 75 120
+HBase | MongoDB | #SUP: 10 #SID: 9 14 16 17 21 27 28 120 130 173
+HBase | Hazelcast | #SUP: 3 #SID: 16 21 28
+HBase | Influx_DB | #SUP: 3 #SID: 16 17 21
+HBase | SQLite | #SUP: 5 #SID: 10 17 33 75 143
+HBase | Solr | #SUP: 9 #SID: 9 10 14 17 21 26 28 33 120
+HBase | Snowflake | #SUP: 3 #SID: 17 21 75
+HBase | AmazonRedshift | #SUP: 3 #SID: 16 17 75
+HBase | PostgreSQL | #SUP: 13 #SID: 9 15 16 17 21 24 27 28 33 75 120 130 143
+HBase | Cassandra | #SUP: 10 #SID: 9 14 16 17 21 27 28 120 130 143
+HBase | MS_SQL_Server | #SUP: 8 #SID: 9 10 15 17 33 75 120 130
+HBase | Ehcache | #SUP: 7 #SID: 9 10 15 21 33 120 130
+HBase | MicrosoftAzureCosmosDB | #SUP: 2 #SID: 10 28
+HBase | SAPAdaptiveServer | #SUP: 5 #SID: 9 17 75 120 130
+HBase | ClickHouse | #SUP: 3 #SID: 15 17 21
+HBase | Etcd | #SUP: 2 #SID: 9 17
+HBase | MySQL | #SUP: 16 #SID: 9 10 14 15 16 17 21 24 26 28 33 75 120 130 143 173
+HBase | Join_Ignite_NoSql | #SUP: 3 #SID: 16 28 33
+Netezza | #SUP: 3 #SID: 57 90 149
+Netezza Snowflake | #SUP: 2 #SID: 57 149
+Netezza AmazonRedshift | #SUP: 2 #SID: 57 149
+Netezza PostgreSQL | #SUP: 3 #SID: 57 90 149
+Netezza MS_SQL_Server | #SUP: 2 #SID: 57 149
+Netezza MS_Access | #SUP: 2 #SID: 57 149
+Netezza SAPAdaptiveServer | #SUP: 2 #SID: 57 149
+Netezza Vertica | #SUP: 2 #SID: 57 149
+Netezza Teradata | #SUP: 2 #SID: 57 149
+Netezza PostGIS | #SUP: 2 #SID: 57 149
+Netezza MySQL | #SUP: 3 #SID: 57 90 149
+Netezza Elasticsearch | #SUP: 2 #SID: 57 149
+Netezza SapHana | #SUP: 2 #SID: 57 149
+Netezza Oracle | #SUP: 2 #SID: 57 149
+Netezza Firebird | #SUP: 2 #SID: 57 149
+Netezza Informix | #SUP: 2 #SID: 57 149
+Netezza IBM_DB2 | #SUP: 2 #SID: 57 149
+Netezza SQLite | #SUP: 2 #SID: 57 149
+Netezza | Hive | #SUP: 2 #SID: 57 90
+Netezza | MariaDB | #SUP: 2 #SID: 57 149
+Netezza | H2 | #SUP: 3 #SID: 57 90 149
+Netezza | GoogleBigQuery | #SUP: 3 #SID: 57 90 149
+Netezza | Netezza | #SUP: 3 #SID: 57 90 149
+Netezza | Elasticsearch | #SUP: 2 #SID: 57 149
+Netezza | SapHana | #SUP: 2 #SID: 57 149
+Netezza | Oracle | #SUP: 2 #SID: 57 149
+Netezza | Firebird | #SUP: 2 #SID: 57 149
+Netezza | Informix | #SUP: 2 #SID: 57 149
+Netezza | IBM_DB2 | #SUP: 2 #SID: 57 149
+Netezza | SQLite | #SUP: 2 #SID: 57 149
+Netezza | Snowflake | #SUP: 2 #SID: 57 149
+Netezza | AmazonRedshift | #SUP: 2 #SID: 57 149
+Netezza | PostgreSQL | #SUP: 3 #SID: 57 90 149
+Netezza | MS_SQL_Server | #SUP: 2 #SID: 57 149
+Netezza | MS_Access | #SUP: 2 #SID: 57 149
+Netezza | SAPAdaptiveServer | #SUP: 2 #SID: 57 149
+Netezza | Vertica | #SUP: 2 #SID: 57 149
+Netezza | Teradata | #SUP: 2 #SID: 57 149
+Netezza | PostGIS | #SUP: 2 #SID: 57 149
+Netezza | MySQL | #SUP: 3 #SID: 57 90 149
+Elasticsearch | #SUP: 26 #SID: 1 9 14 16 17 21 23 25 26 28 47 57 62 67 76 89 115 120 130 132 143 149 152 162 176 183
+Elasticsearch SapHana | #SUP: 3 #SID: 17 57 149
+Elasticsearch Oracle | #SUP: 12 #SID: 1 9 17 28 57 62 115 120 130 149 152 176
+Elasticsearch OrientDB | #SUP: 2 #SID: 57 162
+Elasticsearch DynamoDB | #SUP: 6 #SID: 1 14 17 21 28 57
+Elasticsearch Firebird | #SUP: 3 #SID: 17 57 149
+Elasticsearch Informix | #SUP: 4 #SID: 17 57 130 149
+Elasticsearch IBM_DB2 | #SUP: 5 #SID: 1 17 57 120 149
+Elasticsearch MongoDB | #SUP: 14 #SID: 1 9 14 16 17 21 28 62 89 120 130 149 152 162
+Elasticsearch Hazelcast | #SUP: 3 #SID: 16 21 28
+Elasticsearch Influx_DB | #SUP: 3 #SID: 16 17 21
+Elasticsearch SQLite | #SUP: 3 #SID: 17 57 149
+Elasticsearch Solr | #SUP: 8 #SID: 9 14 17 21 23 26 28 120
+Elasticsearch Snowflake | #SUP: 5 #SID: 1 17 21 57 149
+Elasticsearch AmazonRedshift | #SUP: 5 #SID: 1 16 17 57 149
+Elasticsearch PostgreSQL | #SUP: 16 #SID: 1 9 16 17 21 25 28 57 62 115 120 130 132 149 152 183
+Elasticsearch Cassandra | #SUP: 13 #SID: 1 9 14 16 17 21 28 120 130 132 143 152 183
+Elasticsearch MS_SQL_Server | #SUP: 8 #SID: 1 9 17 57 120 130 149 152
+Elasticsearch Ehcache | #SUP: 10 #SID: 9 21 62 89 120 130 149 152 176 183
+Elasticsearch MS_Access | #SUP: 2 #SID: 57 149
+Elasticsearch SAPAdaptiveServer | #SUP: 8 #SID: 9 17 28 57 62 120 130 149
+Elasticsearch ClickHouse | #SUP: 4 #SID: 1 17 21 57
+Elasticsearch Vertica | #SUP: 2 #SID: 57 149
+Elasticsearch Teradata | #SUP: 2 #SID: 57 149
+Elasticsearch PostGIS | #SUP: 3 #SID: 57 120 149
+Elasticsearch Etcd | #SUP: 2 #SID: 9 17
+Elasticsearch MySQL | #SUP: 17 #SID: 1 9 14 16 17 21 25 26 28 57 62 120 130 132 143 149 152
+Elasticsearch Join_Ignite_NoSql | #SUP: 2 #SID: 16 28
+Elasticsearch | Memcached | #SUP: 3 #SID: 9 120 130
+Elasticsearch | Hive | #SUP: 6 #SID: 16 21 28 57 67 152
+Elasticsearch | Redis | #SUP: 14 #SID: 1 9 14 16 17 21 25 28 62 120 130 132 152 183
+Elasticsearch | GoogleCloudDatastore | #SUP: 2 #SID: 16 21
+Elasticsearch | MariaDB | #SUP: 10 #SID: 1 9 16 17 28 57 120 130 143 149
+Elasticsearch | Neo4j | #SUP: 2 #SID: 16 28
+Elasticsearch | H2 | #SUP: 11 #SID: 9 16 17 25 28 57 62 115 120 149 152
+Elasticsearch | GoogleBigQuery | #SUP: 6 #SID: 1 21 28 57 149 152
+Elasticsearch | HBase | #SUP: 10 #SID: 9 14 16 17 21 26 28 120 130 152
+Elasticsearch | Netezza | #SUP: 2 #SID: 57 149
+Elasticsearch | Elasticsearch | #SUP: 24 #SID: 1 9 14 16 17 21 23 25 26 28 47 57 62 67 76 89 120 130 132 143 149 152 176 183
+Elasticsearch | SapHana | #SUP: 3 #SID: 17 57 149
+Elasticsearch | Oracle | #SUP: 11 #SID: 1 9 17 57 62 115 120 130 149 152 176
+Elasticsearch | DynamoDB | #SUP: 6 #SID: 1 14 17 21 28 57
+Elasticsearch | Firebird | #SUP: 3 #SID: 17 57 149
+Elasticsearch | Informix | #SUP: 4 #SID: 17 57 130 149
+Elasticsearch | IBM_DB2 | #SUP: 5 #SID: 1 17 57 120 149
+Elasticsearch | MongoDB | #SUP: 13 #SID: 1 9 14 16 17 21 28 62 89 120 130 149 152
+Elasticsearch | Hazelcast | #SUP: 3 #SID: 16 21 28
+Elasticsearch | Influx_DB | #SUP: 3 #SID: 16 17 21
+Elasticsearch | SQLite | #SUP: 3 #SID: 17 57 149
+Elasticsearch | Solr | #SUP: 8 #SID: 9 14 17 21 23 26 28 120
+Elasticsearch | Snowflake | #SUP: 5 #SID: 1 17 21 57 149
+Elasticsearch | AmazonRedshift | #SUP: 5 #SID: 1 16 17 57 149
+Elasticsearch | PostgreSQL | #SUP: 16 #SID: 1 9 16 17 21 25 28 57 62 115 120 130 132 149 152 183
+Elasticsearch | Cassandra | #SUP: 13 #SID: 1 9 14 16 17 21 28 120 130 132 143 152 183
+Elasticsearch | MS_SQL_Server | #SUP: 8 #SID: 1 9 17 57 120 130 149 152
+Elasticsearch | Ehcache | #SUP: 10 #SID: 9 21 62 89 120 130 149 152 176 183
+Elasticsearch | MS_Access | #SUP: 2 #SID: 57 149
+Elasticsearch | SAPAdaptiveServer | #SUP: 7 #SID: 9 17 57 62 120 130 149
+Elasticsearch | ClickHouse | #SUP: 4 #SID: 1 17 21 57
+Elasticsearch | Vertica | #SUP: 2 #SID: 57 149
+Elasticsearch | Teradata | #SUP: 2 #SID: 57 149
+Elasticsearch | PostGIS | #SUP: 3 #SID: 57 120 149
+Elasticsearch | Etcd | #SUP: 2 #SID: 9 17
+Elasticsearch | MySQL | #SUP: 17 #SID: 1 9 14 16 17 21 25 26 28 57 62 120 130 132 143 149 152
+Elasticsearch | Join_Ignite_NoSql | #SUP: 2 #SID: 16 28
+SapHana | #SUP: 6 #SID: 17 57 61 75 122 149
+SapHana Snowflake | #SUP: 4 #SID: 17 57 75 149
+SapHana AmazonRedshift | #SUP: 4 #SID: 17 57 75 149
+SapHana PostgreSQL | #SUP: 6 #SID: 17 57 61 75 122 149
+SapHana MS_SQL_Server | #SUP: 6 #SID: 17 57 61 75 122 149
+SapHana Ehcache | #SUP: 2 #SID: 61 149
+SapHana MS_Access | #SUP: 2 #SID: 57 149
+SapHana SAPAdaptiveServer | #SUP: 5 #SID: 17 57 75 122 149
+SapHana ClickHouse | #SUP: 3 #SID: 17 57 61
+SapHana Vertica | #SUP: 3 #SID: 57 75 149
+SapHana Teradata | #SUP: 2 #SID: 57 149
+SapHana PostGIS | #SUP: 3 #SID: 57 61 149
+SapHana MySQL | #SUP: 6 #SID: 17 57 61 75 122 149
+SapHana Oracle | #SUP: 6 #SID: 17 57 61 75 122 149
+SapHana DynamoDB | #SUP: 2 #SID: 17 57
+SapHana Firebird | #SUP: 5 #SID: 17 57 75 122 149
+SapHana Informix | #SUP: 5 #SID: 17 57 75 122 149
+SapHana IBM_DB2 | #SUP: 6 #SID: 17 57 61 75 122 149
+SapHana MongoDB | #SUP: 2 #SID: 17 149
+SapHana SQLite | #SUP: 6 #SID: 17 57 61 75 122 149
+SapHana | Redis | #SUP: 2 #SID: 17 61
+SapHana | MariaDB | #SUP: 6 #SID: 17 57 61 75 122 149
+SapHana | H2 | #SUP: 6 #SID: 17 57 61 75 122 149
+SapHana | GoogleBigQuery | #SUP: 3 #SID: 57 75 149
+SapHana | Netezza | #SUP: 2 #SID: 57 149
+SapHana | Elasticsearch | #SUP: 3 #SID: 17 57 149
+SapHana | SapHana | #SUP: 6 #SID: 17 57 61 75 122 149
+SapHana | Oracle | #SUP: 6 #SID: 17 57 61 75 122 149
+SapHana | DynamoDB | #SUP: 2 #SID: 17 57
+SapHana | Firebird | #SUP: 5 #SID: 17 57 75 122 149
+SapHana | Informix | #SUP: 5 #SID: 17 57 75 122 149
+SapHana | IBM_DB2 | #SUP: 6 #SID: 17 57 61 75 122 149
+SapHana | MongoDB | #SUP: 2 #SID: 17 149
+SapHana | SQLite | #SUP: 6 #SID: 17 57 61 75 122 149
+SapHana | Snowflake | #SUP: 4 #SID: 17 57 75 149
+SapHana | AmazonRedshift | #SUP: 4 #SID: 17 57 75 149
+SapHana | PostgreSQL | #SUP: 6 #SID: 17 57 61 75 122 149
+SapHana | MS_SQL_Server | #SUP: 6 #SID: 17 57 61 75 122 149
+SapHana | Ehcache | #SUP: 2 #SID: 61 149
+SapHana | MS_Access | #SUP: 2 #SID: 57 149
+SapHana | SAPAdaptiveServer | #SUP: 5 #SID: 17 57 75 122 149
+SapHana | ClickHouse | #SUP: 3 #SID: 17 57 61
+SapHana | Vertica | #SUP: 2 #SID: 57 149
+SapHana | Teradata | #SUP: 2 #SID: 57 149
+SapHana | PostGIS | #SUP: 3 #SID: 57 61 149
+SapHana | MySQL | #SUP: 6 #SID: 17 57 61 75 122 149
+Oracle | #SUP: 65 #SID: 0 1 2 7 9 15 17 18 20 28 29 33 34 35 37 38 42 45 50 52 57 58 59 61 62 63 64 72 74 75 79 94 97 98 99 103 104 110 112 115 116 120 122 128 130 133 139 144 149 150 152 153 154 157 159 165 168 174 176 181 182 187 189 197 199
+Oracle OrientDB | #SUP: 2 #SID: 57 103
+Oracle DynamoDB | #SUP: 7 #SID: 1 17 28 37 57 98 103
+Oracle Firebird | #SUP: 8 #SID: 17 20 35 57 75 122 149 181
+Oracle Informix | #SUP: 8 #SID: 17 35 57 75 79 122 130 149
+Oracle IBM_DB2 | #SUP: 21 #SID: 0 1 15 17 20 35 42 57 58 61 63 74 75 94 116 120 122 149 181 182 197
+Oracle Couchbase | #SUP: 3 #SID: 28 37 110
+Oracle FirebaseRealtime | #SUP: 2 #SID: 37 45
+Oracle MongoDB | #SUP: 17 #SID: 1 9 17 20 28 37 58 62 63 79 99 103 110 120 130 149 152
+Oracle Hazelcast | #SUP: 5 #SID: 37 63 74 79 94
+Oracle Influx_DB | #SUP: 2 #SID: 17 37
+Oracle SQLite | #SUP: 16 #SID: 17 33 34 35 42 57 61 75 79 103 110 122 149 165 187 199
+Oracle Solr | #SUP: 8 #SID: 9 17 28 33 34 79 120 181
+Oracle Snowflake | #SUP: 5 #SID: 1 17 57 75 149
+Oracle AmazonRedshift | #SUP: 5 #SID: 1 17 57 75 149
+Oracle PostgreSQL | #SUP: 42 #SID: 0 1 2 9 15 17 18 20 28 33 34 35 37 42 52 57 58 61 62 74 75 79 94 98 99 103 110 112 115 116 120 122 128 130 139 149 150 152 165 181 182 197
+Oracle Cassandra | #SUP: 11 #SID: 1 9 17 28 37 45 58 110 120 130 152
+Oracle MS_SQL_Server | #SUP: 27 #SID: 0 1 9 15 17 20 33 35 37 42 57 58 61 74 75 79 94 112 120 122 130 149 152 181 182 187 197
+Oracle Ehcache | #SUP: 27 #SID: 2 9 15 20 29 33 34 37 61 62 79 94 99 103 104 110 112 116 120 130 149 152 157 168 176 182 197
+Oracle MS_Access | #SUP: 8 #SID: 34 35 57 79 94 99 149 197
+Oracle SAPAdaptiveServer | #SUP: 16 #SID: 0 9 17 28 35 57 62 74 75 94 120 122 130 149 182 197
+Oracle ClickHouse | #SUP: 6 #SID: 1 15 17 57 61 79
+Oracle Vertica | #SUP: 3 #SID: 57 75 149
+Oracle Teradata | #SUP: 3 #SID: 57 79 149
+Oracle PostGIS | #SUP: 7 #SID: 57 58 61 79 98 120 149
+Oracle Etcd | #SUP: 2 #SID: 9 17
+Oracle MySQL | #SUP: 45 #SID: 0 1 2 9 15 17 18 20 29 33 34 35 37 42 52 57 58 61 62 63 74 75 79 94 97 99 103 110 112 116 120 122 128 130 133 139 149 152 165 168 181 182 187 197 199
+Oracle | Memcached | #SUP: 5 #SID: 9 37 63 120 130
+Oracle | Hive | #SUP: 4 #SID: 15 28 33 57
+Oracle | Redis | #SUP: 23 #SID: 1 9 15 17 18 20 28 29 33 37 42 58 59 61 62 79 94 97 99 103 120 130 133
+Oracle | GoogleCloudDatastore | #SUP: 5 #SID: 33 63 79 103 168
+Oracle | MariaDB | #SUP: 27 #SID: 1 2 9 17 20 28 35 37 42 52 57 61 63 74 75 98 110 112 116 120 122 130 133 139 149 165 182
+Oracle | Neo4j | #SUP: 2 #SID: 20 28
+Oracle | H2 | #SUP: 31 #SID: 0 9 15 17 18 20 28 33 34 35 37 42 57 61 62 63 74 75 79 99 110 112 115 116 120 122 149 165 182 189 197
+Oracle | GoogleBigQuery | #SUP: 5 #SID: 1 28 57 75 149
+Oracle | HBase | #SUP: 8 #SID: 9 15 17 28 33 75 120 130
+Oracle | Netezza | #SUP: 2 #SID: 57 149
+Oracle | Elasticsearch | #SUP: 10 #SID: 1 9 17 28 57 62 120 130 149 176
+Oracle | SapHana | #SUP: 6 #SID: 17 57 61 75 122 149
+Oracle | Oracle | #SUP: 54 #SID: 0 1 2 7 9 15 17 18 20 28 29 33 34 35 37 38 42 50 52 57 58 59 61 62 63 64 74 75 79 94 97 98 99 103 110 112 115 116 120 122 130 139 149 150 153 154 165 168 176 182 187 189 197 199
+Oracle | OrientDB | #SUP: 2 #SID: 57 103
+Oracle | DynamoDB | #SUP: 7 #SID: 1 17 28 37 57 98 103
+Oracle | Firebird | #SUP: 7 #SID: 17 20 35 57 75 122 149
+Oracle | Informix | #SUP: 8 #SID: 17 35 57 75 79 122 130 149
+Oracle | IBM_DB2 | #SUP: 20 #SID: 0 1 15 17 20 35 42 57 58 61 63 74 75 94 116 120 122 149 182 197
+Oracle | Couchbase | #SUP: 3 #SID: 28 37 110
+Oracle | MongoDB | #SUP: 16 #SID: 1 9 17 20 28 37 58 62 63 79 99 103 110 120 130 149
+Oracle | Hazelcast | #SUP: 6 #SID: 28 37 63 74 79 94
+Oracle | Influx_DB | #SUP: 2 #SID: 17 37
+Oracle | SQLite | #SUP: 17 #SID: 17 33 34 35 42 57 61 75 79 103 110 122 139 149 165 187 199
+Oracle | Solr | #SUP: 7 #SID: 9 17 28 33 34 79 120
+Oracle | Snowflake | #SUP: 5 #SID: 1 17 57 75 149
+Oracle | AmazonRedshift | #SUP: 5 #SID: 1 17 57 75 149
+Oracle | PostgreSQL | #SUP: 41 #SID: 0 1 2 9 15 17 18 20 28 33 34 35 37 42 52 57 58 61 62 74 75 79 94 98 99 103 110 112 115 116 120 122 130 133 139 149 150 165 182 187 197
+Oracle | Cassandra | #SUP: 9 #SID: 1 9 17 28 37 58 110 120 130
+Oracle | MS_SQL_Server | #SUP: 26 #SID: 0 1 9 15 17 20 33 35 37 42 52 57 58 61 74 75 79 94 112 120 122 130 149 182 187 197
+Oracle | Ehcache | #SUP: 24 #SID: 2 9 15 20 29 33 34 37 61 62 79 94 99 103 110 112 116 120 130 133 149 176 182 197
+Oracle | MicrosoftAzureCosmosDB | #SUP: 2 #SID: 28 37
+Oracle | MS_Access | #SUP: 8 #SID: 34 35 57 79 94 99 149 197
+Oracle | SAPAdaptiveServer | #SUP: 16 #SID: 0 9 17 28 35 57 62 74 75 94 120 122 130 149 182 197
+Oracle | ClickHouse | #SUP: 6 #SID: 1 15 17 57 61 79
+Oracle | Vertica | #SUP: 3 #SID: 57 75 149
+Oracle | Teradata | #SUP: 3 #SID: 57 79 149
+Oracle | PostGIS | #SUP: 6 #SID: 57 61 79 98 120 149
+Oracle | Etcd | #SUP: 2 #SID: 9 17
+Oracle | MySQL | #SUP: 42 #SID: 0 1 2 9 15 17 18 20 28 29 33 34 35 37 42 52 57 58 61 62 63 74 75 79 94 99 103 110 112 116 120 122 130 133 139 149 165 168 182 187 197 199
+Oracle | Join_Ignite_NoSql | #SUP: 2 #SID: 28 33
+OrientDB | #SUP: 3 #SID: 57 103 162
+OrientDB MySQL | #SUP: 2 #SID: 57 103
+OrientDB DynamoDB | #SUP: 2 #SID: 57 103
+OrientDB MongoDB | #SUP: 2 #SID: 103 162
+OrientDB SQLite | #SUP: 2 #SID: 57 103
+OrientDB | Redis | #SUP: 2 #SID: 103 162
+OrientDB | MariaDB | #SUP: 2 #SID: 57 162
+OrientDB | Elasticsearch | #SUP: 2 #SID: 57 162
+OrientDB | Oracle | #SUP: 2 #SID: 57 103
+OrientDB | OrientDB | #SUP: 3 #SID: 57 103 162
+OrientDB | DynamoDB | #SUP: 2 #SID: 57 103
+OrientDB | MongoDB | #SUP: 2 #SID: 103 162
+OrientDB | SQLite | #SUP: 2 #SID: 57 103
+OrientDB | MySQL | #SUP: 2 #SID: 57 103
+DynamoDB | #SUP: 17 #SID: 1 10 14 17 21 24 28 30 37 43 57 68 98 103 137 155 160
+DynamoDB Firebird | #SUP: 3 #SID: 17 57 137
+DynamoDB Informix | #SUP: 2 #SID: 17 57
+DynamoDB IBM_DB2 | #SUP: 3 #SID: 1 17 57
+DynamoDB Couchbase | #SUP: 2 #SID: 28 37
+DynamoDB MongoDB | #SUP: 8 #SID: 1 14 17 21 28 37 103 137
+DynamoDB Hazelcast | #SUP: 3 #SID: 21 28 37
+DynamoDB Influx_DB | #SUP: 2 #SID: 17 21
+DynamoDB SQLite | #SUP: 6 #SID: 10 17 30 57 103 137
+DynamoDB Solr | #SUP: 5 #SID: 10 14 17 21 28
+DynamoDB Snowflake | #SUP: 4 #SID: 1 17 21 57
+DynamoDB AmazonRedshift | #SUP: 3 #SID: 1 17 57
+DynamoDB PostgreSQL | #SUP: 9 #SID: 1 17 21 24 28 37 57 98 137
+DynamoDB Cassandra | #SUP: 6 #SID: 1 14 17 21 28 37
+DynamoDB MS_SQL_Server | #SUP: 5 #SID: 1 10 17 37 57
+DynamoDB Ehcache | #SUP: 5 #SID: 10 21 30 37 103
+DynamoDB MicrosoftAzureCosmosDB | #SUP: 2 #SID: 10 28
+DynamoDB SAPAdaptiveServer | #SUP: 3 #SID: 17 28 57
+DynamoDB ClickHouse | #SUP: 4 #SID: 1 17 21 57
+DynamoDB PostGIS | #SUP: 2 #SID: 57 98
+DynamoDB MySQL | #SUP: 12 #SID: 1 10 14 17 21 24 28 30 37 57 103 137
+DynamoDB | Hive | #SUP: 4 #SID: 21 24 28 57
+DynamoDB | Redis | #SUP: 8 #SID: 1 14 17 21 28 37 43 103
+DynamoDB | GoogleCloudDatastore | #SUP: 4 #SID: 21 24 43 103
+DynamoDB | MariaDB | #SUP: 6 #SID: 1 17 28 37 57 98
+DynamoDB | H2 | #SUP: 5 #SID: 17 24 28 37 57
+DynamoDB | GoogleBigQuery | #SUP: 4 #SID: 1 21 28 57
+DynamoDB | HBase | #SUP: 6 #SID: 10 14 17 21 24 28
+DynamoDB | Elasticsearch | #SUP: 6 #SID: 1 14 17 21 28 57
+DynamoDB | SapHana | #SUP: 2 #SID: 17 57
+DynamoDB | Oracle | #SUP: 6 #SID: 1 17 37 57 98 103
+DynamoDB | OrientDB | #SUP: 2 #SID: 57 103
+DynamoDB | DynamoDB | #SUP: 15 #SID: 1 10 14 17 21 24 28 30 37 43 57 68 98 103 155
+DynamoDB | Firebird | #SUP: 2 #SID: 17 57
+DynamoDB | Informix | #SUP: 2 #SID: 17 57
+DynamoDB | IBM_DB2 | #SUP: 3 #SID: 1 17 57
+DynamoDB | Couchbase | #SUP: 2 #SID: 28 37
+DynamoDB | MongoDB | #SUP: 7 #SID: 1 14 17 21 28 37 103
+DynamoDB | Hazelcast | #SUP: 3 #SID: 21 28 37
+DynamoDB | Influx_DB | #SUP: 3 #SID: 17 21 37
+DynamoDB | SQLite | #SUP: 5 #SID: 10 17 30 57 103
+DynamoDB | Solr | #SUP: 5 #SID: 10 14 17 21 28
+DynamoDB | Snowflake | #SUP: 4 #SID: 1 17 21 57
+DynamoDB | AmazonRedshift | #SUP: 3 #SID: 1 17 57
+DynamoDB | PostgreSQL | #SUP: 8 #SID: 1 17 21 24 28 37 57 98
+DynamoDB | Cassandra | #SUP: 6 #SID: 1 14 17 21 28 37
+DynamoDB | MS_SQL_Server | #SUP: 5 #SID: 1 10 17 37 57
+DynamoDB | Ehcache | #SUP: 5 #SID: 10 21 30 37 103
+DynamoDB | MicrosoftAzureCosmosDB | #SUP: 3 #SID: 10 28 37
+DynamoDB | SAPAdaptiveServer | #SUP: 2 #SID: 17 57
+DynamoDB | ClickHouse | #SUP: 4 #SID: 1 17 21 57
+DynamoDB | PostGIS | #SUP: 2 #SID: 57 98
+DynamoDB | MySQL | #SUP: 11 #SID: 1 10 14 17 21 24 28 30 37 57 103
+Firebird | #SUP: 9 #SID: 17 20 35 57 75 122 137 149 181
+Firebird Snowflake | #SUP: 4 #SID: 17 57 75 149
+Firebird AmazonRedshift | #SUP: 4 #SID: 17 57 75 149
+Firebird PostgreSQL | #SUP: 9 #SID: 17 20 35 57 75 122 137 149 181
+Firebird MS_SQL_Server | #SUP: 8 #SID: 17 20 35 57 75 122 149 181
+Firebird Ehcache | #SUP: 2 #SID: 20 149
+Firebird MS_Access | #SUP: 3 #SID: 35 57 149
+Firebird SAPAdaptiveServer | #SUP: 6 #SID: 17 35 57 75 122 149
+Firebird ClickHouse | #SUP: 2 #SID: 17 57
+Firebird Vertica | #SUP: 2 #SID: 57 149
+Firebird Teradata | #SUP: 2 #SID: 57 149
+Firebird PostGIS | #SUP: 2 #SID: 57 149
+Firebird MySQL | #SUP: 9 #SID: 17 20 35 57 75 122 137 149 181
+Firebird Informix | #SUP: 6 #SID: 17 35 57 75 122 149
+Firebird IBM_DB2 | #SUP: 8 #SID: 17 20 35 57 75 122 149 181
+Firebird MongoDB | #SUP: 4 #SID: 17 20 137 149
+Firebird SQLite | #SUP: 7 #SID: 17 35 57 75 122 137 149
+Firebird Solr | #SUP: 2 #SID: 17 181
+Firebird | Redis | #SUP: 3 #SID: 17 20 137
+Firebird | MariaDB | #SUP: 8 #SID: 17 20 35 57 75 122 137 149
+Firebird | H2 | #SUP: 8 #SID: 17 20 35 57 75 122 137 149
+Firebird | GoogleBigQuery | #SUP: 3 #SID: 57 75 149
+Firebird | Netezza | #SUP: 2 #SID: 57 149
+Firebird | Elasticsearch | #SUP: 3 #SID: 17 57 149
+Firebird | SapHana | #SUP: 5 #SID: 17 57 75 122 149
+Firebird | Oracle | #SUP: 7 #SID: 17 20 35 57 75 122 149
+Firebird | DynamoDB | #SUP: 3 #SID: 17 57 137
+Firebird | Firebird | #SUP: 8 #SID: 17 20 35 57 75 122 137 149
+Firebird | Informix | #SUP: 6 #SID: 17 35 57 75 122 149
+Firebird | IBM_DB2 | #SUP: 7 #SID: 17 20 35 57 75 122 149
+Firebird | MongoDB | #SUP: 4 #SID: 17 20 137 149
+Firebird | SQLite | #SUP: 7 #SID: 17 35 57 75 122 137 149
+Firebird | Snowflake | #SUP: 4 #SID: 17 57 75 149
+Firebird | AmazonRedshift | #SUP: 4 #SID: 17 57 75 149
+Firebird | PostgreSQL | #SUP: 8 #SID: 17 20 35 57 75 122 137 149
+Firebird | MS_SQL_Server | #SUP: 7 #SID: 17 20 35 57 75 122 149
+Firebird | Ehcache | #SUP: 2 #SID: 20 149
+Firebird | MS_Access | #SUP: 3 #SID: 35 57 149
+Firebird | SAPAdaptiveServer | #SUP: 6 #SID: 17 35 57 75 122 149
+Firebird | ClickHouse | #SUP: 2 #SID: 17 57
+Firebird | Vertica | #SUP: 2 #SID: 57 149
+Firebird | Teradata | #SUP: 2 #SID: 57 149
+Firebird | PostGIS | #SUP: 2 #SID: 57 149
+Firebird | MySQL | #SUP: 8 #SID: 17 20 35 57 75 122 137 149
+Informix | #SUP: 9 #SID: 17 35 57 75 79 84 122 130 149
+Informix Snowflake | #SUP: 4 #SID: 17 57 75 149
+Informix AmazonRedshift | #SUP: 4 #SID: 17 57 75 149
+Informix PostgreSQL | #SUP: 9 #SID: 17 35 57 75 79 84 122 130 149
+Informix Cassandra | #SUP: 2 #SID: 17 130
+Informix MS_SQL_Server | #SUP: 8 #SID: 17 35 57 75 79 122 130 149
+Informix Ehcache | #SUP: 4 #SID: 79 84 130 149
+Informix MS_Access | #SUP: 4 #SID: 35 57 79 149
+Informix SAPAdaptiveServer | #SUP: 7 #SID: 17 35 57 75 122 130 149
+Informix ClickHouse | #SUP: 3 #SID: 17 57 79
+Informix Vertica | #SUP: 2 #SID: 57 149
+Informix Teradata | #SUP: 3 #SID: 57 79 149
+Informix PostGIS | #SUP: 3 #SID: 57 79 149
+Informix MySQL | #SUP: 9 #SID: 17 35 57 75 79 84 122 130 149
+Informix IBM_DB2 | #SUP: 6 #SID: 17 35 57 75 122 149
+Informix MongoDB | #SUP: 4 #SID: 17 79 130 149
+Informix SQLite | #SUP: 7 #SID: 17 35 57 75 79 122 149
+Informix Solr | #SUP: 2 #SID: 17 79
+Informix | Redis | #SUP: 4 #SID: 17 79 84 130
+Informix | MariaDB | #SUP: 7 #SID: 17 35 57 75 122 130 149
+Informix | H2 | #SUP: 8 #SID: 17 35 57 75 79 84 122 149
+Informix | GoogleBigQuery | #SUP: 3 #SID: 57 75 149
+Informix | HBase | #SUP: 2 #SID: 17 130
+Informix | Netezza | #SUP: 2 #SID: 57 149
+Informix | Elasticsearch | #SUP: 4 #SID: 17 57 130 149
+Informix | SapHana | #SUP: 5 #SID: 17 57 75 122 149
+Informix | Oracle | #SUP: 8 #SID: 17 35 57 75 79 122 130 149
+Informix | DynamoDB | #SUP: 2 #SID: 17 57
+Informix | Firebird | #SUP: 6 #SID: 17 35 57 75 122 149
+Informix | Informix | #SUP: 9 #SID: 17 35 57 75 79 84 122 130 149
+Informix | IBM_DB2 | #SUP: 6 #SID: 17 35 57 75 122 149
+Informix | MongoDB | #SUP: 4 #SID: 17 79 130 149
+Informix | SQLite | #SUP: 7 #SID: 17 35 57 75 79 122 149
+Informix | Solr | #SUP: 2 #SID: 17 79
+Informix | Snowflake | #SUP: 4 #SID: 17 57 75 149
+Informix | AmazonRedshift | #SUP: 4 #SID: 17 57 75 149
+Informix | PostgreSQL | #SUP: 9 #SID: 17 35 57 75 79 84 122 130 149
+Informix | Cassandra | #SUP: 2 #SID: 17 130
+Informix | MS_SQL_Server | #SUP: 8 #SID: 17 35 57 75 79 122 130 149
+Informix | Ehcache | #SUP: 4 #SID: 79 84 130 149
+Informix | MS_Access | #SUP: 4 #SID: 35 57 79 149
+Informix | SAPAdaptiveServer | #SUP: 7 #SID: 17 35 57 75 122 130 149
+Informix | ClickHouse | #SUP: 3 #SID: 17 57 79
+Informix | Vertica | #SUP: 2 #SID: 57 149
+Informix | Teradata | #SUP: 3 #SID: 57 79 149
+Informix | PostGIS | #SUP: 3 #SID: 57 79 149
+Informix | MySQL | #SUP: 9 #SID: 17 35 57 75 79 84 122 130 149
+IBM_DB2 | #SUP: 24 #SID: 0 1 15 17 20 35 42 54 57 58 61 63 74 75 94 102 114 116 120 122 149 181 182 197
+IBM_DB2 Snowflake | #SUP: 5 #SID: 1 17 57 75 149
+IBM_DB2 AmazonRedshift | #SUP: 5 #SID: 1 17 57 75 149
+IBM_DB2 PostgreSQL | #SUP: 22 #SID: 0 1 15 17 20 35 42 57 58 61 74 75 94 102 114 116 120 122 149 181 182 197
+IBM_DB2 Cassandra | #SUP: 4 #SID: 1 17 58 120
+IBM_DB2 MS_SQL_Server | #SUP: 19 #SID: 0 1 15 17 20 35 42 57 58 61 74 75 94 102 120 122 149 181 197
+IBM_DB2 Ehcache | #SUP: 10 #SID: 15 20 61 94 102 114 116 120 149 197
+IBM_DB2 MS_Access | #SUP: 5 #SID: 35 57 94 149 197
+IBM_DB2 SAPAdaptiveServer | #SUP: 12 #SID: 0 17 35 57 74 75 94 120 122 149 182 197
+IBM_DB2 ClickHouse | #SUP: 5 #SID: 1 15 17 57 61
+IBM_DB2 Vertica | #SUP: 3 #SID: 57 75 149
+IBM_DB2 Teradata | #SUP: 2 #SID: 57 149
+IBM_DB2 PostGIS | #SUP: 4 #SID: 57 61 120 149
+IBM_DB2 MySQL | #SUP: 23 #SID: 0 1 15 17 20 35 42 57 58 61 63 74 75 94 102 114 116 120 122 149 181 182 197
+IBM_DB2 MongoDB | #SUP: 7 #SID: 1 17 20 58 63 120 149
+IBM_DB2 Hazelcast | #SUP: 3 #SID: 63 74 94
+IBM_DB2 SQLite | #SUP: 8 #SID: 17 35 42 57 61 75 122 149
+IBM_DB2 Solr | #SUP: 3 #SID: 17 120 181
+IBM_DB2 | Memcached | #SUP: 2 #SID: 63 120
+IBM_DB2 | Hive | #SUP: 2 #SID: 15 57
+IBM_DB2 | Redis | #SUP: 10 #SID: 1 15 17 20 42 58 61 94 102 120
+IBM_DB2 | GoogleCloudDatastore | #SUP: 2 #SID: 63 114
+IBM_DB2 | MariaDB | #SUP: 16 #SID: 1 17 20 35 42 57 61 63 74 75 102 116 120 122 149 182
+IBM_DB2 | H2 | #SUP: 19 #SID: 0 15 17 20 35 42 57 61 63 74 75 102 114 116 120 122 149 182 197
+IBM_DB2 | GoogleBigQuery | #SUP: 4 #SID: 1 57 75 149
+IBM_DB2 | HBase | #SUP: 4 #SID: 15 17 75 120
+IBM_DB2 | Netezza | #SUP: 2 #SID: 57 149
+IBM_DB2 | Elasticsearch | #SUP: 5 #SID: 1 17 57 120 149
+IBM_DB2 | SapHana | #SUP: 6 #SID: 17 57 61 75 122 149
+IBM_DB2 | Oracle | #SUP: 20 #SID: 0 1 15 17 20 35 42 57 58 61 63 74 75 94 116 120 122 149 182 197
+IBM_DB2 | DynamoDB | #SUP: 3 #SID: 1 17 57
+IBM_DB2 | Firebird | #SUP: 7 #SID: 17 20 35 57 75 122 149
+IBM_DB2 | Informix | #SUP: 6 #SID: 17 35 57 75 122 149
+IBM_DB2 | IBM_DB2 | #SUP: 23 #SID: 0 1 15 17 20 35 42 54 57 58 61 63 74 75 94 102 114 116 120 122 149 182 197
+IBM_DB2 | MongoDB | #SUP: 7 #SID: 1 17 20 58 63 120 149
+IBM_DB2 | Hazelcast | #SUP: 3 #SID: 63 74 94
+IBM_DB2 | SQLite | #SUP: 8 #SID: 17 35 42 57 61 75 122 149
+IBM_DB2 | Solr | #SUP: 2 #SID: 17 120
+IBM_DB2 | Snowflake | #SUP: 5 #SID: 1 17 57 75 149
+IBM_DB2 | AmazonRedshift | #SUP: 5 #SID: 1 17 57 75 149
+IBM_DB2 | PostgreSQL | #SUP: 21 #SID: 0 1 15 17 20 35 42 57 58 61 74 75 94 102 114 116 120 122 149 182 197
+IBM_DB2 | Cassandra | #SUP: 4 #SID: 1 17 58 120
+IBM_DB2 | MS_SQL_Server | #SUP: 19 #SID: 0 1 15 17 20 35 42 57 58 61 74 75 94 102 120 122 149 182 197
+IBM_DB2 | Ehcache | #SUP: 11 #SID: 15 20 61 94 102 114 116 120 149 182 197
+IBM_DB2 | MS_Access | #SUP: 5 #SID: 35 57 94 149 197
+IBM_DB2 | SAPAdaptiveServer | #SUP: 12 #SID: 0 17 35 57 74 75 94 120 122 149 182 197
+IBM_DB2 | ClickHouse | #SUP: 5 #SID: 1 15 17 57 61
+IBM_DB2 | Vertica | #SUP: 3 #SID: 57 75 149
+IBM_DB2 | Teradata | #SUP: 2 #SID: 57 149
+IBM_DB2 | PostGIS | #SUP: 4 #SID: 57 61 120 149
+IBM_DB2 | MySQL | #SUP: 22 #SID: 0 1 15 17 20 35 42 57 58 61 63 74 75 94 102 114 116 120 122 149 182 197
+Couchbase | #SUP: 4 #SID: 22 28 37 110
+Couchbase PostgreSQL | #SUP: 3 #SID: 28 37 110
+Couchbase Cassandra | #SUP: 3 #SID: 28 37 110
+Couchbase Ehcache | #SUP: 2 #SID: 37 110
+Couchbase MicrosoftAzureCosmosDB | #SUP: 2 #SID: 28 37
+Couchbase MySQL | #SUP: 4 #SID: 22 28 37 110
+Couchbase MongoDB | #SUP: 3 #SID: 28 37 110
+Couchbase Hazelcast | #SUP: 2 #SID: 28 37
+Couchbase | Redis | #SUP: 2 #SID: 28 37
+Couchbase | MariaDB | #SUP: 3 #SID: 28 37 110
+Couchbase | H2 | #SUP: 4 #SID: 22 28 37 110
+Couchbase | Oracle | #SUP: 3 #SID: 28 37 110
+Couchbase | DynamoDB | #SUP: 2 #SID: 28 37
+Couchbase | Couchbase | #SUP: 3 #SID: 28 37 110
+Couchbase | MongoDB | #SUP: 3 #SID: 28 37 110
+Couchbase | Hazelcast | #SUP: 2 #SID: 28 37
+Couchbase | PostgreSQL | #SUP: 3 #SID: 28 37 110
+Couchbase | Cassandra | #SUP: 3 #SID: 28 37 110
+Couchbase | Ehcache | #SUP: 2 #SID: 37 110
+Couchbase | MicrosoftAzureCosmosDB | #SUP: 2 #SID: 28 37
+Couchbase | MySQL | #SUP: 4 #SID: 22 28 37 110
+FirebaseRealtime | #SUP: 16 #SID: 37 45 77 93 109 113 119 124 129 134 145 146 163 184 190 196
+FirebaseRealtime MySQL | #SUP: 3 #SID: 37 145 146
+FirebaseRealtime Cassandra | #SUP: 2 #SID: 37 45
+FirebaseRealtime Ehcache | #SUP: 2 #SID: 37 129
+FirebaseRealtime | MySQL | #SUP: 2 #SID: 145 146
+FirebaseRealtime | Realm | #SUP: 2 #SID: 77 129
+FirebaseRealtime | FirebaseRealtime | #SUP: 14 #SID: 45 77 93 109 113 119 124 134 145 146 163 184 190 196
+MongoDB | #SUP: 38 #SID: 1 9 14 16 17 20 21 27 28 37 41 51 58 62 63 65 79 87 88 89 99 103 110 112 120 123 127 130 137 138 148 149 152 161 162 173 177 191
+MongoDB Snowflake | #SUP: 4 #SID: 1 17 21 149
+MongoDB AmazonRedshift | #SUP: 4 #SID: 1 16 17 149
+MongoDB PostgreSQL | #SUP: 23 #SID: 1 9 16 17 20 21 27 28 37 58 62 79 99 110 112 120 123 130 137 138 149 152 191
+MongoDB Cassandra | #SUP: 14 #SID: 1 9 14 16 17 21 27 28 37 58 110 120 130 152
+MongoDB MS_SQL_Server | #SUP: 12 #SID: 1 9 17 20 37 58 79 120 130 149 152 191
+MongoDB Ehcache | #SUP: 17 #SID: 9 20 21 37 62 79 88 89 99 103 110 112 120 127 130 149 152
+MongoDB MicrosoftAzureCosmosDB | #SUP: 2 #SID: 28 37
+MongoDB MS_Access | #SUP: 2 #SID: 79 149
+MongoDB SAPAdaptiveServer | #SUP: 7 #SID: 9 17 28 62 120 130 149
+MongoDB CouchDB | #SUP: 2 #SID: 37 148
+MongoDB ClickHouse | #SUP: 4 #SID: 1 17 21 79
+MongoDB Teradata | #SUP: 3 #SID: 41 79 149
+MongoDB PostGIS | #SUP: 4 #SID: 58 79 120 149
+MongoDB Etcd | #SUP: 2 #SID: 9 17
+MongoDB MySQL | #SUP: 28 #SID: 1 9 14 16 17 20 21 28 37 41 58 62 63 79 99 103 110 112 120 123 130 137 138 149 152 161 177 191
+MongoDB Join_Ignite_NoSql | #SUP: 2 #SID: 16 28
+MongoDB Hazelcast | #SUP: 9 #SID: 16 21 28 37 63 79 88 127 148
+MongoDB Influx_DB | #SUP: 4 #SID: 16 17 21 37
+MongoDB SQLite | #SUP: 8 #SID: 17 79 103 110 123 137 149 191
+MongoDB Solr | #SUP: 7 #SID: 9 14 17 21 28 79 120
+MongoDB | Memcached | #SUP: 5 #SID: 9 37 63 120 130
+MongoDB | Hive | #SUP: 4 #SID: 16 21 28 152
+MongoDB | Redis | #SUP: 21 #SID: 1 9 14 16 17 20 21 28 37 58 62 79 99 120 123 127 130 137 138 152 161
+MongoDB | GoogleCloudDatastore | #SUP: 5 #SID: 16 21 63 79 123
+MongoDB | MariaDB | #SUP: 16 #SID: 1 9 16 17 20 28 37 63 110 112 120 123 130 137 161 191
+MongoDB | Neo4j | #SUP: 3 #SID: 16 20 28
+MongoDB | H2 | #SUP: 21 #SID: 9 16 17 20 27 28 37 41 62 63 79 99 110 112 120 123 137 138 148 152 161
+MongoDB | GoogleBigQuery | #SUP: 4 #SID: 1 21 28 152
+MongoDB | HBase | #SUP: 10 #SID: 9 14 16 17 21 27 28 120 130 152
+MongoDB | Elasticsearch | #SUP: 12 #SID: 1 9 14 16 17 21 28 62 89 120 130 152
+MongoDB | Oracle | #SUP: 16 #SID: 1 9 17 20 28 37 58 62 63 79 99 110 112 120 130 152
+MongoDB | DynamoDB | #SUP: 7 #SID: 1 14 17 21 28 37 137
+MongoDB | Firebird | #SUP: 3 #SID: 17 20 137
+MongoDB | Informix | #SUP: 3 #SID: 17 79 130
+MongoDB | IBM_DB2 | #SUP: 6 #SID: 1 17 20 58 63 120
+MongoDB | Couchbase | #SUP: 3 #SID: 28 37 110
+MongoDB | MongoDB | #SUP: 32 #SID: 1 9 14 16 17 20 21 27 28 37 41 51 58 62 63 79 87 89 99 110 112 120 123 127 130 137 138 148 152 161 177 191
+MongoDB | Hazelcast | #SUP: 9 #SID: 16 21 28 37 63 65 79 127 148
+MongoDB | Influx_DB | #SUP: 4 #SID: 16 17 21 37
+MongoDB | SQLite | #SUP: 5 #SID: 17 79 110 123 137
+MongoDB | Solr | #SUP: 7 #SID: 9 14 17 21 28 79 120
+MongoDB | Snowflake | #SUP: 3 #SID: 1 17 21
+MongoDB | AmazonRedshift | #SUP: 3 #SID: 1 16 17
+MongoDB | PostgreSQL | #SUP: 22 #SID: 1 9 16 17 20 21 27 28 37 58 62 79 99 110 112 120 123 130 137 138 152 191
+MongoDB | Cassandra | #SUP: 14 #SID: 1 9 14 16 17 21 27 28 37 58 110 120 130 152
+MongoDB | MS_SQL_Server | #SUP: 12 #SID: 1 9 17 20 37 58 79 112 120 130 152 191
+MongoDB | Ehcache | #SUP: 14 #SID: 9 20 21 37 62 79 89 99 110 112 120 127 130 152
+MongoDB | MicrosoftAzureCosmosDB | #SUP: 2 #SID: 28 37
+MongoDB | SAPAdaptiveServer | #SUP: 6 #SID: 9 17 28 62 120 130
+MongoDB | CouchDB | #SUP: 2 #SID: 37 148
+MongoDB | ClickHouse | #SUP: 4 #SID: 1 17 21 79
+MongoDB | Teradata | #SUP: 2 #SID: 41 79
+MongoDB | PostGIS | #SUP: 3 #SID: 58 79 120
+MongoDB | Etcd | #SUP: 2 #SID: 9 17
+MongoDB | MySQL | #SUP: 26 #SID: 1 9 14 16 17 20 21 28 37 41 58 62 63 79 99 110 112 120 123 130 137 138 152 161 177 191
+MongoDB | Join_Ignite_NoSql | #SUP: 2 #SID: 16 28
+Hazelcast | #SUP: 20 #SID: 16 21 28 37 43 53 63 65 73 74 79 88 92 94 102 127 131 148 183 198
+Hazelcast PostgreSQL | #SUP: 9 #SID: 16 21 28 37 74 79 94 183 198
+Hazelcast Cassandra | #SUP: 5 #SID: 16 21 28 37 183
+Hazelcast MS_SQL_Server | #SUP: 3 #SID: 37 74 79
+Hazelcast Ehcache | #SUP: 9 #SID: 21 37 43 79 88 102 127 131 183
+Hazelcast MicrosoftAzureCosmosDB | #SUP: 2 #SID: 28 37
+Hazelcast MS_Access | #SUP: 2 #SID: 79 94
+Hazelcast CouchDB | #SUP: 2 #SID: 37 148
+Hazelcast ClickHouse | #SUP: 2 #SID: 21 79
+Hazelcast MySQL | #SUP: 12 #SID: 16 21 28 37 63 73 74 79 94 102 131 198
+Hazelcast Join_Ignite_NoSql | #SUP: 2 #SID: 16 28
+Hazelcast Influx_DB | #SUP: 3 #SID: 16 21 37
+Hazelcast Solr | #SUP: 4 #SID: 21 28 79 198
+Hazelcast | Memcached | #SUP: 2 #SID: 37 63
+Hazelcast | Hive | #SUP: 3 #SID: 16 21 28
+Hazelcast | Redis | #SUP: 10 #SID: 16 21 28 37 43 79 94 102 127 183
+Hazelcast | GoogleCloudDatastore | #SUP: 5 #SID: 16 21 43 63 79
+Hazelcast | MariaDB | #SUP: 6 #SID: 16 28 37 63 74 102
+Hazelcast | Neo4j | #SUP: 3 #SID: 16 28 73
+Hazelcast | H2 | #SUP: 8 #SID: 16 28 37 63 74 79 102 131
+Hazelcast | GoogleBigQuery | #SUP: 2 #SID: 21 28
+Hazelcast | HBase | #SUP: 3 #SID: 16 21 28
+Hazelcast | Elasticsearch | #SUP: 4 #SID: 16 21 28 183
+Hazelcast | Oracle | #SUP: 5 #SID: 37 63 74 79 94
+Hazelcast | DynamoDB | #SUP: 4 #SID: 21 28 37 43
+Hazelcast | IBM_DB2 | #SUP: 4 #SID: 63 74 94 102
+Hazelcast | Couchbase | #SUP: 2 #SID: 28 37
+Hazelcast | MongoDB | #SUP: 8 #SID: 16 21 28 37 63 79 88 127
+Hazelcast | Hazelcast | #SUP: 14 #SID: 16 21 28 37 43 53 63 65 73 79 88 94 127 131
+Hazelcast | Influx_DB | #SUP: 3 #SID: 16 21 37
+Hazelcast | Solr | #SUP: 3 #SID: 21 28 79
+Hazelcast | PostgreSQL | #SUP: 9 #SID: 16 21 28 37 74 79 94 102 183
+Hazelcast | Cassandra | #SUP: 5 #SID: 16 21 28 37 183
+Hazelcast | MS_SQL_Server | #SUP: 5 #SID: 37 74 79 94 102
+Hazelcast | Ehcache | #SUP: 9 #SID: 21 37 43 79 88 102 127 131 183
+Hazelcast | MicrosoftAzureCosmosDB | #SUP: 2 #SID: 28 37
+Hazelcast | MS_Access | #SUP: 2 #SID: 79 94
+Hazelcast | SAPAdaptiveServer | #SUP: 2 #SID: 74 94
+Hazelcast | ClickHouse | #SUP: 2 #SID: 21 79
+Hazelcast | MySQL | #SUP: 11 #SID: 16 21 28 37 63 73 74 79 94 102 131
+Hazelcast | Join_Ignite_NoSql | #SUP: 2 #SID: 16 28
+Influx_DB | #SUP: 4 #SID: 16 17 21 37
+Influx_DB Snowflake | #SUP: 2 #SID: 17 21
+Influx_DB AmazonRedshift | #SUP: 2 #SID: 16 17
+Influx_DB PostgreSQL | #SUP: 4 #SID: 16 17 21 37
+Influx_DB Cassandra | #SUP: 4 #SID: 16 17 21 37
+Influx_DB MS_SQL_Server | #SUP: 2 #SID: 17 37
+Influx_DB Ehcache | #SUP: 2 #SID: 21 37
+Influx_DB ClickHouse | #SUP: 2 #SID: 17 21
+Influx_DB MySQL | #SUP: 4 #SID: 16 17 21 37
+Influx_DB Solr | #SUP: 2 #SID: 17 21
+Influx_DB | Hive | #SUP: 2 #SID: 16 21
+Influx_DB | Redis | #SUP: 3 #SID: 16 17 21
+Influx_DB | GoogleCloudDatastore | #SUP: 2 #SID: 16 21
+Influx_DB | MariaDB | #SUP: 2 #SID: 16 17
+Influx_DB | H2 | #SUP: 2 #SID: 16 17
+Influx_DB | HBase | #SUP: 3 #SID: 16 17 21
+Influx_DB | Elasticsearch | #SUP: 3 #SID: 16 17 21
+Influx_DB | DynamoDB | #SUP: 2 #SID: 17 21
+Influx_DB | MongoDB | #SUP: 3 #SID: 16 17 21
+Influx_DB | Hazelcast | #SUP: 2 #SID: 16 21
+Influx_DB | Influx_DB | #SUP: 3 #SID: 16 17 21
+Influx_DB | Solr | #SUP: 2 #SID: 17 21
+Influx_DB | Snowflake | #SUP: 2 #SID: 17 21
+Influx_DB | AmazonRedshift | #SUP: 2 #SID: 16 17
+Influx_DB | PostgreSQL | #SUP: 3 #SID: 16 17 21
+Influx_DB | Cassandra | #SUP: 3 #SID: 16 17 21
+Influx_DB | ClickHouse | #SUP: 2 #SID: 17 21
+Influx_DB | MySQL | #SUP: 3 #SID: 16 17 21
+SQLite | #SUP: 37 #SID: 10 17 30 33 34 35 42 46 57 61 71 75 79 80 82 91 96 103 110 122 123 125 131 135 137 139 141 143 147 149 164 165 167 187 191 195 199
+SQLite Snowflake | #SUP: 4 #SID: 17 57 75 149
+SQLite AmazonRedshift | #SUP: 4 #SID: 17 57 75 149
+SQLite PostgreSQL | #SUP: 23 #SID: 17 33 34 35 42 57 61 75 79 80 103 110 122 123 137 139 141 143 149 164 165 187 195
+SQLite Cassandra | #SUP: 3 #SID: 17 110 143
+SQLite MS_SQL_Server | #SUP: 13 #SID: 10 17 33 35 42 57 61 75 79 80 122 149 187
+SQLite Ehcache | #SUP: 11 #SID: 10 30 33 34 61 79 103 110 131 147 149
+SQLite MS_Access | #SUP: 5 #SID: 34 35 57 79 149
+SQLite SAPAdaptiveServer | #SUP: 6 #SID: 17 35 57 75 122 149
+SQLite ClickHouse | #SUP: 4 #SID: 17 57 61 79
+SQLite Vertica | #SUP: 3 #SID: 57 75 149
+SQLite Teradata | #SUP: 4 #SID: 57 79 80 149
+SQLite PostGIS | #SUP: 4 #SID: 57 61 79 149
+SQLite MySQL | #SUP: 27 #SID: 10 17 30 33 34 35 42 57 61 75 79 80 82 103 110 122 123 137 139 141 143 149 165 167 187 195 199
+SQLite Solr | #SUP: 5 #SID: 17 33 34 79 164
+SQLite | Hive | #SUP: 2 #SID: 33 57
+SQLite | Redis | #SUP: 10 #SID: 17 33 42 61 79 103 123 125 137 164
+SQLite | GoogleCloudDatastore | #SUP: 5 #SID: 33 79 103 123 164
+SQLite | MariaDB | #SUP: 16 #SID: 17 35 42 57 61 75 110 122 123 137 139 143 149 165 191 195
+SQLite | H2 | #SUP: 17 #SID: 17 33 34 35 42 57 61 75 79 110 122 123 125 131 137 143 149
+SQLite | GoogleBigQuery | #SUP: 4 #SID: 46 57 75 149
+SQLite | HBase | #SUP: 4 #SID: 10 17 33 75
+SQLite | Netezza | #SUP: 2 #SID: 57 149
+SQLite | Elasticsearch | #SUP: 4 #SID: 17 57 143 149
+SQLite | SapHana | #SUP: 6 #SID: 17 57 61 75 122 149
+SQLite | Oracle | #SUP: 15 #SID: 17 33 34 35 42 57 61 75 79 103 110 122 149 165 199
+SQLite | OrientDB | #SUP: 2 #SID: 57 103
+SQLite | DynamoDB | #SUP: 6 #SID: 10 17 30 57 103 137
+SQLite | Firebird | #SUP: 7 #SID: 17 35 57 75 122 137 149
+SQLite | Informix | #SUP: 7 #SID: 17 35 57 75 79 122 149
+SQLite | IBM_DB2 | #SUP: 8 #SID: 17 35 42 57 61 75 122 149
+SQLite | MongoDB | #SUP: 8 #SID: 17 79 103 110 123 137 149 191
+SQLite | Hazelcast | #SUP: 2 #SID: 79 131
+SQLite | SQLite | #SUP: 35 #SID: 17 30 33 34 35 42 46 57 61 71 75 79 80 82 91 96 103 110 122 123 125 131 135 137 139 141 143 147 149 164 165 187 191 195 199
+SQLite | Solr | #SUP: 6 #SID: 10 17 33 34 79 164
+SQLite | Snowflake | #SUP: 4 #SID: 17 57 75 149
+SQLite | AmazonRedshift | #SUP: 4 #SID: 17 57 75 149
+SQLite | PostgreSQL | #SUP: 24 #SID: 17 33 34 35 42 57 61 75 79 80 103 110 122 123 137 139 141 143 149 164 165 187 191 195
+SQLite | Cassandra | #SUP: 3 #SID: 17 110 143
+SQLite | MS_SQL_Server | #SUP: 13 #SID: 10 17 33 35 42 57 61 75 79 80 122 149 191
+SQLite | Ehcache | #SUP: 11 #SID: 10 30 33 34 61 79 103 110 131 147 149
+SQLite | MS_Access | #SUP: 5 #SID: 34 35 57 79 149
+SQLite | SAPAdaptiveServer | #SUP: 6 #SID: 17 35 57 75 122 149
+SQLite | ClickHouse | #SUP: 4 #SID: 17 57 61 79
+SQLite | Vertica | #SUP: 3 #SID: 57 75 149
+SQLite | Teradata | #SUP: 4 #SID: 57 79 80 149
+SQLite | PostGIS | #SUP: 4 #SID: 57 61 79 149
+SQLite | MySQL | #SUP: 28 #SID: 10 17 30 33 34 35 42 57 61 75 79 80 82 103 110 122 123 131 137 139 141 143 149 165 187 191 195 199
+Solr | #SUP: 15 #SID: 9 10 14 17 21 23 26 28 33 34 79 120 164 181 198
+Solr Snowflake | #SUP: 2 #SID: 17 21
+Solr PostgreSQL | #SUP: 11 #SID: 9 17 21 28 33 34 79 120 164 181 198
+Solr Cassandra | #SUP: 6 #SID: 9 14 17 21 28 120
+Solr MS_SQL_Server | #SUP: 7 #SID: 9 10 17 33 79 120 181
+Solr Ehcache | #SUP: 7 #SID: 9 10 21 33 34 79 120
+Solr MicrosoftAzureCosmosDB | #SUP: 2 #SID: 10 28
+Solr MS_Access | #SUP: 2 #SID: 34 79
+Solr SAPAdaptiveServer | #SUP: 4 #SID: 9 17 28 120
+Solr ClickHouse | #SUP: 3 #SID: 17 21 79
+Solr PostGIS | #SUP: 2 #SID: 79 120
+Solr MySQL | #SUP: 13 #SID: 9 10 14 17 21 26 28 33 34 79 120 181 198
+Solr Join_Ignite_NoSql | #SUP: 2 #SID: 28 33
+Solr | Memcached | #SUP: 2 #SID: 9 120
+Solr | Hive | #SUP: 3 #SID: 21 28 33
+Solr | Redis | #SUP: 9 #SID: 9 14 17 21 28 33 79 120 164
+Solr | GoogleCloudDatastore | #SUP: 4 #SID: 21 33 79 164
+Solr | MariaDB | #SUP: 4 #SID: 9 17 28 120
+Solr | H2 | #SUP: 6 #SID: 9 17 28 33 79 120
+Solr | GoogleBigQuery | #SUP: 2 #SID: 21 28
+Solr | HBase | #SUP: 8 #SID: 9 14 17 21 26 28 33 120
+Solr | Elasticsearch | #SUP: 8 #SID: 9 14 17 21 23 26 28 120
+Solr | Oracle | #SUP: 6 #SID: 9 17 28 33 79 120
+Solr | DynamoDB | #SUP: 4 #SID: 14 17 21 28
+Solr | Informix | #SUP: 2 #SID: 17 79
+Solr | IBM_DB2 | #SUP: 2 #SID: 17 120
+Solr | MongoDB | #SUP: 7 #SID: 9 14 17 21 28 79 120
+Solr | Hazelcast | #SUP: 4 #SID: 21 28 79 198
+Solr | Influx_DB | #SUP: 2 #SID: 17 21
+Solr | SQLite | #SUP: 4 #SID: 17 33 79 164
+Solr | Solr | #SUP: 12 #SID: 9 14 17 21 23 26 28 33 79 120 164 198
+Solr | Snowflake | #SUP: 2 #SID: 17 21
+Solr | PostgreSQL | #SUP: 9 #SID: 9 17 21 28 33 79 120 164 198
+Solr | Cassandra | #SUP: 6 #SID: 9 14 17 21 28 120
+Solr | MS_SQL_Server | #SUP: 5 #SID: 9 17 33 79 120
+Solr | Ehcache | #SUP: 5 #SID: 9 21 33 79 120
+Solr | SAPAdaptiveServer | #SUP: 4 #SID: 9 17 28 120
+Solr | ClickHouse | #SUP: 3 #SID: 17 21 79
+Solr | PostGIS | #SUP: 2 #SID: 79 120
+Solr | Etcd | #SUP: 2 #SID: 9 17
+Solr | MySQL | #SUP: 10 #SID: 9 14 17 21 26 28 33 79 120 198
+Solr | Join_Ignite_NoSql | #SUP: 2 #SID: 28 33
+Snowflake | #SUP: 6 #SID: 1 17 21 57 75 149
+Snowflake AmazonRedshift | #SUP: 5 #SID: 1 17 57 75 149
+Snowflake PostgreSQL | #SUP: 6 #SID: 1 17 21 57 75 149
+Snowflake Cassandra | #SUP: 3 #SID: 1 17 21
+Snowflake MS_SQL_Server | #SUP: 5 #SID: 1 17 57 75 149
+Snowflake Ehcache | #SUP: 2 #SID: 21 149
+Snowflake MS_Access | #SUP: 2 #SID: 57 149
+Snowflake SAPAdaptiveServer | #SUP: 4 #SID: 17 57 75 149
+Snowflake ClickHouse | #SUP: 4 #SID: 1 17 21 57
+Snowflake Vertica | #SUP: 2 #SID: 57 149
+Snowflake Teradata | #SUP: 2 #SID: 57 149
+Snowflake PostGIS | #SUP: 2 #SID: 57 149
+Snowflake MySQL | #SUP: 6 #SID: 1 17 21 57 75 149
+Snowflake | Hive | #SUP: 2 #SID: 21 57
+Snowflake | Redis | #SUP: 3 #SID: 1 17 21
+Snowflake | MariaDB | #SUP: 5 #SID: 1 17 57 75 149
+Snowflake | H2 | #SUP: 4 #SID: 17 57 75 149
+Snowflake | GoogleBigQuery | #SUP: 5 #SID: 1 21 57 75 149
+Snowflake | HBase | #SUP: 2 #SID: 17 21
+Snowflake | Netezza | #SUP: 2 #SID: 57 149
+Snowflake | Elasticsearch | #SUP: 5 #SID: 1 17 21 57 149
+Snowflake | SapHana | #SUP: 4 #SID: 17 57 75 149
+Snowflake | Oracle | #SUP: 5 #SID: 1 17 57 75 149
+Snowflake | DynamoDB | #SUP: 4 #SID: 1 17 21 57
+Snowflake | Firebird | #SUP: 4 #SID: 17 57 75 149
+Snowflake | Informix | #SUP: 4 #SID: 17 57 75 149
+Snowflake | IBM_DB2 | #SUP: 5 #SID: 1 17 57 75 149
+Snowflake | MongoDB | #SUP: 4 #SID: 1 17 21 149
+Snowflake | Influx_DB | #SUP: 2 #SID: 17 21
+Snowflake | SQLite | #SUP: 4 #SID: 17 57 75 149
+Snowflake | Solr | #SUP: 2 #SID: 17 21
+Snowflake | Snowflake | #SUP: 6 #SID: 1 17 21 57 75 149
+Snowflake | AmazonRedshift | #SUP: 5 #SID: 1 17 57 75 149
+Snowflake | PostgreSQL | #SUP: 6 #SID: 1 17 21 57 75 149
+Snowflake | Cassandra | #SUP: 3 #SID: 1 17 21
+Snowflake | MS_SQL_Server | #SUP: 5 #SID: 1 17 57 75 149
+Snowflake | Ehcache | #SUP: 2 #SID: 21 149
+Snowflake | MS_Access | #SUP: 2 #SID: 57 149
+Snowflake | SAPAdaptiveServer | #SUP: 4 #SID: 17 57 75 149
+Snowflake | ClickHouse | #SUP: 4 #SID: 1 17 21 57
+Snowflake | Vertica | #SUP: 2 #SID: 57 149
+Snowflake | Teradata | #SUP: 2 #SID: 57 149
+Snowflake | PostGIS | #SUP: 2 #SID: 57 149
+Snowflake | MySQL | #SUP: 6 #SID: 1 17 21 57 75 149
+AmazonRedshift | #SUP: 6 #SID: 1 16 17 57 75 149
+AmazonRedshift PostgreSQL | #SUP: 6 #SID: 1 16 17 57 75 149
+AmazonRedshift Cassandra | #SUP: 3 #SID: 1 16 17
+AmazonRedshift MS_SQL_Server | #SUP: 5 #SID: 1 17 57 75 149
+AmazonRedshift MS_Access | #SUP: 2 #SID: 57 149
+AmazonRedshift SAPAdaptiveServer | #SUP: 4 #SID: 17 57 75 149
+AmazonRedshift ClickHouse | #SUP: 3 #SID: 1 17 57
+AmazonRedshift Vertica | #SUP: 3 #SID: 57 75 149
+AmazonRedshift Teradata | #SUP: 2 #SID: 57 149
+AmazonRedshift PostGIS | #SUP: 2 #SID: 57 149
+AmazonRedshift MySQL | #SUP: 6 #SID: 1 16 17 57 75 149
+AmazonRedshift | Hive | #SUP: 2 #SID: 16 57
+AmazonRedshift | Redis | #SUP: 3 #SID: 1 16 17
+AmazonRedshift | MariaDB | #SUP: 6 #SID: 1 16 17 57 75 149
+AmazonRedshift | H2 | #SUP: 5 #SID: 16 17 57 75 149
+AmazonRedshift | GoogleBigQuery | #SUP: 4 #SID: 1 57 75 149
+AmazonRedshift | HBase | #SUP: 2 #SID: 16 17
+AmazonRedshift | Netezza | #SUP: 2 #SID: 57 149
+AmazonRedshift | Elasticsearch | #SUP: 5 #SID: 1 16 17 57 149
+AmazonRedshift | SapHana | #SUP: 4 #SID: 17 57 75 149
+AmazonRedshift | Oracle | #SUP: 5 #SID: 1 17 57 75 149
+AmazonRedshift | DynamoDB | #SUP: 3 #SID: 1 17 57
+AmazonRedshift | Firebird | #SUP: 4 #SID: 17 57 75 149
+AmazonRedshift | Informix | #SUP: 4 #SID: 17 57 75 149
+AmazonRedshift | IBM_DB2 | #SUP: 5 #SID: 1 17 57 75 149
+AmazonRedshift | MongoDB | #SUP: 4 #SID: 1 16 17 149
+AmazonRedshift | Influx_DB | #SUP: 2 #SID: 16 17
+AmazonRedshift | SQLite | #SUP: 4 #SID: 17 57 75 149
+AmazonRedshift | Snowflake | #SUP: 5 #SID: 1 17 57 75 149
+AmazonRedshift | AmazonRedshift | #SUP: 6 #SID: 1 16 17 57 75 149
+AmazonRedshift | PostgreSQL | #SUP: 6 #SID: 1 16 17 57 75 149
+AmazonRedshift | Cassandra | #SUP: 3 #SID: 1 16 17
+AmazonRedshift | MS_SQL_Server | #SUP: 5 #SID: 1 17 57 75 149
+AmazonRedshift | MS_Access | #SUP: 2 #SID: 57 149
+AmazonRedshift | SAPAdaptiveServer | #SUP: 4 #SID: 17 57 75 149
+AmazonRedshift | ClickHouse | #SUP: 3 #SID: 1 17 57
+AmazonRedshift | Vertica | #SUP: 2 #SID: 57 149
+AmazonRedshift | Teradata | #SUP: 2 #SID: 57 149
+AmazonRedshift | PostGIS | #SUP: 2 #SID: 57 149
+AmazonRedshift | MySQL | #SUP: 6 #SID: 1 16 17 57 75 149
+PostgreSQL | #SUP: 75 #SID: 0 1 2 9 15 16 17 18 20 21 24 25 27 28 33 34 35 37 39 40 42 52 57 58 60 61 62 74 75 79 80 84 86 90 94 98 99 101 102 103 110 112 114 115 116 117 120 122 123 128 130 132 133 137 138 139 140 141 143 149 150 152 164 165 169 175 181 182 183 186 187 191 195 197 198
+PostgreSQL Cassandra | #SUP: 15 #SID: 1 9 16 17 21 28 37 58 110 120 130 132 143 152 183
+PostgreSQL MS_SQL_Server | #SUP: 33 #SID: 0 1 9 15 16 17 20 33 35 37 39 42 52 57 58 61 74 75 79 80 94 102 112 120 122 130 149 152 181 182 186 191 197
+PostgreSQL Ehcache | #SUP: 30 #SID: 2 9 15 20 21 33 34 37 40 61 62 79 84 94 99 102 103 110 112 114 116 117 120 130 133 149 152 182 183 197
+PostgreSQL MicrosoftAzureCosmosDB | #SUP: 2 #SID: 28 37
+PostgreSQL MS_Access | #SUP: 8 #SID: 34 35 57 79 94 99 149 197
+PostgreSQL SAPAdaptiveServer | #SUP: 16 #SID: 0 9 17 28 35 40 57 62 74 75 94 120 122 130 149 197
+PostgreSQL ClickHouse | #SUP: 7 #SID: 1 15 17 21 57 61 79
+PostgreSQL Vertica | #SUP: 3 #SID: 57 75 149
+PostgreSQL Teradata | #SUP: 4 #SID: 57 79 80 149
+PostgreSQL PostGIS | #SUP: 7 #SID: 57 58 61 79 98 120 149
+PostgreSQL Etcd | #SUP: 3 #SID: 9 17 60
+PostgreSQL MySQL | #SUP: 65 #SID: 0 1 2 9 15 16 17 18 20 21 24 25 28 33 34 35 37 39 40 42 52 57 58 60 61 62 74 75 79 80 84 90 94 99 102 103 110 112 114 116 117 120 122 123 128 130 132 133 137 138 139 140 141 143 149 152 165 181 182 186 187 191 195 197 198
+PostgreSQL Join_Ignite_NoSql | #SUP: 3 #SID: 16 28 33
+PostgreSQL | Memcached | #SUP: 4 #SID: 9 37 120 130
+PostgreSQL | Hive | #SUP: 9 #SID: 15 16 21 24 28 33 57 90 152
+PostgreSQL | Redis | #SUP: 37 #SID: 1 9 15 16 17 18 20 21 25 28 33 37 40 42 58 60 61 62 79 84 94 99 101 102 103 117 120 123 130 132 133 137 138 140 152 164 183
+PostgreSQL | GoogleCloudDatastore | #SUP: 11 #SID: 16 21 24 33 39 79 86 103 114 123 164
+PostgreSQL | MariaDB | #SUP: 34 #SID: 1 2 9 16 17 20 28 35 37 42 52 57 61 74 75 98 102 110 112 116 117 120 122 123 130 133 137 139 143 149 165 182 191 195
+PostgreSQL | Neo4j | #SUP: 3 #SID: 16 20 28
+PostgreSQL | H2 | #SUP: 45 #SID: 0 9 15 16 17 18 20 24 25 28 33 34 35 37 40 42 57 60 61 62 74 75 79 84 90 99 102 110 112 114 115 116 120 122 123 137 138 143 149 152 165 175 182 186 197
+PostgreSQL | GoogleBigQuery | #SUP: 8 #SID: 1 21 28 57 75 90 149 152
+PostgreSQL | HBase | #SUP: 12 #SID: 9 15 16 17 21 24 28 33 75 120 130 152
+PostgreSQL | Netezza | #SUP: 3 #SID: 57 90 149
+PostgreSQL | Elasticsearch | #SUP: 16 #SID: 1 9 16 17 21 25 28 57 62 120 130 132 143 149 152 183
+PostgreSQL | SapHana | #SUP: 6 #SID: 17 57 61 75 122 149
+PostgreSQL | Oracle | #SUP: 41 #SID: 0 1 2 9 15 17 18 20 28 33 34 35 37 42 52 57 58 61 62 74 75 79 94 98 99 103 110 112 115 116 120 122 128 130 139 149 150 152 165 182 197
+PostgreSQL | OrientDB | #SUP: 2 #SID: 57 103
+PostgreSQL | DynamoDB | #SUP: 10 #SID: 1 17 21 24 28 37 57 98 103 137
+PostgreSQL | Firebird | #SUP: 8 #SID: 17 20 35 57 75 122 137 149
+PostgreSQL | Informix | #SUP: 9 #SID: 17 35 57 75 79 84 122 130 149
+PostgreSQL | IBM_DB2 | #SUP: 20 #SID: 0 1 15 17 20 35 42 57 58 61 74 75 94 102 114 116 120 122 149 197
+PostgreSQL | Couchbase | #SUP: 3 #SID: 28 37 110
+PostgreSQL | MongoDB | #SUP: 22 #SID: 1 9 16 17 20 21 28 37 58 62 79 99 103 110 112 120 123 130 137 149 152 191
+PostgreSQL | Hazelcast | #SUP: 8 #SID: 16 21 28 37 74 79 94 198
+PostgreSQL | Influx_DB | #SUP: 4 #SID: 16 17 21 37
+PostgreSQL | SQLite | #SUP: 22 #SID: 17 33 34 35 42 57 61 75 79 80 103 110 122 123 137 139 141 143 149 164 165 195
+PostgreSQL | Solr | #SUP: 10 #SID: 9 17 21 28 33 34 79 120 164 198
+PostgreSQL | Snowflake | #SUP: 6 #SID: 1 17 21 57 75 149
+PostgreSQL | AmazonRedshift | #SUP: 6 #SID: 1 16 17 57 75 149
+PostgreSQL | PostgreSQL | #SUP: 69 #SID: 0 1 2 9 15 16 17 18 20 21 24 25 28 33 34 35 37 40 42 52 57 58 60 61 62 74 75 79 80 84 86 90 94 98 99 101 102 103 110 112 114 115 116 117 120 122 128 130 132 133 137 138 139 140 141 143 149 150 152 164 165 169 182 183 186 191 195 197 198
+PostgreSQL | Cassandra | #SUP: 15 #SID: 1 9 16 17 21 28 37 58 110 120 130 132 143 152 183
+PostgreSQL | MS_SQL_Server | #SUP: 30 #SID: 0 1 9 15 17 20 33 35 37 42 52 57 58 61 74 75 79 80 94 102 112 120 122 130 149 152 182 186 191 197
+PostgreSQL | Ehcache | #SUP: 30 #SID: 2 9 15 20 21 33 34 37 40 61 62 79 84 94 99 102 103 110 112 114 116 117 120 130 133 149 152 182 183 197
+PostgreSQL | MicrosoftAzureCosmosDB | #SUP: 2 #SID: 28 37
+PostgreSQL | MS_Access | #SUP: 8 #SID: 34 35 57 79 94 99 149 197
+PostgreSQL | SAPAdaptiveServer | #SUP: 16 #SID: 0 9 17 28 35 40 57 62 74 75 94 120 122 130 149 197
+PostgreSQL | ClickHouse | #SUP: 7 #SID: 1 15 17 21 57 61 79
+PostgreSQL | Vertica | #SUP: 3 #SID: 57 75 149
+PostgreSQL | Teradata | #SUP: 4 #SID: 57 79 80 149
+PostgreSQL | PostGIS | #SUP: 7 #SID: 57 58 61 79 98 120 149
+PostgreSQL | Etcd | #SUP: 3 #SID: 9 17 60
+PostgreSQL | MySQL | #SUP: 63 #SID: 0 1 2 9 15 16 17 18 20 21 24 25 28 33 34 35 37 40 42 52 57 58 60 61 62 74 75 79 80 84 90 94 99 102 103 110 112 114 116 117 120 122 123 128 130 132 133 137 138 139 140 141 143 149 152 165 175 182 186 191 195 197 198
+PostgreSQL | Join_Ignite_NoSql | #SUP: 3 #SID: 16 28 33
+Realm | #SUP: 5 #SID: 48 77 78 129 158
+Realm | Realm | #SUP: 4 #SID: 77 78 129 158
+Cassandra | #SUP: 18 #SID: 1 9 14 16 17 21 27 28 37 45 58 110 120 130 132 143 152 183
+Cassandra MySQL | #SUP: 15 #SID: 1 9 14 16 17 21 28 37 58 110 120 130 132 143 152
+Cassandra Join_Ignite_NoSql | #SUP: 2 #SID: 16 28
+Cassandra MS_SQL_Server | #SUP: 8 #SID: 1 9 17 37 58 120 130 152
+Cassandra Ehcache | #SUP: 8 #SID: 9 21 37 110 120 130 152 183
+Cassandra MicrosoftAzureCosmosDB | #SUP: 2 #SID: 28 37
+Cassandra SAPAdaptiveServer | #SUP: 5 #SID: 9 17 28 120 130
+Cassandra ClickHouse | #SUP: 3 #SID: 1 17 21
+Cassandra | Memcached | #SUP: 4 #SID: 9 37 120 130
+Cassandra | Hive | #SUP: 4 #SID: 16 21 28 152
+Cassandra | Redis | #SUP: 14 #SID: 1 9 14 16 17 21 28 37 58 120 130 132 152 183
+Cassandra | GoogleCloudDatastore | #SUP: 2 #SID: 16 21
+Cassandra | MariaDB | #SUP: 10 #SID: 1 9 16 17 28 37 110 120 130 143
+Cassandra | Neo4j | #SUP: 2 #SID: 16 28
+Cassandra | H2 | #SUP: 10 #SID: 9 16 17 27 28 37 110 120 143 152
+Cassandra | GoogleBigQuery | #SUP: 4 #SID: 1 21 28 152
+Cassandra | HBase | #SUP: 10 #SID: 9 14 16 17 21 27 28 120 130 152
+Cassandra | Elasticsearch | #SUP: 13 #SID: 1 9 14 16 17 21 28 120 130 132 143 152 183
+Cassandra | Oracle | #SUP: 9 #SID: 1 9 17 37 58 110 120 130 152
+Cassandra | DynamoDB | #SUP: 6 #SID: 1 14 17 21 28 37
+Cassandra | Informix | #SUP: 2 #SID: 17 130
+Cassandra | IBM_DB2 | #SUP: 4 #SID: 1 17 58 120
+Cassandra | Couchbase | #SUP: 3 #SID: 28 37 110
+Cassandra | MongoDB | #SUP: 14 #SID: 1 9 14 16 17 21 27 28 37 58 110 120 130 152
+Cassandra | Hazelcast | #SUP: 4 #SID: 16 21 28 37
+Cassandra | Influx_DB | #SUP: 4 #SID: 16 17 21 37
+Cassandra | SQLite | #SUP: 3 #SID: 17 110 143
+Cassandra | Solr | #SUP: 6 #SID: 9 14 17 21 28 120
+Cassandra | Snowflake | #SUP: 3 #SID: 1 17 21
+Cassandra | AmazonRedshift | #SUP: 3 #SID: 1 16 17
+Cassandra | PostgreSQL | #SUP: 16 #SID: 1 9 16 17 21 27 28 37 58 110 120 130 132 143 152 183
+Cassandra | Cassandra | #SUP: 17 #SID: 1 9 14 16 17 21 27 28 37 58 110 120 130 132 143 152 183
+Cassandra | MS_SQL_Server | #SUP: 8 #SID: 1 9 17 37 58 120 130 152
+Cassandra | Ehcache | #SUP: 8 #SID: 9 21 37 110 120 130 152 183
+Cassandra | MicrosoftAzureCosmosDB | #SUP: 2 #SID: 28 37
+Cassandra | SAPAdaptiveServer | #SUP: 4 #SID: 9 17 120 130
+Cassandra | ClickHouse | #SUP: 3 #SID: 1 17 21
+Cassandra | Etcd | #SUP: 2 #SID: 9 17
+Cassandra | MySQL | #SUP: 15 #SID: 1 9 14 16 17 21 28 37 58 110 120 130 132 143 152
+Cassandra | Join_Ignite_NoSql | #SUP: 2 #SID: 16 28
+MS_SQL_Server | #SUP: 36 #SID: 0 1 9 10 15 16 17 20 33 35 37 39 42 52 57 58 61 74 75 79 80 83 94 102 112 120 122 130 149 152 181 182 186 187 191 197
+MS_SQL_Server MySQL | #SUP: 36 #SID: 0 1 9 10 15 16 17 20 33 35 37 39 42 52 57 58 61 74 75 79 80 83 94 102 112 120 122 130 149 152 181 182 186 187 191 197
+MS_SQL_Server Ehcache | #SUP: 17 #SID: 9 10 15 20 33 37 61 79 94 102 112 120 130 149 152 182 197
+MS_SQL_Server MicrosoftAzureCosmosDB | #SUP: 2 #SID: 10 37
+MS_SQL_Server MS_Access | #SUP: 6 #SID: 35 57 79 94 149 197
+MS_SQL_Server SAPAdaptiveServer | #SUP: 13 #SID: 0 9 17 35 57 74 75 94 120 122 130 149 197
+MS_SQL_Server ClickHouse | #SUP: 6 #SID: 1 15 17 57 61 79
+MS_SQL_Server Vertica | #SUP: 3 #SID: 57 75 149
+MS_SQL_Server Teradata | #SUP: 3 #SID: 57 79 149
+MS_SQL_Server PostGIS | #SUP: 5 #SID: 57 61 79 120 149
+MS_SQL_Server Etcd | #SUP: 2 #SID: 9 17
+MS_SQL_Server | Memcached | #SUP: 3 #SID: 37 120 130
+MS_SQL_Server | Hive | #SUP: 5 #SID: 15 16 33 57 152
+MS_SQL_Server | Redis | #SUP: 17 #SID: 1 9 15 16 17 20 33 37 42 58 61 79 94 102 120 130 152
+MS_SQL_Server | GoogleCloudDatastore | #SUP: 4 #SID: 16 33 39 79
+MS_SQL_Server | MariaDB | #SUP: 20 #SID: 1 16 17 20 35 37 42 52 57 61 74 75 102 112 120 122 130 149 182 191
+MS_SQL_Server | Neo4j | #SUP: 2 #SID: 16 20
+MS_SQL_Server | H2 | #SUP: 24 #SID: 0 9 15 16 17 20 33 35 37 42 57 61 74 75 79 102 112 120 122 149 152 182 186 197
+MS_SQL_Server | GoogleBigQuery | #SUP: 5 #SID: 1 57 75 149 152
+MS_SQL_Server | HBase | #SUP: 9 #SID: 10 15 16 17 33 75 120 130 152
+MS_SQL_Server | Netezza | #SUP: 2 #SID: 57 149
+MS_SQL_Server | Elasticsearch | #SUP: 9 #SID: 1 9 16 17 57 120 130 149 152
+MS_SQL_Server | SapHana | #SUP: 6 #SID: 17 57 61 75 122 149
+MS_SQL_Server | Oracle | #SUP: 26 #SID: 0 1 9 15 17 20 33 35 37 42 57 58 61 74 75 79 94 112 120 122 130 149 152 182 187 197
+MS_SQL_Server | DynamoDB | #SUP: 5 #SID: 1 10 17 37 57
+MS_SQL_Server | Firebird | #SUP: 7 #SID: 17 20 35 57 75 122 149
+MS_SQL_Server | Informix | #SUP: 8 #SID: 17 35 57 75 79 122 130 149
+MS_SQL_Server | IBM_DB2 | #SUP: 18 #SID: 0 1 15 17 20 35 42 57 58 61 74 75 94 102 120 122 149 197
+MS_SQL_Server | MongoDB | #SUP: 13 #SID: 1 9 16 17 20 37 58 79 120 130 149 152 191
+MS_SQL_Server | Hazelcast | #SUP: 5 #SID: 16 37 74 79 94
+MS_SQL_Server | Influx_DB | #SUP: 3 #SID: 16 17 37
+MS_SQL_Server | SQLite | #SUP: 12 #SID: 17 33 35 42 57 61 75 79 80 122 149 187
+MS_SQL_Server | Solr | #SUP: 5 #SID: 10 17 33 79 120
+MS_SQL_Server | Snowflake | #SUP: 5 #SID: 1 17 57 75 149
+MS_SQL_Server | AmazonRedshift | #SUP: 6 #SID: 1 16 17 57 75 149
+MS_SQL_Server | PostgreSQL | #SUP: 32 #SID: 0 1 9 15 16 17 20 33 35 37 42 52 57 58 61 74 75 79 80 94 102 112 120 122 130 149 152 182 186 187 191 197
+MS_SQL_Server | Cassandra | #SUP: 8 #SID: 1 16 17 37 58 120 130 152
+MS_SQL_Server | MS_SQL_Server | #SUP: 32 #SID: 0 1 9 10 15 17 20 33 35 37 42 52 57 58 61 74 75 79 80 94 102 112 120 122 130 149 152 182 186 187 191 197
+MS_SQL_Server | Ehcache | #SUP: 15 #SID: 10 15 20 33 37 61 79 102 112 120 130 149 152 182 197
+MS_SQL_Server | MicrosoftAzureCosmosDB | #SUP: 2 #SID: 10 37
+MS_SQL_Server | MS_Access | #SUP: 6 #SID: 35 57 79 94 149 197
+MS_SQL_Server | SAPAdaptiveServer | #SUP: 12 #SID: 0 17 35 57 74 75 94 120 122 130 149 197
+MS_SQL_Server | ClickHouse | #SUP: 6 #SID: 1 15 17 57 61 79
+MS_SQL_Server | Vertica | #SUP: 3 #SID: 57 75 149
+MS_SQL_Server | Teradata | #SUP: 4 #SID: 57 79 80 149
+MS_SQL_Server | PostGIS | #SUP: 5 #SID: 57 61 79 120 149
+MS_SQL_Server | Etcd | #SUP: 2 #SID: 9 17
+MS_SQL_Server | MySQL | #SUP: 33 #SID: 0 1 9 10 15 16 17 20 33 35 37 42 52 57 58 61 74 75 79 80 94 102 112 120 122 130 149 152 182 186 187 191 197
+MS_SQL_Server | Join_Ignite_NoSql | #SUP: 2 #SID: 16 33
+Ehcache | #SUP: 57 #SID: 2 5 6 8 9 10 15 20 21 23 29 30 33 34 36 37 40 41 43 44 61 62 66 79 84 88 89 94 99 100 102 103 104 106 110 112 114 116 117 120 127 129 130 131 133 147 149 151 152 156 157 168 176 182 183 185 197
+Ehcache MySQL | #SUP: 38 #SID: 2 5 8 9 10 15 20 21 29 30 33 34 37 40 41 44 61 62 79 84 94 99 102 103 110 112 114 116 117 120 130 131 133 149 152 168 182 197
+Ehcache MicrosoftAzureCosmosDB | #SUP: 2 #SID: 10 37
+Ehcache MS_Access | #SUP: 6 #SID: 34 79 94 99 149 197
+Ehcache SAPAdaptiveServer | #SUP: 6 #SID: 9 62 120 130 149 197
+Ehcache ClickHouse | #SUP: 4 #SID: 15 21 61 79
+Ehcache Teradata | #SUP: 2 #SID: 79 149
+Ehcache PostGIS | #SUP: 4 #SID: 61 79 120 149
+Ehcache | Memcached | #SUP: 6 #SID: 8 9 36 37 120 130
+Ehcache | Hive | #SUP: 3 #SID: 21 33 152
+Ehcache | Redis | #SUP: 26 #SID: 8 9 20 21 29 33 37 40 43 44 61 62 79 84 94 99 102 103 117 120 127 130 133 152 157 183
+Ehcache | GoogleCloudDatastore | #SUP: 6 #SID: 21 33 43 79 103 168
+Ehcache | MariaDB | #SUP: 15 #SID: 2 9 20 37 61 102 110 112 116 117 120 130 133 149 182
+Ehcache | H2 | #SUP: 25 #SID: 9 20 33 37 40 41 44 61 62 66 79 84 99 102 110 112 116 117 120 131 149 152 157 182 197
+Ehcache | GoogleBigQuery | #SUP: 3 #SID: 21 149 152
+Ehcache | HBase | #SUP: 7 #SID: 9 10 21 33 120 130 152
+Ehcache | Elasticsearch | #SUP: 11 #SID: 9 21 23 62 89 120 130 149 152 176 183
+Ehcache | SapHana | #SUP: 2 #SID: 61 149
+Ehcache | Oracle | #SUP: 25 #SID: 2 9 20 29 33 37 61 62 79 94 99 103 104 110 112 116 120 130 149 152 157 168 176 182 197
+Ehcache | DynamoDB | #SUP: 6 #SID: 10 21 30 37 43 103
+Ehcache | Firebird | #SUP: 2 #SID: 20 149
+Ehcache | Informix | #SUP: 4 #SID: 79 84 130 149
+Ehcache | IBM_DB2 | #SUP: 8 #SID: 20 61 94 102 116 120 149 197
+Ehcache | Couchbase | #SUP: 2 #SID: 37 110
+Ehcache | FirebaseRealtime | #SUP: 2 #SID: 37 129
+Ehcache | MongoDB | #SUP: 18 #SID: 9 20 21 37 41 62 79 88 89 99 103 110 112 120 127 130 149 152
+Ehcache | Hazelcast | #SUP: 9 #SID: 21 37 43 79 88 94 102 127 131
+Ehcache | Influx_DB | #SUP: 2 #SID: 21 37
+Ehcache | SQLite | #SUP: 10 #SID: 10 30 33 61 79 103 110 131 147 149
+Ehcache | Solr | #SUP: 7 #SID: 9 10 21 23 33 79 120
+Ehcache | Snowflake | #SUP: 2 #SID: 21 149
+Ehcache | PostgreSQL | #SUP: 27 #SID: 2 9 20 21 33 37 40 61 62 79 84 94 99 102 103 110 112 116 117 120 130 133 149 152 182 183 197
+Ehcache | Cassandra | #SUP: 8 #SID: 9 21 37 110 120 130 152 183
+Ehcache | MS_SQL_Server | #SUP: 16 #SID: 9 10 20 33 37 61 79 94 102 112 120 130 149 152 182 197
+Ehcache | Ehcache | #SUP: 50 #SID: 2 6 8 9 10 20 21 29 30 33 36 37 41 43 44 61 62 66 79 84 88 89 94 99 100 102 103 104 106 110 112 116 117 120 127 129 130 131 133 147 149 151 152 156 157 176 182 183 185 197
+Ehcache | MicrosoftAzureCosmosDB | #SUP: 2 #SID: 10 37
+Ehcache | MS_Access | #SUP: 4 #SID: 79 94 99 149
+Ehcache | SAPAdaptiveServer | #SUP: 8 #SID: 9 40 62 94 120 130 149 197
+Ehcache | ClickHouse | #SUP: 3 #SID: 21 61 79
+Ehcache | Teradata | #SUP: 3 #SID: 41 79 149
+Ehcache | PostGIS | #SUP: 4 #SID: 61 79 120 149
+Ehcache | Etcd | #SUP: 2 #SID: 8 9
+Ehcache | MySQL | #SUP: 34 #SID: 2 8 9 10 20 21 29 30 33 37 40 41 44 61 62 79 84 94 99 102 103 110 112 116 117 120 130 131 133 149 152 168 182 197
+MicrosoftAzureCosmosDB | #SUP: 4 #SID: 10 28 37 121
+MicrosoftAzureCosmosDB MySQL | #SUP: 4 #SID: 10 28 37 121
+MicrosoftAzureCosmosDB | MicrosoftAzureCosmosDB | #SUP: 2 #SID: 28 121
+MicrosoftAzureCosmosDB | MySQL | #SUP: 2 #SID: 28 121
+MS_Access | #SUP: 8 #SID: 34 35 57 79 94 99 149 197
+MS_Access MySQL | #SUP: 8 #SID: 34 35 57 79 94 99 149 197
+MS_Access SAPAdaptiveServer | #SUP: 5 #SID: 35 57 94 149 197
+MS_Access ClickHouse | #SUP: 2 #SID: 57 79
+MS_Access Vertica | #SUP: 2 #SID: 57 149
+MS_Access Teradata | #SUP: 3 #SID: 57 79 149
+MS_Access PostGIS | #SUP: 3 #SID: 57 79 149
+MS_Access | Redis | #SUP: 3 #SID: 79 94 99
+MS_Access | MariaDB | #SUP: 3 #SID: 35 57 149
+MS_Access | H2 | #SUP: 7 #SID: 34 35 57 79 99 149 197
+MS_Access | GoogleBigQuery | #SUP: 2 #SID: 57 149
+MS_Access | Netezza | #SUP: 2 #SID: 57 149
+MS_Access | Elasticsearch | #SUP: 2 #SID: 57 149
+MS_Access | SapHana | #SUP: 2 #SID: 57 149
+MS_Access | Oracle | #SUP: 8 #SID: 34 35 57 79 94 99 149 197
+MS_Access | Firebird | #SUP: 3 #SID: 35 57 149
+MS_Access | Informix | #SUP: 4 #SID: 35 57 79 149
+MS_Access | IBM_DB2 | #SUP: 5 #SID: 35 57 94 149 197
+MS_Access | MongoDB | #SUP: 3 #SID: 79 99 149
+MS_Access | Hazelcast | #SUP: 2 #SID: 79 94
+MS_Access | SQLite | #SUP: 5 #SID: 34 35 57 79 149
+MS_Access | Solr | #SUP: 2 #SID: 34 79
+MS_Access | Snowflake | #SUP: 2 #SID: 57 149
+MS_Access | AmazonRedshift | #SUP: 2 #SID: 57 149
+MS_Access | PostgreSQL | #SUP: 8 #SID: 34 35 57 79 94 99 149 197
+MS_Access | MS_SQL_Server | #SUP: 6 #SID: 35 57 79 94 149 197
+MS_Access | Ehcache | #SUP: 6 #SID: 34 79 94 99 149 197
+MS_Access | MS_Access | #SUP: 7 #SID: 34 35 57 79 94 99 149
+MS_Access | SAPAdaptiveServer | #SUP: 5 #SID: 35 57 94 149 197
+MS_Access | ClickHouse | #SUP: 2 #SID: 57 79
+MS_Access | Vertica | #SUP: 2 #SID: 57 149
+MS_Access | Teradata | #SUP: 3 #SID: 57 79 149
+MS_Access | PostGIS | #SUP: 3 #SID: 57 79 149
+MS_Access | MySQL | #SUP: 8 #SID: 34 35 57 79 94 99 149 197
+SAPAdaptiveServer | #SUP: 17 #SID: 0 9 17 28 35 40 57 62 74 75 94 120 122 130 149 182 197
+SAPAdaptiveServer MySQL | #SUP: 16 #SID: 0 9 17 35 40 57 62 74 75 94 120 122 130 149 182 197
+SAPAdaptiveServer ClickHouse | #SUP: 2 #SID: 17 57
+SAPAdaptiveServer Vertica | #SUP: 3 #SID: 57 75 149
+SAPAdaptiveServer Teradata | #SUP: 2 #SID: 57 149
+SAPAdaptiveServer PostGIS | #SUP: 3 #SID: 57 120 149
+SAPAdaptiveServer | Memcached | #SUP: 2 #SID: 120 130
+SAPAdaptiveServer | Hive | #SUP: 2 #SID: 28 57
+SAPAdaptiveServer | Redis | #SUP: 8 #SID: 9 17 28 40 62 94 120 130
+SAPAdaptiveServer | MariaDB | #SUP: 11 #SID: 17 28 35 57 74 75 120 122 130 149 182
+SAPAdaptiveServer | H2 | #SUP: 15 #SID: 0 9 17 28 35 40 57 62 74 75 120 122 149 182 197
+SAPAdaptiveServer | GoogleBigQuery | #SUP: 4 #SID: 28 57 75 149
+SAPAdaptiveServer | HBase | #SUP: 5 #SID: 17 28 75 120 130
+SAPAdaptiveServer | Netezza | #SUP: 2 #SID: 57 149
+SAPAdaptiveServer | Elasticsearch | #SUP: 8 #SID: 9 17 28 57 62 120 130 149
+SAPAdaptiveServer | SapHana | #SUP: 5 #SID: 17 57 75 122 149
+SAPAdaptiveServer | Oracle | #SUP: 16 #SID: 0 9 17 28 35 57 62 74 75 94 120 122 130 149 182 197
+SAPAdaptiveServer | DynamoDB | #SUP: 3 #SID: 17 28 57
+SAPAdaptiveServer | Firebird | #SUP: 6 #SID: 17 35 57 75 122 149
+SAPAdaptiveServer | Informix | #SUP: 7 #SID: 17 35 57 75 122 130 149
+SAPAdaptiveServer | IBM_DB2 | #SUP: 12 #SID: 0 17 35 57 74 75 94 120 122 149 182 197
+SAPAdaptiveServer | MongoDB | #SUP: 7 #SID: 9 17 28 62 120 130 149
+SAPAdaptiveServer | Hazelcast | #SUP: 2 #SID: 28 74
+SAPAdaptiveServer | SQLite | #SUP: 6 #SID: 17 35 57 75 122 149
+SAPAdaptiveServer | Solr | #SUP: 3 #SID: 17 28 120
+SAPAdaptiveServer | Snowflake | #SUP: 4 #SID: 17 57 75 149
+SAPAdaptiveServer | AmazonRedshift | #SUP: 4 #SID: 17 57 75 149
+SAPAdaptiveServer | PostgreSQL | #SUP: 17 #SID: 0 9 17 28 35 40 57 62 74 75 94 120 122 130 149 182 197
+SAPAdaptiveServer | Cassandra | #SUP: 4 #SID: 17 28 120 130
+SAPAdaptiveServer | MS_SQL_Server | #SUP: 14 #SID: 0 9 17 35 57 74 75 94 120 122 130 149 182 197
+SAPAdaptiveServer | Ehcache | #SUP: 6 #SID: 62 120 130 149 182 197
+SAPAdaptiveServer | MS_Access | #SUP: 5 #SID: 35 57 94 149 197
+SAPAdaptiveServer | SAPAdaptiveServer | #SUP: 16 #SID: 0 17 28 35 40 57 62 74 75 94 120 122 130 149 182 197
+SAPAdaptiveServer | ClickHouse | #SUP: 2 #SID: 17 57
+SAPAdaptiveServer | Vertica | #SUP: 3 #SID: 57 75 149
+SAPAdaptiveServer | Teradata | #SUP: 2 #SID: 57 149
+SAPAdaptiveServer | PostGIS | #SUP: 3 #SID: 57 120 149
+SAPAdaptiveServer | Etcd | #SUP: 2 #SID: 9 17
+SAPAdaptiveServer | MySQL | #SUP: 17 #SID: 0 9 17 28 35 40 57 62 74 75 94 120 122 130 149 182 197
+CouchDB | #SUP: 2 #SID: 37 148
+CouchDB | CouchDB | #SUP: 2 #SID: 37 148
+CouchDB | H2 | #SUP: 2 #SID: 37 148
+CouchDB | MongoDB | #SUP: 2 #SID: 37 148
+CouchDB | Hazelcast | #SUP: 2 #SID: 37 148
+ClickHouse | #SUP: 7 #SID: 1 15 17 21 57 61 79
+ClickHouse MySQL | #SUP: 7 #SID: 1 15 17 21 57 61 79
+ClickHouse Teradata | #SUP: 2 #SID: 57 79
+ClickHouse PostGIS | #SUP: 3 #SID: 57 61 79
+ClickHouse | Hive | #SUP: 3 #SID: 15 21 57
+ClickHouse | Redis | #SUP: 5 #SID: 1 15 17 21 61
+ClickHouse | MariaDB | #SUP: 4 #SID: 1 17 57 61
+ClickHouse | H2 | #SUP: 4 #SID: 15 17 57 61
+ClickHouse | GoogleBigQuery | #SUP: 3 #SID: 1 21 57
+ClickHouse | HBase | #SUP: 3 #SID: 15 17 21
+ClickHouse | Elasticsearch | #SUP: 4 #SID: 1 17 21 57
+ClickHouse | SapHana | #SUP: 3 #SID: 17 57 61
+ClickHouse | Oracle | #SUP: 5 #SID: 1 15 17 57 61
+ClickHouse | DynamoDB | #SUP: 4 #SID: 1 17 21 57
+ClickHouse | Firebird | #SUP: 2 #SID: 17 57
+ClickHouse | Informix | #SUP: 2 #SID: 17 57
+ClickHouse | IBM_DB2 | #SUP: 5 #SID: 1 15 17 57 61
+ClickHouse | MongoDB | #SUP: 3 #SID: 1 17 21
+ClickHouse | Influx_DB | #SUP: 2 #SID: 17 21
+ClickHouse | SQLite | #SUP: 3 #SID: 17 57 61
+ClickHouse | Solr | #SUP: 2 #SID: 17 21
+ClickHouse | Snowflake | #SUP: 4 #SID: 1 17 21 57
+ClickHouse | AmazonRedshift | #SUP: 3 #SID: 1 17 57
+ClickHouse | PostgreSQL | #SUP: 6 #SID: 1 15 17 21 57 61
+ClickHouse | Cassandra | #SUP: 3 #SID: 1 17 21
+ClickHouse | MS_SQL_Server | #SUP: 5 #SID: 1 15 17 57 61
+ClickHouse | Ehcache | #SUP: 3 #SID: 15 21 61
+ClickHouse | SAPAdaptiveServer | #SUP: 2 #SID: 17 57
+ClickHouse | ClickHouse | #SUP: 6 #SID: 1 15 17 21 57 61
+ClickHouse | PostGIS | #SUP: 2 #SID: 57 61
+ClickHouse | MySQL | #SUP: 6 #SID: 1 15 17 21 57 61
+Vertica | #SUP: 4 #SID: 10 57 75 149
+Vertica MySQL | #SUP: 3 #SID: 57 75 149
+Vertica Teradata | #SUP: 2 #SID: 57 149
+Vertica PostGIS | #SUP: 2 #SID: 57 149
+Vertica | MariaDB | #SUP: 3 #SID: 57 75 149
+Vertica | H2 | #SUP: 3 #SID: 57 75 149
+Vertica | GoogleBigQuery | #SUP: 3 #SID: 57 75 149
+Vertica | HBase | #SUP: 2 #SID: 10 75
+Vertica | Netezza | #SUP: 2 #SID: 57 149
+Vertica | Elasticsearch | #SUP: 2 #SID: 57 149
+Vertica | SapHana | #SUP: 3 #SID: 57 75 149
+Vertica | Oracle | #SUP: 3 #SID: 57 75 149
+Vertica | DynamoDB | #SUP: 2 #SID: 10 57
+Vertica | Firebird | #SUP: 3 #SID: 57 75 149
+Vertica | Informix | #SUP: 3 #SID: 57 75 149
+Vertica | IBM_DB2 | #SUP: 3 #SID: 57 75 149
+Vertica | SQLite | #SUP: 4 #SID: 10 57 75 149
+Vertica | Snowflake | #SUP: 3 #SID: 57 75 149
+Vertica | AmazonRedshift | #SUP: 3 #SID: 57 75 149
+Vertica | PostgreSQL | #SUP: 3 #SID: 57 75 149
+Vertica | MS_SQL_Server | #SUP: 4 #SID: 10 57 75 149
+Vertica | Ehcache | #SUP: 2 #SID: 10 149
+Vertica | MS_Access | #SUP: 2 #SID: 57 149
+Vertica | SAPAdaptiveServer | #SUP: 3 #SID: 57 75 149
+Vertica | Vertica | #SUP: 3 #SID: 57 75 149
+Vertica | Teradata | #SUP: 2 #SID: 57 149
+Vertica | PostGIS | #SUP: 2 #SID: 57 149
+Vertica | MySQL | #SUP: 4 #SID: 10 57 75 149
+Teradata | #SUP: 5 #SID: 41 57 79 80 149
+Teradata MySQL | #SUP: 5 #SID: 41 57 79 80 149
+Teradata PostGIS | #SUP: 3 #SID: 57 79 149
+Teradata | MariaDB | #SUP: 2 #SID: 57 149
+Teradata | H2 | #SUP: 4 #SID: 41 57 79 149
+Teradata | GoogleBigQuery | #SUP: 2 #SID: 57 149
+Teradata | Netezza | #SUP: 2 #SID: 57 149
+Teradata | Elasticsearch | #SUP: 2 #SID: 57 149
+Teradata | SapHana | #SUP: 2 #SID: 57 149
+Teradata | Oracle | #SUP: 3 #SID: 57 79 149
+Teradata | Firebird | #SUP: 2 #SID: 57 149
+Teradata | Informix | #SUP: 3 #SID: 57 79 149
+Teradata | IBM_DB2 | #SUP: 2 #SID: 57 149
+Teradata | MongoDB | #SUP: 3 #SID: 41 79 149
+Teradata | SQLite | #SUP: 4 #SID: 57 79 80 149
+Teradata | Snowflake | #SUP: 2 #SID: 57 149
+Teradata | AmazonRedshift | #SUP: 2 #SID: 57 149
+Teradata | PostgreSQL | #SUP: 4 #SID: 57 79 80 149
+Teradata | MS_SQL_Server | #SUP: 4 #SID: 57 79 80 149
+Teradata | Ehcache | #SUP: 2 #SID: 79 149
+Teradata | MS_Access | #SUP: 3 #SID: 57 79 149
+Teradata | SAPAdaptiveServer | #SUP: 2 #SID: 57 149
+Teradata | ClickHouse | #SUP: 2 #SID: 57 79
+Teradata | Vertica | #SUP: 2 #SID: 57 149
+Teradata | Teradata | #SUP: 4 #SID: 41 57 79 149
+Teradata | PostGIS | #SUP: 3 #SID: 57 79 149
+Teradata | MySQL | #SUP: 5 #SID: 41 57 79 80 149
+PostGIS | #SUP: 7 #SID: 57 58 61 79 98 120 149
+PostGIS MySQL | #SUP: 6 #SID: 57 58 61 79 120 149
+PostGIS | Redis | #SUP: 4 #SID: 58 61 79 120
+PostGIS | MariaDB | #SUP: 5 #SID: 57 61 98 120 149
+PostGIS | H2 | #SUP: 5 #SID: 57 61 79 120 149
+PostGIS | GoogleBigQuery | #SUP: 2 #SID: 57 149
+PostGIS | Netezza | #SUP: 2 #SID: 57 149
+PostGIS | Elasticsearch | #SUP: 3 #SID: 57 120 149
+PostGIS | SapHana | #SUP: 3 #SID: 57 61 149
+PostGIS | Oracle | #SUP: 7 #SID: 57 58 61 79 98 120 149
+PostGIS | DynamoDB | #SUP: 2 #SID: 57 98
+PostGIS | Firebird | #SUP: 2 #SID: 57 149
+PostGIS | Informix | #SUP: 3 #SID: 57 79 149
+PostGIS | IBM_DB2 | #SUP: 5 #SID: 57 58 61 120 149
+PostGIS | MongoDB | #SUP: 4 #SID: 58 79 120 149
+PostGIS | SQLite | #SUP: 4 #SID: 57 61 79 149
+PostGIS | Solr | #SUP: 2 #SID: 79 120
+PostGIS | Snowflake | #SUP: 2 #SID: 57 149
+PostGIS | AmazonRedshift | #SUP: 2 #SID: 57 149
+PostGIS | PostgreSQL | #SUP: 7 #SID: 57 58 61 79 98 120 149
+PostGIS | Cassandra | #SUP: 2 #SID: 58 120
+PostGIS | MS_SQL_Server | #SUP: 6 #SID: 57 58 61 79 120 149
+PostGIS | Ehcache | #SUP: 4 #SID: 61 79 120 149
+PostGIS | MS_Access | #SUP: 3 #SID: 57 79 149
+PostGIS | SAPAdaptiveServer | #SUP: 3 #SID: 57 120 149
+PostGIS | ClickHouse | #SUP: 3 #SID: 57 61 79
+PostGIS | Vertica | #SUP: 2 #SID: 57 149
+PostGIS | Teradata | #SUP: 3 #SID: 57 79 149
+PostGIS | PostGIS | #SUP: 7 #SID: 57 58 61 79 98 120 149
+PostGIS | MySQL | #SUP: 6 #SID: 57 58 61 79 120 149
+Etcd | #SUP: 5 #SID: 8 9 17 32 60
+Etcd MySQL | #SUP: 3 #SID: 9 17 60
+Etcd | Redis | #SUP: 2 #SID: 8 60
+Etcd | Etcd | #SUP: 3 #SID: 8 32 60
+MySQL | #SUP: 109 #SID: 0 1 2 3 4 5 8 9 10 11 12 13 14 15 16 17 18 20 21 22 24 25 26 28 29 30 32 33 34 35 37 39 40 41 42 44 52 55 56 57 58 60 61 62 63 73 74 75 79 80 82 83 84 85 90 94 97 99 102 103 105 110 111 112 114 116 117 118 120 121 122 123 126 128 130 131 132 133 136 137 138 139 140 141 143 145 146 149 152 161 165 166 167 168 173 175 177 179 181 182 186 187 191 193 194 195 197 198 199
+MySQL Join_Ignite_NoSql | #SUP: 3 #SID: 16 28 33
+MySQL | Memcached | #SUP: 6 #SID: 8 9 37 63 120 130
+MySQL | Hive | #SUP: 9 #SID: 15 16 21 24 28 33 57 90 152
+MySQL | Redis | #SUP: 46 #SID: 1 8 9 12 14 15 16 17 18 20 21 25 28 29 33 37 40 42 44 55 58 60 61 62 79 83 84 94 97 99 102 103 117 118 120 123 130 132 133 136 137 138 140 152 161 173
+MySQL | GoogleCloudDatastore | #SUP: 11 #SID: 16 21 22 24 33 39 63 79 103 123 168
+MySQL | MariaDB | #SUP: 37 #SID: 1 2 9 16 17 20 28 35 37 42 52 57 61 63 74 75 83 102 110 112 116 117 118 120 122 123 130 133 137 139 143 149 161 165 182 191 195
+MySQL | Neo4j | #SUP: 4 #SID: 16 20 28 73
+MySQL | H2 | #SUP: 57 #SID: 0 9 12 15 16 17 18 20 22 24 25 28 33 34 35 37 40 41 42 44 55 56 57 60 61 62 63 74 75 79 84 90 99 102 110 112 116 117 120 122 123 128 131 136 137 138 143 149 152 161 165 173 175 182 186 193 197
+MySQL | GoogleBigQuery | #SUP: 8 #SID: 1 21 28 57 75 90 149 152
+MySQL | HBase | #SUP: 16 #SID: 9 10 14 15 16 17 21 24 26 28 33 75 120 130 152 173
+MySQL | Netezza | #SUP: 3 #SID: 57 90 149
+MySQL | Elasticsearch | #SUP: 17 #SID: 1 9 14 16 17 21 25 26 28 57 62 120 130 132 143 149 152
+MySQL | SapHana | #SUP: 6 #SID: 17 57 61 75 122 149
+MySQL | Oracle | #SUP: 44 #SID: 0 1 2 9 15 17 18 20 29 33 34 35 37 42 52 57 58 61 62 63 74 75 79 94 97 99 103 110 112 116 120 122 128 130 133 139 149 152 165 168 182 187 197 199
+MySQL | OrientDB | #SUP: 2 #SID: 57 103
+MySQL | DynamoDB | #SUP: 12 #SID: 1 10 14 17 21 24 28 30 37 57 103 137
+MySQL | Firebird | #SUP: 8 #SID: 17 20 35 57 75 122 137 149
+MySQL | Informix | #SUP: 9 #SID: 17 35 57 75 79 84 122 130 149
+MySQL | IBM_DB2 | #SUP: 21 #SID: 0 1 15 17 20 35 42 57 58 61 63 74 75 94 102 116 120 122 149 182 197
+MySQL | Couchbase | #SUP: 4 #SID: 22 28 37 110
+MySQL | FirebaseRealtime | #SUP: 3 #SID: 37 145 146
+MySQL | MongoDB | #SUP: 29 #SID: 1 9 14 16 17 20 21 28 37 41 58 62 63 79 99 103 110 112 120 123 130 137 138 149 152 161 173 177 191
+MySQL | Hazelcast | #SUP: 12 #SID: 16 21 28 37 63 73 74 79 94 102 131 198
+MySQL | Influx_DB | #SUP: 4 #SID: 16 17 21 37
+MySQL | SQLite | #SUP: 25 #SID: 17 30 33 34 35 42 57 61 75 79 80 82 103 110 122 123 137 139 141 143 149 165 187 195 199
+MySQL | Solr | #SUP: 12 #SID: 9 10 14 17 21 26 28 33 34 79 120 198
+MySQL | Snowflake | #SUP: 6 #SID: 1 17 21 57 75 149
+MySQL | AmazonRedshift | #SUP: 6 #SID: 1 16 17 57 75 149
+MySQL | PostgreSQL | #SUP: 62 #SID: 0 1 2 9 15 16 17 18 20 21 24 25 28 33 34 35 37 40 42 52 57 58 60 61 62 74 75 79 80 84 90 94 99 102 103 110 112 116 117 120 122 123 128 130 132 133 137 138 139 140 141 143 149 152 165 182 186 187 191 195 197 198
+MySQL | Cassandra | #SUP: 15 #SID: 1 9 14 16 17 21 28 37 58 110 120 130 132 143 152
+MySQL | MS_SQL_Server | #SUP: 33 #SID: 0 1 9 10 15 17 20 33 35 37 42 52 57 58 61 74 75 79 80 83 94 102 112 120 122 130 149 152 182 186 187 191 197
+MySQL | Ehcache | #SUP: 36 #SID: 2 8 9 10 15 20 21 29 30 33 34 37 40 41 44 61 62 79 84 94 99 102 103 110 112 116 117 120 130 131 133 149 152 168 182 197
+MySQL | MicrosoftAzureCosmosDB | #SUP: 4 #SID: 10 28 37 121
+MySQL | MS_Access | #SUP: 8 #SID: 34 35 57 79 94 99 149 197
+MySQL | SAPAdaptiveServer | #SUP: 16 #SID: 0 9 17 35 40 57 62 74 75 94 120 122 130 149 182 197
+MySQL | ClickHouse | #SUP: 7 #SID: 1 15 17 21 57 61 79
+MySQL | Vertica | #SUP: 3 #SID: 57 75 149
+MySQL | Teradata | #SUP: 5 #SID: 41 57 79 80 149
+MySQL | PostGIS | #SUP: 6 #SID: 57 58 61 79 120 149
+MySQL | Etcd | #SUP: 5 #SID: 8 9 17 32 60
+MySQL | MySQL | #SUP: 100 #SID: 0 1 2 3 4 9 10 11 12 13 14 15 16 17 18 20 21 22 24 25 26 28 29 30 32 33 34 35 37 40 41 42 44 52 55 57 58 60 61 62 63 73 74 75 79 80 82 83 84 85 90 94 97 99 102 103 105 110 111 112 116 117 118 120 121 122 123 126 128 130 131 132 133 136 137 138 139 140 141 143 145 146 149 152 161 165 166 168 173 175 177 182 186 187 191 193 195 197 198 199
+MySQL | Join_Ignite_NoSql | #SUP: 3 #SID: 16 28 33
+Join_Ignite_NoSql | #SUP: 3 #SID: 16 28 33
+Join_Ignite_NoSql | PostgreSQL | #SUP: 2 #SID: 16 28
+Join_Ignite_NoSql | Cassandra | #SUP: 2 #SID: 16 28
+Join_Ignite_NoSql | Hive | #SUP: 2 #SID: 16 28
+Join_Ignite_NoSql | Redis | #SUP: 2 #SID: 16 28
+Join_Ignite_NoSql | MariaDB | #SUP: 2 #SID: 16 28
+Join_Ignite_NoSql | Neo4j | #SUP: 2 #SID: 16 28
+Join_Ignite_NoSql | H2 | #SUP: 2 #SID: 16 28
+Join_Ignite_NoSql | HBase | #SUP: 2 #SID: 16 28
+Join_Ignite_NoSql | Elasticsearch | #SUP: 2 #SID: 16 28
+Join_Ignite_NoSql | MySQL | #SUP: 2 #SID: 16 28
+Join_Ignite_NoSql | Join_Ignite_NoSql | #SUP: 2 #SID: 16 28
+Join_Ignite_NoSql | MongoDB | #SUP: 2 #SID: 16 28
+Join_Ignite_NoSql | Hazelcast | #SUP: 2 #SID: 16 28
