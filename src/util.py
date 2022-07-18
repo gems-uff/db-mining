@@ -1,4 +1,5 @@
 import os
+import time
 
 # Flags
 DATABASE_DEBUG = False
@@ -26,13 +27,14 @@ REACT_STATIC_DIR = REACT_BUILD_DIR + os.sep + 'static'
 PROJECTS_FILE = RESOURCE_DIR + os.sep + 'projects.xlsx'
 FILTERED_FILE = RESOURCE_DIR + os.sep + 'filtered_projects.xlsx'
 ANNOTATED_FILE = RESOURCE_DIR + os.sep + 'annotated.xlsx'
-ANNOTATED_FILE_JAVA = RESOURCE_DIR + os.sep +  'annotated_java.xlsx' #'annotated_java_test.xlsx'
+ANNOTATED_FILE_JAVA = RESOURCE_DIR + os.sep + 'annotated_java_test.xlsx' #'annotated_java.xlsx' 
 ANNOTATED_FILE_JAVA_TEST = RESOURCE_DIR + os.sep + 'annotated_java_test.xlsx'
 ANNOTATED_FILE_JAVA_SAMPLE = RESOURCE_DIR + os.sep + 'annotated_java_sample.xlsx'
 DBLP_FILE = RESOURCE_DIR + os.sep + 'dblp.xml'
 VENUE_KEYS = RESOURCE_DIR + os.sep + 'venue_keys.txt'
 PAPERS_FILE = RESOURCE_DIR + os.sep + 'papers.xlsx'
 FILTERED_PAPERS_FILE = RESOURCE_DIR + os.sep + 'filtered_papers.xlsx'
+FILTERED_PAPERS_FILE_2022 = RESOURCE_DIR + os.sep + 'filtered_papers_2022.xlsx'
 AGREEMENT_FILE = RESOURCE_DIR + os.sep + 'agreement.xlsx'
 CHARACTERIZATION_FILE_IMP = RESOURCE_DIR + os.sep + 'characterization_implementation.xlsx'
 COUNT_FILE_IMP = RESOURCE_DIR + os.sep + 'count_implementation.xlsx'
