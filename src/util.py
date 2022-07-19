@@ -1,4 +1,5 @@
 import os
+import time
 
 # Flags
 DATABASE_DEBUG = False
@@ -16,6 +17,8 @@ HEURISTICS_DIR_FIRST_LEVEL = HEURISTICS_DIR + os.sep + '.first-level'
 HEURISTICS_DIR_SECOND_LEVEL = HEURISTICS_DIR + os.sep + '.second-level'
 HEURISTICS_DIR_TEMP_FILES = HEURISTICS_DIR + os.sep + '.tempFiles'
 
+SEQ_PATTERNS_DIR = RESOURCE_DIR + os.sep + 'seq_patterns'
+
 
 REACT_BUILD_DIR = BASE_DIR + os.sep + 'web' + os.sep + 'build'
 REACT_STATIC_DIR = REACT_BUILD_DIR + os.sep + 'static'
@@ -24,13 +27,14 @@ REACT_STATIC_DIR = REACT_BUILD_DIR + os.sep + 'static'
 PROJECTS_FILE = RESOURCE_DIR + os.sep + 'projects.xlsx'
 FILTERED_FILE = RESOURCE_DIR + os.sep + 'filtered_projects.xlsx'
 ANNOTATED_FILE = RESOURCE_DIR + os.sep + 'annotated.xlsx'
-ANNOTATED_FILE_JAVA = RESOURCE_DIR + os.sep +  'annotated_java.xlsx' #'annotated_java_test.xlsx'
+ANNOTATED_FILE_JAVA = RESOURCE_DIR + os.sep + 'annotated_java.xlsx' #'annotated_java_test.xlsx'
 ANNOTATED_FILE_JAVA_TEST = RESOURCE_DIR + os.sep + 'annotated_java_test.xlsx'
 ANNOTATED_FILE_JAVA_SAMPLE = RESOURCE_DIR + os.sep + 'annotated_java_sample.xlsx'
 DBLP_FILE = RESOURCE_DIR + os.sep + 'dblp.xml'
 VENUE_KEYS = RESOURCE_DIR + os.sep + 'venue_keys.txt'
 PAPERS_FILE = RESOURCE_DIR + os.sep + 'papers.xlsx'
 FILTERED_PAPERS_FILE = RESOURCE_DIR + os.sep + 'filtered_papers.xlsx'
+FILTERED_PAPERS_FILE_2022 = RESOURCE_DIR + os.sep + 'filtered_papers_2022.xlsx'
 AGREEMENT_FILE = RESOURCE_DIR + os.sep + 'agreement.xlsx'
 CHARACTERIZATION_FILE_IMP = RESOURCE_DIR + os.sep + 'characterization_implementation.xlsx'
 COUNT_FILE_IMP = RESOURCE_DIR + os.sep + 'count_implementation.xlsx'
@@ -44,8 +48,12 @@ HISTORICAL_FILE_JOIN = RESOURCE_DIR + os.sep + 'historical_join.xlsx'
 HISTORICAL_RULES_FILE = RESOURCE_DIR + os.sep + 'historical_rules.xlsx'
 HISTORICAL_FILE_JOIN_DB = RESOURCE_DIR + os.sep + 'historical_join_db.xlsx'
 DATABASES_MODELS = RESOURCE_DIR + os.sep + 'databases_models.xlsx'
-HISTORICAL_INPUT_SEQUENCIAL = RESOURCE_DIR + os.sep + 'input_sequencial.txt'
-HISTORICAL_INPUT_SEQUENCIAL_NEG = RESOURCE_DIR + os.sep + 'input_sequencial_neg.txt'
+HISTORICAL_INPUT_SEQUENCIAL = SEQ_PATTERNS_DIR + os.sep + 'input_sequencial.txt'
+HISTORICAL_INPUT_SEQUENCIAL_NEG = SEQ_PATTERNS_DIR + os.sep + 'input_sequencial_neg.txt'
+HISTORICAL_INPUT_SEQUENCIAL_NUMBERS = SEQ_PATTERNS_DIR + os.sep + 'input_sequencial_numbers.txt'
+HISTORICAL_INPUT_SEQUENCIAL_NUMBERSNEG = SEQ_PATTERNS_DIR + os.sep + 'input_sequencial_numbersneg.txt'
+HISTORICAL_OUTPUT_SEQUENCIAL_NUMBERS = SEQ_PATTERNS_DIR + os.sep + '"output_seq.txt'
+HISTORICAL_OUTPUT_SEQUENCIAL_NUMBERSNEG = SEQ_PATTERNS_DIR + os.sep + '"output_seq_neg.txt'
 
 DATABASE_CONFIG_FILE = BASE_DIR + os.sep + 'database.json'
 

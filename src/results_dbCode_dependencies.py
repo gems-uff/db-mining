@@ -72,6 +72,7 @@ def create_separate_file_level():
     for i, project in enumerate(projects_db):
         status = {
         'DB-Code(Java)': 0,
+        'DB-Code(Java - Test)': 0,
         'DB-Code(XML)': 0,
         'Dependencies': 0,
         'Error-first':0,
@@ -149,14 +150,16 @@ def save(all_results):
 def save_txt(list_files, project):
     print("Saving file " +project+".txt")
     os.chdir(HEURISTICS_DIR_SECOND_LEVEL)
-    new_list_files = remove_duplicate_files(list_files)
+    print(os.getcwd())
+    print(project)
+    #new_list_files = remove_duplicate_files(list_files)
     try:
         TextFile = open(project+'.txt', 'w+')
-        for k in new_list_files:
+        for k in list_files:
             TextFile.write(k +"\n")
         TextFile.close()    
     except FileNotFoundError:
-        print("The 'docs' directory does not exist")                       
+        print("The directory does not exist")                       
     
 def main():
     create_list_fanin_second_level()

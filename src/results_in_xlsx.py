@@ -165,6 +165,81 @@ def count_number_files_project(project):
     except subprocess.CalledProcessError as ex:
         return 0
 
+def create_characterization_and_database(type_characterization, nameFile):
+    db.connect()
+    index_projects = []
+    index_domains = []
+    all_results = []
+    projects_db = db.query(db.Project).options(load_only('id', 'owner', 'name'), selectinload(db.Project.versions).load_only('id')).all()
+    labels_db_implementation = db.query(db.Label).options(selectinload(db.Label.heuristic).options(selectinload(db.Heuristic.executions).defer('output').defer('user'))).filter(db.Label.type == type_characterization[0]).all()
+    labels_db_classes = db.query(db.Label).options(selectinload(db.Label.heuristic).options(selectinload(db.Heuristic.executions).defer('output').defer('user'))).filter(db.Label.type == type_characterization[1]).all()
+    print("Search results in execution for label and project.")
+    print("File to be generated: ", type_characterization)
+    for j, project in enumerate(projects_db):
+        status = {
+        'Test': 0,
+        'Code': 0,
+        'None' : 0,
+        'Not Java': 0
+    }
+        status['Project'] = project.name
+        for i,label in enumerate(labels_db_implementation):
+            if(len(index_projects)< len(projects_db)):
+                index_projects.append(project.name)
+                index_domains.append(project.domain)
+            # Search results in execution for label and project
+            execution = db.query(db.Execution) \
+                .join(db.Execution.version) \
+                .join(db.Execution.heuristic) \
+                .filter(db.Version.project_id == project.id) \
+                .filter(db.Heuristic.label_id == label.id).first()
+            if(execution is None) :
+                status['None'] += 1
+            else:
+                if(execution.output != ''):
+                    output = execution.output.split('\n\n')
+                    for k in output:                    
+                        file_path = REPOS_DIR + os.sep + project.owner + os.sep + project.name + os.sep + k.split('\n', 1)[0]
+                        file_path = file_path.replace('\x1b[m', '')
+                        if file_path.endswith('.java'):
+                            if "/src/test"in file_path:
+                                status['Test'] += 1   
+                            else:
+                                status['Code'] += 1   
+                        else:
+                            status['Not Java'] += 1          
+
+        for i,label in enumerate(labels_db_classes):
+            if(len(index_projects)< len(projects_db)):
+                index_projects.append(project.name)
+                index_domains.append(project.domain)
+            # Search results in execution for label and project
+            execution = db.query(db.Execution) \
+                .join(db.Execution.version) \
+                .join(db.Execution.heuristic) \
+                .filter(db.Version.project_id == project.id) \
+                .filter(db.Heuristic.label_id == label.id).first()
+            if(execution is None):
+                status['None'] += 1
+            else:
+                if(execution.output != ''):
+                    output = execution.output.split('\n\n')
+                    for k in output:                    
+                        file_path = REPOS_DIR + os.sep + project.owner + os.sep + project.name + os.sep + k.split('\n', 1)[0]
+                        file_path = file_path.replace('\x1b[m', '')
+                        if file_path.endswith('.java'):
+                            if "src/test"in file_path:
+                                status['Test'] += 1   
+                            else:
+                                status['Code'] += 1   
+                        else:
+                            status['Not Java'] += 1 
+                            
+        all_results.append(status.copy())
+        status.clear()
+    
+    save(all_results, nameFile)
+
 def main():
     create_characterization('database', False, 'database')
     create_characterization('implementation', False, 'implementation')
@@ -173,7 +248,8 @@ def main():
     create_count_sql()
     create_count_implementation(True)
     create_count_implementation(False)
-    
+    list_type = ['implementation', 'classes']
+    create_characterization_and_database(list_type, 'number_of_files')
 
 if __name__ == "__main__":
     main()
