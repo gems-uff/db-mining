@@ -1,6 +1,6 @@
-[^a-zA-Z|^\/"\_#|0-9]LogviewerLogPageHandler[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]LogviewerLogSearchHandler[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]LogCleaner[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]WorkerLogs[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]LogviewerLogSearchHandlerTest[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]LogCleanerTest[^a-zA-Z|^\/"\_#|0-9]
+([.,\s(]|^)LogviewerLogPageHandler([.,\s(]|$)
+([.,\s(]|^)LogviewerLogSearchHandler([.,\s(]|$)
+([.,\s(]|^)LogCleaner([.,\s(]|$)
+([.,\s(]|^)WorkerLogs([.,\s(]|$)
+([.,\s(]|^)LogviewerLogSearchHandlerTest([.,\s(]|$)
+([.,\s(]|^)LogCleanerTest([.,\s(]|$)

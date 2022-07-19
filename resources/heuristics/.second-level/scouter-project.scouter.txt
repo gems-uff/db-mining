@@ -1,5 +1,0 @@
-[^a-zA-Z|^\/"\_#|0-9]DigestTableView[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]SqlSummaryComposite[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]ObjectThreadDumpLockView[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]XlogSummarySQLDialog[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]XLogFlowView[^a-zA-Z|^\/"\_#|0-9]

@@ -1,0 +1,2 @@
+([.,\s(]|^)DigestDetailDialog([.,\s(]|$)
+([.,\s(]|^)SQLFormatDialog([.,\s(]|$)

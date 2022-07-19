@@ -1,0 +1,3 @@
+([.,\s(]|^)QualfierMessageTest([.,\s(]|$)
+([.,\s(]|^)Context([.,\s(]|$)
+([.,\s(]|^)ObjectFactory([.,\s(]|$)

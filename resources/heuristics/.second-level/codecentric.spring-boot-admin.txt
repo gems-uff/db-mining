@@ -1,4 +1,1 @@
-[^a-zA-Z|^\/"\_#|0-9]AdminServerUiAutoConfiguration[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]AdminServerNotifierAutoConfiguration[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]AdminServerWebConfiguration[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]NotificationFilterControllerTest[^a-zA-Z|^\/"\_#|0-9]
+([.,\s(]|^)AdminServerUiAutoConfiguration([.,\s(]|$)

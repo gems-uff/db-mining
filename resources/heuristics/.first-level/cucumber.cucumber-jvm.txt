@@ -1,0 +1,4 @@
+([.,\s(]|^)RunCucumberTest([.,\s(]|$)
+([.,\s(]|^)Message([.,\s(]|$)
+([.,\s(]|^)User([.,\s(]|$)
+([.,\s(]|^)TestNGFormatterTest([.,\s(]|$)

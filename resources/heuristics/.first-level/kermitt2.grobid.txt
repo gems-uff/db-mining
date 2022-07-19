@@ -1,0 +1,2 @@
+([.,\s(]|^)GrobidServicePropConfiguration([.,\s(]|$)
+([.,\s(]|^)GrobidServiceModuleTest([.,\s(]|$)

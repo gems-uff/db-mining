@@ -1,0 +1,6 @@
+([.,\s(]|^)Dump([.,\s(]|$)
+([.,\s(]|^)RequestTest([.,\s(]|$)
+([.,\s(]|^)EmbeddedQueryManagerTest([.,\s(]|$)
+([.,\s(]|^)RemoteQueryManagerTest([.,\s(]|$)
+([.,\s(]|^)InfinispanTestSupport([.,\s(]|$)
+([.,\s(]|^)RemoteInfinispanTestSupport([.,\s(]|$)

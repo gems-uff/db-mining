@@ -1,4 +1,0 @@
-[^a-zA-Z|^\/"\_#|0-9]SubsonicRESTController[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]RESTFilter[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]RESTRequestParameterProcessingFilter[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]TestCaseUtils[^a-zA-Z|^\/"\_#|0-9]

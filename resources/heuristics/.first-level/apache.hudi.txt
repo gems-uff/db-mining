@@ -1,0 +1,7 @@
+([.,\s(]|^)ClientFunctionalTestSuite([.,\s(]|$)
+([.,\s(]|^)SparkClientFunctionalTestSuite([.,\s(]|$)
+([.,\s(]|^)HoodieSparkFunctionalTestSuite([.,\s(]|$)
+([.,\s(]|^)HiveSyncFunctionalTestSuite([.,\s(]|$)
+([.,\s(]|^)UtilitiesFunctionalTestSuite([.,\s(]|$)
+([.,\s(]|^)HoodieDLAClient([.,\s(]|$)
+([.,\s(]|^)QueryBasedDDLExecutor([.,\s(]|$)

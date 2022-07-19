@@ -1,1 +1,0 @@
-[^a-zA-Z|^\/"\_#|0-9]UaaConfigurationTests[^a-zA-Z|^\/"\_#|0-9]

@@ -1,2 +1,0 @@
-[^a-zA-Z|^\/"\_#|0-9]RestTemplateEurekaHttpClientTest[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]WebClientEurekaHttpClientTest[^a-zA-Z|^\/"\_#|0-9]
