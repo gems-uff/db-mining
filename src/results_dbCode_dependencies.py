@@ -150,6 +150,8 @@ def save(all_results):
 def save_txt(list_files, project):
     print("Saving file " +project+".txt")
     os.chdir(HEURISTICS_DIR_SECOND_LEVEL)
+    print(os.getcwd())
+    print(project)
     #new_list_files = remove_duplicate_files(list_files)
     try:
         TextFile = open(project+'.txt', 'w+')
@@ -157,7 +159,7 @@ def save_txt(list_files, project):
             TextFile.write(k +"\n")
         TextFile.close()    
     except FileNotFoundError:
-        print("The 'docs' directory does not exist")                       
+        print("The directory does not exist")                       
     
 def main():
     create_list_fanin_second_level()
