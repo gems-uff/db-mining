@@ -1,2 +1,0 @@
-[^a-zA-Z|^\/"\_#|0-9]TargetCodeGeneratorLoader[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]CppGeneratorTest[^a-zA-Z|^\/"\_#|0-9]

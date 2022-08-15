@@ -1,0 +1,2 @@
+([.,\s(]|^)SpoonPluginManager([.,\s(]|$)
+([.,\s(]|^)CarteStatusCache([.,\s(]|$)

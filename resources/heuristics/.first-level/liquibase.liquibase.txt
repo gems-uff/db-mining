@@ -1,0 +1,2 @@
+([.,\s(]|^)XMLChangeLogSerializerTest([.,\s(]|$)
+([.,\s(]|^)Main([.,\s(]|$)

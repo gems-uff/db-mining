@@ -1,0 +1,1 @@
+([.,\s(]|^)OutputConsumerAdapterV30([.,\s(]|$)

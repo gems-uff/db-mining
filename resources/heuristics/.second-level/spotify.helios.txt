@@ -1,4 +1,0 @@
-[^a-zA-Z|^\/"\_#|0-9]AgentMain[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]MasterMain[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]ServiceMainFactory[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]SentryTest[^a-zA-Z|^\/"\_#|0-9]

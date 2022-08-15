@@ -1,4 +1,2 @@
-[^a-zA-Z|^\/"\_#|0-9]CLIMethod[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]TimeZoneProperty[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]RelativePathTest[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]Jenkins19124Test[^a-zA-Z|^\/"\_#|0-9]
+([.,\s(]|^)CLIMethod([.,\s(]|$)
+([.,\s(]|^)TimeZoneProperty([.,\s(]|$)

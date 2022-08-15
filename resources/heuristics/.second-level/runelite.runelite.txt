@@ -1,1 +1,1 @@
-[^a-zA-Z|^\/"\_#|0-9]LootTrackerControllerTest[^a-zA-Z|^\/"\_#|0-9]
+([.,\s(]|^)LootTrackerControllerTest([.,\s(]|$)

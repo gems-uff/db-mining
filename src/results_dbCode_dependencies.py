@@ -86,14 +86,15 @@ def create_separate_file_level():
                 first_level = file.read().splitlines()
         except FileNotFoundError:
             status['Error-first'] += 1
-            print("The 'docs' directory does not exist")
+            print("The 'HEURISTICS_DIR_FIRST_LEVEL' directory does not exist")
+
         file_path = HEURISTICS_DIR_SECOND_LEVEL + os.sep + project.owner + "." + project.name + ".txt"
         try:
             with open(file_path) as file:
                 second_level = file.read().splitlines()
         except FileNotFoundError:
             status['Error-second'] += 1
-            print("The 'docs' directory does not exist")
+            print("The 'HEURISTICS_DIR_SECOND_LEVEL' directory does not exist")
         for i in second_level:
             if i in first_level:
                 status['DB-Code(Java)'] += 1
@@ -150,6 +151,8 @@ def save(all_results):
 def save_txt(list_files, project):
     print("Saving file " +project+".txt")
     os.chdir(HEURISTICS_DIR_SECOND_LEVEL)
+    print(os.getcwd())
+    print(project)
     #new_list_files = remove_duplicate_files(list_files)
     try:
         TextFile = open(project+'.txt', 'w+')
@@ -157,7 +160,7 @@ def save_txt(list_files, project):
             TextFile.write(k +"\n")
         TextFile.close()    
     except FileNotFoundError:
-        print("The 'docs' directory does not exist")                       
+        print("The directory does not exist")                       
     
 def main():
     create_list_fanin_second_level()
