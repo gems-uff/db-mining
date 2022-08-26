@@ -1,0 +1,8 @@
+([.,\s(]|^)DataSourceDecoratorAutoConfigurationTests([.,\s(]|$)
+([.,\s(]|^)P6SpyConfigurationTests([.,\s(]|$)
+([.,\s(]|^)ProxyDataSourceConfigurationTests([.,\s(]|$)
+([.,\s(]|^)SleuthP6SpyListenerAutoConfigurationTests([.,\s(]|$)
+([.,\s(]|^)SleuthProxyDataSourceListenerAutoConfigurationTests([.,\s(]|$)
+([.,\s(]|^)TracingJdbcEventListenerTests([.,\s(]|$)
+([.,\s(]|^)TracingListenerStrategyTests([.,\s(]|$)
+([.,\s(]|^)TracingQueryExecutionListenerTests([.,\s(]|$)

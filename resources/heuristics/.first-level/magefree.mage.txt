@@ -1,0 +1,4 @@
+([.,\s(]|^)EntityManager([.,\s(]|$)
+([.,\s(]|^)EntityManagerTest([.,\s(]|$)
+([.,\s(]|^)Statistics([.,\s(]|$)
+([.,\s(]|^)FeedbackServiceImpl([.,\s(]|$)

@@ -1,4 +1,3 @@
-[^a-zA-Z|^\/"\_#|0-9]BinaryMerge[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]Merge[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]RadixOrder[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]SortCombine[^a-zA-Z|^\/"\_#|0-9]
+([.,\s(]|^)BinaryMerge([.,\s(]|$)
+([.,\s(]|^)Merge([.,\s(]|$)
+([.,\s(]|^)SortCombine([.,\s(]|$)

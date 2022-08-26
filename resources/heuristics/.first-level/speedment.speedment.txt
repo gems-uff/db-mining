@@ -1,0 +1,3 @@
+([.,\s(]|^)EntityManager([.,\s(]|$)
+([.,\s(]|^)EntityManagerImpl([.,\s(]|$)
+([.,\s(]|^)DelegateEntityManager([.,\s(]|$)

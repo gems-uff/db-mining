@@ -1,5 +1,2 @@
-[^a-zA-Z|^\/"\_#|0-9]PinnedReposFragment[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]PinnedReposPresenter[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]RepoPagerActivity[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]RepoPagerPresenter[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]RepoFilesActivity[^a-zA-Z|^\/"\_#|0-9]
+([.,\s(]|^)PinnedReposPresenter([.,\s(]|$)
+([.,\s(]|^)RepoPagerActivity([.,\s(]|$)

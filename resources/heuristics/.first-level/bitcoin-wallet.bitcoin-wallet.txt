@@ -1,0 +1,4 @@
+([.,\s(]|^)AddressBookDao([.,\s(]|$)
+([.,\s(]|^)ExchangeRateDao([.,\s(]|$)
+([.,\s(]|^)AddressBookEntry([.,\s(]|$)
+([.,\s(]|^)ExchangeRateEntry([.,\s(]|$)

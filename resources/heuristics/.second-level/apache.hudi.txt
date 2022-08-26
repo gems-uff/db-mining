@@ -1,6 +1,1 @@
-[^a-zA-Z|^\/"\_#|0-9]DLASyncTool[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]DDLExecutor[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]HiveQueryDDLExecutor[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]JDBCExecutor[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]HiveTestUtil[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]UtilitiesTestBase[^a-zA-Z|^\/"\_#|0-9]
+([.,\s(]|^)JDBCExecutor([.,\s(]|$)

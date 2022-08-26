@@ -1,2 +1,0 @@
-[^a-zA-Z|^\/"\_#|0-9]JibExampleConfiguration[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]HelloWorldResource[^a-zA-Z|^\/"\_#|0-9]

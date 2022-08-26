@@ -1,5 +1,1 @@
-[^a-zA-Z|^\/"\_#|0-9]LiquibaseCommandLine[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]AbstractCliWrapperCommandStep[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]CommandLineUtils[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]AbstractAntTaskTest[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]MainTest[^a-zA-Z|^\/"\_#|0-9]
+([.,\s(]|^)MainTest([.,\s(]|$)

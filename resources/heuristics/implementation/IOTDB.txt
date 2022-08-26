@@ -1,0 +1,4 @@
+<\s*artifactId\s*>\s*iotdb-jdbc
+import\s{1,}org\.apache\.iotdb\.jdbc
+org\.apache\.iotdb\.jdbc\.IoTDBDriver
+jdbc:iotdb

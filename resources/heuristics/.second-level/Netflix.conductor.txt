@@ -1,3 +1,0 @@
-[^a-zA-Z|^\/"\_#|0-9]EventResourceTest[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]MetadataResourceTest[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]WorkflowResourceTest[^a-zA-Z|^\/"\_#|0-9]

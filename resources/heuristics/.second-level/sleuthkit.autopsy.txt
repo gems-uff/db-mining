@@ -1,5 +1,0 @@
-[^a-zA-Z|^\/"\_#|0-9]Comments[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]Diff[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]HTMLReportGenerator[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]JDiff[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]Options[^a-zA-Z|^\/"\_#|0-9]

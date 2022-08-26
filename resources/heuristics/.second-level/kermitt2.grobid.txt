@@ -1,2 +1,0 @@
-[^a-zA-Z|^\/"\_#|0-9]GrobidServiceConfiguration[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]GrobidRestServiceTest[^a-zA-Z|^\/"\_#|0-9]

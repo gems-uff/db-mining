@@ -1,0 +1,8 @@
+([.,\s(]|^)ESPivot([.,\s(]|$)
+([.,\s(]|^)ESCountHandler([.,\s(]|$)
+([.,\s(]|^)MapLiteralExpression([.,\s(]|$)
+([.,\s(]|^)PipelineInterpreter([.,\s(]|$)
+([.,\s(]|^)StageIteratorTest([.,\s(]|$)
+([.,\s(]|^)GRN([.,\s(]|$)
+([.,\s(]|^)ActionResource([.,\s(]|$)
+([.,\s(]|^)SidecarResource([.,\s(]|$)
