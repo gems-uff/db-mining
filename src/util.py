@@ -27,7 +27,7 @@ REACT_STATIC_DIR = REACT_BUILD_DIR + os.sep + 'static'
 PROJECTS_FILE = RESOURCE_DIR + os.sep + 'projects.xlsx'
 FILTERED_FILE = RESOURCE_DIR + os.sep + 'filtered_projects.xlsx'
 ANNOTATED_FILE = RESOURCE_DIR + os.sep + 'annotated.xlsx'
-ANNOTATED_FILE_JAVA = RESOURCE_DIR + os.sep + 'annotated_java_test.xlsx' #'annotated_java.xlsx' 
+ANNOTATED_FILE_JAVA = RESOURCE_DIR + os.sep + 'annotated_java.xlsx' #'annotated_java_test.xlsx'
 ANNOTATED_FILE_JAVA_TEST = RESOURCE_DIR + os.sep + 'annotated_java_test.xlsx'
 ANNOTATED_FILE_JAVA_SAMPLE = RESOURCE_DIR + os.sep + 'annotated_java_sample.xlsx'
 DBLP_FILE = RESOURCE_DIR + os.sep + 'dblp.xml'
@@ -54,6 +54,8 @@ HISTORICAL_INPUT_SEQUENCIAL_NUMBERS = SEQ_PATTERNS_DIR + os.sep + 'input_sequenc
 HISTORICAL_INPUT_SEQUENCIAL_NUMBERSNEG = SEQ_PATTERNS_DIR + os.sep + 'input_sequencial_numbersneg.txt'
 HISTORICAL_OUTPUT_SEQUENCIAL_NUMBERS = SEQ_PATTERNS_DIR + os.sep + '"output_seq.txt'
 HISTORICAL_OUTPUT_SEQUENCIAL_NUMBERSNEG = SEQ_PATTERNS_DIR + os.sep + '"output_seq_neg.txt'
+HISTORICAL_INPUT_SEQUENCIAL_IN_OUT = SEQ_PATTERNS_DIR + os.sep + 'input_sequencial_in_out.txt'
+HISTORICAL_OUTPUT_SEQUENCIAL_IN_OUT = SEQ_PATTERNS_DIR + os.sep + 'output_seq_in_out.txt'
 
 DATABASE_CONFIG_FILE = BASE_DIR + os.sep + 'database.json'
 
