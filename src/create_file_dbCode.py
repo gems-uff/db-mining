@@ -184,7 +184,7 @@ def search_labels(labelType):
 def create_heuristic_class(file_path):
     file_name = file_path.split('/')[-1]
     #heuristic_file = "[^a-zA-Z|^\/\"\_#|0-9]" + file_name.split('.')[0] + "[^a-zA-Z|^\/\"\_#|0-9]" #[^a-zA-Z|^\/"\_#|0-9]
-    heuristic_file = "([.,\s(]|^)" + file_name.split('.')[0] + "([.,)(\s]|$)" #[^a-zA-Z|^\/"\_#|0-9]
+    heuristic_file = "(\s{1,}|[.,(]|^)" + file_name.split('.')[0] + "(\s{1,}|[.,(]|^)" #[^a-zA-Z|^\/"\_#|0-9]
     return heuristic_file
 
 def remove_duplicate_files(list_files):
