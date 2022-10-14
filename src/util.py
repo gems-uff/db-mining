@@ -54,6 +54,7 @@ HISTORICAL_INPUT_SEQUENCIAL_NUMBERS = SEQ_PATTERNS_DIR + os.sep + 'input_sequenc
 HISTORICAL_INPUT_SEQUENCIAL_NUMBERSNEG = SEQ_PATTERNS_DIR + os.sep + 'input_sequencial_numbersneg.txt'
 HISTORICAL_OUTPUT_SEQUENCIAL_NUMBERS = SEQ_PATTERNS_DIR + os.sep + '"output_seq.txt'
 HISTORICAL_OUTPUT_SEQUENCIAL_NUMBERSNEG = SEQ_PATTERNS_DIR + os.sep + '"output_seq_neg.txt'
+VULNERABILITY_FILE = RESOURCE_DIR + os.sep + 'Vulnerability_Version_20061101_Date_20220913.xlsx'
 
 DATABASE_CONFIG_FILE = BASE_DIR + os.sep + 'database.json'
 

@@ -112,6 +112,20 @@ class Execution(db.Model):
     version = db.relationship('Version', back_populates='executions')
 
 
+class Vulnerability(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
+    status = db.Column(db.String)
+    description = db.Column(db.String)
+    reference = db.Column(db.String)
+    phase = db.Column(db.String)
+    votes = db.Column(db.String)
+    commets = db.Column(db.String)
+    label_id = db.Column(db.Integer, db.ForeignKey('label.id'))
+    label = db.relationship('Label')
+    
+
+
 ###########################################
 # DATABASE CONNECT, COMMIT, CLOSE
 ###########################################
