@@ -71,9 +71,12 @@ def create_separate_file_level():
 
     for i, project in enumerate(projects_db):
         status = {
+        'DB-Code(Java) Number': 0,
         'DB-Code(Java)': 0,
         'DB-Code(Java - Test)': 0,
+        'DB-Code(XML) Number': 0,
         'DB-Code(XML)': 0,
+        'Dependencies Number': 0,
         'Dependencies': 0,
         'Error-first':0,
         'Error-second':0,
@@ -104,13 +107,19 @@ def create_separate_file_level():
 
         save_txt(second_level_pure, project.owner+"."+project.name)
 
+        total_project = int(count_number_files_project(project))
         results["Projects"] = project.name
-        results["DB-Code(Java)"] = status['DB-Code(Java)']
-        results["DB-Code(XML)"] = count_file_xml(project)
-        results["Dependencies"] = status['Dependencies']
-        results["Total-DB"] = status['DB-Code(Java)'] + results["DB-Code(XML)"] + status['Dependencies']
-        results["Total-Project"] = int(count_number_files_project(project))
-        results["Rate"] = (results["Total-DB"] / int(results["Total-Project"]))*100
+        results["DB-Code(Java) Number"] = status['DB-Code(Java)']
+        results["DB-Code(Java)"] = (int(status['DB-Code(Java)'])/total_project)*100
+        results["DB-Code(XML) Number"] = count_file_xml(project)
+        results["DB-Code(XML)"] = (count_file_xml(project)/total_project)*100
+        results["Dependencies Number"] = status['Dependencies']
+        results["Dependencies"] = (int(status['Dependencies'])/total_project)*100
+        results["Total-DB Files Number"] = results['DB-Code(Java) Number'] + results["DB-Code(XML) Number"] + results['Dependencies Number']
+        results["Total-Project Files"] = total_project
+        results["Total-DB Files"] = (results["Total-DB Files Number"] / int(results["Total-Project Files"]))*100
+        results['Error-second'] = status['Error-second']
+        results['Error-first'] = status['Error-first']
         all_results.append(results.copy())
 
         status.clear()
@@ -164,7 +173,7 @@ def save_txt(list_files, project):
     
 def main():
     create_list_fanin_second_level()
-    create_separate_file_level()
+    #create_separate_file_level()
 
 if __name__ == "__main__":
     main()

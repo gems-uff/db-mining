@@ -1,6 +1,5 @@
-
 from sqlalchemy.orm import load_only, selectinload
-from util import RESOURCE_DIR, COUNT_FILE_IMP, REPOS_DIR, COUNT_FILE_SQL, COUNT_FILE_IMP_RATE
+from util import RESOURCE_DIR, COUNT_FILE_IMP, REPOS_DIR, COUNT_FILE_SQL, COUNT_FILE_IMP_RATE, USAGE_FAN_IN_FILE
 
 import pandas as pd
 import os
@@ -54,7 +53,7 @@ def create_characterization(type_characterization, names, nameFile):
         results_Label.clear()
     save(all_results, nameFile)
 
-#conta quantos arquivos foram retornados para o uso de frameworks ORM 
+#conta quantos arquivos foram retornados para o uso de ORM 
 def create_count_implementation(rate):
     db.connect()
     all_results = dict()
@@ -78,7 +77,7 @@ def create_count_implementation(rate):
                 .filter(db.Heuristic.label_id == label.id) \
                 .filter(db.Execution.output != '').first()
             if(execution is None):
-                results_Label.append(0)
+                results_Label.append("")
             else:
                 output = execution.output.split('\n\n')
                 sum = 0
@@ -126,7 +125,7 @@ def create_count_sql():
                 .filter(db.Heuristic.label_id == label.id) \
                 .filter(db.Execution.output != '').first()
             if(execution is None):
-                results_Label.append(0)
+                results_Label.append("")
             else:
                 output = execution.output.split('\n\n')
                 sum = 0
@@ -180,7 +179,8 @@ def create_characterization_and_database(type_characterization, nameFile):
         'Test': 0,
         'Code': 0,
         'None' : 0,
-        'Not Java': 0
+        'Not Java': 0, 
+        'Total Project': 0
     }
         status['Project'] = project.name
         for i,label in enumerate(labels_db_implementation):
@@ -234,11 +234,133 @@ def create_characterization_and_database(type_characterization, nameFile):
                                 status['Code'] += 1   
                         else:
                             status['Not Java'] += 1 
-                            
+        status['Total Project'] = count_number_files_project(project)                    
         all_results.append(status.copy())
         status.clear()
     
     save(all_results, nameFile)
+
+#conta os resultados dos aquivos de primeiro e segundo nível, separando por categoria
+def create_count_dbCode_Dependencies():
+    db.connect()
+    list_status_dbCode = []
+    index_projects = []
+    results_Label = []
+    status_dbCode = dict()
+    projects_db = db.query(db.Project).options(load_only('id', 'owner', 'name'), selectinload(db.Project.versions).load_only('id')).all()
+    labels_db = db.query(db.Label).options(selectinload(db.Label.heuristic).options(selectinload(db.Heuristic.executions).defer('output').defer('user'))).filter(db.Label.type == 'implementation').all()
+    print("Search results in execution for label and project.")
+    for i, project in enumerate(projects_db):
+        status_dbCode = {
+        'Project': project.name,
+        'DB-Code Test': 0,
+        'DB-Code Java': 0,
+        'DB-Code XML': 0,
+        'DB-Code Not Java/XML' : 0,
+        'None': 0, 
+        'Dependencies Test': 0,
+        'Dependencies Code': 0,
+        'Dependencies XML': 0,
+        'Dependencies Not Java/XML': 0,
+        'Total Project' : 0
+    }
+        for j, label in enumerate(labels_db):
+            if(len(index_projects)< len(projects_db)):
+                index_projects.append(project.name)
+            # Search results in execution for label and project
+            execution = db.query(db.Execution) \
+                .join(db.Execution.version) \
+                .join(db.Execution.heuristic) \
+                .filter(db.Version.project_id == project.id) \
+                .filter(db.Heuristic.label_id == label.id) \
+                .filter(db.Execution.output != '').first()
+            if(execution is None):
+                status_dbCode['None'] += 1 
+            else:
+                output = execution.output.split('\n\n')
+                for k in output:
+                    file_path = REPOS_DIR + os.sep + project.owner + os.sep + project.name + os.sep + k.split('\n', 1)[0]
+                    file_path = file_path.replace('\x1b[m', '')
+                    if file_path.endswith('.java'):
+                        if "src/test" in file_path:
+                            status_dbCode['DB-Code Test'] += 1   
+                        else:
+                            status_dbCode['DB-Code Java'] += 1   
+                    else:
+                        if file_path.endswith('.xml'):
+                            status_dbCode['DB-Code XML'] += 1 
+                        else:
+                            status_dbCode['DB-Code Not Java/XML'] += 1 
+                status_dbCode['Total DB'] = len(output)
+
+        label_classes_db = db.query(db.Label).options(selectinload(db.Label.heuristic).
+                                                           options(selectinload(db.Heuristic.executions)
+                                                                   .defer('output').defer('user'))).filter(db.Label.name == project.owner+"."+project.name).first()
+        execution = db.query(db.Execution) \
+                .join(db.Execution.version) \
+                .join(db.Execution.heuristic) \
+                .filter(db.Version.project_id == project.id) \
+                .filter(db.Heuristic.label_id == label_classes_db.id) \
+                .filter(db.Execution.output != '').first()
+        if(execution is None):
+            results_Label.append("")
+        else:
+            output = execution.output.split('\n\n')
+            for k in output:
+                file_path = REPOS_DIR + os.sep + project.owner + os.sep + project.name + os.sep + k.split('\n', 1)[0]
+                file_path = file_path.replace('\x1b[m', '')
+                if file_path.endswith('.java'):
+                    if "src/test" in file_path:
+                        status_dbCode['Dependencies Test'] += 1   
+                    else:
+                        status_dbCode['Dependencies Code'] += 1   
+                else:
+                    if file_path.endswith('.xml'):
+                        status_dbCode['Dependencies XML'] += 1 
+                    else:
+                        status_dbCode['Dependencies Not Java/XML'] += 1 
+            else:
+                    results_Label.append(status_dbCode)
+            status_dbCode['Total DB'] += len(output)
+        status_dbCode['Total Project']= int(count_number_files_project(project))
+        list_status_dbCode.append(calculate_rate(project, status_dbCode))
+       
+    save_local_pd(list_status_dbCode, USAGE_FAN_IN_FILE)
+
+def save_local_pd( dicResults, LocalToSave):
+    print("\n")
+    print(f'Saving all results to {LocalToSave}...', end=' ')
+    df = pd.DataFrame(dicResults)
+    df.to_excel(LocalToSave, index=False)
+    print('Done!')
+
+def calculate_rate(project, status_dbCode):
+    status_dbCode_rate = {
+        'Project': project.name,
+        'N DB-Code Test': int(status_dbCode['DB-Code Test']) if int(status_dbCode['DB-Code Test'])>0 else "",
+        'N DB-Code Java': int(status_dbCode['DB-Code Java']) if int(status_dbCode['DB-Code Java'])>0 else "",
+        'N DB-Code XML': int(status_dbCode['DB-Code XML']) if int(status_dbCode['DB-Code XML'])>0 else "",
+        'N DB-Code Not Java/XML' : int(status_dbCode['DB-Code Not Java/XML']) if int(status_dbCode['DB-Code Not Java/XML']) >0 else "",
+        'N Dependencies Test': int(status_dbCode['Dependencies Test']) if int(status_dbCode['Dependencies Test'])>0 else "",
+        'N Dependencies Code': int(status_dbCode['Dependencies Code']) if int(status_dbCode['Dependencies Code'])>0 else "",
+        'N Dependencies XML': int(status_dbCode['Dependencies XML']) if int(status_dbCode['Dependencies XML'])>0 else "",
+        'N Dependencies Not Java/XML': int(status_dbCode['Dependencies XML']) if int(status_dbCode['Dependencies XML'])>0 else "",
+        'N Total Project': int(status_dbCode['Total Project'])  if int(status_dbCode['Total Project'])>0 else "",
+        'N Total DB': int(status_dbCode['Total DB'])  if int(status_dbCode['Total DB'])>0 else "",
+        'DB-Code Test': int(status_dbCode['DB-Code Test'])/int(status_dbCode['Total Project'])*100  if int(status_dbCode['DB-Code Test'])/int(status_dbCode['Total Project'])*100>0 else "",
+        'DB-Code Java': int(status_dbCode['DB-Code Java'])/int(status_dbCode['Total Project'])*100  if int(status_dbCode['DB-Code Java'])/int(status_dbCode['Total Project'])*100 >0 else "",
+        'DB-Code XML': int(status_dbCode['DB-Code XML'])/int(status_dbCode['Total Project'])*100  if int(status_dbCode['DB-Code XML'])/int(status_dbCode['Total Project'])*100>0 else "",
+        'Dependencies Test': int(status_dbCode['Dependencies Test'])/int(status_dbCode['Total Project'])*100  if int(status_dbCode['Dependencies Test'])/int(status_dbCode['Total Project'])*100>0 else "",
+        'Dependencies Code': int(status_dbCode['Dependencies Code'])/int(status_dbCode['Total Project'])*100  if int(status_dbCode['Dependencies Code'])/int(status_dbCode['Total Project'])*100 >0 else "",
+        'Dependencies XML': int(status_dbCode['Dependencies XML'])/int(status_dbCode['Total Project'])*100  if int(status_dbCode['Dependencies XML'])/int(status_dbCode['Total Project'])*100>0 else "", 
+        'Total DB': int(status_dbCode['Total DB'])/int(status_dbCode['Total Project'])*100  if int(status_dbCode['Total DB'])/int(status_dbCode['Total Project'])*100>0 else ""
+    }
+    return status_dbCode_rate
+
+    
+    
+
+
 
 def main():
     create_characterization('database', False, 'database')
@@ -250,6 +372,7 @@ def main():
     create_count_implementation(False)
     list_type = ['implementation', 'classes']
     create_characterization_and_database(list_type, 'number_of_files')
-
+    create_count_dbCode_Dependencies()
+    
 if __name__ == "__main__":
     main()

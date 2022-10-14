@@ -13,3 +13,4 @@ import\s{1,}com\.healthmarketscience\.sqlbuilder\.BinaryCondition
 import\s{1,}org\.springframework\.data\.jpa\.repository\.JpaRepository	
 <\s*artifactId\s*>\s*jooq
 import\s{1,}org\.springframework\.jdbc\.core\.JdbcTemplate
+import\s{1,}javax\.persistence
