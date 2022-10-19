@@ -263,7 +263,7 @@ def create_count_dbCode_Dependencies():
         'Dependencies XML': 0,
         'Dependencies Not Java/XML': 0,
         'Total Project' : 0
-    }
+    }   #busca as labels de banco labels de Bd - primeiro nível
         for j, label in enumerate(labels_db):
             if(len(index_projects)< len(projects_db)):
                 index_projects.append(project.name)
@@ -293,35 +293,45 @@ def create_count_dbCode_Dependencies():
                             status_dbCode['DB-Code Not Java/XML'] += 1 
                 status_dbCode['Total DB'] = len(output)
 
+        #busca as labels de banco labels de dependencia - segundo nível
         label_classes_db = db.query(db.Label).options(selectinload(db.Label.heuristic).
                                                            options(selectinload(db.Heuristic.executions)
                                                                    .defer('output').defer('user'))).filter(db.Label.name == project.owner+"."+project.name).first()
-        execution = db.query(db.Execution) \
+        if (label_classes_db is None): 
+            print(project.owner+"."+project.name)
+            status_dbCode['Dependencies Test'] = 0
+            status_dbCode['Dependencies Code'] = 0
+            status_dbCode['Dependencies XML'] = 0 
+            status_dbCode['Dependencies Not Java/XML'] = 0 
+        else:
+            execution = db.query(db.Execution) \
                 .join(db.Execution.version) \
                 .join(db.Execution.heuristic) \
                 .filter(db.Version.project_id == project.id) \
                 .filter(db.Heuristic.label_id == label_classes_db.id) \
                 .filter(db.Execution.output != '').first()
-        if(execution is None):
-            results_Label.append("")
-        else:
-            output = execution.output.split('\n\n')
-            for k in output:
-                file_path = REPOS_DIR + os.sep + project.owner + os.sep + project.name + os.sep + k.split('\n', 1)[0]
-                file_path = file_path.replace('\x1b[m', '')
-                if file_path.endswith('.java'):
-                    if "src/test" in file_path:
-                        status_dbCode['Dependencies Test'] += 1   
-                    else:
-                        status_dbCode['Dependencies Code'] += 1   
-                else:
-                    if file_path.endswith('.xml'):
-                        status_dbCode['Dependencies XML'] += 1 
-                    else:
-                        status_dbCode['Dependencies Not Java/XML'] += 1 
+
+            if(execution is None):
+                results_Label.append("")
             else:
+                output = execution.output.split('\n\n')
+                for k in output:
+                    file_path = REPOS_DIR + os.sep + project.owner + os.sep + project.name + os.sep + k.split('\n', 1)[0]
+                    file_path = file_path.replace('\x1b[m', '')
+                    if file_path.endswith('.java'):
+                        if "src/test" in file_path:
+                            status_dbCode['Dependencies Test'] += 1   
+                        else:
+                            status_dbCode['Dependencies Code'] += 1   
+                    else:
+                        if file_path.endswith('.xml'):
+                            status_dbCode['Dependencies XML'] += 1 
+                        else:
+                            status_dbCode['Dependencies Not Java/XML'] += 1 
+                else:
                     results_Label.append(status_dbCode)
             status_dbCode['Total DB'] += len(output)
+        
         status_dbCode['Total Project']= int(count_number_files_project(project))
         list_status_dbCode.append(calculate_rate(project, status_dbCode))
        
