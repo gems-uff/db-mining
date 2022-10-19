@@ -262,7 +262,8 @@ def create_count_dbCode_Dependencies():
         'Dependencies Code': 0,
         'Dependencies XML': 0,
         'Dependencies Not Java/XML': 0,
-        'Total Project' : 0
+        'Total Project' : 0,
+        'Total DB' : 0
     }   #busca as labels de banco labels de Bd - primeiro nível
         for j, label in enumerate(labels_db):
             if(len(index_projects)< len(projects_db)):
@@ -303,8 +304,8 @@ def create_count_dbCode_Dependencies():
             status_dbCode['Dependencies Code'] = 0
             status_dbCode['Dependencies XML'] = 0 
             status_dbCode['Dependencies Not Java/XML'] = 0
-            status_dbCode['Total DB']= 0 
-            status_dbCode['Total Project']= 0 
+            status_dbCode['Total DB'] = 0 
+            status_dbCode['Total Project'] = 0 
         else:
             execution = db.query(db.Execution) \
                 .join(db.Execution.version) \
