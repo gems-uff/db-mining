@@ -302,7 +302,8 @@ def create_count_dbCode_Dependencies():
             status_dbCode['Dependencies Test'] = 0
             status_dbCode['Dependencies Code'] = 0
             status_dbCode['Dependencies XML'] = 0 
-            status_dbCode['Dependencies Not Java/XML'] = 0 
+            status_dbCode['Dependencies Not Java/XML'] = 0
+            status_dbCode['Total Project']= 0 
         else:
             execution = db.query(db.Execution) \
                 .join(db.Execution.version) \
