@@ -1,1 +1,1 @@
-([.,\s(]|^)XmlMultiConfigurationTest([.,\s(]|$)
+(\s{1,}|[.,(]|^)XmlMultiConfigurationTest(\s{1,}|[.,(]|^)

@@ -1,2 +1,2 @@
-([.,\s(]|^)CompareWriter([.,\s(]|$)
-([.,\s(]|^)DbWriteTest([.,\s(]|$)
+(\s{1,}|[.,(]|^)CompareWriter(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)DbWriteTest(\s{1,}|[.,(]|^)

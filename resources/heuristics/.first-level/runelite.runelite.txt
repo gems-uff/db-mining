@@ -1,2 +1,2 @@
-([.,\s(]|^)GrandExchangeController([.,\s(]|$)
-([.,\s(]|^)LootTrackerController([.,\s(]|$)
+(\s{1,}|[.,(]|^)GrandExchangeController(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)LootTrackerController(\s{1,}|[.,(]|^)

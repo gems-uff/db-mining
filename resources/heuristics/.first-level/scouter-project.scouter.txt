@@ -1,2 +1,2 @@
-([.,\s(]|^)DigestDetailDialog([.,\s(]|$)
-([.,\s(]|^)SQLFormatDialog([.,\s(]|$)
+(\s{1,}|[.,(]|^)DigestDetailDialog(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)SQLFormatDialog(\s{1,}|[.,(]|^)

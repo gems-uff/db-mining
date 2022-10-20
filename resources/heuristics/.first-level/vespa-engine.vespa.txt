@@ -1,4 +1,4 @@
-([.,\s(]|^)VespaXmlUpdateReaderTestCase([.,\s(]|$)
-([.,\s(]|^)XmlFeedReaderTest([.,\s(]|$)
-([.,\s(]|^)SimpleFeederTest([.,\s(]|$)
-([.,\s(]|^)StorageClusterTest([.,\s(]|$)
+(\s{1,}|[.,(]|^)VespaXmlUpdateReaderTestCase(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)XmlFeedReaderTest(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)SimpleFeederTest(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)StorageClusterTest(\s{1,}|[.,(]|^)

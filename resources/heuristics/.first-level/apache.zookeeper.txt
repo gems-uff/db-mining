@@ -1,1 +1,1 @@
-([.,\s(]|^)NettyNettySuiteTest([.,\s(]|$)
+(\s{1,}|[.,(]|^)NettyNettySuiteTest(\s{1,}|[.,(]|^)
