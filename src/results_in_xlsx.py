@@ -1,5 +1,5 @@
 from sqlalchemy.orm import load_only, selectinload
-from util import RESOURCE_DIR, COUNT_FILE_IMP, REPOS_DIR, COUNT_FILE_SQL, COUNT_FILE_IMP_RATE, USAGE_FAN_IN_FILE
+from util import RESOURCE_DIR, COUNT_FILE_IMP, REPOS_DIR, COUNT_FILE_SQL, COUNT_FILE_IMP_RATE, USAGE_FAN_IN_FILE, VULNERABILITY_LABELS
 
 import pandas as pd
 import os
@@ -349,7 +349,7 @@ def save_local_pd( dicResults, LocalToSave):
 
 def calculate_rate(project, status_dbCode):
     status_dbCode_rate = {
-        'Project': project.name,
+        'Projects': project.name,
         'N DB-Code Test': int(status_dbCode['DB-Code Test']) if int(status_dbCode['DB-Code Test'])>0 else "",
         'N DB-Code Java': int(status_dbCode['DB-Code Java']) if int(status_dbCode['DB-Code Java'])>0 else "",
         'N DB-Code XML': int(status_dbCode['DB-Code XML']) if int(status_dbCode['DB-Code XML'])>0 else "",
@@ -370,22 +370,39 @@ def calculate_rate(project, status_dbCode):
     }
     return status_dbCode_rate
 
-    
+def create_vulnerability_csv():
+    results_Label = []
+    db.connect()
+    vulnerabilities_db = db.query(db.Vulnerability) \
+                .join(db.Label) \
+                .filter(db.Vulnerability.label_id == db.Label.id)
+    for j, vulnerability in enumerate(vulnerabilities_db):
+        status_dbCode = {
+            'Name': vulnerability.name,
+            'Description': vulnerability.description,
+            'Year': vulnerability.year,
+            'Label': vulnerability.label.name
+        }
+
+        results_Label.append(status_dbCode)
+        
+    save_local(results_Label, VULNERABILITY_LABELS)
     
 
 
 
 def main():
-    create_characterization('database', False, 'database')
-    create_characterization('implementation', False, 'implementation')
-    create_characterization('implementation', True, 'implementation_names')
-    create_characterization('query', False, 'query')
-    create_count_sql()
-    create_count_implementation(True)
-    create_count_implementation(False)
-    list_type = ['implementation', 'classes']
-    create_characterization_and_database(list_type, 'number_of_files')
-    create_count_dbCode_Dependencies()
+    # create_characterization('database', False, 'database')
+    # create_characterization('implementation', False, 'implementation')
+    # create_characterization('implementation', True, 'implementation_names')
+    # create_characterization('query', False, 'query')
+    # create_count_sql()
+    # create_count_implementation(True)
+    # create_count_implementation(False)
+    # list_type = ['implementation', 'classes']
+    # create_characterization_and_database(list_type, 'number_of_files')
+    # create_count_dbCode_Dependencies()
+    create_vulnerability_csv()
     
 if __name__ == "__main__":
     main()

@@ -68,6 +68,7 @@ class Version(db.Model):
     isLast = db.Column(db.Boolean)
     project_id = db.Column(db.Integer, db.ForeignKey('project.id'))
     part_commit = db.Column(db.Integer) #acrescentei
+    date_commit = db.Column(db.String) #acrescentei
     project = db.relationship('Project', back_populates='versions')
     executions = db.relationship('Execution', back_populates='version', cascade="all, delete-orphan")
 
@@ -121,6 +122,8 @@ class Vulnerability(db.Model):
     phase = db.Column(db.String)
     votes = db.Column(db.String)
     commets = db.Column(db.String)
+    year = db.Column(db.String)
+    version = db.Column(db.String)
     label_id = db.Column(db.Integer, db.ForeignKey('label.id'))
     label = db.relationship('Label')
     
