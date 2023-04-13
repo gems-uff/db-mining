@@ -1,1 +1,1 @@
-([.,\s(]|^)FieldCanBeFinalTest([.,\s(]|$)
+(\s{1,}|[.,(]|^)FieldCanBeFinalTest(\s{1,}|[.,(]|^)

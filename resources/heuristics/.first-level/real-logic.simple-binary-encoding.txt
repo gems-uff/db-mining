@@ -1,1 +1,1 @@
-([.,\s(]|^)CppGenerator([.,\s(]|$)
+(\s{1,}|[.,(]|^)CppGenerator(\s{1,}|[.,(]|^)

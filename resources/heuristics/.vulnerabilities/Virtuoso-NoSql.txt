@@ -1,0 +1,2 @@
+<\s*artifactId\s*>\s*virtjdbc3
+<\s*artifactId\s*>\s*virt_jena

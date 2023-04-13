@@ -1,1 +1,1 @@
-([.,\s(]|^)SchemaReference([.,\s(]|$)
+(\s{1,}|[.,(]|^)SchemaReference(\s{1,}|[.,(]|^)

@@ -1,2 +1,2 @@
-([.,\s(]|^)ExternalSourcesViewer([.,\s(]|$)
-([.,\s(]|^)CPUResultsSnapshot([.,\s(]|$)
+(\s{1,}|[.,(]|^)ExternalSourcesViewer(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)CPUResultsSnapshot(\s{1,}|[.,(]|^)

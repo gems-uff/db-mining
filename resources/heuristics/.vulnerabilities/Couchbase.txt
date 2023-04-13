@@ -1,0 +1,1 @@
+(com\.couchbase\.client\.+)\n(\s*<artifactId\s*>\s*java-client)
