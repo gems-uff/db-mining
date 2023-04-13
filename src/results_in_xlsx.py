@@ -388,7 +388,53 @@ def create_vulnerability_csv():
         
     save_local(results_Label, VULNERABILITY_LABELS)
     
+def create_pomxml_characterization(type_characterization):
+    db.connect()
+    all_results = dict()
+    index_projects = []
+    index_domains = []
+    results_Label = []
+    projects_db = db.query(db.Project).options(load_only('id', 'owner', 'name'), selectinload(db.Project.versions).load_only('id')).all()
+    labels_db = db.query(db.Label).options(selectinload(db.Label.heuristic).options(selectinload(db.Heuristic.executions).defer('output').defer('user'))).filter(db.Label.type == type_characterization).all()
+    print("Search results in execution for label and project.")
+    print("File to be generated: ", type_characterization)
+    for i,label in enumerate(labels_db):
+        for j, project in enumerate(projects_db):
+            if(len(index_projects)< len(projects_db)):
+                index_projects.append(project.name)
+                index_domains.append(project.domain)
+            # Search results in execution for label and project
+            execution = db.query(db.Execution) \
+                .join(db.Execution.version) \
+                .join(db.Execution.heuristic) \
+                .filter(db.Version.project_id == project.id) \
+                .filter(db.Heuristic.label_id == label.id).first()
+            if(execution is None):
+                print("None")
+            if (execution.output == ''):
+                results_Label.append(len(0)) 
+            else:
+                for output in execution.output:
+                    pom = False
+                    for k in output:                    
+                        file_path = REPOS_DIR + os.sep + project.owner + os.sep + project.name + os.sep + k.split('\n', 1)[0]
+                        file_path = file_path.replace('\x1b[m', '')
+                        if file_path.endswith('pom.xml'):
+                            pom = True
+                            results_Label.append(len(output))
+                    if(pom ==False):
+                        results_Label.append(-1)
+        else:
+            print(" ")            
+        if(i==0):
+            all_results["Projects"] = index_projects
+            all_results["Domains"] = index_domains
+        all_results[label.name] = results_Label.copy()
+        results_Label.clear()
 
+
+
+    save()
 
 
 def main():
@@ -402,7 +448,8 @@ def main():
     # list_type = ['implementation', 'classes']
     # create_characterization_and_database(list_type, 'number_of_files')
     # create_count_dbCode_Dependencies()
-    create_vulnerability_csv()
+    #create_vulnerability_csv()
+    create_pomxml_characterization('database')
     
 if __name__ == "__main__":
     main()

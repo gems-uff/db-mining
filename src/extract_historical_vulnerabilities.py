@@ -2,6 +2,7 @@ import os
 import subprocess
 from sys import version
 from time import time
+from datetime import datetime
 
 import pandas as pd
 from sqlalchemy.sql.expression import null
@@ -115,7 +116,6 @@ def get_or_create_labels():
 
 def list_commits_project(project):
     list_commits_project = []
-    list_date_commits = [] 
     try:
         os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
         try:
@@ -126,7 +126,21 @@ def list_commits_project(project):
                 if "commit" in k:
                     commit_txt = k.split('\n')
                     hashCommit = commit_txt[0].split(" ")[1]
-                    commitDate = commit_txt[2].split("   ")[1] #criar um método que manipula a data
+                    if(len(commit_txt) == 4):
+                        try:
+                            date = commit_txt[3].split("   ")[1]
+                        except :
+                            date = null
+                    else:      
+                        try:
+                            date = commit_txt[2].split("   ")[1]
+                        except :
+                            date = null
+                    if date != '':
+                        try:
+                            commitDate = datetime.strptime(date, '%c %z').date()
+                        except :
+                            date = null
                     list_commits_project.append(hashCommit)
                     version_db = db.query(db.Version).filter(db.Version.project_id==project.id).filter(db.Version.sha1 == hashCommit).first() 
                     if version_db is None and hashCommit != "":
@@ -135,7 +149,8 @@ def list_commits_project(project):
         except subprocess.TimeoutExpired:
                 print(red('Git error.'))
     except NotADirectoryError:
-            print(red('Repository not found.')) 
+            print(red('Repository not found.'))
+    print('Lista de Commits finalizada') 
     return list_commits_project
 
 def main():
@@ -155,10 +170,10 @@ def main():
     status = {
         'Success': 0,
         'Skipped': 0,
+        'Iguais': 0,
         'Repository not found': 0,
         'Git error': 0,
-        'Git timeout': 0,
-        'Total': len(labels) * len(projects)
+        'Git timeout': 0
     }
     
     print(f'\nProcessing {len(labels)} heuristics over {len(projects)} projects commits.')
@@ -168,30 +183,48 @@ def main():
         list_commit = list_commits_project(project)
         try: 
             os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
-            for commit_txt in list_commit:
-                cmd = CHECKCOUT_COMMAND + [commit_txt]
-                try:
-                    p = subprocess.run(cmd, capture_output=True, timeout=360)
-                    for j, label in enumerate(labels):
+            print(f'\nProcessing {len(list_commit)} commits of {project.name} project.')
+            for j, label in enumerate(labels):
+                newOutput = ""
+                for commit_txt in list_commit:
+                    cmd = CHECKCOUT_COMMAND + [commit_txt]
+                    try:
+                        p = subprocess.run(cmd, capture_output=True, timeout=360)
                         version_db = db.query(db.Version).filter(db.Version.project_id==project.id).filter(db.Version.sha1 == commit_txt).first() 
-    
+                        if(version_db is None):
+                            continue
                         cmd = GREP_COMMAND + [HEURISTICS_DIR_VULNERABILITIES + os.sep + label.name + '.txt']
                         p = subprocess.run(cmd, capture_output=True, timeout=360)
                         if p.stderr:
                             raise subprocess.CalledProcessError(p.returncode, cmd, p.stdout, p.stderr)
 
-                        db.create(db.Execution, output=p.stdout.decode(errors='replace').replace('\x00', '\uFFFD'),
+                        if(p.stdout.decode(errors='replace').replace('\x00', '\uFFFD') == ''):
+                            db.create(db.Execution, output=p.stdout.decode(errors='replace').replace('\x00', '\uFFFD'),
                               version_id=version_db.id, heuristic_id=label.id, isValidated=False, isAccepted=False)
-                   #realizar a busca para as strings              
-                    print(green('ok.'))
-                    status['Success'] += 1
-                    commit()
-                except subprocess.TimeoutExpired:
-                    print(red('Git error.'))
-                    status['Git error'] += 1
-                except subprocess.CalledProcessError as ex:
-                    print(red('Git error.'))
-                    status['Git error'] += 1
+                            commit()
+                        elif(newOutput == ''):
+                            newOutput=str(p.stdout.decode(errors='replace').replace('\x00', '\uFFFD'))
+                            db.create(db.Execution, output=p.stdout.decode(errors='replace').replace('\x00', '\uFFFD'),
+                              version_id=version_db.id, heuristic_id=label.id, isValidated=False, isAccepted=False)
+                            commit()  
+                        else:
+                            oldOutput = newOutput
+                            newOutput=p.stdout.decode(errors='replace').replace('\x00', '\uFFFD')
+                            if oldOutput == newOutput:
+                                print("Iguais")
+                                status['Iguais'] += 1
+                            else:
+                                db.create(db.Execution, output=p.stdout.decode(errors='replace').replace('\x00', '\uFFFD'),
+                              version_id=version_db.id, heuristic_id=label.id, isValidated=False, isAccepted=False)             
+                                print(green('ok.'))
+                                status['Success'] += 1
+                                commit()
+                    except subprocess.TimeoutExpired:
+                        print(red('Git error.'))
+                        status['Git error'] += 1
+                    except subprocess.CalledProcessError as ex:
+                        print(red('Git error.'))
+                        status['Git error'] += 1
         except NotADirectoryError:
             print(red('repository not found.'))
             status['Repository not found'] += 1
