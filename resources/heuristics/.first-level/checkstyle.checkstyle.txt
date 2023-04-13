@@ -1,1 +1,1 @@
-([.,\s(]|^)InputIndentationAnnotationScopeIndentationCheck([.,\s(]|$)
+(\s{1,}|[.,(]|^)InputIndentationAnnotationScopeIndentationCheck(\s{1,}|[.,(]|^)

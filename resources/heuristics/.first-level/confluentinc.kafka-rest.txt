@@ -1,1 +1,1 @@
-([.,\s(]|^)CreateConsumerInstanceResponse([.,\s(]|$)
+(\s{1,}|[.,(]|^)CreateConsumerInstanceResponse(\s{1,}|[.,(]|^)

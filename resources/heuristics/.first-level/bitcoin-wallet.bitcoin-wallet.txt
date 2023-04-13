@@ -1,4 +1,4 @@
-([.,\s(]|^)AddressBookDao([.,\s(]|$)
-([.,\s(]|^)ExchangeRateDao([.,\s(]|$)
-([.,\s(]|^)AddressBookEntry([.,\s(]|$)
-([.,\s(]|^)ExchangeRateEntry([.,\s(]|$)
+(\s{1,}|[.,(]|^)AddressBookDao(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)ExchangeRateDao(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)AddressBookEntry(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)ExchangeRateEntry(\s{1,}|[.,(]|^)

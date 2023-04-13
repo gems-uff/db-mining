@@ -1,1 +1,1 @@
-([.,\s(]|^)RootDocToXML([.,\s(]|$)
+(\s{1,}|[.,(]|^)RootDocToXML(\s{1,}|[.,(]|^)

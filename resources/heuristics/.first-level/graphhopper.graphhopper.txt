@@ -1,1 +1,1 @@
-([.,\s(]|^)IsochroneResource([.,\s(]|$)
+(\s{1,}|[.,(]|^)IsochroneResource(\s{1,}|[.,(]|^)

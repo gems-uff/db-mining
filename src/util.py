@@ -16,6 +16,7 @@ HEURISTICS_DIR_EOI = HEURISTICS_DIR + os.sep + 'eo'
 HEURISTICS_DIR_FIRST_LEVEL = HEURISTICS_DIR + os.sep + '.first-level'
 HEURISTICS_DIR_SECOND_LEVEL = HEURISTICS_DIR + os.sep + '.second-level'
 HEURISTICS_DIR_TEMP_FILES = HEURISTICS_DIR + os.sep + '.tempFiles'
+HEURISTICS_DIR_VULNERABILITIES = HEURISTICS_DIR + os.sep + '.vulnerabilities'
 
 SEQ_PATTERNS_DIR = RESOURCE_DIR + os.sep + 'seq_patterns'
 
@@ -27,7 +28,7 @@ REACT_STATIC_DIR = REACT_BUILD_DIR + os.sep + 'static'
 PROJECTS_FILE = RESOURCE_DIR + os.sep + 'projects.xlsx'
 FILTERED_FILE = RESOURCE_DIR + os.sep + 'filtered_projects.xlsx'
 ANNOTATED_FILE = RESOURCE_DIR + os.sep + 'annotated.xlsx'
-ANNOTATED_FILE_JAVA = RESOURCE_DIR + os.sep + 'annotated_java.xlsx' #'annotated_java_test.xlsx'
+ANNOTATED_FILE_JAVA = RESOURCE_DIR + os.sep + 'annotated_java_test.xlsx' #'annotated_java.xlsx'
 ANNOTATED_FILE_JAVA_TEST = RESOURCE_DIR + os.sep + 'annotated_java_test.xlsx'
 ANNOTATED_FILE_JAVA_SAMPLE = RESOURCE_DIR + os.sep + 'annotated_java_sample.xlsx'
 DBLP_FILE = RESOURCE_DIR + os.sep + 'dblp.xml'
@@ -57,6 +58,7 @@ HISTORICAL_OUTPUT_SEQUENCIAL_NUMBERSNEG = SEQ_PATTERNS_DIR + os.sep + '"output_s
 VULNERABILITY_FILE = RESOURCE_DIR + os.sep + 'Vulnerability_Version_20061101_Date_20220913.xlsx'
 HISTORICAL_INPUT_SEQUENCIAL_IN_OUT = SEQ_PATTERNS_DIR + os.sep + 'input_sequencial_in_out.txt'
 HISTORICAL_OUTPUT_SEQUENCIAL_IN_OUT = SEQ_PATTERNS_DIR + os.sep + 'output_seq_in_out.txt'
+VULNERABILITY_LABELS = RESOURCE_DIR + os.sep + 'vulnetabilities_labels.xlsx'
 
 DATABASE_CONFIG_FILE = BASE_DIR + os.sep + 'database.json'
 

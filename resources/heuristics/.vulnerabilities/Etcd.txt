@@ -1,0 +1,2 @@
+<\s*artifactId\s*>\s*etcd-java
+<\s*artifactId\s*>\s*jetcd-core

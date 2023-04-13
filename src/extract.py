@@ -250,7 +250,7 @@ def main():
     for i, label in enumerate(labels):
         heuristic = label.heuristic
         for j, project in enumerate(projects):
-            version = project.versions[0]  # TODO: fix this to deal with multiple versions
+            version = db.query(db.Version).filter(db.Version.project_id==project.id).first() #filtrar pelo part_commit null
 
             # Print progress information
             progress = '{:.2%}'.format((i * len(projects) + (j + 1)) / status['Total'])

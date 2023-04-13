@@ -1,0 +1,5 @@
+import\s{1,}com\.google\.firebase\.database
+[^a-zA-Z|^\/"\_#|0-9]FirebaseDatabase[^a-zA-Z|^\/"\_#|0-9]
+\.firebaseio\.com
+\.firebasedatabase\.app
+firebase-database

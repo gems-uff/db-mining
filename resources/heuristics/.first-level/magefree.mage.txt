@@ -1,4 +1,4 @@
-([.,\s(]|^)EntityManager([.,\s(]|$)
-([.,\s(]|^)EntityManagerTest([.,\s(]|$)
-([.,\s(]|^)Statistics([.,\s(]|$)
-([.,\s(]|^)FeedbackServiceImpl([.,\s(]|$)
+(\s{1,}|[.,(]|^)EntityManager(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)EntityManagerTest(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)Statistics(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)FeedbackServiceImpl(\s{1,}|[.,(]|^)

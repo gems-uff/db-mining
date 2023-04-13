@@ -1,1 +1,1 @@
-([.,\s(]|^)ValidatorUtils([.,\s(]|$)
+(\s{1,}|[.,(]|^)ValidatorUtils(\s{1,}|[.,(]|^)

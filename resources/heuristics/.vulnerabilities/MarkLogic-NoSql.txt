@@ -1,0 +1,2 @@
+import\s{1,}com\marklogic\client\DatabaseClient
+[^a-zA-Z|^\/"\_#|0-9]DatabaseClient[^a-zA-Z|^\/"\_#|0-9]
