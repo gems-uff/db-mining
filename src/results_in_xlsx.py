@@ -412,9 +412,9 @@ def create_pomxml_characterization(type_characterization):
             if(execution is None):
                 print("None")
             if (execution.output == ''):
-                results_Label.append(len(0)) 
+                results_Label.append(0) 
             else:
-                for output in execution.output:
+                for output in execution.output: #a forma de olhar os resultados está incorreta
                     pom = False
                     for k in output:                    
                         file_path = REPOS_DIR + os.sep + project.owner + os.sep + project.name + os.sep + k.split('\n', 1)[0]
