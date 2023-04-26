@@ -414,16 +414,20 @@ def create_pomxml_characterization(type_characterization):
             if (execution.output == ''):
                 results_Label.append(0) 
             else:
-                for output in execution.output: #a forma de olhar os resultados está incorreta
-                    pom = False
-                    for k in output:                    
-                        file_path = REPOS_DIR + os.sep + project.owner + os.sep + project.name + os.sep + k.split('\n', 1)[0]
-                        file_path = file_path.replace('\x1b[m', '')
-                        if file_path.endswith('pom.xml'):
-                            pom = True
-                            results_Label.append(len(output))
-                    if(pom ==False):
-                        results_Label.append(-1)
+                pom = False
+                output = execution.output.split('\n\n')
+                for k in output: #a forma de olhar os resultados está incorreta                 
+                    file_path = REPOS_DIR + os.sep + project.owner + os.sep + project.name + os.sep + k.split('\n', 1)[0]
+                    file_path = file_path.replace('\x1b[m', '')
+                    if file_path.endswith('pom.xml'):
+                        pom = True
+                if(pom==True):
+                    if(len(output)==1):
+                        results_Label.append(file_path)
+                    else:
+                        results_Label.append(len(output))
+                else:
+                    results_Label.append(-1)
         else:
             print(" ")            
         if(i==0):
@@ -434,7 +438,7 @@ def create_pomxml_characterization(type_characterization):
 
 
 
-    save()
+    save(all_results, 'pomXml')
 
 
 def main():
