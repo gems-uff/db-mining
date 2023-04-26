@@ -412,7 +412,7 @@ def create_pomxml_characterization(type_characterization):
             if(execution is None):
                 print("None")
                 results_Label.append(0)
-            if (execution.output == ''):
+            elif (execution.output == ''):
                 results_Label.append(0) 
             else:
                 pom = False
