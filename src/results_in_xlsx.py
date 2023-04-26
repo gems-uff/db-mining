@@ -411,6 +411,7 @@ def create_pomxml_characterization(type_characterization):
                 .filter(db.Heuristic.label_id == label.id).first()
             if(execution is None):
                 print("None")
+                results_Label.append(0)
             if (execution.output == ''):
                 results_Label.append(0) 
             else:
