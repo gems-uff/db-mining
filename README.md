@@ -9,6 +9,8 @@ Leonardo Gresta Paulino Murta (UFF, Brazil)
 Igor Wiese (UTFPR, Brazil)  
 Igor Steinmacher (NAU, USA)  
 Marco Aurélio Gerosa (NAU, USA)  
+Camila Acácio de Paiva (UFF, Brazil)  
+Raquel Maximino de Barros Santos (UFF, Brazil) 
 
 # Project Corpus
 - In summary, the table below shows the workflow to the selection of projects for our corpus. We have the name of the script, your purpose, the required entry and the output produced.
@@ -21,6 +23,7 @@ Marco Aurélio Gerosa (NAU, USA)
 | download.py   | Clones all repositories in the corpus               | annotated_java.xlsx | None          |
 | reset.py      | Tries to fix name colisions for case-insensitive FS | annotated_java.xlsx | None          |
 | extract.py    | Runs git grep and populates the databese            | annotated_java.xlsx | None          |
+| create_file_dbCode.py    | Generates .txt files that contains dbCode Heuristics            | DataBase (Implementatio Heuristics) | Path .first-level          |
 - [Excel Spreadsheet](https://github.com/gems-uff/db-mining/raw/master/resources/annotated.xlsx)  (validate that all fields in the spreadsheet are filled in correctly, the convert of formulas may cause an error.)
 - [Collection Scripts](https://github.com/gems-uff/db-mining/tree/master/src) (see the installation instructions bellow to run the scripts in your computer)
 
