@@ -202,7 +202,7 @@ There are two sets of spreadsheets. The first one is related to the selection of
 | ---- | ------- | ------------- |
 | projects.xlsx | All public, non-fork, and active (with pushes in the last 3 months) projects with ≥1000 stars from GitHub on March 27, 2021 | 21,149 |
 | filtered.xlsx | All projects from projects.xlsx with ≥1000 stars, ≥1000 commits, ≥10 contributors, and Java programming languages | 632 |
-| annotated_java.xlsx | All Java projects from filtered.xlsx with manual annotations classifying the domain of the projects and discarding inadequate projects | 329 |
+| annotated_java.xlsx | All Java projects from filtered.xlsx with manual annotations classifying the domain of the projects and discarding inadequate projects | 317 |
 
 ## Related Work
 
@@ -228,7 +228,14 @@ As with the spreadsheets, we also have two sets of scripts: one for the corpus a
 | download.py   | Clones all repositories in the corpus               | annotated_java.xlsx | None          |
 | reset.py      | Tries to fix name colisions for case-insensitive FS | annotated_java.xlsx | None          |
 | extract.py    | Runs git grep and populates the databese            | annotated_java.xlsx | None          |
-
+| create_file_dbCode.py    | Generates .txt files that contains dbCode Heuristics            | DataBase (Implementatio Heuristics) | Path .first-level          |
+| extract_classes.py    | Runs git grep and populates the database with dependencies of dbCode            | Path .first-level | None          |
+| results_dbCode_dependencies.py    | Count the results of bdCode and its dependencies to the project          | DataBase (Second Level) | Path .second-level and usage_fan_in_file.xlsx          |
+| results_in_xlsx.py    | Generates the xlsx that it will use to analyze the results           | DataBase | count_implementation.xlsx, count_sql.xlsx, database.xlsx, implementation.xlsx, implementation_names.xlsx, query.xlsx          |
+| results_database_characterization.ipynb    | Produces statistics about database Heuristics            | database.xlsx | None          |
+| results_implementation_characterization.ipynb   | Produces statistics about implementation Heuristics            | database.xlsx, implementation.xlsx, implementation_names.xlsx, query.xlsx | None          |
+| create_vulnerabilityDatabase.py    | Produces database about vulnerabilities            | Vulnerability_Version_20061101_Date_20220913.xlsx | None          |
+| extract_historical_vulnerabilities.py    | Runs git grep and populates the database with historial of vulnerabilities            | DataBase | None          |
 ## Related Work 
 
 | Name          | Goal                                                | Input          | Output        |
