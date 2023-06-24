@@ -1,0 +1,4 @@
+<\s*artifactId\s*>\s*JdbcQueryBuilder
+<\s*groupId\s*>\s*com\.healthmarketscience\.sqlbuilder
+<\s*artifactId\s*>\s*sqlbuilder
+import\s{1,}com\.healthmarketscience\.sqlbuilder\.BinaryCondition
