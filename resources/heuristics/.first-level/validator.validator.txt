@@ -1,1 +1,1 @@
-([.,\s(]|^)ParseTreePrinter([.,\s(]|$)
+(\s{1,}|[.,(]|^)ParseTreePrinter(\s{1,}|[.,(]|^)

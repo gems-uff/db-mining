@@ -1,0 +1,1 @@
+<\s*artifactIds*>s*virtuoso-jdbc

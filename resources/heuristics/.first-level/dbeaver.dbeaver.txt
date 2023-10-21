@@ -1,1 +1,1 @@
-([.,\s(]|^)DirectedGraphLayoutVisitor([.,\s(]|$)
+(\s{1,}|[.,(]|^)DirectedGraphLayoutVisitor(\s{1,}|[.,(]|^)

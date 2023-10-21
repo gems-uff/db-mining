@@ -1,1 +1,1 @@
-([.,\s(]|^)GtfsRealtime([.,\s(]|$)
+(\s{1,}|[.,(]|^)GtfsRealtime(\s{1,}|[.,(]|^)

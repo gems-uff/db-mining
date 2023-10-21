@@ -1,0 +1,2 @@
+import\s{1,}org\.apache\.ignite
+[^a-zA-Z|^\/"\_#|0-9]IgniteCache[^a-zA-Z|^\/"\_#|0-9]
