@@ -250,7 +250,7 @@ The URL http://localhost:3000 is served by Node.js and has hot reload capability
 
 5. Run the `historical_count_models.ipynb` to produce statistics and dataset about DBMS models.
 
-6. Run the `historical_count_models.ipynb` to produce graphs with statistics about DBMS models and project domains.
+6. Run the `historical_graphs.ipynb` to produce graphs with statistics about DBMS models and project domains.
 
 7. Run the `historical_coocurrence_version1.ipynb`, `historical_coocurrence_version5.ipynb`, and `historical_coocurrence_version1o.ipynb` to generate association rules for the first, fifth and last slices of project history.
 
