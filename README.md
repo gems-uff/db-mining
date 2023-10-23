@@ -258,7 +258,7 @@ The URL http://localhost:3000 is served by Node.js and has hot reload capability
 
 9. Run the `historical_seqpatterns_format.ipynb` to generate the standard input file for the SPMF library.
 
-10. Run the `historical_seqpatterns_format.ipynb` to filter the replacement patterns and generate the measures.
+10. Run the `historical_seqpatterns_filters.ipynb` to filter the replacement patterns and generate the measures.
 
 
 # Spreadsheets description
