@@ -19,39 +19,39 @@ The table below shows the workflow we use to select the projects for our corpus.
 
 | Name          | Goal                                                | Input          | Output        |
 | ------------- | --------------------------------------------------- | -------------- | ------------- | 
-| collect.py    | Queries projects' metadata from GitHub using API v4 | None           | projects.xlsx |
+| collect.py    | Queries projects' metadata from GitHub using the v4 API | None           | projects.xlsx |
 | filter.ipynb  | Applies some extra filters                          | projects.xlsx  | filtered.xlsx |
 | analyze.ipynb | Produces statistics about the final corpus          | annotated_java.xlsx | None          |
-| download.py   | Clones all repositories in the corpus               | annotated_java.xlsx | None          |
-| reset.py      | Tries to fix name colisions for case-insensitive FS | annotated_java.xlsx | None          |
+| download.py   | Clones all repositories from the corpus               | annotated_java.xlsx | None          |
+| reset.py      | Tries to fix name collisions for case-insensitive File Systems | annotated_java.xlsx | None          |
 
 # Heuristics Extraction
 
-To find out which DBMS is used by a given project, we use heuristics that are based on regular expressions. We use git grep to search the projects source code (one at a time) and store the results in a relational DBMS. The table below shows the workflow for executing the heuristics on our corpus. The table shows the name of the script, its purpose, the required input, and the produced output.
+To find out which DBMS is used by a given project, we use heuristics that are based on regular expressions. We use git grep to search the projects source code (one at a time) and store the results in a relational DBMS. We also use heuristics to find other information about database usage in our corpus, such as how queries are performed, and which vulnerabilities there are in the source code. The table below shows the workflow for executing the heuristics on our corpus. The table shows the name of the script, its purpose, the required input, and the produced output.
   
 | Name          | Goal                                                | Input          | Output        |
 | ------------- | --------------------------------------------------- | -------------- | ------------- |
-| extract.py    | Runs git grep and populates the database            | annotated_java.xlsx | None       |
-| extract_historical.py    | Runs git grep on ten slices of projects history and populates the database | annotated_java.xlsx | None         |
+| extract.py    | Runs git grep and populates the relational DBMS with the results            | annotated_java.xlsx | None       |
+| extract_historical.py    | Runs git grep on ten slices of the projects history and populates the DBMS | annotated_java.xlsx | None         |
 | create_file_dbCode.py    | Generates .txt files that contains dbCode Heuristics            | DataBase (Implementation Heuristics) | Path .first-level |
 | extract_classes.py    | Runs git grep and populates the database with dependencies of dbCode            | Path .first-level | None          |
-| create_vulnerabilityDatabase.py    | Produces database about vulnerabilities            | Vulnerability_Version_20061101_Date_20220913.xlsx | None        |
+| create_vulnerabilityDatabase.py    | Produces a database about vulnerabilities            | Vulnerability_Version_20061101_Date_20220913.xlsx | None        |
 | extract_historical_vulnerabilities.py    | Runs git grep and populates the database with historial of vulnerabilities            | DataBase | None        |
 
 # Results Analysis
 
 ## Current Analysis
-- The table below shows the workflow for currently analyzing the results.
+The table below shows the workflow for analyzing the results for the current version of the projects in our corpus.
 
 | Name          | Goal                                                | Input          | Output        |
 | ------------- | --------------------------------------------------- | -------------- | ------------- |
-| results_dbCode_dependencies.py    | Count the results of bdCode and its dependencies to the project          | DataBase (Second Level) | Path .second-level and usage_fan_in_file.xlsx          |
-| results_in_xlsx.py    | Generates the xlsx that it will use to analyze the results           | DataBase | count_implementation.xlsx, count_sql.xlsx, database.xlsx, implementation.xlsx, implementation_names.xlsx, query.xlsx          |
+| results_dbCode_dependencies.py    | Counts the results of bdCode and its dependencies to the project          | DataBase (Second Level) | Path .second-level and usage_fan_in_file.xlsx          |
+| results_in_xlsx.py    | Generates the xlsx that it will be used to analyze the results           | DataBase | count_implementation.xlsx, count_sql.xlsx, database.xlsx, implementation.xlsx, implementation_names.xlsx, query.xlsx          |
 | results_database_characterization.ipynb    | Produces statistics about database Heuristics            | database.xlsx | None          |
 | results_implementation_characterization.ipynb   | Produces statistics about implementation Heuristics            | database.xlsx, implementation.xlsx, implementation_names.xlsx, query.xlsx | None          |
   
 ## Historical Analysis
-- The table below shows the workflow for historical analysis of the results. This analysis only requires the execution of the **Heuristics Extraction script** extract_historical.py".
+The table below shows the workflow for the historical analysis of the results. This analysis only requires the execution of the **Heuristics Extraction script** extract_historical.py".
 
 | Name          | Goal                                                | Input          | Output        |
 | ------------- | --------------------------------------------------- | -------------- | ------------- |
@@ -62,11 +62,11 @@ To find out which DBMS is used by a given project, we use heuristics that are ba
 | historical_coocurrence_version1.ipynb | Generates association rules for the results found in the projects history first slice. |historical_join.xlsx | historical_rulesv1.xlsx |
 | historical_coocurrence_version5.ipynb | Generates association rules for the results found in the projects history fifth slice. |historical_join.xlsx | historical_rulesv5.xlsx |
 | historical_coocurrence_version10.ipynb | Generates association rules for the results found in the projects history last slice. |historical_join.xlsx | historical_rulesv10.xlsx |
-| historical_coocurrence_filters_v1.ipynb | Apply filters to analyze the correlations found in the first version |historical_rulesv1.xlsx | None |
-| historical_coocurrence_filters_v5.ipynb | Apply filters to analyze the correlations found in the fifth version |historical_rulesv5.xlsx | None |
-| historical_coocurrence_filters_v10.ipynb | Apply filters to analyze the correlations found in the last version |historical_rulesv10.xlsx| None |
+| historical_coocurrence_filters_v1.ipynb | Applies filters to analyze the correlations found in the first version |historical_rulesv1.xlsx | None |
+| historical_coocurrence_filters_v5.ipynb | Applies filters to analyze the correlations found in the fifth version |historical_rulesv5.xlsx | None |
+| historical_coocurrence_filters_v10.ipynb | Applies filters to analyze the correlations found in the last version |historical_rulesv10.xlsx| None |
 | historical_seqpatterns_format.ipynb | Converts the historical_join dataset to the file format required by the SPMF library |historical_join.xlsx| input_sequencial_init_in_out.txt, output_tam1.txt, output_tam3.txt, output_tam4_sid.txt  |
-| historical_seqpatterns_filters.ipynb | Apply filters to search for established replacement patterns and generates some data mining measures | output_tam1.txt, output_tam3.txt, output_tam4_sid.txt | pattern_selection_measures.xlsx |
+| historical_seqpatterns_filters.ipynb | Applies filters to search for established replacement patterns and generates some data mining measures | output_tam1.txt, output_tam3.txt, output_tam4_sid.txt | pattern_selection_measures.xlsx |
 
 ## Related Work 
 
