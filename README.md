@@ -14,7 +14,7 @@ Raquel Maximino de Barros Santos (UFF, Brazil)
 Frederico Gomes de Paiva (UFF, Brazil)  
 João Felipe Pimentel (UFF, Brazil)
 
-# Project Corpus
+# Seleciton of the Project Corpus
 The table below shows the workflow we use to select the projects for our corpus. The table shows the name of the script, its purpose, the required input, and the produced output.
 
 | Name          | Goal                                                | Input          | Output        |
@@ -75,15 +75,15 @@ The table below shows the workflow for the historical analysis of the results. T
 | related-work.py    | Traverses the DBLP XML file using the SAX API to get papers from major Database and Software Engineering conferences and journals | venue_keys.txt           | papers.xlsx |
 | related-work.ipynb  | Filters for papers with "database" on the title and that were published in Software Engineering venues                         | papers.xlsx  | filtered_papers.xlsx |
 
-- [Excel Spreadsheet](https://github.com/gems-uff/db-mining/raw/master/resources/annotated.xlsx)  (validate that all fields in the spreadsheet are filled in correctly, the convert of formulas may cause an error.)
-- [Collection Scripts](https://github.com/gems-uff/db-mining/tree/master/src) (see the installation instructions bellow to run the scripts in your computer)
+- [Excel Spreadsheet](https://github.com/gems-uff/db-mining/raw/master/resources/annotated.xlsx)  (validate that all fields in the spreadsheet are filled in correctly. The convertion of formulas may cause an error.)
+- [Collection Scripts](https://github.com/gems-uff/db-mining/tree/master/src) (see the installation instructions below to run the scripts on your computer)
 
 # Installation
 
 ## Requirements
 
-We assume you have Python 3.7+, Node 12.10+ and Git 2.23+ installed on your computer. 
-OBS: At the moment, sqlalchemy-utils has a incompatibility with sqlalchemy 1.4.0b1. Change to an older version, for example sqlalchemy 1.3.23.
+We assume you have Python 3.7+, Node 12.10+, and Git 2.23+ installed on your computer. 
+OBS: At the moment, sqlalchemy-utils has an incompatibility with sqlalchemy 1.4.0b1. Please use an older version, for example sqlalchemy 1.3.23.
 
 ## Steps for setting up the environment (needs to be done just once) 
 
@@ -139,7 +139,7 @@ You can use either SQLite or PostgreSQL database.
 
 2. Edit it according to the database you will use:
 
-This JSON file has a drop_database field which indicates whether you would like the application to drop the existing database and create a new empty one. If that is the case, the value of drop_database should be True. The database_type field specifies which database management system will be used: SQLite or PostgreSQL. The remaining fields depend on the type of database you are using. 
+This JSON file has a drop_database field, which indicates whether you would like the application to drop the existing database and create a new empty one. If that is the case, the value of drop_database should be True. The database_type field specifies which database management system will be used: SQLite or PostgreSQL. The remaining fields depend on the type of database you are using. 
 
 If you are using SQLite, these are the mandatory fields of the JSON file: 
 
@@ -247,7 +247,7 @@ The URL http://localhost:3000 is served by Node.js and has hot reload capability
 
 3. Execute the next scripts in Google Colab or Jupyter Notebook platforms. 
    
-4. Run the `historical_analysis.ipynb` to produce statistics about DBMS adopted throughout the history of projects.
+4. Run the `historical_analysis.ipynb` to produce statistics about DBMS adopted throughout the projects history.
 
 5. Run the `historical_count_models.ipynb` to produce statistics and dataset about DBMS models.
 
@@ -264,7 +264,7 @@ The URL http://localhost:3000 is served by Node.js and has hot reload capability
 
 # Spreadsheets description
 
-There are two sets of spreadsheets. The first one is related to the selection of projects for our corpus. The second one is related to our search for related work. They are described below, and can be found in the `resources` folder.
+There are two sets of spreadsheets. The first one is related to the selection of projects for our corpus. The second one is related to our search for related work. They are described below and can be found in the `resources` folder.
 
 ## Project Corpus
 
@@ -286,7 +286,7 @@ We searched the DBLP XML file for papers that have "database" on the title, and 
 
 # Acknowledgements
 
-We would like to thank CNPq for funding this research.
+We would like to thank CNPq and NSF for funding this research.
 
 # License
 
