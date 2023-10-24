@@ -9,9 +9,9 @@ Leonardo Gresta Paulino Murta (UFF, Brazil)
 Igor Wiese (UTFPR, Brazil)  
 Igor Steinmacher (NAU, USA)  
 Marco Aurélio Gerosa (NAU, USA)  
-Camila Acácio de Paiva (UFF, Brazil)
-Raquel Maximino de Barros Santos (UFF, Brazil)
-Frederico Gomes de Paiva (UFF, Brazil)
+Camila Acácio de Paiva (UFF, Brazil)  
+Raquel Maximino de Barros Santos (UFF, Brazil)  
+Frederico Gomes de Paiva (UFF, Brazil)  
 João Felipe Pimentel (UFF, Brazil)
 
 # Project Corpus
