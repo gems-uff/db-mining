@@ -1,6 +1,6 @@
 # About
 
-This is the companion website for the research "On the usage of Databases in Open Source Projects". This research has so far been divided into two main analyses: current and historical. In the **Current Analysis** we investigate the use of DBMS in the current situation in which the projects find themselves. In the **Historical Analysis**, we investigated the adoption of DBMS throughout the projects life cycle.
+This is the companion website for the research "On the Usage of Databases in Open Source Projects". The main goal is to investigate which and how DBMS are used in Java Open Source projetcs. This research has so far been divided into two main analyses: current and historical. In the **Current Analysis**, we investigate the use of DBMS in the current version of the projects. In the **Historical Analysis**, we investigate the adoption of DBMS throughout the projects' life cycle.
 
 # Team
 
@@ -15,7 +15,7 @@ Frederico Gomes de Paiva (UFF, Brazil)
 João Felipe Pimentel (UFF, Brazil)
 
 # Project Corpus
-- In summary, the table below shows the workflow to the selection of projects for our corpus. We have the name of the script, your purpose, the required entry and the output produced.
+The table below shows the workflow we use to select the projects for our corpus. The table shows the name of the script, its purpose, the required input, and the produced output.
 
 | Name          | Goal                                                | Input          | Output        |
 | ------------- | --------------------------------------------------- | -------------- | ------------- | 
@@ -26,7 +26,8 @@ João Felipe Pimentel (UFF, Brazil)
 | reset.py      | Tries to fix name colisions for case-insensitive FS | annotated_java.xlsx | None          |
 
 # Heuristics Extraction
-- The table below shows the workflow for searching established heuristics. We have the name of the script, your purpose, the required entry and the output produced.
+
+To find out which DBMS is used by a given project, we use heuristics that are based on regular expressions. We use git grep to search the projects source code (one at a time) and store the results in a relational DBMS. The table below shows the workflow for executing the heuristics on our corpus. The table shows the name of the script, its purpose, the required input, and the produced output.
   
 | Name          | Goal                                                | Input          | Output        |
 | ------------- | --------------------------------------------------- | -------------- | ------------- |
