@@ -1,6 +1,6 @@
 # About
 
-This is the companion website for the paper "On the usage of Databases in Open Source Projects".
+This is the companion website for the research "On the Usage of Databases in Open Source Projects". The main goal is to investigate which and how DBMS are used in Java Open Source projetcs. This research has so far been divided into two main analyses: current and historical. In the **Current Analysis**, we investigate the use of DBMS in the current version of the projects. In the **Historical Analysis**, we investigate the adoption of DBMS throughout the projects' life cycle.
 
 # Team
 
@@ -10,36 +10,80 @@ Igor Wiese (UTFPR, Brazil)
 Igor Steinmacher (NAU, USA)  
 Marco Aurélio Gerosa (NAU, USA)  
 Camila Acácio de Paiva (UFF, Brazil)  
-Raquel Maximino de Barros Santos (UFF, Brazil) 
+Raquel Maximino de Barros Santos (UFF, Brazil)  
+Frederico Gomes de Paiva (UFF, Brazil)  
+João Felipe Pimentel (UFF, Brazil)
 
-# Project Corpus
-- In summary, the table below shows the workflow to the selection of projects for our corpus. We have the name of the script, your purpose, the required entry and the output produced.
+# Seleciton of the Project Corpus
+The table below shows the workflow we use to select the projects for our corpus. The table shows the name of the script, its purpose, the required input, and the produced output.
 
 | Name          | Goal                                                | Input          | Output        |
 | ------------- | --------------------------------------------------- | -------------- | ------------- | 
-| collect.py    | Queries projects' metadata from GitHub using API v4 | None           | projects.xlsx |
+| collect.py    | Queries projects' metadata from GitHub using the v4 API | None           | projects.xlsx |
 | filter.ipynb  | Applies some extra filters                          | projects.xlsx  | filtered.xlsx |
 | analyze.ipynb | Produces statistics about the final corpus          | annotated_java.xlsx | None          |
-| download.py   | Clones all repositories in the corpus               | annotated_java.xlsx | None          |
-| reset.py      | Tries to fix name colisions for case-insensitive FS | annotated_java.xlsx | None          |
-| extract.py    | Runs git grep and populates the databese            | annotated_java.xlsx | None          |
-| create_file_dbCode.py    | Generates .txt files that contains dbCode Heuristics            | DataBase (Implementatio Heuristics) | Path .first-level          |
+| download.py   | Clones all repositories from the corpus               | annotated_java.xlsx | None          |
+| reset.py      | Tries to fix name collisions for case-insensitive File Systems | annotated_java.xlsx | None          |
+
+# Heuristics Extraction
+
+To find out which DBMS is used by a given project, we use heuristics that are based on regular expressions. We use git grep to search the projects source code (one at a time) and store the results in a relational DBMS. We also use heuristics to find other information about database usage in our corpus, such as how queries are performed, and which vulnerabilities there are in the source code. The table below shows the workflow for executing the heuristics on our corpus. The table shows the name of the script, its purpose, the required input, and the produced output.
+  
+| Name          | Goal                                                | Input          | Output        |
+| ------------- | --------------------------------------------------- | -------------- | ------------- |
+| extract.py    | Runs git grep and populates the relational DBMS with the results            | annotated_java.xlsx | None       |
+| extract_historical.py    | Runs git grep on ten slices of the projects history and populates the DBMS | annotated_java.xlsx | None         |
+| create_file_dbCode.py    | Generates .txt files that contains dbCode Heuristics            | DataBase (Implementation Heuristics) | Path .first-level |
 | extract_classes.py    | Runs git grep and populates the database with dependencies of dbCode            | Path .first-level | None          |
-| results_dbCode_dependencies.py    | Count the results of bdCode and its dependencies to the project          | DataBase (Second Level) | Path .second-level and usage_fan_in_file.xlsx          |
-| results_in_xlsx.py    | Generates the xlsx that it will use to analyze the results           | DataBase | count_implementation.xlsx, count_sql.xlsx, database.xlsx, implementation.xlsx, implementation_names.xlsx, query.xlsx          |
+| create_vulnerabilityDatabase.py    | Produces a database about vulnerabilities            | Vulnerability_Version_20061101_Date_20220913.xlsx | None        |
+| extract_historical_vulnerabilities.py    | Runs git grep and populates the database with historial of vulnerabilities            | DataBase | None        |
+
+# Results Analysis
+
+## Current Analysis
+The table below shows the workflow for analyzing the results for the current version of the projects in our corpus.
+
+| Name          | Goal                                                | Input          | Output        |
+| ------------- | --------------------------------------------------- | -------------- | ------------- |
+| results_dbCode_dependencies.py    | Counts the results of bdCode and its dependencies to the project          | DataBase (Second Level) | Path .second-level and usage_fan_in_file.xlsx          |
+| results_in_xlsx.py    | Generates the xlsx that it will be used to analyze the results           | DataBase | count_implementation.xlsx, count_sql.xlsx, database.xlsx, implementation.xlsx, implementation_names.xlsx, query.xlsx          |
 | results_database_characterization.ipynb    | Produces statistics about database Heuristics            | database.xlsx | None          |
 | results_implementation_characterization.ipynb   | Produces statistics about implementation Heuristics            | database.xlsx, implementation.xlsx, implementation_names.xlsx, query.xlsx | None          |
-| create_vulnerabilityDatabase.py    | Produces database about vulnerabilities            | Vulnerability_Version_20061101_Date_20220913.xlsx | None          |
-| extract_historical_vulnerabilities.py    | Runs git grep and populates the database with historial of vulnerabilities            | DataBase | None          |
-- [Excel Spreadsheet](https://github.com/gems-uff/db-mining/raw/master/resources/annotated.xlsx)  (validate that all fields in the spreadsheet are filled in correctly, the convert of formulas may cause an error.)
-- [Collection Scripts](https://github.com/gems-uff/db-mining/tree/master/src) (see the installation instructions bellow to run the scripts in your computer)
+  
+## Historical Analysis
+The table below shows the workflow for the historical analysis of the results. This analysis only requires the execution of the **Heuristics Extraction script** extract_historical.py".
+
+| Name          | Goal                                                | Input          | Output        |
+| ------------- | --------------------------------------------------- | -------------- | ------------- |
+| historical_implementation.py | Generates a coded dataset with the results of the history of the projects | DataBase | historical.xlsx |
+| historical_analysis.ipynb | Produces statistics about DBMS adopted throughout the history of projects | historical.xlsx | historical_join.xlsx  |
+| historical_count_models.ipynb | Produces statistics and dataset about DBMS models | historical_join.xlsx, databases_models.xlsx | historical_join_db.xlsx |
+| historical_graphs.ipynb | Produces graphs with statistics about DBMS models and project domains |historical_join_db.xlsx | None |
+| historical_coocurrence_version1.ipynb | Generates association rules for the results found in the projects history first slice. |historical_join.xlsx | historical_rulesv1.xlsx |
+| historical_coocurrence_version5.ipynb | Generates association rules for the results found in the projects history fifth slice. |historical_join.xlsx | historical_rulesv5.xlsx |
+| historical_coocurrence_version10.ipynb | Generates association rules for the results found in the projects history last slice. |historical_join.xlsx | historical_rulesv10.xlsx |
+| historical_coocurrence_filters_v1.ipynb | Applies filters to analyze the correlations found in the first version |historical_rulesv1.xlsx | None |
+| historical_coocurrence_filters_v5.ipynb | Applies filters to analyze the correlations found in the fifth version |historical_rulesv5.xlsx | None |
+| historical_coocurrence_filters_v10.ipynb | Applies filters to analyze the correlations found in the last version |historical_rulesv10.xlsx| None |
+| historical_seqpatterns_format.ipynb | Converts the historical_join dataset to the file format required by the SPMF library |historical_join.xlsx| input_sequencial_init_in_out.txt, output_tam1.txt, output_tam3.txt, output_tam4_sid.txt  |
+| historical_seqpatterns_filters.ipynb | Applies filters to search for established replacement patterns and generates some data mining measures | output_tam1.txt, output_tam3.txt, output_tam4_sid.txt | pattern_selection_measures.xlsx |
+
+## Related Work 
+
+| Name          | Goal                                                | Input          | Output        |
+| ------------- | --------------------------------------------------- | -------------- | ------------- | 
+| related-work.py    | Traverses the DBLP XML file using the SAX API to get papers from major Database and Software Engineering conferences and journals | venue_keys.txt           | papers.xlsx |
+| related-work.ipynb  | Filters for papers with "database" on the title and that were published in Software Engineering venues                         | papers.xlsx  | filtered_papers.xlsx |
+
+- [Excel Spreadsheet](https://github.com/gems-uff/db-mining/raw/master/resources/annotated.xlsx)  (validate that all fields in the spreadsheet are filled in correctly. The convertion of formulas may cause an error.)
+- [Collection Scripts](https://github.com/gems-uff/db-mining/tree/master/src) (see the installation instructions below to run the scripts on your computer)
 
 # Installation
 
 ## Requirements
 
-We assume you have Python 3.7+, Node 12.10+ and Git 2.23+ installed on your computer. 
-OBS: At the moment, sqlalchemy-utils has a incompatibility with sqlalchemy 1.4.0b1. Change to an older version, for example sqlalchemy 1.3.23.
+We assume you have Python 3.7+, Node 12.10+, and Git 2.23+ installed on your computer. 
+OBS: At the moment, sqlalchemy-utils has an incompatibility with sqlalchemy 1.4.0b1. Please use an older version, for example sqlalchemy 1.3.23.
 
 ## Steps for setting up the environment (needs to be done just once) 
 
@@ -95,7 +139,7 @@ You can use either SQLite or PostgreSQL database.
 
 2. Edit it according to the database you will use:
 
-This JSON file has a drop_database field which indicates whether you would like the application to drop the existing database and create a new empty one. If that is the case, the value of drop_database should be True. The database_type field specifies which database management system will be used: SQLite or PostgreSQL. The remaining fields depend on the type of database you are using. 
+This JSON file has a drop_database field, which indicates whether you would like the application to drop the existing database and create a new empty one. If that is the case, the value of drop_database should be True. The database_type field specifies which database management system will be used: SQLite or PostgreSQL. The remaining fields depend on the type of database you are using. 
 
 If you are using SQLite, these are the mandatory fields of the JSON file: 
 
@@ -143,7 +187,7 @@ But, if you want to run the project to create your own analysis, go to [Steps fo
 
 `~/db-mining$ python src/reset.py`
 
-5. Run the `extract.py` to execute the analysis and populate the database:
+5. Run the `extract.py` to execute the **Current Analysis** or `extract_historical.py` to execute the **Historical Analysis** and populate the database:
 
 `~/db-mining$ python src/extract.py`
 
@@ -167,7 +211,6 @@ But, if you want to run the project to create your own analysis, go to [Steps fo
 
 5. Access the React app at http://127.0.0.1:5000
 
-
 In this case, the URL http://127.0.0.1:5000 is served by Flask and uses the last build of the React app produced by `npm run build`. 
 Alternatively, you can run the application with Node.js server if you want to immediately reflect your changes into the React app without the need of rebuilding it every time during development.
 If so, follow the remaining steps.
@@ -189,19 +232,46 @@ The URL http://localhost:3000 is served by Node.js and has hot reload capability
 
 ## <a name="own-analysis"></a>Steps for creating your own analysis
 
+### Steps for Current Analysis
 *Soon...*
+
+### Steps for Historical Analysis
+
+1. Go into the project directory:
+
+`~$ cd db-mining`
+
+2. Run the `historical_implementation.py` to generate a one-hot coded dataset with the results of the projects history:
+   
+`~/db-mining$ python src/historical_implementation.py`
+
+3. Execute the next scripts in Google Colab or Jupyter Notebook platforms. 
+   
+4. Run the `historical_analysis.ipynb` to produce statistics about DBMS adopted throughout the projects history.
+
+5. Run the `historical_count_models.ipynb` to produce statistics and dataset about DBMS models.
+
+6. Run the `historical_graphs.ipynb` to produce graphs with statistics about DBMS models and project domains.
+
+7. Run the `historical_coocurrence_version1.ipynb`, `historical_coocurrence_version5.ipynb`, and `historical_coocurrence_version1o.ipynb` to generate association rules for the first, fifth and last slices of project history.
+
+8. Run the `historical_coocurrence_filters_v1.ipynb`, `historical_coocurrence_filters_v5.ipynb`, and `historical_coocurrence_filters_v1o.ipynb` to apply filters to analyze the correlations found in the three moments of the projects' history.
+
+9. Run the `historical_seqpatterns_format.ipynb` to generate the standard input file for the SPMF library.
+
+10. Run the `historical_seqpatterns_filters.ipynb` to filter the replacement patterns and generate the measures.
 
 
 # Spreadsheets description
 
-There are two sets of spreadsheets. The first one is related to the selection of projects for our corpus. The second one is related to our search for related work. They are described below, and can be found in the `resources` folder.
+There are two sets of spreadsheets. The first one is related to the selection of projects for our corpus. The second one is related to our search for related work. They are described below and can be found in the `resources` folder.
 
 ## Project Corpus
 
 | Name | Content | # of projects |
 | ---- | ------- | ------------- |
 | projects.xlsx | All public, non-fork, and active (with pushes in the last 3 months) projects with ≥1000 stars from GitHub on March 27, 2021 | 21,149 |
-| filtered.xlsx | All projects from projects.xlsx with ≥1000 stars, ≥1000 commits, ≥10 contributors, and Java programming languages | 632 |
+| filtered.xlsx | All projects from projects.xlsx with ≥1000 stars, ≥1000 commits, ≥10 contributors, and Java programming languages | 633 |
 | annotated_java.xlsx | All Java projects from filtered.xlsx with manual annotations classifying the domain of the projects and discarding inadequate projects | 317 |
 
 ## Related Work
@@ -214,38 +284,9 @@ We searched the DBLP XML file for papers that have "database" on the title, and 
 | filtered_papers.xlsx | All papers from the `papers.xlsx` file that have "database" in the title, filtered by Software Engineering venues and| 260 |  
 
 
-# Scripts description
-
-As with the spreadsheets, we also have two sets of scripts: one for the corpus and another for searching for related work. 
-
-## Project Corpus 
-
-| Name          | Goal                                                | Input          | Output        |
-| ------------- | --------------------------------------------------- | -------------- | ------------- | 
-| collect.py    | Queries projects' metadata from GitHub using API v4 | None           | projects.xlsx |
-| filter.ipynb  | Applies some extra filters                          | projects.xlsx  | filtered.xlsx |
-| analyze.ipynb | Produces statistics about the final corpus          | annotated_java.xlsx | None          |
-| download.py   | Clones all repositories in the corpus               | annotated_java.xlsx | None          |
-| reset.py      | Tries to fix name colisions for case-insensitive FS | annotated_java.xlsx | None          |
-| extract.py    | Runs git grep and populates the databese            | annotated_java.xlsx | None          |
-| create_file_dbCode.py    | Generates .txt files that contains dbCode Heuristics            | DataBase (Implementatio Heuristics) | Path .first-level          |
-| extract_classes.py    | Runs git grep and populates the database with dependencies of dbCode            | Path .first-level | None          |
-| results_dbCode_dependencies.py    | Count the results of bdCode and its dependencies to the project          | DataBase (Second Level) | Path .second-level and usage_fan_in_file.xlsx          |
-| results_in_xlsx.py    | Generates the xlsx that it will use to analyze the results           | DataBase | count_implementation.xlsx, count_sql.xlsx, database.xlsx, implementation.xlsx, implementation_names.xlsx, query.xlsx          |
-| results_database_characterization.ipynb    | Produces statistics about database Heuristics            | database.xlsx | None          |
-| results_implementation_characterization.ipynb   | Produces statistics about implementation Heuristics            | database.xlsx, implementation.xlsx, implementation_names.xlsx, query.xlsx | None          |
-| create_vulnerabilityDatabase.py    | Produces database about vulnerabilities            | Vulnerability_Version_20061101_Date_20220913.xlsx | None          |
-| extract_historical_vulnerabilities.py    | Runs git grep and populates the database with historial of vulnerabilities            | DataBase | None          |
-## Related Work 
-
-| Name          | Goal                                                | Input          | Output        |
-| ------------- | --------------------------------------------------- | -------------- | ------------- | 
-| related-work.py    | Traverses the DBLP XML file using the SAX API to get papers from major Database and Software Engineering conferences and journals | venue_keys.txt           | papers.xlsx |
-| related-work.ipynb  | Filters for papers with "database" on the title and that were published in Software Engineering venues                         | papers.xlsx  | filtered_papers.xlsx |
-
 # Acknowledgements
 
-We would like to thank CNPq for funding this research.
+We would like to thank CNPq and NSF for funding this research.
 
 # License
 
