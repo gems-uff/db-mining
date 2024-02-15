@@ -271,11 +271,6 @@ There are two sets of spreadsheets. The first one is related to the selection of
 | Name | Content | # of projects |
 | ---- | ------- | ------------- |
 | projects.xlsx | All public, non-fork, and active (with pushes in the last 3 months) projects with ≥1000 stars from GitHub on March 27, 2021 | 21,149 |
-<<<<<<< HEAD
-| filtered_projects.xlsx | All projects from projects.xlsx with ≥1000 stars, ≥1000 commits, ≥10 contributors, and Java programming languages | 633 |
-=======
-| filtered.xlsx | All projects from projects.xlsx with ≥1000 stars, ≥1000 commits, ≥10 contributors, and Java programming languages | 633 |
->>>>>>> master
 | annotated_java.xlsx | All Java projects from filtered.xlsx with manual annotations classifying the domain of the projects and discarding inadequate projects | 317 |
 
 ## Related Work
