@@ -1,0 +1,3 @@
+jdbc:cosmosdb
+<\s*artifactId\s*>\s*spring-data-cosmosdb
+cdata\.jdbc\.cosmosdb\.CosmosDBDriver

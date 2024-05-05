@@ -1,0 +1,4 @@
+import com.arangodb
+ArangoDB
+<artifactId>arangodb-java-driver
+com.arangodb:arangodb-java-driver

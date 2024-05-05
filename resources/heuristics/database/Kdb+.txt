@@ -1,0 +1,6 @@
+
+<artifactId>spring-kdb
+jdbc:q
+import kx.c
+<artifactId>kxi-java-sdk
+import com.kx

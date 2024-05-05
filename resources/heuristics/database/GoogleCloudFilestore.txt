@@ -1,0 +1,3 @@
+<\s*artifactId\s*>\s*google-cloud-firestore
+import\s{1,}com\.google\.cloud\.firestore
+FirestoreOptions
