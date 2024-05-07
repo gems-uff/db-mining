@@ -1,9 +1,4 @@
-<\s*artifactId\s*>\s*spring-cloud-azure-dependencies (import genérico para serviços azure)
-<\s*artifactId\s*>\s*spring-cloud-azure-starter
-
-
 <\s*artifactId\s*>\s*azure-resourcemanager
 import\s{1,}com\.azure
-
 jdbc:sqlserver
 com\.microsoft\.sqlserver\.jdbc\.SQLServerDriver

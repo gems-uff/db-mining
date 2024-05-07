@@ -1,6 +1,5 @@
-
-<artifactId>spring-kdb
+<\s*artifactId\s*>\s*spring-kdb
 jdbc:q
-import kx.c
-<artifactId>kxi-java-sdk
-import com.kx
+import\s{1,}kx\.c
+<\s*artifactId\s*>\s*kxi-java-sdk
+import\s{1,}com\.kx

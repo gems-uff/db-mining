@@ -1,4 +1,4 @@
-import com.arangodb
-ArangoDB
-<artifactId>arangodb-java-driver
-com.arangodb:arangodb-java-driver
+import\s{1,}com\.arangodb
+[^a-zA-Z|^\/"\_#|0-9]ArangoDB[^a-zA-Z|^\/"\_#|0-9]
+<\s*artifactId\s*>\s*arangodb-java-driver
+com\.arangodb:arangodb-java-driver

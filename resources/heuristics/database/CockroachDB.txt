@@ -1,5 +1,3 @@
-
-jdbc:postgresql
 jdbc:postgres
-org.postgresql.ds.PGSimpleDataSource
-com.cockroachlabs
+org\.postgresql\.ds\.PGSimpleDataSource
+com\.cockroachlabs
