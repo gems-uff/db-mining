@@ -2,4 +2,4 @@
 jdbc:sqlserver
 com\.microsoft\.sqlserver\.jdbc\.SQLServerDriver
 azuresql
-AzureDB
+azuredb
