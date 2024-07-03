@@ -1,3 +1,4 @@
 com\.microsoft\.sqlserver\.jdbc\.SQLServerDriver
 jdbc:sqlserver
 mssql-jdbc
+<\s*artifactId\s*>\s*spring-cloud-azure-dependencies
