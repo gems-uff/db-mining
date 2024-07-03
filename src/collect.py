@@ -102,7 +102,11 @@ def main():
         while has_next_page:
             print(f'Trying to retrieve the next {variables["repositoriesPerPage"]} repositories (> {stars} stars)...')
             response = requests.post(url="https://api.github.com/graphql", json=request, headers=headers)
-            result = response.json()
+            try:
+                result = response.json()
+            except:
+                print(f'Failed with http code {response.status_code} reason {response.reason}.')
+                continue
 
             if 'Retry-After' in response.headers:  # reached retry limit
                 print(f'Waiting for {response.headers["Retry-After"]} seconds before continuing...', end=' ')
@@ -145,7 +149,11 @@ def main():
                         print(f'Finished.')
                         has_next_page = False
 
-            time.sleep(1)  # Wait 1 second before next request (https://developer.github.com/v3/#abuse-rate-limits)
+            time.sleep(1)  # Wait 1 second before next request (https://docs.github.com/en/graphql/overview/rate-limits-and-node-limits-for-the-graphql-api)
+    except:
+        print(response)
+        #breakpoint()
+        raise
     finally:
         save(all_repositories)
 

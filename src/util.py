@@ -17,6 +17,7 @@ HEURISTICS_DIR_FIRST_LEVEL = HEURISTICS_DIR + os.sep + '.first-level'
 HEURISTICS_DIR_SECOND_LEVEL = HEURISTICS_DIR + os.sep + '.second-level'
 HEURISTICS_DIR_TEMP_FILES = HEURISTICS_DIR + os.sep + '.tempFiles'
 HEURISTICS_DIR_VULNERABILITIES = HEURISTICS_DIR + os.sep + '.vulnerabilities'
+HEURISTICS_DIR_IMPLEMENTATION = HEURISTICS_DIR + os.sep + 'implementation'
 
 SEQ_PATTERNS_DIR = RESOURCE_DIR + os.sep + 'seq_patterns'
 
