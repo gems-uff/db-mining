@@ -1,2 +1,0 @@
-virtuoso\.jdbc3\.Driver	
-<\s*artifactIds*>s*virtuoso-jdbc

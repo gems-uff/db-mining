@@ -1,4 +1,0 @@
-jdbc:postgres
-org\.postgresql\.ds\.PGSimpleDataSource
-com\.cockroachlabs
-cockroachbd

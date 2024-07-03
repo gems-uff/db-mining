@@ -1,4 +1,0 @@
-com\.amazon\.redshift\.jdbc\.Driver
-com\.amazon\.redshift\.jdbc\.DataSource
-jdbc:redshift
-<\s*artifactId\s*>\s*redshift-jdbc42-no-awssdk
