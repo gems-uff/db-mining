@@ -443,7 +443,7 @@ def create_pomxml_characterization(type_characterization):
 
 
 def main():
-    # create_characterization('database', False, 'database')
+     create_characterization('database', False, 'database')
     # create_characterization('implementation', False, 'implementation')
     # create_characterization('implementation', True, 'implementation_names')
     # create_characterization('query', False, 'query')
@@ -454,7 +454,7 @@ def main():
     # create_characterization_and_database(list_type, 'number_of_files')
     # create_count_dbCode_Dependencies()
     #create_vulnerability_csv()
-    create_pomxml_characterization('database')
+    #create_pomxml_characterization('database')
     
 if __name__ == "__main__":
     main()

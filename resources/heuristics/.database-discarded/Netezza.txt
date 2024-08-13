@@ -1,0 +1,3 @@
+org\.netezza\.Driver
+jdbc:netezza
+<\s*artifactId\s*>\s*netezza

@@ -1,0 +1,7 @@
+import\s{1,}com\.whalin\.MemCached
+import\s{1,}net\.spy\.memcached
+import\s{1,}net\.rubyeye\.xmemcached
+[^a-zA-Z|^\/"\_#|0-9]MemCachedClient[^a-zA-Z|^\/"\_#|0-9]
+<\s*artifactId\s*>\s*Memcached-Java-Client
+<\s*artifactId\s*>\s*spymemcached
+<\s*artifactId\s*>\s*xmemcached

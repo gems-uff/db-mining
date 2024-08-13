@@ -1,3 +1,0 @@
-import\s{1,}com\.tinkerpop\.blueprints\.impls\.orient
-[^a-zA-Z|^\/"\_#|0-9]OrientDB[^a-zA-Z|^\/"\_#|0-9]
-<\s*artifactId\s*>\s*orientdb

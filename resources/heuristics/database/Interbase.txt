@@ -1,0 +1,3 @@
+jdbc:InterBase
+InterBase\.interclient\.Driver
+<\s*artifactId\s*>\s*interclient

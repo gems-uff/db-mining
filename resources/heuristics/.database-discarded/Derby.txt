@@ -1,0 +1,4 @@
+jdbc:derby
+org.apache.derby.jdbc.ClientDriver
+<artifactId>derby
+org.apache.derby.jdbc.EmbeddedDriver

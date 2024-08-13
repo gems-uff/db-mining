@@ -1,3 +1,0 @@
-import\s{1,}org\.apache\.solr\.client\.solrj
-[^a-zA-Z|^\/"\_#|0-9]SolrClient[^a-zA-Z|^\/"\_#|0-9]
-<\s*artifactId\s*solr-solrj

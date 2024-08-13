@@ -1,4 +1,0 @@
-org\.elasticsearch\.client
-jdbc:elasticsearch
-jdbc:es
-<\s*artifactId\s*>\s*elasticsearch

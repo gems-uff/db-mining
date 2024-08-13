@@ -1,0 +1,4 @@
+org\.apache\.hive\.jdbc\.HiveDriver
+org\.apache\.hadoop\.hive\.jdbc\.HiveDriver
+jdbc:hive
+<\s*artifactId\s*>\s*hive-jdbc

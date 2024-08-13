@@ -1,2 +1,0 @@
-import\s{1,}org\.jooq
-<\s*artifactId\s*>\s*jooq

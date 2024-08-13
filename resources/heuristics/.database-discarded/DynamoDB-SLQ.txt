@@ -1,0 +1,3 @@
+jdbc:amazondynamodb
+[^a-zA-Z|^\/"\_#|0-9]AmazonDynamoDBDriver[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]DynamoDbBean[^a-zA-Z|^\/"\_#|0-9]

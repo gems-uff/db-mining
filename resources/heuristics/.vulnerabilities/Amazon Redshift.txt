@@ -1,1 +1,0 @@
-<\s*artifactId\s*>\s*redshift-jdbc42-no-awssdk

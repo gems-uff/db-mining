@@ -1,4 +1,0 @@
-import\s{1,}org\.ehcache
-[^a-zA-Z|^\/"\_#|0-9]CacheManager[^a-zA-Z|^\/"\_#|0-9]
-<\s*artifactId\s*>\s*ehcache
-<\s*artifactId\s*>\s*terracotta-toolkit

@@ -1,4 +1,0 @@
-<\s*artifactId\s*>\s*querydsl\-apt
-import\s{1,}static\s{1,}org\.jooq\.impl\.Factory
-import\s{1,}com\.querydsl\.sql\.SQLQueryFactory
-import\s{1,}javax\.persistence

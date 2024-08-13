@@ -1,0 +1,4 @@
+select\s{1,}.*from\s{1,}.*
+insert\s{1,}.*into\s{1,}.*values
+update\s{1,}.*set\s{1,}.*
+delete\s{1,}.*from\s{1,}.*
