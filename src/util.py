@@ -1,5 +1,6 @@
 import os
 import time
+import sys
 
 # Flags
 DATABASE_DEBUG = False
@@ -12,7 +13,7 @@ WORKSPACE_DIR = os.path.dirname(BASE_DIR)
 REPOS_DIR = WORKSPACE_DIR + os.sep + 'repos'
 RESOURCE_DIR = BASE_DIR + os.sep + 'resources'
 HEURISTICS_DIR = RESOURCE_DIR + os.sep + 'heuristics'
-HEURISTICS_DIR_EOI = HEURISTICS_DIR + os.sep + 'eo' 
+HEURISTICS_DIR_EOI = HEURISTICS_DIR + os.sep + 'eo'
 HEURISTICS_DIR_FIRST_LEVEL = HEURISTICS_DIR + os.sep + '.first-level'
 HEURISTICS_DIR_SECOND_LEVEL = HEURISTICS_DIR + os.sep + '.second-level'
 HEURISTICS_DIR_TEMP_FILES = HEURISTICS_DIR + os.sep + '.tempFiles'
@@ -81,5 +82,21 @@ def green(string):
 def yellow(string):
     return '\033[33m' + string + '\033[0m'
 
+
 def get_database_uri(database_name):
     return BASE_DIR + os.sep + database_name
+
+
+def filter_repositories(df, filters, sysexit=True):
+    """Apply regex filters in repositories df"""
+    df['reponame'] = df["owner"] + "/" + df["name"]
+    if filters:
+        condition = (df['reponame'] == '') | False
+        for filter in filters:
+            condition = condition | df['reponame'].str.match(filter)
+        df = df[condition]
+    if len(df) == 0 and sysexit:
+        print('No repositories found. Exiting.', file=sys.stderr)
+        sys.exit(1)
+    del df['reponame']
+    return df

@@ -32,7 +32,6 @@ To find out which DBMS is used by a given project, we use heuristics that are ba
 | Name          | Goal                                                | Input          | Output        |
 | ------------- | --------------------------------------------------- | -------------- | ------------- |
 | extract.py    | Runs git grep and populates the relational DBMS with the results            | annotated_java.xlsx | None       |
-| extract_historical.py    | Runs git grep on ten slices of the projects history and populates the DBMS | annotated_java.xlsx | None         |
 | create_file_dbCode.py    | Generates .txt files that contains dbCode Heuristics            | DataBase (Implementation Heuristics) | Path .first-level |
 | extract_classes.py    | Runs git grep and populates the database with dependencies of dbCode            | Path .first-level | None          |
 | create_vulnerabilityDatabase.py    | Produces a database about vulnerabilities            | Vulnerability_Version_20061101_Date_20220913.xlsx | None        |
@@ -51,7 +50,7 @@ The table below shows the workflow for analyzing the results for the current ver
 | results_implementation_characterization.ipynb   | Produces statistics about implementation Heuristics            | database.xlsx, implementation.xlsx, implementation_names.xlsx, query.xlsx | None          |
   
 ## Historical Analysis
-The table below shows the workflow for the historical analysis of the results. This analysis only requires the execution of the **Heuristics Extraction script** extract_historical.py".
+The table below shows the workflow for the historical analysis of the results. This analysis only requires the execution of the **Heuristics Extraction script** in historical mode: `extract.py -s 10 -l all`".
 
 | Name          | Goal                                                | Input          | Output        |
 | ------------- | --------------------------------------------------- | -------------- | ------------- |
@@ -187,7 +186,7 @@ But, if you want to run the project to create your own analysis, go to [Steps fo
 
 `~/db-mining$ python src/reset.py`
 
-5. Run the `extract.py` to execute the **Current Analysis** or `extract_historical.py` to execute the **Historical Analysis** and populate the database:
+5. Run the `extract.py` to execute the **Current Analysis** or `extract.py -s 10 -l all` to execute the **Historical Analysis** and populate the database:
 
 `~/db-mining$ python src/extract.py`
 
