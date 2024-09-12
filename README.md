@@ -232,7 +232,16 @@ The URL http://localhost:3000 is served by Node.js and has hot reload capability
 ## <a name="own-analysis"></a>Steps for creating your own analysis
 
 ### Steps for Current Analysis
-*Soon...*
+1. Go into the project directory:
+`~$ cd db-mining`
+
+2. Run the `results_in_xlsx.py` to generate a one-hot coded dataset with the results of the current Analysis:
+
+`~/db-mining$ python src/results_in_xlsx.py`
+
+3. Execute the next scripts in Google Colab or Jupyter Notebook platforms. 
+
+4. Run the `results_implementation_characterization.ipynb` to produce statistics about DBMS adopted.
 
 ### Steps for Historical Analysis
 

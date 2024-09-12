@@ -28,9 +28,11 @@ REACT_BUILD_DIR = BASE_DIR + os.sep + 'web' + os.sep + 'build'
 REACT_STATIC_DIR = REACT_BUILD_DIR + os.sep + 'static'
 
 # Files
-PROJECTS_FILE = RESOURCE_DIR + os.sep + 'projects.xlsx'
+PROJECTS_FILE = RESOURCE_DIR + os.sep + 'projects_2024.xlsx'
 POMRESULTS = RESOURCE_DIR + os.sep + 'pomXmlResults.xlsx'
-FILTERED_FILE = RESOURCE_DIR + os.sep + 'filtered_projects.xlsx'
+FILTERED_FILE = RESOURCE_DIR + os.sep + 'filtered_projects_2021.xlsx'
+FILTERED_FILE_ORM_BD = RESOURCE_DIR + os.sep + 'filtered_projects_2021_ORMBD.xlsx'
+FILE_BDENGINE = RESOURCE_DIR + os.sep + 'DB_ENGINES_setembro_2024.xlsx'
 ANNOTATED_FILE = RESOURCE_DIR + os.sep + 'annotated.xlsx'
 ANNOTATED_FILE_JAVA = RESOURCE_DIR + os.sep + 'annotated_java.xlsx' #'annotated_java_test.xlsx' 
 ANNOTATED_FILE_JAVA_TEST = RESOURCE_DIR + os.sep + 'annotated_java_test.xlsx'
