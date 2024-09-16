@@ -11,7 +11,7 @@ import pandas as pd
 import database as db
 from sqlalchemy.orm import load_only, selectinload
 from sqlalchemy import update
-from util import ANNOTATED_FILE_JAVA, HEURISTICS_DIR, REPOS_DIR, filter_repositories, red, green, yellow, CODE_DEBUG
+from util import ANNOTATED_FILE_JAVA_TEST, HEURISTICS_DIR, REPOS_DIR, filter_repositories, red, green, yellow, CODE_DEBUG
 
 
 # Git rev-parse command
@@ -67,7 +67,7 @@ def do_commit():
     db.commit()
 
 
-def get_or_create_projects(filename=ANNOTATED_FILE_JAVA, filters=[], sysexit=True, create_version=False):
+def get_or_create_projects(filename=ANNOTATED_FILE_JAVA_TEST, filters=[], sysexit=True, create_version=False):
 
     if not os.path.exists(filename) and sysexit:
         print(f"Invalid input path: {filename}", file=sys.stderr)
@@ -276,6 +276,34 @@ def list_commits(mode="all", slices=10):
     #print(list(range(len(all_commits)))[size-1::size])
     return all_commits[size-1::size], all_commits[-1][0]
 
+def list_commits_by_n(mode="all", n=100):
+    if mode == "firstparent":
+        mode_cmd = ["--first-parent", "HEAD"]
+    else:
+        mode_cmd = ["--all"]
+    cmd = REVLIST_COMMAND + mode_cmd
+    p = subprocess.run(REVLIST_COMMAND + mode_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if p.stderr:
+        raise subprocess.CalledProcessError(p.returncode, cmd, p.stdout, p.stderr)
+    
+    all_commits = []
+    for i, line in enumerate(iter(p.stdout.decode('utf-8').split('\n'))):
+        if i % 2 == 0:
+            continue
+        commit, datestr = line.strip().strip("'").split(' ', 1)
+        commit_date = parsedate_to_datetime(datestr).astimezone(timezone.utc)
+        all_commits.append((commit, commit_date))
+    
+    if not all_commits:
+        return [], None
+    
+    # Pegar commits de n em n
+    commits_by_n = []
+    for i in range(n - 1, len(all_commits), n):  # Pula n commits e pega o último de cada intervalo
+        commits_by_n.append(all_commits[i])
+    
+    return commits_by_n, all_commits[-1][0]
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -283,7 +311,7 @@ def main():
         description='Extract heuristics from repositories')
 
     parser.add_argument(
-        '-i', '--input', default=ANNOTATED_FILE_JAVA,
+        '-i', '--input', default=ANNOTATED_FILE_JAVA_TEST,
         help="Input xlsx file")
     parser.add_argument(
         '-f', '--filter', default=[], nargs="*",
@@ -297,7 +325,7 @@ def main():
         help="Rev-list execution mode"
     )
     parser.add_argument(
-        '-s', '--slices', default=1, type=int,
+        '-s', '--slices', default=100, type=int,
         help="Number of slices. Use 0 to get all commits and 1 to get latest."
     )
 
@@ -324,7 +352,7 @@ def main():
     for j, project in enumerate(projects):
         try:
             os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
-            commits, last_sha1 = list_commits(args.list_commits_mode, args.slices)
+            commits, last_sha1 = list_commits_by_n(args.list_commits_mode, args.slices)
             tam = len(commits)
             print(f'\nProcessing {tam} commits of {project.name} project.')
             if tam > 1:
