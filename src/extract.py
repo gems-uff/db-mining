@@ -11,7 +11,7 @@ import pandas as pd
 import database as db
 from sqlalchemy.orm import load_only, selectinload
 from sqlalchemy import update
-from util import ANNOTATED_FILE_JAVA_TEST, HEURISTICS_DIR, REPOS_DIR, filter_repositories, red, green, yellow, CODE_DEBUG
+from util import ANNOTATED_FILE_JAVA, HEURISTICS_DIR, REPOS_DIR, filter_repositories, red, green, yellow, CODE_DEBUG
 
 
 # Git rev-parse command
@@ -67,7 +67,7 @@ def do_commit():
     db.commit()
 
 
-def get_or_create_projects(filename=ANNOTATED_FILE_JAVA_TEST, filters=[], sysexit=True, create_version=False):
+def get_or_create_projects(filename=ANNOTATED_FILE_JAVA, filters=[], sysexit=True, create_version=False):
 
     if not os.path.exists(filename) and sysexit:
         print(f"Invalid input path: {filename}", file=sys.stderr)
@@ -311,7 +311,7 @@ def main():
         description='Extract heuristics from repositories')
 
     parser.add_argument(
-        '-i', '--input', default=ANNOTATED_FILE_JAVA_TEST,
+        '-i', '--input', default=ANNOTATED_FILE_JAVA,
         help="Input xlsx file")
     parser.add_argument(
         '-f', '--filter', default=[], nargs="*",
