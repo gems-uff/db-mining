@@ -325,7 +325,7 @@ def main():
         help="Rev-list execution mode"
     )
     parser.add_argument(
-        '-s', '--slices', default=100, type=int,
+        '-s', '--slices', default=1, type=int,
         help="Number of slices. Use 0 to get all commits and 1 to get latest."
     )
 
@@ -352,7 +352,7 @@ def main():
     for j, project in enumerate(projects):
         try:
             os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
-            commits, last_sha1 = list_commits_by_n(args.list_commits_mode, args.slices)
+            commits, last_sha1 = list_commits(args.list_commits_mode, args.slices) #mudar para list_commits_by_n quando for histórico
             tam = len(commits)
             print(f'\nProcessing {tam} commits of {project.name} project.')
             if tam > 1:
