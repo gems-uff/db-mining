@@ -1,0 +1,2 @@
+(\s{1,}|[.,(]|^)ClearWithShortcutTests(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)ExistingScreenshotTestsWithFullSizePhotographer(\s{1,}|[.,(]|^)

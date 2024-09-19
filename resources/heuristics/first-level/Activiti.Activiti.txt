@@ -1,4 +1,3 @@
-(\s{1,}|[.,(]|^)MockResolverFactory(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)ProcessEngineConfigurationImpl(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)StandaloneMybatisTransactionContext(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)BulkDeleteOperation(\s{1,}|[.,(]|^)
@@ -14,6 +13,7 @@
 (\s{1,}|[.,(]|^)MetaDataTest(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)MyTestMapper(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)ProcessEngineInitializationTest(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)MockResolverFactory(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)JpaHelper(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)AbstractEntityManager(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)AttachmentEntityManager(\s{1,}|[.,(]|^)

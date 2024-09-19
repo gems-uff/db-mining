@@ -1,0 +1,7 @@
+(\s{1,}|[.,(]|^)XxlJobGroupDao(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)XxlJobInfoDao(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)XxlJobLogDao(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)XxlJobLogGlueDao(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)XxlJobLogReportDao(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)XxlJobRegistryDao(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)XxlJobUserDao(\s{1,}|[.,(]|^)
