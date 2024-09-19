@@ -1,5 +1,0 @@
-([.,\s(]|^)CommandTestWithFakePlayers([.,\s(]|$)
-([.,\s(]|^)SetWorldSpawnCommandTest([.,\s(]|$)
-([.,\s(]|^)TestForBlocksCommandTest([.,\s(]|$)
-([.,\s(]|^)ToggleDownfallCommandTest([.,\s(]|$)
-([.,\s(]|^)GlowBossTest([.,\s(]|$)

@@ -1,7 +1,0 @@
-([.,\s(]|^)ISqlRunner([.,\s(]|$)
-([.,\s(]|^)LambdaQueryWrapper([.,\s(]|$)
-([.,\s(]|^)QueryWrapper([.,\s(]|$)
-([.,\s(]|^)ReflectionKit([.,\s(]|$)
-([.,\s(]|^)MybatisPlusInterceptorTest([.,\s(]|$)
-([.,\s(]|^)BaseTest([.,\s(]|$)
-([.,\s(]|^)JdbcUtilsTest([.,\s(]|$)

@@ -1,3 +1,0 @@
-([.,\s(]|^)JspFactory([.,\s(]|$)
-([.,\s(]|^)JdoSql([.,\s(]|$)
-([.,\s(]|^)JdoSqlFilter([.,\s(]|$)

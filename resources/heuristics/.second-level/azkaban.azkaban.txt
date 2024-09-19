@@ -1,4 +1,0 @@
-([.,\s(]|^)ServiceProviderTest([.,\s(]|$)
-([.,\s(]|^)ArchiveUnthinnerTest([.,\s(]|$)
-([.,\s(]|^)AzkabanProjectLoaderTest([.,\s(]|$)
-([.,\s(]|^)ProjectManagerTest([.,\s(]|$)

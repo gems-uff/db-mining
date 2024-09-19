@@ -1,2 +1,0 @@
-([.,\s(]|^)KafkaSchemaRegistry([.,\s(]|$)
-([.,\s(]|^)RestApiTest([.,\s(]|$)

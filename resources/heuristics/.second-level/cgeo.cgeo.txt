@@ -1,5 +1,0 @@
-([.,\s(]|^)GCLogin([.,\s(]|$)
-([.,\s(]|^)GCParser([.,\s(]|$)
-([.,\s(]|^)FileParser([.,\s(]|$)
-([.,\s(]|^)Geocache([.,\s(]|$)
-([.,\s(]|^)AbstractCacheComparator([.,\s(]|$)

@@ -1,5 +1,0 @@
-([.,\s(]|^)HtmlFormatter([.,\s(]|$)
-([.,\s(]|^)DiscoverySelectorResolverTest([.,\s(]|$)
-([.,\s(]|^)SanityTest([.,\s(]|$)
-([.,\s(]|^)SanityTest([.,\s(]|$)
-([.,\s(]|^)TestNGCucumberRunnerTest([.,\s(]|$)
