@@ -1,4 +1,0 @@
-(\s{1,}|[.,(]|^)TAccountMapper(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)AccountMaintainServiceImpl(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)TOrderMapper(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)OrderManageImpl(\s{1,}|[.,(]|^)

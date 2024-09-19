@@ -1,3 +1,0 @@
-(\s{1,}|[.,(]|^)DatabaseAccess(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)DatabaseAccessOpenSource(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)DatabaseLogger(\s{1,}|[.,(]|^)

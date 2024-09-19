@@ -1,5 +1,0 @@
-(\s{1,}|[.,(]|^)EventResource(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)MetadataResource(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)WorkflowResource(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)MySQLGrpcEndToEndTest(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)PostgresGrpcEndToEndTest(\s{1,}|[.,(]|^)
