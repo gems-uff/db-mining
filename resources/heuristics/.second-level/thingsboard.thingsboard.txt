@@ -1,6 +1,0 @@
-([.,\s(]|^)AssetController([.,\s(]|$)
-([.,\s(]|^)DefaultTbResourceService([.,\s(]|$)
-([.,\s(]|^)JpaAssetDao([.,\s(]|$)
-([.,\s(]|^)HsqlComponentDescriptorInsertRepository([.,\s(]|$)
-([.,\s(]|^)HsqlEventInsertRepository([.,\s(]|$)
-([.,\s(]|^)HsqlRelationInsertRepository([.,\s(]|$)
