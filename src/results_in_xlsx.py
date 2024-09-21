@@ -443,15 +443,15 @@ def create_pomxml_characterization(type_characterization):
 
 
 def main():
-    # create_characterization('database', False, 'database')
+     create_characterization('database', False, 'database')
     # create_characterization('implementation', False, 'implementation')
-    # create_characterization('implementation', True, 'implementation_names')
-     create_characterization('query', False, 'query')
+     create_characterization('implementation', True, 'implementation_names')
+    # create_characterization('query', False, 'query')
     # create_count_sql()
     # create_count_implementation(True)
     # create_count_implementation(False)
-     list_type = ['implementation', 'classes']
-     create_characterization_and_database(list_type, 'number_of_files')
+    # list_type = ['implementation', 'classes']
+    # create_characterization_and_database(list_type, 'number_of_files')
     # create_count_dbCode_Dependencies()
     #create_vulnerability_csv()
     #create_pomxml_characterization('database')
