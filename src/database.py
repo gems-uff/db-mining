@@ -10,6 +10,7 @@ application = Flask(__name__, static_folder=REACT_STATIC_DIR, template_folder=RE
 
 application.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 application.config['SQLALCHEMY_ECHO'] = DATABASE_DEBUG
+db = SQLAlchemy(application)
 application.app_context().push
 
 # for SQLite, the JSON file needs to have "database_type": "sqlite"
