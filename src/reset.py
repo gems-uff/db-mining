@@ -41,7 +41,7 @@ def main():
 
             process = subprocess.run(['git', 'config', 'core.precomposeunicode', 'false'], capture_output=True)
             if process.stderr:
-                raise subprocess.CalledProcessError(process.stderr)
+                raise subprocess.CalledProcessError(process.returncode, process.args, output=process.stdout, stderr=process.stderr)
 
             cmd = ['git', 'reset', '--hard', '-q', 'origin/HEAD']
             process = subprocess.run(cmd, capture_output=True)
