@@ -6,6 +6,7 @@ from timeit import default_timer as timer
 from email.utils import parsedate_to_datetime
 from datetime import timezone
 
+
 import pandas as pd
 
 import database as db
@@ -276,7 +277,7 @@ def list_commits(mode="all", slices=10):
     #print(list(range(len(all_commits)))[size-1::size])
     return all_commits[size-1::size], all_commits[-1][0]
 
-def list_commits_by_n(mode="all", n=100):
+def list_commits_by_n(mode="all", n=1):
     if mode == "firstparent":
         mode_cmd = ["--first-parent", "HEAD"]
     else:
@@ -352,7 +353,7 @@ def main():
     for j, project in enumerate(projects):
         try:
             os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
-            commits, last_sha1 = list_commits(args.list_commits_mode, args.slices) #mudar para list_commits_by_n quando for histórico
+            commits, last_sha1 = list_commits_by_n(args.list_commits_mode, args.slices) #mudar para list_commits_by_n quando for histórico
             tam = len(commits)
             print(f'\nProcessing {tam} commits of {project.name} project.')
             if tam > 1:
