@@ -134,22 +134,25 @@ class Vulnerability(db.Model):
 ###########################################
 
 def connect():
-    if config['drop_database'] == 'True':
-        print('Deleting database...')
-        drop_database(application.config['SQLALCHEMY_DATABASE_URI'])
+    with application.app_context():
+        if config['drop_database'] == 'True':
+            print('Deleting database...')
+            drop_database(application.config['SQLALCHEMY_DATABASE_URI'])
 
-    if not database_exists(application.config['SQLALCHEMY_DATABASE_URI']):
-        print('Creating Database...')
-        create_database(application.config['SQLALCHEMY_DATABASE_URI'])
-        db.create_all()
+        if not database_exists(application.config['SQLALCHEMY_DATABASE_URI']):
+            print('Creating Database...')
+            create_database(application.config['SQLALCHEMY_DATABASE_URI'])
+            db.create_all()
 
 
 def commit():
-    db.session.commit()
+    with application.app_context():
+        db.session.commit()
 
 
 def close():
-    db.session.close()
+    with application.app_context():
+        db.session.close()
 
 
 ###########################################
@@ -157,7 +160,8 @@ def close():
 ###########################################
 
 def query(*model, **kwargs):
-    return db.session.query(*model).filter_by(**kwargs)
+    with application.app_context():
+        return db.session.query(*model).filter_by(**kwargs)
 
 
 def create(model, **kwargs):
@@ -174,11 +178,13 @@ def get_or_create(model, **kwargs):
 
 
 def add(instance):
-    db.session.add(instance)
+    with application.app_context():
+        db.session.add(instance)
 
 
 def delete(instance):
-    db.session.delete(instance)
+    with application.app_context():
+        db.session.delete(instance)
 
 
 def main():
