@@ -254,8 +254,10 @@ def main():
     for i, label in enumerate(labels):
         heuristic = label.heuristic
         heuristic_objct_label = db.query(db.Label).filter(db.Label.id == heuristic.label_id).first()
-        project = next((x for x in projects if x.owner == heuristic_objct_label.name.split(".")[0] 
-                        and x.name == heuristic_objct_label.name.split(".")[1]), None)
+        nomeOwner = heuristic_objct_label.name.split(".")[0].strip().lower()
+        nameProject = heuristic_objct_label.name.split(".")[1].strip().lower()
+        project = next((x for x in projects if x.owner.strip().lower() ==  nomeOwner
+                        and x.name.strip().lower() == nameProject), None)
         if (project is None ):
             continue
         version = project.versions[0]  # TODO: fix this to deal with multiple versions
