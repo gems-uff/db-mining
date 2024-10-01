@@ -353,7 +353,7 @@ def main():
     for j, project in enumerate(projects):
         try:
             os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
-            commits, last_sha1 = list_commits(args.list_commits_mode, args.slices) #mudar para list_commits_by_n quando for histórico
+            commits, last_sha1 = list_commits_by_n(args.list_commits_mode, args.slices) #mudar para list_commits_by_n quando for histórico
             tam = len(commits)
             print(f'\nProcessing {tam} commits of {project.name} project.')
             if tam > 1:
@@ -401,9 +401,8 @@ def main():
                 for i, label in enumerate(labels):
                     heuristic = label.heuristic
                     # Print progress information Heuristics #projects * len(labels) + (j + 1))
-                    progress = '{:.2%}'.format((j * len(labels) + (i + 1)) / status['Total'])
+                    progress = '{:.2%}'.format((j *len(labels) + (i + 1)) / status['Total'])
                     print(f'[{progress}] Searching for {label.name} in {project.owner}/{project.name}:', end=' ')
-
                     # Try to get a previous execution
                     execution = executions.get((heuristic, version), None)
                     if not execution:
