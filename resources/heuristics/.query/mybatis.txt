@@ -1,2 +1,2 @@
-import\s{1,}static\s{1,}org\.apache\.ibatis\.jdbc\.SelectBuilder\
-import\s{1,}static\s{1,}org\.apache\.ibatis\.jdbc\.SqlBuilder\
+import\s{1,}static\s{1,}org\.apache\.ibatis\.jdbc\.SelectBuilder\.
+import\s{1,}static\s{1,}org\.apache\.ibatis\.jdbc\.SqlBuilder\.
