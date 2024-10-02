@@ -445,10 +445,10 @@ def create_pomxml_characterization(type_characterization):
 def main():
     # create_characterization('database', False, 'database')
     
-    # create_characterization('implementation', False, 'implementation')
+     create_characterization('implementation', False, 'implementation')
     # create_characterization('implementation', True, 'implementation_names')
     
-     create_characterization('query', False, 'query')
+    #create_characterization('query', False, 'query')
     # create_count_sql()
     
     # create_count_implementation(True)
