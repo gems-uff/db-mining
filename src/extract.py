@@ -85,7 +85,10 @@ def get_or_create_projects(filename=ANNOTATED_FILE_JAVA, filters=[], sysexit=Tru
         projects_excel[(project_excel['owner'], project_excel['name'])] = project_excel
 
     # Loading projects from the database.
-    projects_db = db.query(db.Project).options(load_only('id', 'owner', 'name'), selectinload(db.Project.versions).load_only('id')).all()
+    projects_db = db.query(db.Project).options(
+        load_only(db.Project.id, db.Project.owner, db.Project.name),
+        selectinload(db.Project.versions).load_only(db.Version.id)
+    ).all()
 
     status = {
         'Excel': len(projects_excel),
@@ -178,7 +181,11 @@ def get_or_create_labels(heuristics_dir=HEURISTICS_DIR, label_type=None):
         populate_labels_fs(labels_fs, heuristics_dir, label_type)
 
     # Loading labels from the database.
-    labels_db = db.query(db.Label).options(selectinload(db.Label.heuristic).options(selectinload(db.Heuristic.executions).defer('output').defer('user'))).all()
+    labels_db = db.query(db.Label).options(
+        selectinload(db.Label.heuristic)
+        .options(selectinload(db.Heuristic.executions)
+                 .defer(db.Execution.output)
+                 .defer(db.Execution.user))).all()
 
     status = {
         'File System': len(labels_fs),
@@ -353,7 +360,7 @@ def main():
     for j, project in enumerate(projects):
         try:
             os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
-            commits, last_sha1 = list_commits(args.list_commits_mode, args.slices) #mudar para list_commits_by_n quando for histórico
+            commits, last_sha1 = list_commits_by_n(args.list_commits_mode, args.slices) #mudar para list_commits_by_n quando for histórico
             tam = len(commits)
             print(f'\nProcessing {tam} commits of {project.name} project.')
             if tam > 1:
