@@ -334,7 +334,7 @@ def main():
         '--max-commit', default=None, type=int,
         help="Last commit in interval"
     )
-
+    cwd = os.getcwd()
     args = parser.parse_args()
 
     db.connect()
@@ -376,7 +376,7 @@ def main():
                     .values(part_commit = None)
                 )
             for c, (commit, commit_date) in enumerate(commits):
-                if os.path.exists(".stop"):
+                if os.path.exists(os.path.join(cwd, ".stop")):
                     print("Found .stop file. Stopping execution")
                     break
                 start = timer()
