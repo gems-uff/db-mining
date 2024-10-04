@@ -1,0 +1,8 @@
+redis\.clients\.jedis\.Jedis
+com\.lambdaworks\.redis
+[^a-zA-Z|^\/"\_#|0-9]RedisClient[^a-zA-Z|^\/"\_#|0-9]
+[^a-zA-Z|^\/"\_#|0-9]Jedis[^a-zA-Z|^\/"\_#|0-9]
+redis:
+<\s*artifactId\s*>\s*lettuce
+<\s*artifactId\s*>\s*jedis
+commons\-pool2

@@ -1,2 +1,0 @@
-com\.filemaker\.jdbc\.Driver
-jdbc:filemaker

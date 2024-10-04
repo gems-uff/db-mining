@@ -1,3 +1,0 @@
-(\s{1,}|[.,(]|^)HugeFactoryAuthProxy(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)EntityManager(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)StandardAuthManager(\s{1,}|[.,(]|^)

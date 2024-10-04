@@ -1,0 +1,3 @@
+SQLite\.JDBCDriver
+jdbc:sqlite
+sqlitejdbc

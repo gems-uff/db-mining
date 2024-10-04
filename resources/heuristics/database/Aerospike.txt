@@ -1,3 +1,0 @@
-import\s{1,}com\.aerospike\.client
-[^a-zA-Z|^\/"\_#|0-9]AerospikeClient[^a-zA-Z|^\/"\_#|0-9]
-<\s*artifactId\s*>\s*aerospike-client

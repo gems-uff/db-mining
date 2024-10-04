@@ -1,7 +1,0 @@
-<\s*artifactId\s*>\s*jooq
-<\s*artifactId\s*>\s*jooq-meta
-<\s*artifactId\s*>\s*jooq-codegen
-www\.jooq\.org\/xsd\/jooq-codegen
-org\.jooq\.codegen\.JavaGenerator
-import\s{1,}org\.jooq
-import\s{1,}static\s{1,}org\.jooq

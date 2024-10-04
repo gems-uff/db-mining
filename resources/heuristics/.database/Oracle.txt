@@ -1,0 +1,5 @@
+oracle\.jdbc\.driver\.OracleDriver
+oracle\.jdbc\.OracleDriver
+jdbc:oracle
+ojdbc
+com\.oracle

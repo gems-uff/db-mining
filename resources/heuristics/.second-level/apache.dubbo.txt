@@ -1,0 +1,6 @@
+(\s{1,}|[.,(]|^)JValidatorTest(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)JValidatorTestTarget(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)DubboEndpointAnnotationAutoConfiguration(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)DubboQosEndpoints(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)DubboEndpointAnnotationAutoConfigurationTest(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)DubboEndpointTest(\s{1,}|[.,(]|^)

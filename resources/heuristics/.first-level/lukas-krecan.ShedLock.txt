@@ -1,8 +1,0 @@
-(\s{1,}|[.,(]|^)JooqLockProvider(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)JooqStorageAccessor(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)Shedlock(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)AbstractJooqLockProviderIntegrationTest(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)HsqlJooqLockProviderIntegrationTest(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)MariaDbJooqLockProviderIntegrationTest(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)MySqlJooqLockProviderIntegrationTest(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)PostgresJooqLockProviderIntegrationTest(\s{1,}|[.,(]|^)

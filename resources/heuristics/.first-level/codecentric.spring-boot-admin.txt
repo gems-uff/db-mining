@@ -1,3 +1,0 @@
-(\s{1,}|[.,(]|^)NotificationFilterController(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)ApplicationsController(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)InstancesController(\s{1,}|[.,(]|^)

@@ -1,3 +1,0 @@
-<\s*artifactId\s*>\s*google-cloud-firestore
-import\s{1,}com\.google\.cloud\.firestore
-[^a-zA-Z|^\/"\_#|0-9]FirestoreOptions[^a-zA-Z|^\/"\_#|0-9]

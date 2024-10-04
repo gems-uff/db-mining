@@ -1,4 +1,0 @@
-org\.firebirdsql\.jdbc\.FBDriver
-jdbc:firebirdsql
-<\s*artifactId\s*>\s*jaybird
-<\s*artifactId\s*>\s*fbclient

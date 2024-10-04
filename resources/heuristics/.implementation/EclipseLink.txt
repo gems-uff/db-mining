@@ -1,8 +1,0 @@
-org\.eclipse\.persistence\.jpa\.PersistenceProvider
-eclipselink
-eclipselink\.logging
-eclipselink\.nosql
-org\.eclipse\.persistence\.platform\.database
-org\.eclipse\.persistence\.nosql\.adapters
-org\.eclipse\.persistence\.eis\.adapters
-import\s{1,}org\.eclipse\.persistence

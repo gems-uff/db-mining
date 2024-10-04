@@ -1,3 +1,0 @@
-com\.ibm\.db2\.jcc\.DB2Driver
-jdbc:db2
-com\.ibm\.db2

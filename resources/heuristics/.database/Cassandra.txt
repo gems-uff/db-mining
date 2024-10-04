@@ -1,0 +1,4 @@
+import\s{1,}com\.datastax
+[^a-zA-Z|^\/"\_#|0-9]CassandraConnector[^a-zA-Z|^\/"\_#|0-9]
+<\s*artifactId\s*>\s*cassandra
+com\.datastax\.oss

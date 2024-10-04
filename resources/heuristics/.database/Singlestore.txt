@@ -1,0 +1,5 @@
+<\s*artifactId\s*>\s*singlestore-jdbc-client
+jdbc:singlestore
+com\.singlestore\.jdbc\.Driver
+cdata\.jdbc\.singlestore\.SingleStoreDriver
+<\s*artifactId\s*>\s*cdata-singlestore-connector

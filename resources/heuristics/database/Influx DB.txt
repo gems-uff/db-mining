@@ -1,4 +1,0 @@
-import\s{1,}com\.influxdb
-[^a-zA-Z|^\/"\_#|0-9]InfluxDBClient[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]FluxClient[^a-zA-Z|^\/"\_#|0-9]
-<\s*artifactId\s*>\s*influxdb-client-java

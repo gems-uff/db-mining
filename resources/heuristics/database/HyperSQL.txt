@@ -1,3 +1,0 @@
-jdbc:hsqldb
-org\.hsqldb\.jdbc\.JDBCDriver
-<\s*artifactId\s*>\s*hsqldb

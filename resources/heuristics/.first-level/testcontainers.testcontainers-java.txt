@@ -1,2 +1,0 @@
-(\s{1,}|[.,(]|^)AbstractIntegrationTest(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)DemoEntity(\s{1,}|[.,(]|^)

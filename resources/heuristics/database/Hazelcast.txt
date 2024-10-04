@@ -1,3 +1,0 @@
-import\s{1,}com\.hazelcast
-[^a-zA-Z|^\/"\_#|0-9]HazelcastClient[^a-zA-Z|^\/"\_#|0-9]
-<*\sartifactId*\s>*\shazelcast

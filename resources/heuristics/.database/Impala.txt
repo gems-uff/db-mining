@@ -1,0 +1,4 @@
+com\.cloudera\.impala\.jdbc
+jdbc:verdict:impala
+jdbc:impala
+<\s*artifactId\s*>\s*ImpalaJDBC

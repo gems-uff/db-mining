@@ -1,0 +1,4 @@
+import\s{1,}com\.sap\.db\.jdbc\.Driver
+com\.sap\.db\.jdbc\.Driver
+jdbc:sap
+<\s*artifactId\s*>\s*ngdbc

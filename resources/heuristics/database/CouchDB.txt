@@ -1,3 +1,0 @@
-import\s{1,}org\.ektorp
-[^a-zA-Z|^\/"\_#|0-9]CouchDbConnector[^a-zA-Z|^\/"\_#|0-9]
-<\s*artifactId\s*>\s*org\.ektorp

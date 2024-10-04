@@ -1,5 +1,0 @@
-org\.postgresql\.Driver
-jdbc:postgresql
-<\s*artifactId\s*>\s*postgresql
-org\.postgresql\.ds\.PGSimpleDataSource
-com\.cockroachlabs

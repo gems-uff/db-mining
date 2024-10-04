@@ -1,0 +1,3 @@
+com\.ingres\.jdbc\.IngresDriver
+jdbc:ingres
+<\s*artifactId\s*>\s*iijdbc

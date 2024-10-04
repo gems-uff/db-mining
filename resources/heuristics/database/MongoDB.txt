@@ -1,5 +1,0 @@
-import\s{1,}com\.mongodb
-[^a-zA-Z|^\/"\_#|0-9]MongoClient[^a-zA-Z|^\/"\_#|0-9]
-org\.mongodb
-mongodb-driver
-mongodb-java-driver

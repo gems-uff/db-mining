@@ -1,3 +1,0 @@
-(\s{1,}|[.,(]|^)HikariConfigurationUtil(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)HikariConnectionProvider(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)TestHibernate(\s{1,}|[.,(]|^)

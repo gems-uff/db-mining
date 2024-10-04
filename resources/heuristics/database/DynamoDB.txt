@@ -1,4 +1,0 @@
-import\s{1,}com\.amazonaws\.services\.dynamodbv2
-[^a-zA-Z|^\/"\_#|0-9]DynamoDB[^a-zA-Z|^\/"\_#|0-9]
-<\s*artifactId\s*dynamodb
-import\s{1,}software\.amazon\.awssdk\.services\.dynamodb

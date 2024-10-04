@@ -1,0 +1,4 @@
+import\s{1,}com\.couchbase\.client\.java
+[^a-zA-Z|^\/"\_#|0-9]CouchbaseCluster[^a-zA-Z|^\/"\_#|0-9]
+(com\.couchbase\.client\.+)\n(\s*<artifactId\s*>\s*java-client)
+couchbase-client
