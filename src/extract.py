@@ -262,7 +262,7 @@ def validate_ignore_case(label):
     return label.name.startswith('(IgnoreCase')
 
 
-def list_commits(mode="all", slices=10):
+def list_commits(mode="all", n=10, proportional=False):
     if mode == "firstparent":
         mode_cmd = ["--first-parent", "HEAD"]
     else:
@@ -271,29 +271,7 @@ def list_commits(mode="all", slices=10):
     p = subprocess.run(REVLIST_COMMAND + mode_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     if p.stderr:
         raise subprocess.CalledProcessError(p.returncode, cmd, p.stdout, p.stderr)
-    all_commits = []
-    for i, line in enumerate(iter(p.stdout.decode('utf-8').split('\n'))):
-        if i % 2 == 0:
-            continue
-        commit, datestr = line.strip().strip("'").split(' ', 1)
-        commit_date = parsedate_to_datetime(datestr).astimezone(timezone.utc)
-        all_commits.append((commit, commit_date))
-    if not slices:
-        return all_commits, all_commits[-1][0]
-    size = len(all_commits) // slices
-    #print(list(range(len(all_commits)))[size-1::size])
-    return all_commits[size-1::size], all_commits[-1][0]
 
-def list_commits_by_n(mode="all", n=1):
-    if mode == "firstparent":
-        mode_cmd = ["--first-parent", "HEAD"]
-    else:
-        mode_cmd = ["--all"]
-    cmd = REVLIST_COMMAND + mode_cmd
-    p = subprocess.run(REVLIST_COMMAND + mode_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    if p.stderr:
-        raise subprocess.CalledProcessError(p.returncode, cmd, p.stdout, p.stderr)
-    
     all_commits = []
     for i, line in enumerate(iter(p.stdout.decode('utf-8').split('\n'))):
         if i % 2 == 0:
@@ -301,16 +279,24 @@ def list_commits_by_n(mode="all", n=1):
         commit, datestr = line.strip().strip("'").split(' ', 1)
         commit_date = parsedate_to_datetime(datestr).astimezone(timezone.utc)
         all_commits.append((commit, commit_date))
-    
+
     if not all_commits:
         return [], None
-    
-    # Pegar commits de n em n
-    commits_by_n = []
-    for i in range(n - 1, len(all_commits), n):  # Pula n commits e pega o último de cada intervalo
-        commits_by_n.append(all_commits[i])
-    
-    return commits_by_n, all_commits[-1][0]
+
+    if proportional:
+        # Divide repository into n slices
+        if not n:
+            return all_commits, all_commits[-1][0]
+        size = len(all_commits) // n
+
+        return all_commits[size-1::size], all_commits[-1][0]
+    else:
+        # Create slices with n commits
+        commits_by_n = []
+        for i in range(n - 1, len(all_commits), n):  # Pula n commits e pega o último de cada intervalo
+            commits_by_n.append(all_commits[i])
+
+        return commits_by_n, all_commits[-1][0]
 
 
 def main():
@@ -334,7 +320,11 @@ def main():
     )
     parser.add_argument(
         '-s', '--slices', default=1, type=int,
-        help="Number of slices. Use 0 to get all commits and 1 to get latest."
+        help="Slice division. In proportional mode, use 0 to get all commits and 1 to get latest."
+    )
+    parser.add_argument(
+        '-p', '--proportional', action="store_true",
+        help="Split history into S slices. When this flag is not set, it splits into slices of S commits."
     )
 
     args = parser.parse_args()
@@ -360,7 +350,7 @@ def main():
     for j, project in enumerate(projects):
         try:
             os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
-            commits, last_sha1 = list_commits_by_n(args.list_commits_mode, args.slices) #mudar para list_commits_by_n quando for histórico
+            commits, last_sha1 = list_commits(args.list_commits_mode, args.slices, args.proportional)
             tam = len(commits)
             print(f'\nProcessing {tam} commits of {project.name} project.')
             if tam > 1:
