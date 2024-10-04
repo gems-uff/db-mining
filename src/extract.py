@@ -326,6 +326,14 @@ def main():
         '-p', '--proportional', action="store_true",
         help="Split history into S slices. When this flag is not set, it splits into slices of S commits."
     )
+    parser.add_argument(
+        '--min-commit', default=1, type=int,
+        help="First commit in interval"
+    )
+    parser.add_argument(
+        '--max-commit', default=None, type=int,
+        help="Last commit in interval"
+    )
 
     args = parser.parse_args()
 
@@ -351,19 +359,29 @@ def main():
         try:
             os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
             commits, last_sha1 = list_commits(args.list_commits_mode, args.slices, args.proportional)
+            total_commit = len(commits)
+            commits = commits[args.min_commit - 1:args.max_commit]
             tam = len(commits)
-            print(f'\nProcessing {tam} commits of {project.name} project.')
-            if tam > 1:
+            last_commit = total_commit if not args.max_commit else args.max_commit
+            print(f'\nProcessing {tam} commits {args.min_commit}..{last_commit} (out of {total_commit}) of {project.name} project.')
+            if total_commit > 1:
                 # Remove all existing part_commits because the new selection will override it
                 (
                     update(db.Version)
-                    .where(db.Version.project_id == project.id)
+                    .where(
+                        (db.Version.project_id == project.id)
+                        & (db.Version.part_commit >= args.min_commit)
+                        & (db.Version.part_commit <= last_commit)
+                    )
                     .values(part_commit = None)
                 )
-            for i, (commit, commit_date) in enumerate(commits):
+            for c, (commit, commit_date) in enumerate(commits):
+                if os.path.exists(".stop"):
+                    print("Found .stop file. Stopping execution")
+                    break
                 start = timer()
-                part = i + 1 if tam > 1 else None
-                print(f"Commit: {i}/{tam} {commit}. ", end="")
+                part = args.min_commit + c if total_commit > 1 else None
+                print(f"Commit {part or 1}: {c}/{tam} {commit}. ", end="")
                 cmd = CHECKOUT_COMMAND + [commit]
                 try:
                     p = subprocess.run(cmd, capture_output=True)
@@ -381,7 +399,7 @@ def main():
                 ).first()
                 if version:
                     print("... Found version.")
-                    if tam > 1:
+                    if total_commit > 1:
                         version.part_commit = part
                     version.date_commit = commit_date
                     version.isLast = commit == last_sha1
@@ -398,7 +416,7 @@ def main():
                 for i, label in enumerate(labels):
                     heuristic = label.heuristic
                     # Print progress information Heuristics #projects * len(labels) + (j + 1))
-                    progress = '{:.2%}'.format((j *len(labels) + (i + 1)) / status['Total'])
+                    progress = '{:.2%}'.format(((j + c/tam) * len(labels) + (i + 1)/tam) / status['Total'])
                     print(f'[{progress}] Searching for {label.name} in {project.owner}/{project.name}:', end=' ')
                     # Try to get a previous execution
                     execution = executions.get((heuristic, version), None)
