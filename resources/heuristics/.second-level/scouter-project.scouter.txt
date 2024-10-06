@@ -1,0 +1,7 @@
+(\s{1,}|[.,(]|^)DigestTableView(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)DigestDetailDialog(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)SQLFormatDialog(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)SqlSummaryComposite(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)ObjectThreadDumpLockView(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)XlogSummarySQLDialog(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)XLogFlowView(\s{1,}|[.,(]|^)

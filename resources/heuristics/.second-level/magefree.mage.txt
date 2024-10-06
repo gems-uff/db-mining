@@ -1,0 +1,4 @@
+(\s{1,}|[.,(]|^)EntityManager(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)EntityManagerTest(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)MageServerImpl(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)FeedbackServiceImpl(\s{1,}|[.,(]|^)

@@ -20,5 +20,4 @@
 (\s{1,}|[.,(]|^)ManageUsersController(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)BootstrapDataPopulator(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)ApplicationConfig(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)CasRealm(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)TestService(\s{1,}|[.,(]|^)

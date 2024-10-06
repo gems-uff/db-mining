@@ -1,7 +1,6 @@
 (\s{1,}|[.,(]|^)ClientTest(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)CliTest(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)ConsoleTest(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)CommandTopicMigrationUtil(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)CommandIdAssigner(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)CommandQueue(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)CommandStatusFuture(\s{1,}|[.,(]|^)

@@ -1,0 +1,8 @@
+(\s{1,}|[.,(]|^)AbstractIntegrationTest(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)BarConcreteTestClass(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)FooConcreteTestClass(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)DemoController(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)DemoEntity(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)DemoService(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)AbstractIntegrationTest(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)DemoControllerTest(\s{1,}|[.,(]|^)

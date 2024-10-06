@@ -97,7 +97,6 @@
 (\s{1,}|[.,(]|^)GzipHandlerFactoryTest(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)HttpConnectorFactoryTest(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)HttpsConnectorFactoryTest(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)ServerPushFilterFactoryTest(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)LayoutIntegrationTests(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)AppenderFactoryCustomLayoutTest(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)AppenderFactoryCustomTimeZoneTest(\s{1,}|[.,(]|^)
