@@ -53,7 +53,7 @@ GREP_COMMAND_IGNORECASE = [
 
 # Git comands to list commits historical
 REVLIST_COMMAND = ['git','rev-list', '--reverse', "--pretty='%H %aD'"]
-CHECKOUT_COMMAND = ['git','checkout']
+CHECKOUT_COMMAND = ['git','checkout', '-f']
 
 
 def print_results(status):
@@ -85,7 +85,10 @@ def get_or_create_projects(filename=ANNOTATED_FILE_JAVA, filters=[], sysexit=Tru
         projects_excel[(project_excel['owner'], project_excel['name'])] = project_excel
 
     # Loading projects from the database.
-    projects_db = db.query(db.Project).options(load_only('id', 'owner', 'name'), selectinload(db.Project.versions).load_only('id')).all()
+    projects_db = db.query(db.Project).options(
+        load_only(db.Project.id, db.Project.owner, db.Project.name),
+        selectinload(db.Project.versions).load_only(db.Version.id)
+    ).all()
 
     status = {
         'Excel': len(projects_excel),
@@ -178,7 +181,11 @@ def get_or_create_labels(heuristics_dir=HEURISTICS_DIR, label_type=None):
         populate_labels_fs(labels_fs, heuristics_dir, label_type)
 
     # Loading labels from the database.
-    labels_db = db.query(db.Label).options(selectinload(db.Label.heuristic).options(selectinload(db.Heuristic.executions).defer('output').defer('user'))).all()
+    labels_db = db.query(db.Label).options(
+        selectinload(db.Label.heuristic)
+        .options(selectinload(db.Heuristic.executions)
+                 .defer(db.Execution.output)
+                 .defer(db.Execution.user))).all()
 
     status = {
         'File System': len(labels_fs),
@@ -255,38 +262,18 @@ def validate_ignore_case(label):
     return label.name.startswith('(IgnoreCase')
 
 
-def list_commits(mode="all", slices=10):
+def list_commits(mode="all", n=10, proportional=False, verbose=False):
     if mode == "firstparent":
         mode_cmd = ["--first-parent", "HEAD"]
     else:
         mode_cmd = ["--all"]
     cmd = REVLIST_COMMAND + mode_cmd
-    p = subprocess.run(REVLIST_COMMAND + mode_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if verbose:
+        print('\n>>>', ' '.join(cmd))
+    p = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     if p.stderr:
         raise subprocess.CalledProcessError(p.returncode, cmd, p.stdout, p.stderr)
-    all_commits = []
-    for i, line in enumerate(iter(p.stdout.decode('utf-8').split('\n'))):
-        if i % 2 == 0:
-            continue
-        commit, datestr = line.strip().strip("'").split(' ', 1)
-        commit_date = parsedate_to_datetime(datestr).astimezone(timezone.utc)
-        all_commits.append((commit, commit_date))
-    if not slices:
-        return all_commits, all_commits[-1][0]
-    size = len(all_commits) // slices
-    #print(list(range(len(all_commits)))[size-1::size])
-    return all_commits[size-1::size], all_commits[-1][0]
 
-def list_commits_by_n(mode="all", n=1):
-    if mode == "firstparent":
-        mode_cmd = ["--first-parent", "HEAD"]
-    else:
-        mode_cmd = ["--all"]
-    cmd = REVLIST_COMMAND + mode_cmd
-    p = subprocess.run(REVLIST_COMMAND + mode_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    if p.stderr:
-        raise subprocess.CalledProcessError(p.returncode, cmd, p.stdout, p.stderr)
-    
     all_commits = []
     for i, line in enumerate(iter(p.stdout.decode('utf-8').split('\n'))):
         if i % 2 == 0:
@@ -294,16 +281,24 @@ def list_commits_by_n(mode="all", n=1):
         commit, datestr = line.strip().strip("'").split(' ', 1)
         commit_date = parsedate_to_datetime(datestr).astimezone(timezone.utc)
         all_commits.append((commit, commit_date))
-    
+
     if not all_commits:
         return [], None
-    
-    # Pegar commits de n em n
-    commits_by_n = []
-    for i in range(n - 1, len(all_commits), n):  # Pula n commits e pega o último de cada intervalo
-        commits_by_n.append(all_commits[i])
-    
-    return commits_by_n, all_commits[-1][0]
+
+    if proportional:
+        # Divide repository into n slices
+        if not n:
+            return all_commits, all_commits[-1][0]
+        size = len(all_commits) // n
+
+        return all_commits[size-1::size], all_commits[-1][0]
+    else:
+        # Create slices with n commits
+        commits_by_n = []
+        for i in range(n - 1, len(all_commits), n):  # Pula n commits e pega o último de cada intervalo
+            commits_by_n.append(all_commits[i])
+
+        return commits_by_n, all_commits[-1][0]
 
 
 def main():
@@ -327,9 +322,34 @@ def main():
     )
     parser.add_argument(
         '-s', '--slices', default=1, type=int,
-        help="Number of slices. Use 0 to get all commits and 1 to get latest."
+        help="Slice division. In proportional mode, use 0 to get all commits and 1 to get latest."
     )
-
+    parser.add_argument(
+        '-p', '--proportional', action="store_true",
+        help="Split history into S slices. When this flag is not set, it splits into slices of S commits."
+    )
+    parser.add_argument(
+        '--min-slice', default=1, type=int,
+        help="First slice in interval"
+    )
+    parser.add_argument(
+        '--max-slice', default=None, type=int,
+        help="Last slice in interval"
+    )
+    parser.add_argument(
+        '-v', '--verbose', action="store_true",
+        help="Show command"
+    )
+    
+    parser.add_argument(
+        '-c', '--checkout', action="store_true",
+        help="Checkout version before analysis"
+    )
+    parser.add_argument(
+        '-r', '--restore', action="store_true",
+        help="Restore repository to initial version. Only valid with checkout flag"
+    )
+    cwd = os.getcwd()
     args = parser.parse_args()
 
     db.connect()
@@ -353,23 +373,14 @@ def main():
     for j, project in enumerate(projects):
         try:
             os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
-            commits, last_sha1 = list_commits(args.list_commits_mode, args.slices) #mudar para list_commits_by_n quando for histórico
-            tam = len(commits)
-            print(f'\nProcessing {tam} commits of {project.name} project.')
-            if tam > 1:
-                # Remove all existing part_commits because the new selection will override it
-                (
-                    update(db.Version)
-                    .where(db.Version.project_id == project.id)
-                    .values(part_commit = None)
-                )
-            for i, (commit, commit_date) in enumerate(commits):
-                start = timer()
-                part = i + 1 if tam > 1 else None
-                print(f"Commit: {i}/{tam} {commit}. ", end="")
-                cmd = CHECKOUT_COMMAND + [commit]
+            commits, last_sha1 = list_commits(args.list_commits_mode, args.slices, args.proportional, args.verbose)
+            if args.checkout and args.restore:
+                cmd = REVPARSE_COMMAND
+                if args.verbose:
+                    print('\n>>>', ' '.join(cmd))
                 try:
                     p = subprocess.run(cmd, capture_output=True)
+                    last_sha1 = p.stdout.decode(errors='replace').replace('\x00', '\uFFFD').strip()
                 except subprocess.TimeoutExpired:
                     print(red('Git error.'))
                     status['Git error'] += 1
@@ -378,13 +389,72 @@ def main():
                     print(red('Git error.'))
                     status['Git error'] += 1
                     continue
+            total_commit = len(commits)
+            commits = commits[args.min_slice - 1:args.max_slice]
+            tam = len(commits)
+            last_commit = total_commit if not args.max_slice else args.max_slice
+            print(f'\nProcessing {tam} commits {args.min_slice}..{last_commit} (out of {total_commit}) of {project.name} project.')
+            if total_commit > 1:
+                # Remove all existing part_commits because the new selection will override it
+                (
+                    update(db.Version)
+                    .where(
+                        (db.Version.project_id == project.id)
+                        & (db.Version.part_commit >= args.min_slice)
+                        & (db.Version.part_commit <= last_commit)
+                    )
+                    .values(part_commit = None)
+                )
+            for c, (commit, commit_date) in enumerate(commits):
+                if os.path.exists(os.path.join(cwd, ".stop")):
+                    print("Found .stop file. Stopping execution")
+                    break
+                start = timer()
+                part = args.min_slice + c if total_commit > 1 else None
+                print(f"Commit {part or 1}: {c}/{tam} {commit}. ", end="")
+
+                if args.checkout:
+                    print(f"Checkout commit {commit}.")
+                    cmd = CHECKOUT_COMMAND + [commit]
+                    if args.verbose:
+                        print('\n>>>', ' '.join(cmd))
+                    try:
+                        p = subprocess.run(cmd, capture_output=True)
+                    except subprocess.TimeoutExpired:
+                        print(red('Git error.'))
+                        status['Git error'] += 1
+                        continue
+                    except subprocess.CalledProcessError as ex:
+                        print(red('Git error.'))
+                        status['Git error'] += 1
+                        continue
+
+                    cmd = REVPARSE_COMMAND
+                    if args.verbose:
+                        print('\n>>>', ' '.join(cmd))
+                    try:
+                        p = subprocess.run(cmd, capture_output=True)
+                        current_commit = p.stdout.decode(errors='replace').replace('\x00', '\uFFFD').strip()
+                    except subprocess.TimeoutExpired:
+                        print(red('Git error.'))
+                        status['Git error'] += 1
+                        continue
+                    except subprocess.CalledProcessError as ex:
+                        print(red('Git error.'))
+                        status['Git error'] += 1
+                        continue
+                    if current_commit != commit:
+                        print(red(f'Git error (checkout failed: {current_commit}, {commit}).'))
+                        status['Git error'] += 1
+                        continue
+
                 version = db.db.session.query(db.Version).filter(
                     (db.Version.project_id == project.id) &
                     (db.Version.sha1 == commit)
                 ).first()
                 if version:
                     print("... Found version.")
-                    if tam > 1:
+                    if total_commit > 1:
                         version.part_commit = part
                     version.date_commit = commit_date
                     version.isLast = commit == last_sha1
@@ -399,9 +469,12 @@ def main():
                     db.db.session.add(version)
                 #db.session.commit()
                 for i, label in enumerate(labels):
+                    if os.path.exists(os.path.join(cwd, ".break")):
+                        print("Found .break file. Pausing execution")
+                        breakpoint()
                     heuristic = label.heuristic
                     # Print progress information Heuristics #projects * len(labels) + (j + 1))
-                    progress = '{:.2%}'.format((j *len(labels) + (i + 1)) / status['Total'])
+                    progress = '{:.2%}'.format(((j + c/tam) * len(labels) + (i + 1)/tam) / status['Total'])
                     print(f'[{progress}] Searching for {label.name} in {project.owner}/{project.name}:', end=' ')
                     # Try to get a previous execution
                     execution = executions.get((heuristic, version), None)
@@ -410,15 +483,22 @@ def main():
                             ignore_case = validate_ignore_case(label)
                             os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
                             if ignore_case:
-                                cmd = GREP_COMMAND_IGNORECASE + [args.heuristics + os.sep + label.type + os.sep + label.name + '.txt']
+                                cmd = GREP_COMMAND_IGNORECASE
                             else:
-                                cmd = GREP_COMMAND + [args.heuristics + os.sep + label.type + os.sep + label.name + '.txt']
+                                cmd = GREP_COMMAND
+                            cmd = cmd + [
+                                args.heuristics + os.sep + label.type + os.sep + label.name + '.txt',
+                                commit
+                            ]
+                            if args.verbose:
+                                print('\n>>>', ' '.join(cmd))
                             p = subprocess.run(cmd, capture_output=True)
                             if p.stderr:
                                 raise subprocess.CalledProcessError(p.returncode, cmd, p.stdout, p.stderr)
-                            db.create(db.Execution, output=p.stdout.decode(errors='replace').replace('\x00', '\uFFFD'),
+                            output = p.stdout.decode(errors='replace').replace('\x00', '\uFFFD')
+                            db.create(db.Execution, output=output,
                                       version=version, heuristic=heuristic, isValidated=False, isAccepted=False)
-                            print(green('ok.'))
+                            print(green('uses.' if output else 'does not use.'))
                             status['Success'] += 1
                         except subprocess.TimeoutExpired:
                             print(red('Git error.'))
@@ -441,15 +521,18 @@ def main():
             status['Repository not found'] += 1
         finally:
             do_commit()
-            print("Checkout last commit.")
-            cmd = CHECKOUT_COMMAND + [last_sha1]
-            try:
-                p = subprocess.run(cmd, capture_output=True)
-                print(green('ok.'))
-            except subprocess.TimeoutExpired:
-                print(red('Git error.'))
-            except subprocess.CalledProcessError:
-                print(red('Git error.'))
+            if args.checkout and args.restore:
+                print(f"Restore commit {last_sha1}.")
+                cmd = CHECKOUT_COMMAND + [last_sha1]
+                if args.verbose:
+                    print('\n>>>', ' '.join(cmd))
+                try:
+                    p = subprocess.run(cmd, capture_output=True)
+                    print(green('ok.'))
+                except subprocess.TimeoutExpired:
+                    print(red('Git error.'))
+                except subprocess.CalledProcessError:
+                    print(red('Git error.'))
 
     print_results(status)
     db.close()

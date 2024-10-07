@@ -32,7 +32,6 @@ elif config['database_type'].lower() == 'postgresql':
 
 db = SQLAlchemy(application, session_options={"expire_on_commit": False})
 
-
 ###########################################
 # SQLALCHEMY CLASSES
 ###########################################
@@ -134,6 +133,7 @@ class Vulnerability(db.Model):
 ###########################################
 
 def connect():
+    application.app_context().push()
     if config['drop_database'] == 'True':
         print('Deleting database...')
         drop_database(application.config['SQLALCHEMY_DATABASE_URI'])
