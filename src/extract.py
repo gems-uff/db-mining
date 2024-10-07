@@ -53,7 +53,7 @@ GREP_COMMAND_IGNORECASE = [
 
 # Git comands to list commits historical
 REVLIST_COMMAND = ['git','rev-list', '--reverse', "--pretty='%H %aD'"]
-CHECKOUT_COMMAND = ['git','switch', '-f']
+CHECKOUT_COMMAND = ['git','checkout', '-f']
 
 
 def print_results(status):
@@ -337,13 +337,17 @@ def main():
         help="Last slice in interval"
     )
     parser.add_argument(
-        '--verbose', action="store_true",
+        '-v', '--verbose', action="store_true",
         help="Show command"
     )
     
     parser.add_argument(
-        '--checkout', action="store_true",
+        '-c', '--checkout', action="store_true",
         help="Checkout version before analysis"
+    )
+    parser.add_argument(
+        '-r', '--restore', action="store_true",
+        help="Restore repository to initial version. Only valid with checkout flag"
     )
     cwd = os.getcwd()
     args = parser.parse_args()
@@ -370,6 +374,21 @@ def main():
         try:
             os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
             commits, last_sha1 = list_commits(args.list_commits_mode, args.slices, args.proportional, args.verbose)
+            if args.checkout and args.restore:
+                cmd = REVPARSE_COMMAND
+                if args.verbose:
+                    print('\n>>>', ' '.join(cmd))
+                try:
+                    p = subprocess.run(cmd, capture_output=True)
+                    last_sha1 = p.stdout.decode(errors='replace').replace('\x00', '\uFFFD').strip()
+                except subprocess.TimeoutExpired:
+                    print(red('Git error.'))
+                    status['Git error'] += 1
+                    continue
+                except subprocess.CalledProcessError as ex:
+                    print(red('Git error.'))
+                    status['Git error'] += 1
+                    continue
             total_commit = len(commits)
             commits = commits[args.min_slice - 1:args.max_slice]
             tam = len(commits)
@@ -395,6 +414,7 @@ def main():
                 print(f"Commit {part or 1}: {c}/{tam} {commit}. ", end="")
 
                 if args.checkout:
+                    print(f"Checkout commit {commit}.")
                     cmd = CHECKOUT_COMMAND + [commit]
                     if args.verbose:
                         print('\n>>>', ' '.join(cmd))
@@ -408,6 +428,26 @@ def main():
                         print(red('Git error.'))
                         status['Git error'] += 1
                         continue
+
+                    cmd = REVPARSE_COMMAND
+                    if args.verbose:
+                        print('\n>>>', ' '.join(cmd))
+                    try:
+                        p = subprocess.run(cmd, capture_output=True)
+                        current_commit = p.stdout.decode(errors='replace').replace('\x00', '\uFFFD').strip()
+                    except subprocess.TimeoutExpired:
+                        print(red('Git error.'))
+                        status['Git error'] += 1
+                        continue
+                    except subprocess.CalledProcessError as ex:
+                        print(red('Git error.'))
+                        status['Git error'] += 1
+                        continue
+                    if current_commit != commit:
+                        print(red(f'Git error (checkout failed: {current_commit}, {commit}).'))
+                        status['Git error'] += 1
+                        continue
+
                 version = db.db.session.query(db.Version).filter(
                     (db.Version.project_id == project.id) &
                     (db.Version.sha1 == commit)
@@ -481,8 +521,8 @@ def main():
             status['Repository not found'] += 1
         finally:
             do_commit()
-            if args.checkout:
-                print("Checkout last commit.")
+            if args.checkout and args.restore:
+                print(f"Restore commit {last_sha1}.")
                 cmd = CHECKOUT_COMMAND + [last_sha1]
                 if args.verbose:
                     print('\n>>>', ' '.join(cmd))
