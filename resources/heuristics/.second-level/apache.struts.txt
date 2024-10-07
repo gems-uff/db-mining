@@ -26,8 +26,5 @@
 (\s{1,}|[.,(]|^)Person(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)SelectTest(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)DefaultJSONWriter(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)MemberObject(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)ModelDrivenAction(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)Person(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)SpringProxyUtilTest(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)BeanAdapter(\s{1,}|[.,(]|^)

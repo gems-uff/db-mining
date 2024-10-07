@@ -1,3 +1,0 @@
-(\s{1,}|[.,(]|^)SpringContextProcessor(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)SpringContextDelegate(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)SpringContextProcessorTest(\s{1,}|[.,(]|^)

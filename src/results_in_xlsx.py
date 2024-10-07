@@ -142,10 +142,20 @@ def create_count_sql():
 def save(all_results, type_characterization):
     print("\n")
     print(f'Saving all results {type_characterization} to {RESOURCE_DIR}...', end=' ')
-    df = pd.DataFrame(all_results)
-    CHARACTERIZATION_FILE_PATH = RESOURCE_DIR + os.sep + type_characterization+ '.xlsx'
-    df.to_excel(CHARACTERIZATION_FILE_PATH, index=False)
-    print('Done!')
+    df_new = pd.DataFrame(all_results)
+    CHARACTERIZATION_FILE_PATH = RESOURCE_DIR + os.sep + type_characterization + '.xlsx'
+
+    # Verifica se o arquivo já existe
+    if os.path.exists(CHARACTERIZATION_FILE_PATH):
+        # Carregar o arquivo existente
+        with pd.ExcelWriter(CHARACTERIZATION_FILE_PATH, mode='a', engine='openpyxl', if_sheet_exists='overlay') as writer:
+            # Escrever os novos dados abaixo dos existentes (no mesmo sheet ou nova aba)
+            df_new.to_excel(writer, index=False, sheet_name='Sheet1', startrow=writer.sheets['Sheet1'].max_row)
+    else:
+        # Se o arquivo não existe, cria um novo
+        df_new.to_excel(CHARACTERIZATION_FILE_PATH, index=False)
+    
+    print("Done!")
 
 def save_local(all_results, LocalToSave):
     print("\n")
@@ -473,14 +483,14 @@ def main():
     # create_characterization('implementation', True, 'implementation_names')
     
     #create_characterization('query', False, 'query')
-    # create_count_sql()
+    create_count_sql()
     
-    create_count_implementation(True)
-    create_count_implementation(False)
+    #create_count_implementation(True)
+    #create_count_implementation(False)
     
     list_type = ['implementation', 'classes']
     create_characterization_and_database(list_type, 'number_of_files')
-    create_count_dbCode_Dependencies()
+    #create_count_dbCode_Dependencies()
     #create_vulnerability_csv()
     #create_pomxml_characterization('database')
     
