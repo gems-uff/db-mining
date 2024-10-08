@@ -1,3 +1,0 @@
-(\s{1,}|[.,(]|^)TestLineReader(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)TimelineStoreTestUtils(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)TestSystemMetricsPublisherForV2(\s{1,}|[.,(]|^)

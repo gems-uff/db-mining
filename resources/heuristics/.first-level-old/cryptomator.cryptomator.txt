@@ -1,3 +1,0 @@
-(\s{1,}|[.,(]|^)UpdateReminderComponent(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)UpdateReminderController(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)UpdateReminderModule(\s{1,}|[.,(]|^)

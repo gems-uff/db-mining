@@ -1,8 +1,0 @@
-(\s{1,}|[.,(]|^)SelectTest(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)BeanValidationExampleAction(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)ProxyUtil(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)SecurityMemberAccessTest(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)FieldAction(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)FieldActionDoExecute(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)FieldMatchAction(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)Person(\s{1,}|[.,(]|^)

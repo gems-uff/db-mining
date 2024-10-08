@@ -16,6 +16,7 @@
 (\s{1,}|[.,(]|^)ExceptionTraceRegistryHandler(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)PinotExceptionTraceDao(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)MultiValueTagTypeHandler(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)MultiValueTagTypeHandlerTest(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)InspectorRegistryHandler(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)InspectorWebPinotDaoConfiguration(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)PinotAgentStatDao(\s{1,}|[.,(]|^)

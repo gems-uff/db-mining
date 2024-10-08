@@ -1,3 +1,0 @@
-(\s{1,}|[.,(]|^)MediaLoadData(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)OutputConsumerAdapterV30(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)DefaultTrackSelector(\s{1,}|[.,(]|^)

@@ -1,2 +1,0 @@
-(\s{1,}|[.,(]|^)ManagedService(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)ManagedAtmosphereHandlerTest(\s{1,}|[.,(]|^)

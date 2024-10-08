@@ -1,2 +1,0 @@
-(\s{1,}|[.,(]|^)VirtualTopicDLQTest(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)RequestReplyNoAdvisoryNetworkTest(\s{1,}|[.,(]|^)
