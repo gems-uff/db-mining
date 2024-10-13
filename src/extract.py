@@ -15,6 +15,12 @@ from sqlalchemy import update
 from util import ANNOTATED_FILE_JAVA, HEURISTICS_DIR, REPOS_DIR, filter_repositories, red, green, yellow, CODE_DEBUG
 
 
+class ExtractException(Exception):
+    def __init__(self, message, status='Git error'):            
+        super().__init__(message)
+            
+        self.status = status
+
 # Git rev-parse command
 REVPARSE_COMMAND = [
     'git',
@@ -68,7 +74,7 @@ def do_commit():
     db.commit()
 
 
-def get_or_create_projects(filename=ANNOTATED_FILE_JAVA, filters=[], sysexit=True, create_version=False):
+def get_or_create_projects(filename=ANNOTATED_FILE_JAVA, sysexit=True, create_version=False):
 
     if not os.path.exists(filename) and sysexit:
         print(f"Invalid input path: {filename}", file=sys.stderr)
@@ -79,7 +85,6 @@ def get_or_create_projects(filename=ANNOTATED_FILE_JAVA, filters=[], sysexit=Tru
     # Loading projects from the Excel.
     df = pd.read_excel(filename, keep_default_na=False)
     df = df[df.discardReason == ''].reset_index(drop=True)
-    df = filter_repositories(df, filters, sysexit=sysexit)
     projects_excel = dict()
     for i, project_excel in df.iterrows():
         projects_excel[(project_excel['owner'], project_excel['name'])] = project_excel
@@ -301,6 +306,33 @@ def list_commits(mode="all", n=10, proportional=False, verbose=False):
         return commits_by_n, all_commits[-1][0]
 
 
+def do_rev_parse(verbose):
+    cmd = REVPARSE_COMMAND
+    if verbose:
+        print('\n>>>', ' '.join(cmd))
+    try:
+        p = subprocess.run(cmd, capture_output=True)
+        last_sha1 = p.stdout.decode(errors='replace').replace('\x00', '\uFFFD').strip()
+        return last_sha1
+    except subprocess.TimeoutExpired as e:
+        raise ExtractException("Git error (rev-parse).") from e
+    except subprocess.CalledProcessError as ex:
+        raise ExtractException("Git error (rev-parse).") from e
+        
+
+def do_checkout(commit, verbose):
+    print(f"Checkout commit {commit}.")
+    cmd = CHECKOUT_COMMAND + [commit]
+    if verbose:
+        print('\n>>>', ' '.join(cmd))
+    try:
+        p = subprocess.run(cmd, capture_output=True)
+    except subprocess.TimeoutExpired:
+        raise ExtractException("Git error (checkout).") from e
+    except subprocess.CalledProcessError as ex:
+        raise ExtractException("Git error (checkout).") from e
+
+
 def main():
     parser = argparse.ArgumentParser(
         prog='extract',
@@ -311,17 +343,17 @@ def main():
         help="Input xlsx file")
     parser.add_argument(
         '-f', '--filter', default=[], nargs="*",
-        help="Regex filter for repository")
+        help="Select specific repositories")
     parser.add_argument(
         '-x', '--heuristics', default=HEURISTICS_DIR,
         help="Heuristics directory")
     parser.add_argument(
-        '-l', '--list-commits-mode', default='all',
+        '-l', '--list-commits-mode', default='firstparent',
         choices=['firstparent', 'all'],
         help="Rev-list execution mode"
     )
     parser.add_argument(
-        '-s', '--slices', default=1, type=int,
+        '-s', '--slices', default=100, type=int,
         help="Slice division. In proportional mode, use 0 to get all commits and 1 to get latest."
     )
     parser.add_argument(
@@ -335,6 +367,14 @@ def main():
     parser.add_argument(
         '--max-slice', default=None, type=int,
         help="Last slice in interval"
+    )
+    parser.add_argument(
+        '--min-project', default=1, type=int,
+        help="First project in interval"
+    )
+    parser.add_argument(
+        '--max-project', default=None, type=int,
+        help="Last project in interval"
     )
     parser.add_argument(
         '-v', '--verbose', action="store_true",
@@ -353,7 +393,7 @@ def main():
     args = parser.parse_args()
 
     db.connect()
-    projects = get_or_create_projects(filename=args.input, filters=args.filter)
+    projects = get_or_create_projects(filename=args.input)
     labels = get_or_create_labels(heuristics_dir=args.heuristics)
 
     # Indexing executions by label heuristic and project version.
@@ -368,43 +408,34 @@ def main():
     }
 
     times = []
-    # Searching all heuristics in 10 commits of each project
-    print(f'\nProcessing {len(projects)} projects over {len(labels)} heuristics.')
+    # Searching all heuristics in the commits of each project
+    if args.filter:
+        projects = [project for project in projects if f"{project.owner}/{project.name}" in args.filter]
+    total_project = len(projects)
+    projects = projects[args.min_project - 1:args.max_project]
+    last_project = total_project if not args.max_project else args.max_project
+    print(f'\nProcessing {len(projects)} projects {args.min_project}..{last_project} (out of {total_project}) over {len(labels)} heuristics.')
     for j, project in enumerate(projects):
         try:
             os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
             commits, last_sha1 = list_commits(args.list_commits_mode, args.slices, args.proportional, args.verbose)
             if args.checkout and args.restore:
-                cmd = REVPARSE_COMMAND
-                if args.verbose:
-                    print('\n>>>', ' '.join(cmd))
-                try:
-                    p = subprocess.run(cmd, capture_output=True)
-                    last_sha1 = p.stdout.decode(errors='replace').replace('\x00', '\uFFFD').strip()
-                except subprocess.TimeoutExpired:
-                    print(red('Git error.'))
-                    status['Git error'] += 1
-                    continue
-                except subprocess.CalledProcessError as ex:
-                    print(red('Git error.'))
-                    status['Git error'] += 1
-                    continue
+                last_sha1 = do_rev_parse(args.verbose)
             total_commit = len(commits)
             commits = commits[args.min_slice - 1:args.max_slice]
             tam = len(commits)
             last_commit = total_commit if not args.max_slice else args.max_slice
-            print(f'\nProcessing {tam} commits {args.min_slice}..{last_commit} (out of {total_commit}) of {project.name} project.')
+            part_project = args.min_project + j if total_project > 1 else None
+            print(f'\nProcessing {tam} commits {args.min_slice}..{last_commit} (out of {total_commit}) of [{part_project or 1}: {j}/{total_project}] {project.name} project.')
             if total_commit > 1:
                 # Remove all existing part_commits because the new selection will override it
-                (
-                    update(db.Version)
-                    .where(
-                        (db.Version.project_id == project.id)
-                        & (db.Version.part_commit >= args.min_slice)
-                        & (db.Version.part_commit <= last_commit)
-                    )
-                    .values(part_commit = None)
+                condition = (
+                    (db.Version.project_id == project.id)
+                    & (db.Version.part_commit >= args.min_slice)    
                 )
+                if args.max_slice:
+                    condition = condition & (db.Version.part_commit <= last_commit)
+                update(db.Version).where(condition).values(part_commit = None)
             for c, (commit, commit_date) in enumerate(commits):
                 if os.path.exists(os.path.join(cwd, ".stop")):
                     print("Found .stop file. Stopping execution")
@@ -412,41 +443,11 @@ def main():
                 start = timer()
                 part = args.min_slice + c if total_commit > 1 else None
                 print(f"Commit {part or 1}: {c}/{tam} {commit}. ", end="")
-
                 if args.checkout:
-                    print(f"Checkout commit {commit}.")
-                    cmd = CHECKOUT_COMMAND + [commit]
-                    if args.verbose:
-                        print('\n>>>', ' '.join(cmd))
-                    try:
-                        p = subprocess.run(cmd, capture_output=True)
-                    except subprocess.TimeoutExpired:
-                        print(red('Git error.'))
-                        status['Git error'] += 1
-                        continue
-                    except subprocess.CalledProcessError as ex:
-                        print(red('Git error.'))
-                        status['Git error'] += 1
-                        continue
-
-                    cmd = REVPARSE_COMMAND
-                    if args.verbose:
-                        print('\n>>>', ' '.join(cmd))
-                    try:
-                        p = subprocess.run(cmd, capture_output=True)
-                        current_commit = p.stdout.decode(errors='replace').replace('\x00', '\uFFFD').strip()
-                    except subprocess.TimeoutExpired:
-                        print(red('Git error.'))
-                        status['Git error'] += 1
-                        continue
-                    except subprocess.CalledProcessError as ex:
-                        print(red('Git error.'))
-                        status['Git error'] += 1
-                        continue
+                    do_checkout(commit, args.verbose)
+                    current_commit = do_rev_parse(args.verbose)
                     if current_commit != commit:
-                        print(red(f'Git error (checkout failed: {current_commit}, {commit}).'))
-                        status['Git error'] += 1
-                        continue
+                        raise ExtractException(f'Git error (checkout failed: {current_commit}, {commit}).')
 
                 version = db.db.session.query(db.Version).filter(
                     (db.Version.project_id == project.id) &
@@ -475,7 +476,7 @@ def main():
                     heuristic = label.heuristic
                     # Print progress information Heuristics #projects * len(labels) + (j + 1))
                     progress = '{:.2%}'.format(((j + c/tam) * len(labels) + (i + 1)/tam) / status['Total'])
-                    print(f'[{progress}] Searching for {label.name} in {project.owner}/{project.name}:', end=' ')
+                    print(f'[{progress}] Searching for {label.name} in [{part_project or 1}: {j}/{total_project} -- Commit {part or 1}: {c}/{tam}] {project.owner}/{project.name}:', end=' ')
                     # Try to get a previous execution
                     execution = executions.get((heuristic, version), None)
                     if not execution:
@@ -519,20 +520,14 @@ def main():
         except NotADirectoryError:
             print(red('repository not found.'))
             status['Repository not found'] += 1
+        except ExtractException as e:
+            print(red(e.message))
+            status[e.status] += 1
         finally:
             do_commit()
             if args.checkout and args.restore:
                 print(f"Restore commit {last_sha1}.")
-                cmd = CHECKOUT_COMMAND + [last_sha1]
-                if args.verbose:
-                    print('\n>>>', ' '.join(cmd))
-                try:
-                    p = subprocess.run(cmd, capture_output=True)
-                    print(green('ok.'))
-                except subprocess.TimeoutExpired:
-                    print(red('Git error.'))
-                except subprocess.CalledProcessError:
-                    print(red('Git error.'))
+                do_checkout(last_sha1, args.verbose)
 
     print_results(status)
     db.close()

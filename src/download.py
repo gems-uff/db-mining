@@ -22,6 +22,14 @@ def main():
     parser.add_argument(
         '-f', '--filter', default=[], nargs="*",
         help="Regex filter for repository")
+    parser.add_argument(
+        '--min-project', default=1, type=int,
+        help="First project in interval"
+    )
+    parser.add_argument(
+        '--max-project', default=None, type=int,
+        help="Last project in interval"
+    )
 
     args = parser.parse_args()
 
@@ -38,6 +46,9 @@ def main():
 
     print(f'Cloning/updating {total} repositories...')
     for i, row in df.iterrows():
+        if i < args.min_project - 1 or (args.max_project and i >= args.max_project):
+            continue
+        
         print(f'Processing repository {row["owner"]}/{row["name"]}.')
         source = args.uriformat.format(**row)
         target = REPOS_DIR + os.sep + row['owner'] + os.sep + row['name']
