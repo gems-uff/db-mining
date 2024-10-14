@@ -76,7 +76,7 @@ def do_commit():
 
 def get_or_create_projects(
     filename=ANNOTATED_FILE_JAVA,
-    filter=None, min_project=1, max_project=None,
+    filters=None, min_project=1, max_project=None,
     sysexit=True, create_version=False
 ):
 
@@ -93,10 +93,10 @@ def get_or_create_projects(
     ignore = set()
     for i, (_, project_excel) in enumerate(df.iterrows()):
         project_tup = (project_excel['owner'], project_excel['name'])
-        if filter and f"{project_excel.owner}/{project_excel.name}" not in filter:
+        if filters and f"{project_excel.owner}/{project_excel.name}" not in filters:
             ignore.add(project_tup)
             continue
-        if i < min_project - 1 and (not max_project or i >= max_project):
+        if i < min_project - 1 or (max_project and i >= max_project):
             ignore.add(project_tup)
             continue
         #project_excel["pos"] = i
@@ -136,6 +136,9 @@ def get_or_create_projects(
     # Adding missing projects in the database
     for project_excel in projects_excel.values():
         # Print progress information
+        project_tup = (project_excel['owner'], project_excel['name'])
+        if project_tup in ignore:
+            continue
         i += 1
         progress = '{:.2%}'.format(i / status['Excel'])
         print(f'[{progress}] Adding project {project_excel["owner"]}/{project_excel["name"]}:', end=' ')
@@ -146,23 +149,21 @@ def get_or_create_projects(
         project_dict['pushedAt'] = str(project_dict['pushedAt'])
         try:
             os.chdir(REPOS_DIR + os.sep + project_dict['owner'] + os.sep + project_dict['name'])
-            p = subprocess.run(REVPARSE_COMMAND, capture_output=True)
-            if p.stderr:
-                raise subprocess.CalledProcessError(p.returncode, REVPARSE_COMMAND, p.stdout, p.stderr)
-
+            sha1 = do_rev_parse(False)
             project = db.create(db.Project, **project_dict)
             if create_version:
-                db.create(db.Version, sha1=p.stdout.decode().strip(), isLast=True, project=project)
+                db.create(db.Version, sha1=sha1, isLast=True, project=project)
             projects.append(project)
             print(green('ok.'))
             status['Added'] += 1
+
         except NotADirectoryError:
             print(red('repository not found.'))
             status['Repository not found'] += 1
         except FileNotFoundError:
             print(red('Project not found.'))
             status['Repository not found'] += 1
-        except subprocess.CalledProcessError as ex:
+        except ExtractException as ex:
             print(red('Git error.'))
             status['Git error'] += 1
             if CODE_DEBUG:
@@ -327,6 +328,8 @@ def do_rev_parse(verbose):
         print('\n>>>', ' '.join(cmd))
     try:
         p = subprocess.run(cmd, capture_output=True)
+        if p.stderr:
+            raise ExtractException("Git error (rev-parse).")
         last_sha1 = p.stdout.decode(errors='replace').replace('\x00', '\uFFFD').strip()
         return last_sha1
     except subprocess.TimeoutExpired as e:
@@ -384,11 +387,11 @@ def main():
         help="Last slice in interval"
     )
     parser.add_argument(
-        '--min-project', default=1, type=int,
+        '-pi', '--min-project', default=1, type=int,
         help="First project in interval"
     )
     parser.add_argument(
-        '--max-project', default=None, type=int,
+        '-pf', '--max-project', default=None, type=int,
         help="Last project in interval"
     )
     parser.add_argument(
@@ -404,12 +407,16 @@ def main():
         '-r', '--restore', action="store_true",
         help="Restore repository to initial version. Only valid with checkout flag"
     )
+    parser.add_argument(
+        '--dry-run', action="store_true",
+        help="Dry-run. Do not extract repositories"
+    )
     cwd = os.getcwd()
     args = parser.parse_args()
 
     db.connect()
     projects = get_or_create_projects(
-        filename=args.input, filter=args.filter,
+        filename=args.input, filters=args.filter,
         min_project=args.min_project, max_project=args.max_project)
     labels = get_or_create_labels(heuristics_dir=args.heuristics)
 
@@ -440,7 +447,9 @@ def main():
             tam = len(commits)
             last_commit = total_commit if not args.max_slice else args.max_slice
             part_project = args.min_project + j if total_project > 1 else None
-            print(f'\nProcessing {tam} commits {args.min_slice}..{last_commit} (out of {total_commit}) of [{part_project or 1}: {j}/{total_project}] {project.name} project.')
+            print(f'\nProcessing {tam} commits {args.min_slice}..{last_commit} (out of {total_commit}) of [Project {part_project or 1}: {j + 1}/{total_project}] {project.name} project.')
+            if args.dry_run:
+                continue
             if total_commit > 1:
                 # Remove all existing part_commits because the new selection will override it
                 condition = (
@@ -490,7 +499,7 @@ def main():
                     heuristic = label.heuristic
                     # Print progress information Heuristics #projects * len(labels) + (j + 1))
                     progress = '{:.2%}'.format(((j + c/tam) * len(labels) + (i + 1)/tam) / status['Total'])
-                    print(f'[{progress}] Searching for {label.name} in [{part_project or 1}: {j}/{total_project} -- Commit {part or 1}: {c}/{tam}] {project.owner}/{project.name}:', end=' ')
+                    print(f'[{progress}] Searching for {label.name} in [Project {part_project or 1}: {j + 1}/{total_project} -- Commit {part or 1}: {c + 1}/{tam}] {project.owner}/{project.name}:', end=' ')
                     # Try to get a previous execution
                     execution = executions.get((heuristic, version), None)
                     if not execution:

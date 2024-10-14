@@ -25,11 +25,11 @@ def main():
         '-f', '--filter', default=[], nargs="*",
         help="Regex filter for repository")
     parser.add_argument(
-        '--min-project', default=1, type=int,
+        '-pi', '--min-project', default=1, type=int,
         help="First project in interval"
     )
     parser.add_argument(
-        '--max-project', default=None, type=int,
+        '-pf', '--max-project', default=None, type=int,
         help="Last project in interval"
     )
     args = parser.parse_args()

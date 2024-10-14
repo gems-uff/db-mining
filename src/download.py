@@ -23,12 +23,16 @@ def main():
         '-f', '--filter', default=[], nargs="*",
         help="Regex filter for repository")
     parser.add_argument(
-        '--min-project', default=1, type=int,
+        '-pi', '--min-project', default=1, type=int,
         help="First project in interval"
     )
     parser.add_argument(
-        '--max-project', default=None, type=int,
+        '-pf', '--max-project', default=None, type=int,
         help="Last project in interval"
+    )
+    parser.add_argument(
+        '--dry-run', action="store_true",
+        help="Dry-run. Do not close repositories"
     )
 
     args = parser.parse_args()
@@ -52,6 +56,8 @@ def main():
     print(f'Cloning/updating {total} repositories...')
     for i, (_, row) in enumerate(rows):
         print(f'Processing repository {row["owner"]}/{row["name"]}.')
+        if args.dry_run:
+            continue
         source = args.uriformat.format(**row)
         target = REPOS_DIR + os.sep + row['owner'] + os.sep + row['name']
 
