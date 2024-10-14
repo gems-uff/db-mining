@@ -42,13 +42,15 @@ def main():
     print('Removing discarded repositories.')
     df = df[df.discardReason == '']
     df = filter_repositories(df, args.filter)
-    total = len(df)
+
+    rows = [
+        iterrow for i, iterrow in enumerate(df.iterrows())
+        if i >= args.min_project - 1 and (not args.max_project or i < args.max_project)
+    ]
+    total = len(rows)
 
     print(f'Cloning/updating {total} repositories...')
-    for i, row in df.iterrows():
-        if i < args.min_project - 1 or (args.max_project and i >= args.max_project):
-            continue
-        
+    for i, (_, row) in enumerate(rows):
         print(f'Processing repository {row["owner"]}/{row["name"]}.')
         source = args.uriformat.format(**row)
         target = REPOS_DIR + os.sep + row['owner'] + os.sep + row['name']

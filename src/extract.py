@@ -74,7 +74,11 @@ def do_commit():
     db.commit()
 
 
-def get_or_create_projects(filename=ANNOTATED_FILE_JAVA, sysexit=True, create_version=False):
+def get_or_create_projects(
+    filename=ANNOTATED_FILE_JAVA,
+    filter=None, min_project=1, max_project=None,
+    sysexit=True, create_version=False
+):
 
     if not os.path.exists(filename) and sysexit:
         print(f"Invalid input path: {filename}", file=sys.stderr)
@@ -85,9 +89,19 @@ def get_or_create_projects(filename=ANNOTATED_FILE_JAVA, sysexit=True, create_ve
     # Loading projects from the Excel.
     df = pd.read_excel(filename, keep_default_na=False)
     df = df[df.discardReason == ''].reset_index(drop=True)
-    projects_excel = dict()
-    for i, project_excel in df.iterrows():
-        projects_excel[(project_excel['owner'], project_excel['name'])] = project_excel
+    projects_excel = {}
+    ignore = set()
+    for i, (_, project_excel) in enumerate(df.iterrows()):
+        project_tup = (project_excel['owner'], project_excel['name'])
+        if filter and f"{project_excel.owner}/{project_excel.name}" not in filter:
+            ignore.add(project_tup)
+            continue
+        if i < min_project - 1 and (not max_project or i >= max_project):
+            ignore.add(project_tup)
+            continue
+        #project_excel["pos"] = i
+        projects_excel[project_tup] = project_excel
+
 
     # Loading projects from the database.
     projects_db = db.query(db.Project).options(
@@ -107,14 +121,15 @@ def get_or_create_projects(filename=ANNOTATED_FILE_JAVA, sysexit=True, create_ve
     i = 0
     # Deleting projects that do not exist in the Excel file
     for project in projects_db:
-        if projects_excel.pop((project.owner, project.name), None) is not None:
+        project_tup = (project.owner, project.name)
+        if projects_excel.pop(project_tup, None) is not None:
             # Print progress information
             i += 1
             progress = '{:.2%}'.format(i / status['Excel'])
             print(f'[{progress}] Adding project {project.owner}/{project.name}:', end=' ')
             projects.append(project)
             print(yellow('already done.'))
-        else:
+        elif project_tup not in ignore:
             db.delete(project)
             status['Deleted'] += 1
 
@@ -393,7 +408,9 @@ def main():
     args = parser.parse_args()
 
     db.connect()
-    projects = get_or_create_projects(filename=args.input)
+    projects = get_or_create_projects(
+        filename=args.input, filter=args.filter,
+        min_project=args.min_project, max_project=args.max_project)
     labels = get_or_create_labels(heuristics_dir=args.heuristics)
 
     # Indexing executions by label heuristic and project version.
@@ -409,10 +426,7 @@ def main():
 
     times = []
     # Searching all heuristics in the commits of each project
-    if args.filter:
-        projects = [project for project in projects if f"{project.owner}/{project.name}" in args.filter]
     total_project = len(projects)
-    projects = projects[args.min_project - 1:args.max_project]
     last_project = total_project if not args.max_project else args.max_project
     print(f'\nProcessing {len(projects)} projects {args.min_project}..{last_project} (out of {total_project}) over {len(labels)} heuristics.')
     for j, project in enumerate(projects):

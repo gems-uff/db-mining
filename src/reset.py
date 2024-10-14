@@ -1,9 +1,11 @@
 import os
 import subprocess
+import argparse
+import sys
 
 import pandas as pd
 
-from util import ANNOTATED_FILE_JAVA, REPOS_DIR, green, red, CODE_DEBUG, yellow
+from util import ANNOTATED_FILE_JAVA, REPOS_DIR, filter_repositories, green, red, CODE_DEBUG, yellow
 
 
 def main():
@@ -11,20 +13,51 @@ def main():
     This program can be useful to fix collisions (due to data migrated from case insensitive to case sensitive file
     systems) and to update the workspace to the most recent version.
     """
-    print(f'Loading repositories from {ANNOTATED_FILE_JAVA}.')
-    info_repositories = pd.read_excel(ANNOTATED_FILE_JAVA, keep_default_na=False)
+
+    parser = argparse.ArgumentParser(
+        prog='reset',
+        description='Fix collisions and update workspace to the most recent version')
+
+    parser.add_argument(
+        '-i', '--input', default=ANNOTATED_FILE_JAVA,
+        help="Input xlsx file")
+    parser.add_argument(
+        '-f', '--filter', default=[], nargs="*",
+        help="Regex filter for repository")
+    parser.add_argument(
+        '--min-project', default=1, type=int,
+        help="First project in interval"
+    )
+    parser.add_argument(
+        '--max-project', default=None, type=int,
+        help="Last project in interval"
+    )
+    args = parser.parse_args()
+
+    if not os.path.exists(args.input):
+        print(f"Invalid input path: {args.input}", file=sys.stderr)
+        sys.exit(1)
+    print(f'Loading repositories from {args.input}.')
+    info_repositories = pd.read_excel(args.input, keep_default_na=False)
     info_repositories = info_repositories[info_repositories.discardReason == ''].reset_index(drop=True)
+    info_repositories = filter_repositories(info_repositories, args.filter)
+
+    rows = [
+        iterrow for i, iterrow in enumerate(info_repositories.iterrows())
+        if i >= args.min_project - 1 and (not args.max_project or i < args.max_project)
+    ]
+    total = len(rows)
 
     status = {
         'Success': 0,
         'Collided': 0,
         'Repository not found': 0,
         'Git error': 0,
-        'Total': len(info_repositories)
+        'Total': total
     }
 
     print(f'Resetting {status["Total"]} repositories...')
-    for i, row in info_repositories.iterrows():
+    for i, (_, row) in enumerate(rows):
         # Print progress information
         progress = '{:.2%}'.format(i / status["Total"])
         print(f'[{progress}] Processing repository {row["owner"]}/{row["name"]}:', end=' ')
