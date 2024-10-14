@@ -172,7 +172,7 @@ def get_or_create_projects(
     status['Total'] = len(projects)
     print_results(status)
     do_commit()
-    return sorted(projects, key=lambda item: (item.owner.lower(), item.name.lower()))
+    return projects
 
 
 def populate_labels_fs(labels_fs, label_type_path, label_type_name):
