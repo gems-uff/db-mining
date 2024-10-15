@@ -192,7 +192,13 @@ def search_projects():
 
 def search_labels(labelType):
     db.connect()
-    labels_db = db.query(db.Label).options(selectinload(db.Label.heuristic).options(selectinload(db.Heuristic.executions).defer('output').defer('user'))).filter(db.Label.type == labelType).all()
+    labels_db = db.query(db.Label).options(
+        selectinload(db.Label.heuristic).options(
+            selectinload(db.Heuristic.executions)
+            .defer(db.Execution.output)
+            .defer(db.Execution.user)
+        )
+    ).filter(db.Label.type == labelType).all()
     return labels_db
 
 def create_heuristic_class(file_path):
