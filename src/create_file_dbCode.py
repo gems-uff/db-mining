@@ -26,8 +26,16 @@ def create_list_implementation():
         'Total': 0
     }
 
-    projects_db = db.query(db.Project).options(load_only('id', 'owner', 'name'), selectinload(db.Project.versions).load_only('id')).all()
-    labels_db = db.query(db.Label).options(selectinload(db.Label.heuristic).options(selectinload(db.Heuristic.executions).defer('output').defer('user'))).filter(db.Label.type == 'implementation').all()
+    projects_db = db.query(db.Project).options(
+        load_only(db.Project.id, db.Project.owner, db.Project.name),
+        selectinload(db.Project.versions).load_only(db.Version.id)).all()
+    labels_db = db.query(db.Label).options(
+        selectinload(db.Label.heuristic)
+        .options(
+            selectinload(db.Heuristic.executions)
+            .defer(db.Execution.output)
+            .defer(db.Execution.user)
+        )).filter(db.Label.type == 'implementation').all()
     print("Search results in execution for label and project.")
 
     for i,label in enumerate(labels_db):
@@ -36,12 +44,14 @@ def create_list_implementation():
                 index_projects.append(project.name)
                 index_domains.append(project.domain)
             # Search results in execution for label and project
-            execution = db.query(db.Execution) \
-                .join(db.Execution.version) \
-                .join(db.Execution.heuristic) \
-                .filter(db.Version.project_id == project.id) \
-                .filter(db.Heuristic.label_id == label.id) \
+            execution = (
+                db.query(db.Execution)
+                .join(db.Execution.version)
+                .join(db.Execution.heuristic)
+                .filter(db.Version.project_id == project.id)
+                .filter(db.Heuristic.label_id == label.id)
                 .filter(db.Execution.output != '').first()
+            )
             if(execution is None):
                 print("Execution is None")
             else:
@@ -101,12 +111,14 @@ def create_list_dbCode():
             if(len(index_projects)< len(projects_db)):
                 index_projects.append(project.name)
                 index_domains.append(project.domain)
-            execution = db.query(db.Execution) \
-                .join(db.Execution.version) \
-                .join(db.Execution.heuristic) \
-                .filter(db.Version.project_id == project.id) \
-                .filter(db.Heuristic.label_id == label.id) \
-                .filter(db.Execution.output != '').first()            
+            execution = (
+                db.query(db.Execution)
+                .join(db.Execution.version)
+                .join(db.Execution.heuristic)
+                .filter(db.Version.project_id == project.id)
+                .filter(db.Heuristic.label_id == label.id)
+                .filter(db.Execution.output != '').first()
+            )
             if(execution is None):
                 status['None'] += 1
             else:

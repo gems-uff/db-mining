@@ -28,12 +28,14 @@ def create_list_fanin_second_level():
             if(len(index_projects)< len(projects_db)):
                 index_projects.append(project.name)
                 index_domains.append(project.domain)
-            execution = db.query(db.Execution) \
-                .join(db.Execution.version) \
-                .join(db.Execution.heuristic) \
-                .filter(db.Version.project_id == project.id) \
-                .filter(db.Heuristic.label_id == label.id) \
-                .filter(db.Execution.output != '').first()            
+            execution = (
+                db.query(db.Execution)
+                .join(db.Execution.version)
+                .join(db.Execution.heuristic)
+                .filter(db.Version.project_id == project.id)
+                .filter(db.Heuristic.label_id == label.id)
+                .filter(db.Execution.output != '').first()
+            )
             if(execution is None):
                 status['None'] += 1
             else:
@@ -131,11 +133,13 @@ def count_file_xml(project):
     number_of_xml_files = 0 
     none = 0
 
-    execution = db.query(db.Execution) \
-                .join(db.Execution.version) \
-                .join(db.Execution.heuristic) \
-                .filter(db.Version.project_id == project.id) \
-                .filter(db.Execution.output != '').first()            
+    execution = (
+        db.query(db.Execution)
+        .join(db.Execution.version)
+        .join(db.Execution.heuristic)
+        .filter(db.Version.project_id == project.id)
+        .filter(db.Execution.output != '').first()
+    )
     if(execution is None):
             none += 1
     else:

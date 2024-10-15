@@ -58,7 +58,9 @@ def get_or_create_projects():
         projects_excel[(project_excel['owner'], project_excel['name'])] = project_excel
 
     # Loading projects from the database.
-    projects_db = db.query(db.Project).options(load_only('id', 'owner', 'name'), selectinload(db.Project.versions).load_only('id')).all()
+    projects_db = db.query(db.Project).options(
+        load_only(db.Project.id, db.Project.owner, db.Project.name
+    ), selectinload(db.Project.versions).load_only(db.Version.id)).all()
 
     status = {
         'Excel': len(projects_excel),
@@ -136,7 +138,13 @@ def get_or_create_labels():
                     }
         labels_fs[(label_fs['type'], label_fs['name'])] = label_fs
     # Loading labels from the database.
-    labels_db = db.query(db.Label).options(selectinload(db.Label.heuristic).options(selectinload(db.Heuristic.executions).defer('output').defer('user'))).all()
+    labels_db = db.query(db.Label).options(
+        selectinload(db.Label.heuristic).options(
+            selectinload(db.Heuristic.executions)
+            .defer(db.Execution.output)
+            .defer(db.Execution.user)
+        )
+    ).all()
     status = {
         'File System': len(labels_fs),
         'Database': len(labels_db),

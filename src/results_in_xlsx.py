@@ -14,8 +14,16 @@ def create_characterization(type_characterization, names, nameFile):
     index_projects = []
     index_domains = []
     results_Label = []
-    projects_db = db.query(db.Project).options(load_only('id', 'owner', 'name'), selectinload(db.Project.versions).load_only('id')).all()
-    labels_db = db.query(db.Label).options(selectinload(db.Label.heuristic).options(selectinload(db.Heuristic.executions).defer('output').defer('user'))).filter(db.Label.type == type_characterization).all()
+    projects_db = db.query(db.Project).options(
+        load_only(db.Project.id, db.Project.owner, db.Project.name),
+        selectinload(db.Project.versions).load_only(db.Version.id)
+    ).all()
+    labels_db = db.query(db.Label).options(
+        selectinload(db.Label.heuristic).options(
+            selectinload(db.Heuristic.executions)
+            .defer(db.Execution.output).defer(db.Execution.user)
+        )
+    ).filter(db.Label.type == type_characterization).all()
     print("Search results in execution for label and project.")
     print("File to be generated: ", type_characterization)
     for i,label in enumerate(labels_db):
@@ -61,8 +69,16 @@ def create_count_implementation(rate):
     index_domains = []
     results_Label = []
     list_total_projects=[]
-    projects_db = db.query(db.Project).options(load_only('id', 'owner', 'name'), selectinload(db.Project.versions).load_only('id')).all()
-    labels_db = db.query(db.Label).options(selectinload(db.Label.heuristic).options(selectinload(db.Heuristic.executions).defer('output').defer('user'))).filter(db.Label.type == 'implementation').all()
+    projects_db = db.query(db.Project).options(
+        load_only(db.Project.id, db.Project.owner, db.Project.name),
+        selectinload(db.Project.versions).load_only(db.Version.id)
+    ).all()
+    labels_db = db.query(db.Label).options(
+        selectinload(db.Label.heuristic).options(
+            selectinload(db.Heuristic.executions)
+            .defer(db.Execution.output).defer(db.Execution.user)
+        )
+    ).filter(db.Label.type == 'implementation').all()
     print("Search results in execution for label and project.")
     for i,label in enumerate(labels_db):
         for j, project in enumerate(projects_db):
@@ -70,12 +86,14 @@ def create_count_implementation(rate):
                 index_projects.append(project.name)
                 index_domains.append(project.domain)
             # Search results in execution for label and project
-            execution = db.query(db.Execution) \
-                .join(db.Execution.version) \
-                .join(db.Execution.heuristic) \
-                .filter(db.Version.project_id == project.id) \
-                .filter(db.Heuristic.label_id == label.id) \
+            execution = (
+                db.query(db.Execution)
+                .join(db.Execution.version)
+                .join(db.Execution.heuristic)
+                .filter(db.Version.project_id == project.id)
+                .filter(db.Heuristic.label_id == label.id)
                 .filter(db.Execution.output != '').first()
+            )
             if(execution is None):
                 results_Label.append("")
             else:
@@ -109,8 +127,13 @@ def create_count_sql():
     index_projects = []
     index_domains = []
     results_Label = []
-    projects_db = db.query(db.Project).options(load_only('id', 'owner', 'name'), selectinload(db.Project.versions).load_only('id')).all()
-    labels_db = db.query(db.Label).options(selectinload(db.Label.heuristic).options(selectinload(db.Heuristic.executions).defer('output').defer('user'))).filter(db.Label.type == 'query').all()
+    projects_db = db.query(db.Project).options(
+        load_only(db.Project.id, db.Project.owner, db.Project.name),
+        selectinload(db.Project.versions).load_only(db.Version.id)).all()
+    labels_db = db.query(db.Label).options(
+        selectinload(db.Label.heuristic).options(
+            selectinload(db.Heuristic.executions).defer(db.Execution.output).defer(db.Execution.user))
+    ).filter(db.Label.type == 'query').all()
     print("Search results in execution for label and project.")
     for i,label in enumerate(labels_db):
         for j, project in enumerate(projects_db):
@@ -118,12 +141,14 @@ def create_count_sql():
                 index_projects.append(project.name)
                 index_domains.append(project.domain)
             # Search results in execution for label and project
-            execution = db.query(db.Execution) \
-                .join(db.Execution.version) \
-                .join(db.Execution.heuristic) \
-                .filter(db.Version.project_id == project.id) \
-                .filter(db.Heuristic.label_id == label.id) \
+            execution = (
+                db.query(db.Execution)
+                .join(db.Execution.version)
+                .join(db.Execution.heuristic)
+                .filter(db.Version.project_id == project.id)
+                .filter(db.Heuristic.label_id == label.id)
                 .filter(db.Execution.output != '').first()
+            )
             if(execution is None):
                 results_Label.append("")
             else:
@@ -169,9 +194,21 @@ def create_characterization_and_database(type_characterization, nameFile):
     index_projects = []
     index_domains = []
     all_results = []
-    projects_db = db.query(db.Project).options(load_only('id', 'owner', 'name'), selectinload(db.Project.versions).load_only('id')).all()
-    labels_db_implementation = db.query(db.Label).options(selectinload(db.Label.heuristic).options(selectinload(db.Heuristic.executions).defer('output').defer('user'))).filter(db.Label.type == type_characterization[0]).all()
-    labels_db_classes = db.query(db.Label).options(selectinload(db.Label.heuristic).options(selectinload(db.Heuristic.executions).defer('output').defer('user'))).filter(db.Label.type == type_characterization[1]).all()
+    projects_db = db.query(db.Project).options(
+        load_only(db.Project.id, db.Project.owner, db.Project.name),
+        selectinload(db.Project.versions).load_only(db.Version.id)).all()
+    labels_db_implementation = db.query(db.Label).options(
+        selectinload(db.Label.heuristic).options(
+            selectinload(db.Heuristic.executions)
+            .defer(db.Execution.output).defer(db.Execution.user)
+        )
+    ).filter(db.Label.type == type_characterization[0]).all()
+    labels_db_classes = db.query(db.Label).options(
+        selectinload(db.Label.heuristic).options(
+            selectinload(db.Heuristic.executions)
+            .defer(db.Execution.output).defer(db.Execution.user)
+        )
+    ).filter(db.Label.type == type_characterization[1]).all()
     print("Search results in execution for label and project.")
     print("File to be generated: ", type_characterization)
     for j, project in enumerate(projects_db):
@@ -188,11 +225,13 @@ def create_characterization_and_database(type_characterization, nameFile):
                 index_projects.append(project.name)
                 index_domains.append(project.domain)
             # Search results in execution for label and project
-            execution = db.query(db.Execution) \
-                .join(db.Execution.version) \
-                .join(db.Execution.heuristic) \
-                .filter(db.Version.project_id == project.id) \
+            execution = (
+                db.query(db.Execution)
+                .join(db.Execution.version)
+                .join(db.Execution.heuristic)
+                .filter(db.Version.project_id == project.id)
                 .filter(db.Heuristic.label_id == label.id).first()
+            )
             if(execution is None) :
                 status['None'] += 1
             else:
@@ -214,11 +253,13 @@ def create_characterization_and_database(type_characterization, nameFile):
                 index_projects.append(project.name)
                 index_domains.append(project.domain)
             # Search results in execution for label and project
-            execution = db.query(db.Execution) \
-                .join(db.Execution.version) \
-                .join(db.Execution.heuristic) \
-                .filter(db.Version.project_id == project.id) \
+            execution = (
+                db.query(db.Execution)
+                .join(db.Execution.version)
+                .join(db.Execution.heuristic)
+                .filter(db.Version.project_id == project.id)
                 .filter(db.Heuristic.label_id == label.id).first()
+            )
             if(execution is None):
                 status['None'] += 1
             else:
@@ -247,8 +288,16 @@ def create_count_dbCode_Dependencies():
     index_projects = []
     results_Label = []
     status_dbCode = dict()
-    projects_db = db.query(db.Project).options(load_only('id', 'owner', 'name'), selectinload(db.Project.versions).load_only('id')).all()
-    labels_db = db.query(db.Label).options(selectinload(db.Label.heuristic).options(selectinload(db.Heuristic.executions).defer('output').defer('user'))).filter(db.Label.type == 'implementation').all()
+    projects_db = db.query(db.Project).options(
+        load_only(db.Project.id, db.Project.owner, db.Project.name),
+        selectinload(db.Project.versions).load_only(db.Version.id)
+    ).all()
+    labels_db = db.query(db.Label).options(
+        selectinload(db.Label.heuristic).options(
+            selectinload(db.Heuristic.executions)
+            .defer(db.Execution.output).defer(db.Execution.user)
+        )
+    ).filter(db.Label.type == 'implementation').all()
     print("Search results in execution for label and project.")
     for i, project in enumerate(projects_db):
         status_dbCode = {
@@ -269,12 +318,14 @@ def create_count_dbCode_Dependencies():
             if(len(index_projects)< len(projects_db)):
                 index_projects.append(project.name)
             # Search results in execution for label and project
-            execution = db.query(db.Execution) \
-                .join(db.Execution.version) \
-                .join(db.Execution.heuristic) \
-                .filter(db.Version.project_id == project.id) \
-                .filter(db.Heuristic.label_id == label.id) \
+            execution = (
+                db.query(db.Execution)
+                .join(db.Execution.version)
+                .join(db.Execution.heuristic)
+                .filter(db.Version.project_id == project.id)
+                .filter(db.Heuristic.label_id == label.id)
                 .filter(db.Execution.output != '').first()
+            )
             if(execution is None):
                 status_dbCode['None'] += 1 
             else:
@@ -295,9 +346,12 @@ def create_count_dbCode_Dependencies():
                 status_dbCode['Total DB'] = len(output)
 
         #busca as labels de banco labels de dependencia - segundo nível
-        label_classes_db = db.query(db.Label).options(selectinload(db.Label.heuristic).
-                                                           options(selectinload(db.Heuristic.executions)
-                                                                   .defer('output').defer('user'))).filter(db.Label.name == project.owner+"."+project.name).first()
+        label_classes_db = db.query(db.Label).options(
+            selectinload(db.Label.heuristic).options(
+                selectinload(db.Heuristic.executions)
+                .defer(db.Execution.output).defer(db.Execution.user)
+            )
+        ).filter(db.Label.name == project.owner + "." + project.name).first()
         if (label_classes_db is None): 
             print(project.owner+"."+project.name)
             status_dbCode['Dependencies Test'] = 0
@@ -307,12 +361,14 @@ def create_count_dbCode_Dependencies():
             status_dbCode['Total DB'] = 0 
             status_dbCode['Total Project'] = 0 
         else:
-            execution = db.query(db.Execution) \
-                .join(db.Execution.version) \
-                .join(db.Execution.heuristic) \
-                .filter(db.Version.project_id == project.id) \
-                .filter(db.Heuristic.label_id == label_classes_db.id) \
+            execution = (
+                db.query(db.Execution)
+                .join(db.Execution.version)
+                .join(db.Execution.heuristic)
+                .filter(db.Version.project_id == project.id)
+                .filter(db.Heuristic.label_id == label_classes_db.id)
                 .filter(db.Execution.output != '').first()
+            )
 
             if(execution is None):
                 results_Label.append("")
@@ -373,9 +429,11 @@ def calculate_rate(project, status_dbCode):
 def create_vulnerability_csv():
     results_Label = []
     db.connect()
-    vulnerabilities_db = db.query(db.Vulnerability) \
-                .join(db.Label) \
-                .filter(db.Vulnerability.label_id == db.Label.id)
+    vulnerabilities_db = (
+        db.query(db.Vulnerability)
+        .join(db.Label)
+        .filter(db.Vulnerability.label_id == db.Label.id)
+    )
     for j, vulnerability in enumerate(vulnerabilities_db):
         status_dbCode = {
             'Name': vulnerability.name,
@@ -394,8 +452,14 @@ def create_pomxml_characterization(type_characterization):
     index_projects = []
     index_domains = []
     results_Label = []
-    projects_db = db.query(db.Project).options(load_only('id', 'owner', 'name'), selectinload(db.Project.versions).load_only('id')).all()
-    labels_db = db.query(db.Label).options(selectinload(db.Label.heuristic).options(selectinload(db.Heuristic.executions).defer('output').defer('user'))).filter(db.Label.type == type_characterization).all()
+    projects_db = db.query(db.Project).options(
+        load_only(db.Project.id, db.Project.owner, db.Project.name),
+        selectinload(db.Project.versions).load_only(db.Version.id)
+    ).all()
+    labels_db = db.query(db.Label).options(selectinload(db.Label.heuristic).options(
+        selectinload(db.Heuristic.executions)
+        .defer(db.Execution.output).defer(db.Execution.user)
+    )).filter(db.Label.type == type_characterization).all()
     print("Search results in execution for label and project.")
     print("File to be generated: ", type_characterization)
     for i,label in enumerate(labels_db):
@@ -404,11 +468,13 @@ def create_pomxml_characterization(type_characterization):
                 index_projects.append(project.name)
                 index_domains.append(project.domain)
             # Search results in execution for label and project
-            execution = db.query(db.Execution) \
-                .join(db.Execution.version) \
-                .join(db.Execution.heuristic) \
-                .filter(db.Version.project_id == project.id) \
+            execution = (
+                db.query(db.Execution)
+                .join(db.Execution.version)
+                .join(db.Execution.heuristic)
+                .filter(db.Version.project_id == project.id)
                 .filter(db.Heuristic.label_id == label.id).first()
+            )
             if(execution is None):
                 print("None")
                 results_Label.append(0)

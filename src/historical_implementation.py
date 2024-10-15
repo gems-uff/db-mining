@@ -18,10 +18,22 @@ def create_historical():
     #column = []
     heuristics = []
     results_Label = []
-    projects_db = db.query(db.Project).options(load_only('id', 'owner', 'name'), selectinload(db.Project.versions).load_only('id')).all()
+    projects_db = db.query(db.Project).options(
+        load_only(db.Project.id, db.Project.owner, db.Project.name),
+        selectinload(db.Project.versions).load_only(db.Version.id)
+    ).all()
     #print(projects_db)
-    labels_db = db.query(db.Label).options(selectinload(db.Label.heuristic).options(selectinload(db.Heuristic.executions).defer('output').defer('user'))).filter(db.Label.type == 'database').all()
-    versions_db = db.query(db.Version).options(load_only('id','part_commit','project_id'), selectinload(db.Version.executions).load_only('id')).all()
+    labels_db = db.query(db.Label).options(
+        selectinload(db.Label.heuristic).options(
+            selectinload(db.Heuristic.executions)
+            .defer(db.Execution.output)
+            .defer(db.Execution.user)
+        )
+    ).filter(db.Label.type == 'database').all()
+    versions_db = db.query(db.Version).options(
+        load_only(db.Version.id, db.Version.part_commit, db.Version.project_id),
+        selectinload(db.Version.executions).load_only(db.Execution.id)
+    ).all()
     #print(versions_db)
    
     print("Search results in execution for label and project.")
@@ -37,12 +49,14 @@ def create_historical():
                 linha.append(version.part_commit)
                 for i,label in enumerate(labels_db):
                     # Search results in execution for label and project #.filter(db.Version.project_id == version.id) \
-                    execution = db.query(db.Execution) \
-                        .join(db.Execution.version) \
-                        .join(db.Execution.heuristic) \
-                        .filter(db.Version.id == version.id) \
-                        .filter(db.Version.id == db.Execution.version_id) \
+                    execution = (
+                        db.query(db.Execution)
+                        .join(db.Execution.version)
+                        .join(db.Execution.heuristic)
+                        .filter(db.Version.id == version.id)
+                        .filter(db.Version.id == db.Execution.version_id)
                         .filter(db.Heuristic.label_id == label.id).first()
+                    )
                     
                     if(execution is None):
                         #results_Label.append(0)
