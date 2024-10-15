@@ -64,6 +64,7 @@ def main():
         if os.path.isdir(target):
             os.chdir(target)
             subprocess.run(['git', 'remote', 'update'])
+            subprocess.run(['git', 'remote', 'set-head', 'origin', '-a'])
             subprocess.run(['git', 'reset', '--hard', '-q', 'origin/HEAD'])
             subprocess.run(['git', 'clean', '-d', '-f', '-x', '-q'])
             subprocess.run(['git', 'status', '-s'])
