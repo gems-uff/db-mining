@@ -185,7 +185,9 @@ def find_packege(file_path):
 
 def search_projects():
     db.connect()
-    projects_db = db.query(db.Project).options(load_only('id', 'owner', 'name'), selectinload(db.Project.versions).load_only('id')).all()
+    projects_db = db.query(db.Project).options(
+        load_only(db.Project.id, db.Project.owner, db.Project.name),
+        selectinload(db.Project.versions).load_only(db.Version.id)).all()
     return projects_db
 
 def search_labels(labelType):
