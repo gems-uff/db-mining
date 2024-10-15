@@ -77,7 +77,8 @@ def do_commit():
 def get_or_create_projects(
     filename=ANNOTATED_FILE_JAVA,
     filters=None, min_project=1, max_project=None,
-    sysexit=True, create_version=False
+    sysexit=True, create_version=False,
+    skip_remove=False
 ):
 
     if not os.path.exists(filename) and sysexit:
@@ -105,8 +106,7 @@ def get_or_create_projects(
 
     # Loading projects from the database.
     projects_db = db.query(db.Project).options(
-        load_only(db.Project.id, db.Project.owner, db.Project.name),
-        selectinload(db.Project.versions).load_only(db.Version.id)
+        load_only(db.Project.id, db.Project.owner, db.Project.name)
     ).all()
 
     status = {
@@ -129,7 +129,7 @@ def get_or_create_projects(
             print(f'[{progress}] Adding project {project.owner}/{project.name}:', end=' ')
             projects.append(project)
             print(yellow('already done.'))
-        elif project_tup not in ignore:
+        elif project_tup not in ignore and not skip_remove:
             db.delete(project)
             status['Deleted'] += 1
 
@@ -188,7 +188,7 @@ def populate_labels_fs(labels_fs, label_type_path, label_type_name):
                 labels_fs[(label_fs['type'], label_fs['name'])] = label_fs
 
 
-def get_or_create_labels(heuristics_dir=HEURISTICS_DIR, label_type=None):
+def get_or_create_labels(heuristics_dir=HEURISTICS_DIR, label_type=None, skip_remove=False):
     print(f'\nLoading heuristics from {heuristics_dir}.')
     labels = []
 
@@ -232,20 +232,21 @@ def get_or_create_labels(heuristics_dir=HEURISTICS_DIR, label_type=None):
             if heuristic.pattern != label_fs['pattern']:
                 heuristic.pattern = label_fs['pattern']
                 count = 0
-                for execution in list(heuristic.executions):
-                    if not (execution.isValidated and execution.isAccepted):
-                        # The commit does not invalidate the objects for performance reasons,
-                        # so we need to remove the relationships before deleting the execution.
-                        execution.heuristic = None
-                        execution.version = None
+                if not skip_remove:
+                    for execution in list(heuristic.executions):
+                        if not (execution.isValidated and execution.isAccepted):
+                            # The commit does not invalidate the objects for performance reasons,
+                            # so we need to remove the relationships before deleting the execution.
+                            execution.heuristic = None
+                            execution.version = None
 
-                        db.delete(execution)
-                        count += 1
-                print(green(f'heuristic updated ({count} executions removed).'))
+                            db.delete(execution)
+                            count += 1
+                    print(green(f'heuristic updated ({count} executions removed).'))
                 status['Updated'] += 1
             else:
                 print(yellow('already done.'))
-        else:
+        elif not skip_remove:
             db.delete(label)
             status['Deleted'] += 1
 
@@ -411,14 +412,20 @@ def main():
         '--dry-run', action="store_true",
         help="Dry-run. Do not extract repositories"
     )
+    parser.add_argument(
+        '-a', '--skip-remove', action="store_true",
+        help="Additive mode. Do not remove database records"
+    )
     cwd = os.getcwd()
     args = parser.parse_args()
 
     db.connect()
     projects = get_or_create_projects(
         filename=args.input, filters=args.filter,
-        min_project=args.min_project, max_project=args.max_project)
-    labels = get_or_create_labels(heuristics_dir=args.heuristics)
+        min_project=args.min_project, max_project=args.max_project,
+        skip_remove=args.skip_remove)
+    labels = get_or_create_labels(
+        heuristics_dir=args.heuristics, skip_remove=args.skip_remove)
 
     # Indexing executions by label heuristic and project version.
     executions = index_executions(labels)
