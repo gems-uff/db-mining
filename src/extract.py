@@ -1,3 +1,11 @@
+"""Extract heuristics from projects.
+
+By default, this script extracts heuristics from the history dividing into slices of 100 commits.
+
+It accepts arguments to change the default behavior, and some addotional scripts 
+implement common parameters that are useful.
+"""
+
 import os
 import subprocess
 import argparse
@@ -5,7 +13,7 @@ import sys
 from timeit import default_timer as timer
 from email.utils import parsedate_to_datetime
 from datetime import timezone
-
+from collections import defaultdict
 
 import pandas as pd
 
@@ -195,9 +203,9 @@ def get_or_create_labels(heuristics_dir=HEURISTICS_DIR, label_type=None, skip_re
     # Loading heuristics from the file system.
     labels_fs = dict()
     if label_type is None:
-        for label_type in os.scandir(heuristics_dir):
-            if label_type.is_dir() and not label_type.name.startswith('.'):
-                populate_labels_fs(labels_fs, label_type.path, label_type.name)
+        for label_type_dir in os.scandir(heuristics_dir):
+            if label_type_dir.is_dir() and not label_type_dir.name.startswith('.'):
+                populate_labels_fs(labels_fs, label_type_dir.path, label_type_dir.name)
     else:
         populate_labels_fs(labels_fs, heuristics_dir, label_type)
 
@@ -206,7 +214,11 @@ def get_or_create_labels(heuristics_dir=HEURISTICS_DIR, label_type=None, skip_re
         selectinload(db.Label.heuristic)
         .options(selectinload(db.Heuristic.executions)
                  .defer(db.Execution.output)
-                 .defer(db.Execution.user))).all()
+                 .defer(db.Execution.user))
+    )
+    if label_type is not None:
+        labels_db = labels_db.filter(db.Label.type == label_type)
+    labels_db = labels_db.all()
 
     status = {
         'File System': len(labels_fs),
@@ -346,16 +358,24 @@ def do_checkout(commit, verbose):
         print('\n>>>', ' '.join(cmd))
     try:
         p = subprocess.run(cmd, capture_output=True)
-    except subprocess.TimeoutExpired:
-        raise ExtractException("Git error (checkout).") from e
+    except subprocess.TimeoutExpired as ex:
+        raise ExtractException("Git error (checkout).") from ex
     except subprocess.CalledProcessError as ex:
-        raise ExtractException("Git error (checkout).") from e
+        raise ExtractException("Git error (checkout).") from ex
 
 
-def main():
+def read_args(
+        prog, description,
+        default_proportional=False,
+        default_slices=100,
+        default_label_type=None,
+        default_skip_remove=False,
+        default_heuristics=HEURISTICS_DIR,
+        default_label_selection="all",
+    ):
     parser = argparse.ArgumentParser(
-        prog='extract',
-        description='Extract heuristics from repositories')
+        prog=prog,
+        description=description)
 
     parser.add_argument(
         '-i', '--input', default=ANNOTATED_FILE_JAVA,
@@ -364,21 +384,31 @@ def main():
         '-f', '--filter', default=[], nargs="*",
         help="Select specific repositories")
     parser.add_argument(
-        '-x', '--heuristics', default=HEURISTICS_DIR,
+        '-x', '--heuristics', default=default_heuristics,
         help="Heuristics directory")
+    parser.add_argument(
+        "-t", '--label-type', default=default_label_type,
+        help="Heuristics label type"
+    )
     parser.add_argument(
         '-l', '--list-commits-mode', default='firstparent',
         choices=['firstparent', 'all'],
         help="Rev-list execution mode"
     )
     parser.add_argument(
-        '-s', '--slices', default=100, type=int,
+        '-s', '--slices', default=default_slices, type=int,
         help="Slice division. In proportional mode, use 0 to get all commits and 1 to get latest."
     )
-    parser.add_argument(
+    group = parser.add_mutually_exclusive_group(required=False)
+    group.add_argument(
         '-p', '--proportional', action="store_true",
-        help="Split history into S slices. When this flag is not set, it splits into slices of S commits."
+        help="Split history into S slices."
     )
+    group.add_argument(
+        '--by-s-commits', dest="proportional", action="store_false",
+        help="Split history into slices of S commits."
+    )
+    parser.set_defaults(proportional=default_proportional)
     parser.add_argument(
         '--min-slice', default=1, type=int,
         help="First slice in interval"
@@ -399,7 +429,6 @@ def main():
         '-v', '--verbose', action="store_true",
         help="Show command"
     )
-    
     parser.add_argument(
         '-c', '--checkout', action="store_true",
         help="Checkout version before analysis"
@@ -412,20 +441,57 @@ def main():
         '--dry-run', action="store_true",
         help="Dry-run. Do not extract repositories"
     )
-    parser.add_argument(
+    group2 = parser.add_mutually_exclusive_group(required=False)
+    group2.add_argument(
         '-a', '--skip-remove', action="store_true",
         help="Additive mode. Do not remove database records"
     )
-    cwd = os.getcwd()
-    args = parser.parse_args()
+    group2.add_argument(
+        '--remove', dest="skip_remove", action="store_false",
+        help="Remove projects that do not exist on the spreadsheet and heuristics that do not exist on the directories."
+    )
+    parser.set_defaults(skip_remove=default_skip_remove)
+    parser.add_argument(
+        '--label-selection', choices=["all", "project"], default=default_label_selection,
+        help="Indicate how to select labels by project. all = Find all heuristics in each project; project = Find only heuristics that have the same name as the project"
+    )
 
-    db.connect()
+    parser
+    return parser.parse_args()
+
+
+def process_projects(args, connect=True):
+    if connect:
+        db.connect()
+    cwd = os.getcwd()
+
     projects = get_or_create_projects(
         filename=args.input, filters=args.filter,
         min_project=args.min_project, max_project=args.max_project,
-        skip_remove=args.skip_remove)
+        skip_remove=args.skip_remove
+    )
+
     labels = get_or_create_labels(
-        heuristics_dir=args.heuristics, skip_remove=args.skip_remove)
+        heuristics_dir=args.heuristics,
+        label_type=args.label_type,
+        skip_remove=args.skip_remove
+    )
+
+    if args.label_selection == "all":
+        def project_labels(project_qual_name):
+            return labels
+    elif args.label_selection == "project":
+        label_map = defaultdict(list)
+        for label in labels:
+            # Get first label that implements this heuristics
+            heuristic = label.heuristic
+            heuristic_objct_label = db.query(db.Label).filter(db.Label.id == heuristic.label_id).first()
+            owner, name, *_ = heuristic_objct_label.name.split(".")
+            label_map[f"{owner}/{name}"].append(label)
+
+        def project_labels(project_qual_name):
+            return label_map.get(project_qual_name, [])
+                
 
     # Indexing executions by label heuristic and project version.
     executions = index_executions(labels)
@@ -445,6 +511,7 @@ def main():
     print(f'\nProcessing {len(projects)} projects {args.min_project}..{last_project} (out of {total_project}) over {len(labels)} heuristics.')
     for j, project in enumerate(projects):
         try:
+            project_qual_name = f"{project.owner}/{project.name}"
             os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
             commits, last_sha1 = list_commits(args.list_commits_mode, args.slices, args.proportional, args.verbose)
             if args.checkout and args.restore:
@@ -499,14 +566,14 @@ def main():
                     )
                     db.db.session.add(version)
                 #db.session.commit()
-                for i, label in enumerate(labels):
+                for i, label in enumerate(project_labels(project_qual_name)):
                     if os.path.exists(os.path.join(cwd, ".break")):
                         print("Found .break file. Pausing execution")
                         breakpoint()
                     heuristic = label.heuristic
                     # Print progress information Heuristics #projects * len(labels) + (j + 1))
                     progress = '{:.2%}'.format(((j + c/tam) * len(labels) + (i + 1)/tam) / status['Total'])
-                    print(f'[{progress}] Searching for {label.name} in [Project {part_project or 1}: {j + 1}/{total_project} -- Commit {part or 1}: {c + 1}/{tam}] {project.owner}/{project.name}:', end=' ')
+                    print(f'[{progress}] Searching for {label.name} in [Project {part_project or 1}: {j + 1}/{total_project} -- Commit {part or 1}: {c + 1}/{tam}] {project_qual_name}:', end=' ')
                     # Try to get a previous execution
                     execution = executions.get((heuristic, version), None)
                     if not execution:
@@ -517,10 +584,10 @@ def main():
                                 cmd = GREP_COMMAND_IGNORECASE
                             else:
                                 cmd = GREP_COMMAND
-                            cmd = cmd + [
-                                args.heuristics + os.sep + label.type + os.sep + label.name + '.txt',
-                                commit
-                            ]
+                            heuristic_path = args.heuristics
+                            if not args.label_type:
+                                heuristic_path = heuristic_path + os.sep + label.type
+                            cmd = cmd + [heuristic_path + os.sep + label.name + '.txt', commit]
                             if args.verbose:
                                 print('\n>>>', ' '.join(cmd))
                             p = subprocess.run(cmd, capture_output=True)
@@ -560,7 +627,12 @@ def main():
                 do_checkout(last_sha1, args.verbose)
 
     print_results(status)
-    db.close()
+    if connect:
+        db.close()
+
+def main():
+    args = read_args('extract', 'Extract heuristics from repositories')
+    process_projects(args)
 
 
 if __name__ == "__main__":
