@@ -167,10 +167,20 @@ def create_count_sql():
 def save(all_results, type_characterization):
     print("\n")
     print(f'Saving all results {type_characterization} to {RESOURCE_DIR}...', end=' ')
-    df = pd.DataFrame(all_results)
-    CHARACTERIZATION_FILE_PATH = RESOURCE_DIR + os.sep + type_characterization+ '.xlsx'
-    df.to_excel(CHARACTERIZATION_FILE_PATH, index=False)
-    print('Done!')
+    df_new = pd.DataFrame(all_results)
+    CHARACTERIZATION_FILE_PATH = RESOURCE_DIR + os.sep + type_characterization + '.xlsx'
+
+    # Verifica se o arquivo já existe
+    if os.path.exists(CHARACTERIZATION_FILE_PATH):
+        # Carregar o arquivo existente
+        with pd.ExcelWriter(CHARACTERIZATION_FILE_PATH, mode='a', engine='openpyxl', if_sheet_exists='overlay') as writer:
+            # Escrever os novos dados abaixo dos existentes (no mesmo sheet ou nova aba)
+            df_new.to_excel(writer, index=False, sheet_name='Sheet1', startrow=writer.sheets['Sheet1'].max_row)
+    else:
+        # Se o arquivo não existe, cria um novo
+        df_new.to_excel(CHARACTERIZATION_FILE_PATH, index=False)
+    
+    print("Done!")
 
 def save_local(all_results, LocalToSave):
     print("\n")
@@ -404,26 +414,50 @@ def save_local_pd( dicResults, LocalToSave):
     print('Done!')
 
 def calculate_rate(project, status_dbCode):
-    status_dbCode_rate = {
-        'Projects': project.name,
-        'N DB-Code Test': int(status_dbCode['DB-Code Test']) if int(status_dbCode['DB-Code Test'])>0 else "",
-        'N DB-Code Java': int(status_dbCode['DB-Code Java']) if int(status_dbCode['DB-Code Java'])>0 else "",
-        'N DB-Code XML': int(status_dbCode['DB-Code XML']) if int(status_dbCode['DB-Code XML'])>0 else "",
-        'N DB-Code Not Java/XML' : int(status_dbCode['DB-Code Not Java/XML']) if int(status_dbCode['DB-Code Not Java/XML']) >0 else "",
-        'N Dependencies Test': int(status_dbCode['Dependencies Test']) if int(status_dbCode['Dependencies Test'])>0 else "",
-        'N Dependencies Code': int(status_dbCode['Dependencies Code']) if int(status_dbCode['Dependencies Code'])>0 else "",
-        'N Dependencies XML': int(status_dbCode['Dependencies XML']) if int(status_dbCode['Dependencies XML'])>0 else "",
-        'N Dependencies Not Java/XML': int(status_dbCode['Dependencies XML']) if int(status_dbCode['Dependencies XML'])>0 else "",
-        'N Total Project': int(status_dbCode['Total Project'])  if int(status_dbCode['Total Project'])>0 else "",
-        'N Total DB': int(status_dbCode['Total DB'])  if int(status_dbCode['Total DB'])>0 else "",
-        'DB-Code Test': int(status_dbCode['DB-Code Test'])/int(status_dbCode['Total Project'])*100  if int(status_dbCode['DB-Code Test'])/int(status_dbCode['Total Project'])*100>0 else "",
-        'DB-Code Java': int(status_dbCode['DB-Code Java'])/int(status_dbCode['Total Project'])*100  if int(status_dbCode['DB-Code Java'])/int(status_dbCode['Total Project'])*100 >0 else "",
-        'DB-Code XML': int(status_dbCode['DB-Code XML'])/int(status_dbCode['Total Project'])*100  if int(status_dbCode['DB-Code XML'])/int(status_dbCode['Total Project'])*100>0 else "",
-        'Dependencies Test': int(status_dbCode['Dependencies Test'])/int(status_dbCode['Total Project'])*100  if int(status_dbCode['Dependencies Test'])/int(status_dbCode['Total Project'])*100>0 else "",
-        'Dependencies Code': int(status_dbCode['Dependencies Code'])/int(status_dbCode['Total Project'])*100  if int(status_dbCode['Dependencies Code'])/int(status_dbCode['Total Project'])*100 >0 else "",
-        'Dependencies XML': int(status_dbCode['Dependencies XML'])/int(status_dbCode['Total Project'])*100  if int(status_dbCode['Dependencies XML'])/int(status_dbCode['Total Project'])*100>0 else "", 
-        'Total DB': int(status_dbCode['Total DB'])/int(status_dbCode['Total Project'])*100  if int(status_dbCode['Total DB'])/int(status_dbCode['Total Project'])*100>0 else ""
-    }
+
+    if(int(status_dbCode['Total Project']))>0:
+        status_dbCode_rate = {
+            'Projects': project.name,
+            'N DB-Code Test': int(status_dbCode['DB-Code Test']) if int(status_dbCode['DB-Code Test'])>0 else "",
+            'N DB-Code Java': int(status_dbCode['DB-Code Java']) if int(status_dbCode['DB-Code Java'])>0 else "",
+            'N DB-Code XML': int(status_dbCode['DB-Code XML']) if int(status_dbCode['DB-Code XML'])>0 else "",
+            'N DB-Code Not Java/XML' : int(status_dbCode['DB-Code Not Java/XML']) if int(status_dbCode['DB-Code Not Java/XML']) >0 else "",
+            'N Dependencies Test': int(status_dbCode['Dependencies Test']) if int(status_dbCode['Dependencies Test'])>0 else "",
+            'N Dependencies Code': int(status_dbCode['Dependencies Code']) if int(status_dbCode['Dependencies Code'])>0 else "",
+            'N Dependencies XML': int(status_dbCode['Dependencies XML']) if int(status_dbCode['Dependencies XML'])>0 else "",
+            'N Dependencies Not Java/XML': int(status_dbCode['Dependencies XML']) if int(status_dbCode['Dependencies XML'])>0 else "",
+            'N Total Project': int(status_dbCode['Total Project'])  if int(status_dbCode['Total Project'])>0 else "",
+            'N Total DB': int(status_dbCode['Total DB'])  if int(status_dbCode['Total DB'])>0 else "",
+            'DB-Code Test': int(status_dbCode['DB-Code Test'])/ int(status_dbCode['Total Project'])*100 if int(status_dbCode['DB-Code Test'])/int(status_dbCode['Total Project'])*100>0 else "",
+            'DB-Code Java': int(status_dbCode['DB-Code Java'])/int(status_dbCode['Total Project'])*100  if int(status_dbCode['DB-Code Java'])/int(status_dbCode['Total Project'])*100 >0 else "",
+            'DB-Code XML': int(status_dbCode['DB-Code XML'])/int(status_dbCode['Total Project'])*100  if int(status_dbCode['DB-Code XML'])/int(status_dbCode['Total Project'])*100>0 else "",
+            'Dependencies Test': int(status_dbCode['Dependencies Test'])/int(status_dbCode['Total Project'])*100  if int(status_dbCode['Dependencies Test'])/int(status_dbCode['Total Project'])*100>0 else "",
+            'Dependencies Code': int(status_dbCode['Dependencies Code'])/int(status_dbCode['Total Project'])*100  if int(status_dbCode['Dependencies Code'])/int(status_dbCode['Total Project'])*100 >0 else "",
+            'Dependencies XML': int(status_dbCode['Dependencies XML'])/int(status_dbCode['Total Project'])*100  if int(status_dbCode['Dependencies XML'])/int(status_dbCode['Total Project'])*100>0 else "", 
+            'Total DB': int(status_dbCode['Total DB'])/int(status_dbCode['Total Project'])*100  if int(status_dbCode['Total DB'])/int(status_dbCode['Total Project'])*100>0 else ""
+        }
+    else:
+        status_dbCode_rate = {
+            'Projects': project.name,
+            'N DB-Code Test': int(status_dbCode['DB-Code Test']) if int(status_dbCode['DB-Code Test'])>0 else "",
+            'N DB-Code Java': int(status_dbCode['DB-Code Java']) if int(status_dbCode['DB-Code Java'])>0 else "",
+            'N DB-Code XML': int(status_dbCode['DB-Code XML']) if int(status_dbCode['DB-Code XML'])>0 else "",
+            'N DB-Code Not Java/XML' : int(status_dbCode['DB-Code Not Java/XML']) if int(status_dbCode['DB-Code Not Java/XML']) >0 else "",
+            'N Dependencies Test': int(status_dbCode['Dependencies Test']) if int(status_dbCode['Dependencies Test'])>0 else "",
+            'N Dependencies Code': int(status_dbCode['Dependencies Code']) if int(status_dbCode['Dependencies Code'])>0 else "",
+            'N Dependencies XML': int(status_dbCode['Dependencies XML']) if int(status_dbCode['Dependencies XML'])>0 else "",
+            'N Dependencies Not Java/XML': int(status_dbCode['Dependencies XML']) if int(status_dbCode['Dependencies XML'])>0 else "",
+            'N Total Project': int(status_dbCode['Total Project'])  if int(status_dbCode['Total Project'])>0 else "",
+            'N Total DB': int(status_dbCode['Total DB'])  if int(status_dbCode['Total DB'])>0 else "",
+            'DB-Code Test':  "",
+            'DB-Code Java':  "",
+            'DB-Code XML':  "",
+            'Dependencies Test': "",
+            'Dependencies Code': "",
+            'Dependencies XML': "", 
+            'Total DB': ""
+        }
+        
     return status_dbCode_rate
 
 def create_vulnerability_csv():
@@ -509,19 +543,25 @@ def create_pomxml_characterization(type_characterization):
 
 
 def main():
-    # create_characterization('database', False, 'database')
+    #resultados BDs
+    #create_characterization('database', False, 'database')
+
+    #implementação ORM
+    #create_characterization('implementation', False, 'implementation')
+    #create_characterization('implementation', True, 'implementation_names')
     
-     create_characterization('implementation', False, 'implementation')
-    # create_characterization('implementation', True, 'implementation_names')
-    
+    #resultados de query
     #create_characterization('query', False, 'query')
-    # create_count_sql()
-    
-    # create_count_implementation(True)
-    # create_count_implementation(False)
-    # list_type = ['implementation', 'classes']
-    # create_characterization_and_database(list_type, 'number_of_files')
-    # create_count_dbCode_Dependencies()
+    #create_count_sql()
+
+    #resultados uso do ORM
+    #create_count_implementation(True)
+    #create_count_implementation(False)
+    #list_type = ['implementation', 'classes']
+    #create_characterization_and_database(list_type, 'number_of_files')
+    create_count_dbCode_Dependencies()
+
+
     #create_vulnerability_csv()
     #create_pomxml_characterization('database')
     

@@ -1,89 +1,57 @@
-from itertools import count
-from sys import version
-from sqlalchemy.sql.elements import Null
-from sqlalchemy.sql.expression import column, null
 import database as db
-from sqlalchemy.orm import load_only, selectinload
-
 import pandas as pd
+from sqlalchemy.orm import load_only
 from util import HISTORICAL_FILE
-from sqlalchemy import func
+
+from collections import namedtuple, defaultdict, Counter
 
 
 def create_historical():
-    db.connect()
-    all_results = dict()
-    index_projects = []
-    index_commits = []
-    #column = []
-    heuristics = []
-    results_Label = []
-    projects_db = db.query(db.Project).options(
-        load_only(db.Project.id, db.Project.owner, db.Project.name),
-        selectinload(db.Project.versions).load_only(db.Version.id)
-    ).all()
-    #print(projects_db)
     labels_db = db.query(db.Label).options(
-        selectinload(db.Label.heuristic).options(
-            selectinload(db.Heuristic.executions)
-            .defer(db.Execution.output)
-            .defer(db.Execution.user)
-        )
+        load_only(db.Label.id, db.Label.name)
     ).filter(db.Label.type == 'database').all()
+    label_map = {label.id: label.name for label in labels_db}
+
+    heuristic_db = db.query(db.Heuristic).options(
+        load_only(db.Heuristic.id, db.Heuristic.label_id)
+    )
+    heuristic_map = {heuristic.id: label_map[heuristic.label_id] for heuristic in heuristic_db}
+
+
+    counter = Counter()
+    version_map = defaultdict(set)
+    execution_db = db.query(db.Execution).options(
+        load_only(db.Execution.version_id, db.Execution.heuristic_id)
+    ).filter(db.Execution.output != "")
+    for execution in execution_db:
+        heuristic = heuristic_map[execution.heuristic_id]
+        counter[heuristic] += 1
+        version_map[execution.version_id].add(heuristic)
+            
+    projects_db = db.query(db.Project).options(
+        load_only(db.Project.id, db.Project.owner, db.Project.name)
+    )
+    project_map = {project.id: project for project in projects_db}
+
     versions_db = db.query(db.Version).options(
-        load_only(db.Version.id, db.Version.part_commit, db.Version.project_id),
-        selectinload(db.Version.executions).load_only(db.Execution.id)
-    ).all()
-    #print(versions_db)
-   
-    print("Search results in execution for label and project.")
-    for j, project in enumerate(projects_db):
-        if(len(index_projects)< len(projects_db)):
-            index_projects.append(project.name)
-            #for k, versioni in enumerate(versions_db):
-            for k, version in enumerate (db.query(db.Version).filter(db.Version.project_id == project.id)):
-                linha = []
-               
-                index_commits.append(version.part_commit)
-                linha.append(project.name)
-                linha.append(version.part_commit)
-                for i,label in enumerate(labels_db):
-                    # Search results in execution for label and project #.filter(db.Version.project_id == version.id) \
-                    execution = (
-                        db.query(db.Execution)
-                        .join(db.Execution.version)
-                        .join(db.Execution.heuristic)
-                        .filter(db.Version.id == version.id)
-                        .filter(db.Version.id == db.Execution.version_id)
-                        .filter(db.Heuristic.label_id == label.id).first()
-                    )
-                    
-                    if(execution is None):
-                        #results_Label.append(0)
-                        linha.append(0)
-                    else:
-                        if(execution.output != ''):
-                           #results_Label.append(1)
-                           linha.append(1)
-                        else:
-                            #results_Label.append(0)
-                            linha.append(0)
-                    if (j==0) and (k==0):
-                        heuristics.append(label.name)
-                results_Label.append(linha)
-        if(j==0):
-            all_results["Projects"] = index_projects
-            all_results["Commits"] = index_commits
-    #all_results[str(heuristics)] = results_Label.copy()
-    #results_Label.clear()
-    #print(index_commits)
-    
-    heuristics.insert(0,'COMMITS')
-    heuristics.insert(0,'PROJECTS')
-    #print(labels_db)
-    #print(heuristics)
-    #print(results_Label)
-    save(results_Label, heuristics)
+        load_only(
+            db.Version.id, db.Version.project_id, 
+            db.Version.part_commit, db.Version.date_commit
+        )
+    ).order_by(db.Version.project_id, db.Version.part_commit)
+    labels = [key for key, count in counter.most_common()]
+    columns = ["OWNER", "PROJECTS", "COMMITS", "DATE COMMIT"] + labels
+
+    results_label = []
+    for version in versions_db:
+        project = project_map[version.project_id]
+        linha = [project.owner, project.name, version.part_commit, version.date_commit] + [
+            int(label in version_map.get(version.id, {}))
+            for label in labels
+        ]
+        results_label.append(linha)
+
+    save(results_label, columns)
 
 
 def save(results_Label, heuristics): 
@@ -95,6 +63,7 @@ def save(results_Label, heuristics):
     print('Done!')
 
 def main():
+    db.connect()
     create_historical()
 
 if __name__ == "__main__":
