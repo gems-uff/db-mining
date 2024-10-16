@@ -69,6 +69,7 @@ def main():
         if i >= args.min_project - 1 and (not args.max_project or i < args.max_project)
     ]
     total = len(rows)
+    count = 0
     print(f'Checking {total} repositories...')
     results = []
     for i, (_, row) in enumerate(rows):
@@ -77,12 +78,15 @@ def main():
         commits, last_sha1 = list_commits(args.list_commits_mode, args.slices, False, args.verbose)
         if len(commits) < args.number:
             print(f"- {owner}/{name}: {len(commits)} slices")
+            count += 1
         results.append([
             owner, name, len(commits), last_sha1, 
             '; '.join(sha1 for sha1, date in commits),
             '; '.join(date.isoformat() for sha1, date in commits),
         ])
 
+
+    print(f"Found {count} projects that should be filtered")
     os.chdir(cwd)
     if args.export:
         print(f"Saving all slices to {args.export}")
