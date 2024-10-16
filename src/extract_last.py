@@ -12,7 +12,6 @@ def main():
         default_proportional=True,
         default_slices=1,
     )
-    print(args)
     process_projects(args)
 
 if __name__ == "__main__":

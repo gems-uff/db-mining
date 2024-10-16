@@ -22,7 +22,6 @@ def main():
         default_heuristics=HEURISTICS_DIR_FIRST_LEVEL,
         default_label_selection="project"
     )
-    print(args)
     process_projects(args)
 
 if __name__ == "__main__":

@@ -12,7 +12,6 @@ def main():
     parser = argparse.ArgumentParser(
         prog='download',
         description='Download repositories from xlsx')
-
     parser.add_argument(
         '-i', '--input', default=ANNOTATED_FILE_JAVA,
         help="Input xlsx file")
