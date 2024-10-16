@@ -1,6 +1,6 @@
 """Extract heuristics from last version
 
-Equivalent to `extract.py -p -s 1`
+Equivalent to `extract.py -p -s 1 --may-grep-workspace`
 """
 from extract import read_args, process_projects
 
@@ -11,6 +11,7 @@ def main():
         'Extract heuristics from last version',
         default_proportional=True,
         default_slices=1,
+        default_grep_workspace=True,
     )
     process_projects(args)
 

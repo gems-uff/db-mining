@@ -5,7 +5,8 @@ Equivalent to `
         --label-type classes \\
         --heuristics resources/heuristics/first-level \\
         --label-selection project \\
-        --skip-remove
+        --skip-remove \\
+        --may-grep-workspace
 `
 """
 from extract import read_args, process_projects
@@ -20,7 +21,8 @@ def main():
         default_label_type="classes",
         default_skip_remove=True,
         default_heuristics=HEURISTICS_DIR_FIRST_LEVEL,
-        default_label_selection="project"
+        default_label_selection="project",
+        default_grep_workspace=True
     )
     process_projects(args)
 

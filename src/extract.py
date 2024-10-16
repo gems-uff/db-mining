@@ -372,6 +372,7 @@ def read_args(
         default_skip_remove=False,
         default_heuristics=HEURISTICS_DIR,
         default_label_selection="all",
+        default_grep_workspace=False,
     ):
     parser = argparse.ArgumentParser(
         prog=prog,
@@ -455,9 +456,93 @@ def read_args(
         '--label-selection', choices=["all", "project"], default=default_label_selection,
         help="Indicate how to select labels by project. all = Find all heuristics in each project; project = Find only heuristics that have the same name as the project"
     )
-
-    parser
+    group3 = parser.add_mutually_exclusive_group(required=False)
+    group3.add_argument(
+        '--may-grep-workspace', action="store_true",
+        help="Grep workspace when analyzing the HEAD commit"
+    )
+    group3.add_argument(
+        '--grep-version', dest="may_grep_workspace", action="store_false",
+        help="Grep by version."
+    )
+    parser.set_defaults(may_grep_workspace=default_grep_workspace)
+    
     return parser.parse_args()
+
+
+def prepare_commits(args, project):
+    """Get subset of commits based on slice definition and update part_commit of existing versions"""
+    commits, last_sha1 = list_commits(args.list_commits_mode, args.slices, args.proportional, args.verbose)
+    total_commit = len(commits)
+    commits = commits[args.min_slice - 1:args.max_slice]
+    last_commit = total_commit if not args.max_slice else args.max_slice
+    if total_commit > 1 and not args.dry_run:
+        # Remove all existing part_commits because the new selection will override it
+        condition = (
+            (db.Version.project_id == project.id)
+            & (db.Version.part_commit >= args.min_slice)    
+        )
+        if args.max_slice:
+            condition = condition & (db.Version.part_commit <= last_commit)
+        update(db.Version).where(condition).values(part_commit = None)
+    return commits, last_sha1, total_commit, last_commit
+
+
+def prepare_version(project, commit, total_commit, part, commit_date, last_sha1):
+    """Find or create version"""
+    version = db.db.session.query(db.Version).filter(
+        (db.Version.project_id == project.id) &
+        (db.Version.sha1 == commit)
+    ).first()
+    if version:
+        if total_commit > 1:
+            version.part_commit = part
+        version.date_commit = commit_date
+        version.isLast = commit == last_sha1
+        is_new = False
+    else:
+        version = db.Version(
+            project=project, sha1=commit,
+            isLast=commit == last_sha1,
+            part_commit=part, date_commit=commit_date
+        )
+        is_new = True
+    db.db.session.add(version)
+    return version, is_new
+
+
+def maybe_checkout(args, commit, head_sha1):
+    if args.checkout:
+        do_checkout(commit, args.verbose)
+        current_commit = do_rev_parse(args.verbose)
+        if current_commit != commit:
+            raise ExtractException(f'Git error (checkout failed: {current_commit}, {commit}).')
+        return current_commit
+    return head_sha1
+    
+
+def find_heuristic(project, label, heuristic_path, commit=None, label_type=None, verbose=False):
+    try:
+        ignore_case = validate_ignore_case(label)
+        os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
+        cmd = GREP_COMMAND_IGNORECASE if ignore_case else GREP_COMMAND
+            
+        if not label_type:
+            heuristic_path = heuristic_path + os.sep + label.type
+        cmd = cmd + [heuristic_path + os.sep + label.name + '.txt']
+        if commit:  # Find in specific commit instead of workspace
+            cmd = cmd + [commit]
+        if verbose:
+            print('\n>>>', ' '.join(cmd))
+        p = subprocess.run(cmd, capture_output=True)
+        if p.stderr:
+            raise ExtractException("Git error (git grep stderr).") from ex
+        output = p.stdout.decode(errors='replace').replace('\x00', '\uFFFD')
+        return output
+    except subprocess.TimeoutExpired as ex:
+        raise ExtractException("Git error (git grep timeout).") from ex
+    except subprocess.CalledProcessError as ex:
+        raise ExtractException("Git error (git grep).") from ex
 
 
 def process_projects(args, connect=True):
@@ -513,26 +598,17 @@ def process_projects(args, connect=True):
         try:
             project_qual_name = f"{project.owner}/{project.name}"
             os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
-            commits, last_sha1 = list_commits(args.list_commits_mode, args.slices, args.proportional, args.verbose)
-            if args.checkout and args.restore:
-                last_sha1 = do_rev_parse(args.verbose)
-            total_commit = len(commits)
-            commits = commits[args.min_slice - 1:args.max_slice]
+            commits, last_sha1, total_commit, last_commit = prepare_commits(args, project)
+            if args.may_grep_workspace or (args.checkout and args.restore):
+                current_sha1 = do_rev_parse(args.verbose)
+            head_sha1 = current_sha1 if args.may_grep_workspace else None
+            last_sha1 = current_sha1 if args.checkout and args.restore else last_sha1
+
             tam = len(commits)
-            last_commit = total_commit if not args.max_slice else args.max_slice
             part_project = args.min_project + j if total_project > 1 else None
-            print(f'\nProcessing {tam} commits {args.min_slice}..{last_commit} (out of {total_commit}) of [Project {part_project or 1}: {j + 1}/{total_project}] {project.name} project.')
+            print(f'\nProcessing {tam} commits {args.min_slice}..{last_commit} (out of {total_commit}) of [Project {part_project or 1}: {j + 1}/{total_project}] {project_qual_name} project.')
             if args.dry_run:
                 continue
-            if total_commit > 1:
-                # Remove all existing part_commits because the new selection will override it
-                condition = (
-                    (db.Version.project_id == project.id)
-                    & (db.Version.part_commit >= args.min_slice)    
-                )
-                if args.max_slice:
-                    condition = condition & (db.Version.part_commit <= last_commit)
-                update(db.Version).where(condition).values(part_commit = None)
             for c, (commit, commit_date) in enumerate(commits):
                 if os.path.exists(os.path.join(cwd, ".stop")):
                     print("Found .stop file. Stopping execution")
@@ -540,32 +616,9 @@ def process_projects(args, connect=True):
                 start = timer()
                 part = args.min_slice + c if total_commit > 1 else None
                 print(f"Commit {part or 1}: {c}/{tam} {commit}. ", end="")
-                if args.checkout:
-                    do_checkout(commit, args.verbose)
-                    current_commit = do_rev_parse(args.verbose)
-                    if current_commit != commit:
-                        raise ExtractException(f'Git error (checkout failed: {current_commit}, {commit}).')
-
-                version = db.db.session.query(db.Version).filter(
-                    (db.Version.project_id == project.id) &
-                    (db.Version.sha1 == commit)
-                ).first()
-                if version:
-                    print("... Found version.")
-                    if total_commit > 1:
-                        version.part_commit = part
-                    version.date_commit = commit_date
-                    version.isLast = commit == last_sha1
-                    db.db.session.add(version)
-                else:
-                    print("... New version.")
-                    version = db.Version(
-                        project=project, sha1=commit,
-                        isLast=commit == last_sha1,
-                        part_commit=part, date_commit=commit_date
-                    )
-                    db.db.session.add(version)
-                #db.session.commit()
+                head_sha1 = maybe_checkout(args, commit, head_sha1)
+                version, is_new = prepare_version(project, commit, total_commit, part, commit_date, last_sha1)
+                print(f"... {'New' if is_new else 'Found'} version.")
                 for i, label in enumerate(project_labels(project_qual_name)):
                     if os.path.exists(os.path.join(cwd, ".break")):
                         print("Found .break file. Pausing execution")
@@ -578,34 +631,19 @@ def process_projects(args, connect=True):
                     execution = executions.get((heuristic, version), None)
                     if not execution:
                         try:
-                            ignore_case = validate_ignore_case(label)
-                            os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
-                            if ignore_case:
-                                cmd = GREP_COMMAND_IGNORECASE
-                            else:
-                                cmd = GREP_COMMAND
-                            heuristic_path = args.heuristics
-                            if not args.label_type:
-                                heuristic_path = heuristic_path + os.sep + label.type
-                            cmd = cmd + [heuristic_path + os.sep + label.name + '.txt', commit]
-                            if args.verbose:
-                                print('\n>>>', ' '.join(cmd))
-                            p = subprocess.run(cmd, capture_output=True)
-                            if p.stderr:
-                                raise subprocess.CalledProcessError(p.returncode, cmd, p.stdout, p.stderr)
-                            output = p.stdout.decode(errors='replace').replace('\x00', '\uFFFD')
+                            output = find_heuristic(
+                                project, label, args.heuristics,
+                                commit=commit if commit != head_sha1 else None, # Grep workspace when commit == head_sha1
+                                label_type=args.label_type,
+                                verbose=args.verbose
+                            )
                             db.create(db.Execution, output=output,
                                       version=version, heuristic=heuristic, isValidated=False, isAccepted=False)
                             print(green('uses.' if output else 'does not use.'))
                             status['Success'] += 1
-                        except subprocess.TimeoutExpired:
-                            print(red('Git error.'))
-                            status['Git error'] += 1
-                        except subprocess.CalledProcessError as ex:
-                            print(red('Git error GREP_COMMAND.'))
-                            status['Git error'] += 1
-                            if CODE_DEBUG:
-                                print("Error debug", ex.stderr)
+                        except ExtractException as e:
+                            print(red(e.message))
+                            status[e.status] += 1
                     else:  # Execution already exists
                         print(yellow('already done.'))
                         status['Skipped'] += 1
