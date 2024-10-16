@@ -1,0 +1,3 @@
+(\s{1,}|[.,(]|^)UaaConfiguration(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)TokenRevocationEndpoint(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)IdentityProviderEndpoints(\s{1,}|[.,(]|^)

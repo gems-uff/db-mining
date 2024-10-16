@@ -1,1 +1,2 @@
 (\s{1,}|[.,(]|^)JValidatorTestTarget(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)DubboQosEndpoints(\s{1,}|[.,(]|^)
