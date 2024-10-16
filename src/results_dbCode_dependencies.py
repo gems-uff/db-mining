@@ -180,4 +180,5 @@ def main():
     #create_separate_file_level()
 
 if __name__ == "__main__":
+    db.connect()
     main()

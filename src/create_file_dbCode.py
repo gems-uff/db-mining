@@ -191,7 +191,6 @@ def search_projects():
     return projects_db
 
 def search_labels(labelType):
-    db.connect()
     labels_db = db.query(db.Label).options(
         selectinload(db.Label.heuristic).options(
             selectinload(db.Heuristic.executions)
@@ -220,6 +219,7 @@ def remove_duplicate_files(list_files):
     return new_list_files
     
 def main():
+    db.connect()
     create_list_dbCode()
     #create_list_implementation()
     

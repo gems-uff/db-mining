@@ -1,0 +1,8 @@
+(\s{1,}|[.,(]|^)ManagedServiceProcessor(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)ManagedServiceInterceptor(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)ManagedService(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)AnnotationScanningServletContainerInitializer(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)DefaultAnnotationProcessor(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)PathParamIntrospector(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)ManagedAtmosphereHandlerTest(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)ManagedAtmosphereHandlerTest(\s{1,}|[.,(]|^)
