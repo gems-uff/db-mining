@@ -6,5 +6,5 @@
 (\s{1,}|[.,(]|^)PipelineInterpreter(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)ContentPackPersistenceService(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)StageIteratorTest(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)GRN(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)ActionResource(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)GRN(\s{1,}|[.,(]|^)

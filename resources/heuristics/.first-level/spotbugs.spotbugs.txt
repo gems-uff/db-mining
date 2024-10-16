@@ -1,4 +1,3 @@
-(\s{1,}|[.,(]|^)ValueNumberFrameModelingVisitor(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)BetterCFGBuilder2(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)CFGPrinter(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)StackDepthAnalysis(\s{1,}|[.,(]|^)
@@ -8,3 +7,4 @@
 (\s{1,}|[.,(]|^)FindOpenStream(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)FindUnreleasedLock(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)ClassFeatureSet(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)ValueNumberFrameModelingVisitor(\s{1,}|[.,(]|^)

@@ -1,3 +1,5 @@
+(\s{1,}|[.,(]|^)HoodieAdbJdbcClient(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)QueryBasedDDLExecutor(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)ClientFunctionalTestSuite(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)SparkClientFunctionalTestSuite(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)BasicDao(\s{1,}|[.,(]|^)
@@ -7,5 +9,3 @@
 (\s{1,}|[.,(]|^)HoodieSparkFunctionalTestSuite(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)HiveSyncFunctionalTestSuite(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)UtilitiesFunctionalTestSuite(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)HoodieAdbJdbcClient(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)QueryBasedDDLExecutor(\s{1,}|[.,(]|^)

@@ -1,3 +1,5 @@
+(\s{1,}|[.,(]|^)Nacos(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)NacosTypeExcludeFilter(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)ConfigController(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)ConfigControllerV2(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)NamespaceController(\s{1,}|[.,(]|^)
@@ -11,5 +13,3 @@
 (\s{1,}|[.,(]|^)RoleController(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)UserController(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)LdapAuthCoreITCase(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)Nacos(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)NacosTypeExcludeFilter(\s{1,}|[.,(]|^)
