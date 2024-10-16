@@ -32,6 +32,18 @@ def main():
         '-pf', '--max-project', default=None, type=int,
         help="Last project in interval"
     )
+    parser.add_argument(
+        '-s', '--source', default="origin/HEAD",
+        help="Identify the reference/column that should be used as source"
+    )
+    parser.add_argument(
+        "-m", "--mode", choices=["reference", "column"],
+        help="Reset mode. Reset by reference uses the `source` git reference. Reset by column loads the column `source` of the input file"
+    )
+    parser.add_argument(
+        '-d', '--skip-discard', action="store_true",
+        help="Skip checking for discard reason"
+    )
     args = parser.parse_args()
 
     if not os.path.exists(args.input):
@@ -39,7 +51,8 @@ def main():
         sys.exit(1)
     print(f'Loading repositories from {args.input}.')
     info_repositories = pd.read_excel(args.input, keep_default_na=False)
-    info_repositories = info_repositories[info_repositories.discardReason == ''].reset_index(drop=True)
+    if not args.skip_discard:
+        info_repositories = info_repositories[info_repositories.discardReason == ''].reset_index(drop=True)
     info_repositories = filter_repositories(info_repositories, args.filter)
 
     rows = [
@@ -76,7 +89,11 @@ def main():
             if process.stderr:
                 raise subprocess.CalledProcessError(process.returncode, process.args, output=process.stdout, stderr=process.stderr)
 
-            cmd = ['git', 'reset', '--hard', '-q', 'origin/HEAD']
+            reference = args.source
+            if args.mode == "column":
+                reference = row[reference]
+
+            cmd = ['git', 'reset', '--hard', '-q', reference]
             process = subprocess.run(cmd, capture_output=True)
             if process.stderr:
                 raise subprocess.CalledProcessError(process.returncode, cmd, process.stdout, process.stderr)
