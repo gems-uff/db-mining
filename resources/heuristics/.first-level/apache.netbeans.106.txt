@@ -1,0 +1,1 @@
+(\s{1,}|[.,(]|^)WebPersistenceProvider(\s{1,}|[.,(]|^)

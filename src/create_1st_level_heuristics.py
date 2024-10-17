@@ -104,7 +104,7 @@ def save_txt(list_files, project, directory, multiple_files, remove_duplicates):
         non_duplicated = set(heuristics)
         heuristics = sorted(non_duplicated, key=heuristics.index)
     if multiple_files:
-        for i, heuristic in heuristics:
+        for i, heuristic in enumerate(heuristics):
             print(f"Saving file {project}.{i+1}.txt")
             with open(f'{project}.{i+1}.txt', 'w+') as text_file:
                 text_file.write(f"{heuristic}\n")
@@ -201,11 +201,7 @@ def main():
         'Populate level directories with their heuristics. Default: first-level based on the label `implementation`',
         #default_count=COUNT_LINE_FILE_IMP,default_ext=None # -- uncomment this line for old create_list_implementation
     )
-    create_level_heuristics(
-        label=args.label, filter_ext=args.ext, count_lines=args.count_result,
-        directory=args.heuristic, multiple_files=args.multiple,
-        remove_duplicates=args.remove_duplicates
-    )
+    create_level_heuristics(args)
     
 if __name__ == "__main__":
     main()

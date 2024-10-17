@@ -1,0 +1,1 @@
+(\s{1,}|[.,(]|^)Hk2JavaEEPlatformImpl(\s{1,}|[.,(]|^)

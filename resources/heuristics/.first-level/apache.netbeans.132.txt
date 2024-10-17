@@ -1,0 +1,1 @@
+(\s{1,}|[.,(]|^)J2SEPersistenceProvider(\s{1,}|[.,(]|^)

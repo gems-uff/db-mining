@@ -1,0 +1,1 @@
+(\s{1,}|[.,(]|^)JavaPersistenceGenerator(\s{1,}|[.,(]|^)
