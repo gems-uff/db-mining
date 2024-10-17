@@ -3,7 +3,7 @@
 Equivalent to `
     extract.py --proportional --slices 1 \\
         --label-type classes \\
-        --heuristics resources/heuristics/first-level \\
+        --heuristics resources/heuristics/.first-level \\
         --label-selection project \\
         --skip-remove \\
         --may-grep-workspace
