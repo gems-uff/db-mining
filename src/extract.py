@@ -626,7 +626,7 @@ def process_projects(args, connect=True):
                     heuristic = label.heuristic
                     # Print progress information Heuristics #projects * len(labels) + (j + 1))
                     progress = '{:.2%}'.format(((j + c/tam) * len(labels) + (i + 1)/tam) / status['Total'])
-                    print(f'[{progress}] Searching for {label.name} in [Project {part_project or 1}: {j + 1}/{total_project} -- Commit {part or 1}: {c + 1}/{tam}] {project_qual_name}:', end=' ')
+                    print(f'[{progress}] Searching for {label.name} in [Project {part_project or 1}: {j + 1}/{total_project} -- Commit {part or 1}: {c + 1}/{tam}] {project_qual_name}:', end=' ', flush=True)
                     # Try to get a previous execution
                     execution = executions.get((heuristic, version), None)
                     if not execution:
