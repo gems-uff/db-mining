@@ -1,0 +1,2 @@
+(\s{1,}|[.,(]|^)GrobidServiceModuleTest(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)GrobidRestServiceTest(\s{1,}|[.,(]|^)
