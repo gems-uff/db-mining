@@ -1,0 +1,6 @@
+(\s{1,}|[.,(]|^)AnnotationParameterValue(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)FieldInfo(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)ObjectTypedValueWrapper(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)Issue216Test(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)Issue223Test(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)Issue238Test(\s{1,}|[.,(]|^)

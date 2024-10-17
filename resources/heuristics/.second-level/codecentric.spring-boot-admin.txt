@@ -1,0 +1,7 @@
+(\s{1,}|[.,(]|^)AdminServerUiAutoConfiguration(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)AdminServerNotifierAutoConfiguration(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)AdminServerWebConfiguration(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)NotificationFilterController(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)ApplicationsController(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)InstancesController(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)NotificationFilterControllerTest(\s{1,}|[.,(]|^)
