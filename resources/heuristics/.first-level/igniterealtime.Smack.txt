@@ -1,1 +1,1 @@
-(\s{1,}|[.,(]|^)SubscriberUseCases(\s{1,}|[.,(]|^)
+(\s|[.,(]|^)SubscriberUseCases(\s|[.,(]|$)

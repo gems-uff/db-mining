@@ -1,1 +1,0 @@
-(\s{1,}|[.,(]|^)CommonProjectUtilsTest(\s{1,}|[.,(]|^)

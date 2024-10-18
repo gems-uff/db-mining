@@ -1,1 +1,0 @@
-(\s{1,}|[.,(]|^)ArchQuestionsTest(\s{1,}|[.,(]|^)

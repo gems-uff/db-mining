@@ -1,2 +1,2 @@
-(\s{1,}|[.,(]|^)ProductionConfigurationTests(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)AbstractGatewayControllerEndpoint(\s{1,}|[.,(]|^)
+(\s|[.,(]|^)ProductionConfigurationTests(\s|[.,(]|$)
+(\s|[.,(]|^)AbstractGatewayControllerEndpoint(\s|[.,(]|$)

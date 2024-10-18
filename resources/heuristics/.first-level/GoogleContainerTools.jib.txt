@@ -1,1 +1,1 @@
-(\s{1,}|[.,(]|^)HelloWorldConfiguration(\s{1,}|[.,(]|^)
+(\s|[.,(]|^)HelloWorldConfiguration(\s|[.,(]|$)

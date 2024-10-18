@@ -1,1 +1,0 @@
-(\s{1,}|[.,(]|^)TestNGSuiteHyperlingProvider(\s{1,}|[.,(]|^)

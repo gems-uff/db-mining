@@ -1,1 +1,1 @@
-(\s{1,}|[.,(]|^)FollowCommand(\s{1,}|[.,(]|^)
+(\s|[.,(]|^)FollowCommand(\s|[.,(]|$)

@@ -1,1 +1,0 @@
-(\s{1,}|[.,(]|^)AppClientPersistenceProvider(\s{1,}|[.,(]|^)

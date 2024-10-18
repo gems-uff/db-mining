@@ -1,1 +1,0 @@
-(\s{1,}|[.,(]|^)PersistenceToolBarMVElement(\s{1,}|[.,(]|^)

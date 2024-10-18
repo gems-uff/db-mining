@@ -1,2 +1,2 @@
-(\s{1,}|[.,(]|^)AppShareabilityStatus(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)AppShareabilityDatabase(\s{1,}|[.,(]|^)
+(\s|[.,(]|^)AppShareabilityStatus(\s|[.,(]|$)
+(\s|[.,(]|^)AppShareabilityDatabase(\s|[.,(]|$)

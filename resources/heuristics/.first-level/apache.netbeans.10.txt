@@ -1,1 +1,0 @@
-(\s{1,}|[.,(]|^)JDBCDriverConvertor(\s{1,}|[.,(]|^)

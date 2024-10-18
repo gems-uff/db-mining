@@ -1,1 +1,1 @@
-(\s{1,}|[.,(]|^)KubernetesReconcilerCreatorTest(\s{1,}|[.,(]|^)
+(\s|[.,(]|^)KubernetesReconcilerCreatorTest(\s|[.,(]|$)

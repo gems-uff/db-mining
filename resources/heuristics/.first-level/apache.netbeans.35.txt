@@ -1,1 +1,0 @@
-(\s{1,}|[.,(]|^)J2eeEntityResourcesGenerator(\s{1,}|[.,(]|^)
