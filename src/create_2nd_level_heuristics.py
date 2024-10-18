@@ -3,7 +3,7 @@ import database as db
 import os
 from util import  REPOS_DIR, HEURISTICS_DIR_FIRST_LEVEL, HEURISTICS_DIR_SECOND_LEVEL, USAGE_FAN_IN_FILE
 from results_in_xlsx import count_number_files_project
-from create_1st_level_heuristics import create_level_heuristics, read_args, save_list_of_dicts_table, save_txt, search_projects
+from create_1st_level_heuristics import create_level_heuristics, read_args, save_list_of_dicts_table, save_txt
 
 
 def create_separate_file_level(args):
@@ -14,7 +14,7 @@ def create_separate_file_level(args):
     second_level_pure=[]
 
     print("Filtering results.")
-    projects_db = search_projects()
+    projects_db = db.query_projects(eager=False)
 
     for i, project in enumerate(projects_db):
         status = {

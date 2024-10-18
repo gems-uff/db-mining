@@ -3,6 +3,7 @@ import json
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_utils import database_exists, create_database, drop_database
+from sqlalchemy.orm import load_only, selectinload
 
 from util import DATABASE_DEBUG, REACT_STATIC_DIR, REACT_BUILD_DIR, DATABASE_CONFIG_FILE, get_database_uri
 
@@ -183,6 +184,42 @@ def delete(instance):
 
 def main():
     connect()
+
+###########################################
+# COMMON QUERIES
+###########################################
+
+def query_projects(eager=True, with_version=True):
+    projects_db = db.query(db.Project)
+    if with_version:
+        projects_db = projects_db.options(
+            load_only(db.Project.id, db.Project.owner, db.Project.name),
+            selectinload(db.Project.versions).load_only(db.Version.id)
+        )
+    else:
+        projects_db = projects_db.options(
+            load_only(db.Project.id, db.Project.owner, db.Project.name),
+        )
+    if eager:
+        return projects_db.all()
+    return projects_db
+
+
+def query_labels(label_type=None, eager=True, with_execution=True):
+    labels_db = db.query(db.Label)
+    if with_execution:
+        labels_db = labels_db.options(
+            selectinload(db.Label.heuristic).options(
+                selectinload(db.Heuristic.executions)
+                .defer(db.Execution.output)
+                .defer(db.Execution.user)
+            )
+        )
+    if label_type:
+        labels_db = labels_db.filter(db.Label.type == label_type)
+    if eager:
+        return labels_db.all()
+    return labels_db
 
 
 if __name__ == "__main__":

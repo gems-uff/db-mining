@@ -27,8 +27,8 @@ def create_level_heuristics(args, connect=True):
     if args.remove_duplicates:
         status['Duplicated'] = 0
 
-    labels_db = search_labels(args.label)
-    projects_db = search_projects()
+    labels_db = db.query_labels(args.label)
+    projects_db = db.query_projects(eager=False)
     print("Search results in execution for label and project.")
 
     for project in projects_db:
@@ -113,24 +113,6 @@ def save_txt(list_files, project, directory, multiple_files, remove_duplicates):
         with open(f'{project}.txt', 'w+') as text_file:
             text_file.write('\n'.join(heuristics) + "\n")
     
-
-def search_projects():
-    projects_db = db.query(db.Project).options(
-        load_only(db.Project.id, db.Project.owner, db.Project.name),
-        selectinload(db.Project.versions).load_only(db.Version.id)).all()
-    return projects_db
-
-
-def search_labels(labelType):
-    labels_db = db.query(db.Label).options(
-        selectinload(db.Label.heuristic).options(
-            selectinload(db.Heuristic.executions)
-            .defer(db.Execution.output)
-            .defer(db.Execution.user)
-        )
-    ).filter(db.Label.type == labelType).all()
-    return labels_db
-
 
 def create_heuristic_class(file_path):
     file_name = file_path.split('/')[-1]
