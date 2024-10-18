@@ -489,10 +489,10 @@ def main():
     #create_count_sql()
 
     #resultados uso do ORM
-    #create_count_implementation(True)
-    #create_count_implementation(False)
-    #list_type = ['implementation', 'classes']
-    #create_characterization_and_database(list_type, 'number_of_files')
+    create_count_implementation(True)
+    create_count_implementation(False)
+    list_type = ['implementation', 'classes']
+    create_characterization_and_database(list_type, 'number_of_files')
     create_count_dbCode_Dependencies()
 
 
