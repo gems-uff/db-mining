@@ -84,7 +84,8 @@ def create_count_implementation(rate):
                 for k in output:
                     sum = sum +1
                 if(rate == True):
-                    value = sum/int(count_number_files_project(project))*100
+                    count_files = int(count_number_files_project(project))
+                    value = (sum / count_files * 100) if count_files != 0 else 0
                     results_Label.append(value)
                 else:
                     results_Label.append(sum)
