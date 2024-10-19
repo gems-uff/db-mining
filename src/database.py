@@ -190,15 +190,15 @@ def main():
 ###########################################
 
 def query_projects(eager=True, with_version=True):
-    projects_db = db.query(db.Project)
+    projects_db = query(Project)
     if with_version:
         projects_db = projects_db.options(
-            load_only(db.Project.id, db.Project.owner, db.Project.name),
-            selectinload(db.Project.versions).load_only(db.Version.id)
+            load_only(Project.id, Project.owner, Project.name),
+            selectinload(Project.versions).load_only(Version.id)
         )
     else:
         projects_db = projects_db.options(
-            load_only(db.Project.id, db.Project.owner, db.Project.name),
+            load_only(Project.id, Project.owner, Project.name),
         )
     if eager:
         return projects_db.all()
@@ -206,17 +206,17 @@ def query_projects(eager=True, with_version=True):
 
 
 def query_labels(label_type=None, eager=True, with_execution=True):
-    labels_db = db.query(db.Label)
+    labels_db = query(Label)
     if with_execution:
         labels_db = labels_db.options(
-            selectinload(db.Label.heuristic).options(
-                selectinload(db.Heuristic.executions)
-                .defer(db.Execution.output)
-                .defer(db.Execution.user)
+            selectinload(Label.heuristic).options(
+                selectinload(Heuristic.executions)
+                .defer(Execution.output)
+                .defer(Execution.user)
             )
         )
     if label_type:
-        labels_db = labels_db.filter(db.Label.type == label_type)
+        labels_db = labels_db.filter(Label.type == label_type)
     if eager:
         return labels_db.all()
     return labels_db
