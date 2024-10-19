@@ -283,7 +283,7 @@ class CodeTestStrategy(CountOutputStrategy):
         for execution in executions:
             output = execution.output.split('\n\n')
             for k in output:
-                file_path = k.split('\n', 1)[0].replace('\x1b[m', '')
+                file_path = extract_file_path(k)
                 if file_path.endswith('.java'):
                     if "src/test"in file_path:
                         row['Test'] += 1
@@ -319,7 +319,7 @@ class CodeTestXMLStrategy(CountOutputStrategy):
             output = execution.output.split('\n\n')
             row['Total DB'] += len(output)
             for k in output:
-                file_path = k.split('\n', 1)[0].replace('\x1b[m', '')
+                file_path = extract_file_path(k)
                 if label[0].startswith(f"{project.owner}.{project.name}"):  # level labels
                     if file_path.endswith('.java'):
                         if "src/test" in file_path:
@@ -384,7 +384,7 @@ class PomStrategy(CountOutputStrategy):
             pom = 0
             output = execution.output.split('\n\n')
             for k in output: #a forma de olhar os resultados está incorreta (?)
-                file_path = k.split('\n', 1)[0].replace('\x1b[m', '')
+                file_path = extract_file_path(k)
                 if file_path.endswith('pom.xml'):
                     pom += 1
             if pom:
@@ -394,6 +394,10 @@ class PomStrategy(CountOutputStrategy):
                     row[label[0]] = pom # len(output)
             else:
                 row[label[0]] = -1
+
+def extract_file_path(match):
+    return match.split('\n', 1)[0].split(':', 1)[-1].replace('\x1b[m', '').replace('\x1b[35m', '')
+
 
 
 def count_number_files_project(project):
