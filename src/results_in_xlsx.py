@@ -7,458 +7,67 @@ import subprocess
 import database as db
 
 #gera arquivos .xlsx contendo os resultados das pesquisas, no caso, só retornar se possui ou näo o banco. Esse retorno é marcado por 1 ou pelo nome do banco.
-
 def create_characterization(type_characterization, names, nameFile):
-    db.connect()
-    all_results = dict()
-    index_projects = []
-    index_domains = []
-    results_Label = []
-    projects_db = db.query(db.Project).options(
-        load_only(db.Project.id, db.Project.owner, db.Project.name),
-        selectinload(db.Project.versions).load_only(db.Version.id)
-    ).all()
-    labels_db = db.query(db.Label).options(
-        selectinload(db.Label.heuristic).options(
-            selectinload(db.Heuristic.executions)
-            .defer(db.Execution.output).defer(db.Execution.user)
-        )
-    ).filter(db.Label.type == type_characterization).all()
-    print("Search results in execution for label and project.")
-    print("File to be generated: ", type_characterization)
-    for i,label in enumerate(labels_db):
-        for j, project in enumerate(projects_db):
-            if(len(index_projects)< len(projects_db)):
-                index_projects.append(project.name)
-                index_domains.append(project.domain)
-            # Search results in execution for label and project
-            execution = db.query(db.Execution) \
-                .join(db.Execution.version) \
-                .join(db.Execution.heuristic) \
-                .filter(db.Version.project_id == project.id) \
-                .filter(db.Heuristic.label_id == label.id).first()
-            if(execution is None):
-                if names:
-                    results_Label.append("")
-                else:
-                    results_Label.append(0)
-            else:
-                if(execution.output != ''):
-                    if names:
-                        results_Label.append(label.name)
-                    else:
-                        results_Label.append(1)
-                else:
-                    if names:
-                        results_Label.append("")
-                    else:
-                        results_Label.append(0)
-                        
-        if(i==0):
-            all_results["Projects"] = index_projects
-            all_results["Domains"] = index_domains
-        all_results[label.name] = results_Label.copy()
-        results_Label.clear()
-    save(all_results, nameFile)
+    create_xlsx(
+        nameFile,
+        label_type=type_characterization,
+        select_versions="last",
+        mode="exists",
+        sort_label_by_usage=False,
+        hide_unused=False
+    )
+
 
 #conta quantos arquivos foram retornados para o uso de ORM 
 def create_count_implementation(rate):
-    db.connect()
-    all_results = dict()
-    index_projects = []
-    index_domains = []
-    results_Label = []
-    list_total_projects=[]
-    projects_db = db.query(db.Project).options(
-        load_only(db.Project.id, db.Project.owner, db.Project.name),
-        selectinload(db.Project.versions).load_only(db.Version.id)
-    ).all()
-    labels_db = db.query(db.Label).options(
-        selectinload(db.Label.heuristic).options(
-            selectinload(db.Heuristic.executions)
-            .defer(db.Execution.output).defer(db.Execution.user)
-        )
-    ).filter(db.Label.type == 'implementation').all()
-    print("Search results in execution for label and project.")
-    for i,label in enumerate(labels_db):
-        for j, project in enumerate(projects_db):
-            if(len(index_projects)< len(projects_db)):
-                index_projects.append(project.name)
-                index_domains.append(project.domain)
-            # Search results in execution for label and project
-            execution = (
-                db.query(db.Execution)
-                .join(db.Execution.version)
-                .join(db.Execution.heuristic)
-                .filter(db.Version.project_id == project.id)
-                .filter(db.Heuristic.label_id == label.id)
-                .filter(db.Execution.output != '').first()
-            )
-            if(execution is None):
-                results_Label.append("")
-            else:
-                output = execution.output.split('\n\n')
-                sum = 0
-                for k in output:
-                    sum = sum +1
-                if(rate == True):
-                    value = sum/int(count_number_files_project(project))*100
-                    results_Label.append(value)
-                else:
-                    results_Label.append(sum)
-            if(len(list_total_projects)< len(projects_db)):
-                list_total_projects.append(count_number_files_project(project))
-        if(i==0):
-            all_results["Projects"] = index_projects
-            all_results["Domains"] = index_domains
-        all_results[label.name] = results_Label.copy()
-        results_Label.clear()
-    if(rate == True):    
-        save_local(all_results, COUNT_FILE_IMP_RATE)
-    else:
-        #print(list_total_projects)
-        all_results["Number total of files"] = list_total_projects
-        save_local(all_results, COUNT_FILE_IMP)
+    create_xlsx(
+        COUNT_FILE_IMP_RATE if rate else COUNT_FILE_IMP,
+        label_type='implementation',
+        select_versions="last",
+        mode="rate" if rate else "count",
+        sort_label_by_usage=False,
+        hide_unused=False,
+        total_files_header="Number total of files"
+    )
 
 #conta quantos arquivos foram retornados para o uso de SQL e Builder 
 def create_count_sql():
-    db.connect()
-    all_results = dict()
-    index_projects = []
-    index_domains = []
-    results_Label = []
-    projects_db = db.query(db.Project).options(
-        load_only(db.Project.id, db.Project.owner, db.Project.name),
-        selectinload(db.Project.versions).load_only(db.Version.id)).all()
-    labels_db = db.query(db.Label).options(
-        selectinload(db.Label.heuristic).options(
-            selectinload(db.Heuristic.executions).defer(db.Execution.output).defer(db.Execution.user))
-    ).filter(db.Label.type == 'query').all()
-    print("Search results in execution for label and project.")
-    for i,label in enumerate(labels_db):
-        for j, project in enumerate(projects_db):
-            if(len(index_projects)< len(projects_db)):
-                index_projects.append(project.name)
-                index_domains.append(project.domain)
-            # Search results in execution for label and project
-            execution = (
-                db.query(db.Execution)
-                .join(db.Execution.version)
-                .join(db.Execution.heuristic)
-                .filter(db.Version.project_id == project.id)
-                .filter(db.Heuristic.label_id == label.id)
-                .filter(db.Execution.output != '').first()
-            )
-            if(execution is None):
-                results_Label.append("")
-            else:
-                output = execution.output.split('\n\n')
-                sum = 0
-                for k in output:
-                    sum = sum +1
-                results_Label.append(sum)
-        if(i==0):
-            all_results["Projects"] = index_projects
-            all_results["Domains"] = index_domains
-        all_results[label.name] = results_Label.copy()
-        results_Label.clear()
-    save_local(all_results, COUNT_FILE_SQL)
+    create_xlsx(
+        COUNT_FILE_SQL,
+        label_type='query',
+        select_versions="last",
+        mode="count",
+        sort_label_by_usage=False,
+        hide_unused=False,
+    )
     
-def save(all_results, type_characterization):
-    print("\n")
-    print(f'Saving all results {type_characterization} to {RESOURCE_DIR}...', end=' ')
-    df_new = pd.DataFrame(all_results)
-    CHARACTERIZATION_FILE_PATH = RESOURCE_DIR + os.sep + type_characterization + '.xlsx'
 
-    # Verifica se o arquivo já existe
-    if os.path.exists(CHARACTERIZATION_FILE_PATH):
-        # Carregar o arquivo existente
-        with pd.ExcelWriter(CHARACTERIZATION_FILE_PATH, mode='a', engine='openpyxl', if_sheet_exists='overlay') as writer:
-            # Escrever os novos dados abaixo dos existentes (no mesmo sheet ou nova aba)
-            df_new.to_excel(writer, index=False, sheet_name='Sheet1', startrow=writer.sheets['Sheet1'].max_row)
-    else:
-        # Se o arquivo não existe, cria um novo
-        df_new.to_excel(CHARACTERIZATION_FILE_PATH, index=False)
-    
-    print("Done!")
-
-def save_local(all_results, LocalToSave):
-    print("\n")
-    print(f'Saving all results to {LocalToSave}...', end=' ')
-    df = pd.DataFrame(all_results)
-    df.to_excel(LocalToSave, index=False)
-    print('Done!')
-
-def count_number_files_project(project):
-    try:
-        os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
-        p = subprocess.run("git ls-files | wc -l", capture_output=True, text=True, shell=True)
-        return p.stdout
-    except NotADirectoryError:
-        return 0
-    except subprocess.CalledProcessError as ex:
-        return 0
 
 def create_characterization_and_database(type_characterization, nameFile):
-    db.connect()
-    index_projects = []
-    index_domains = []
-    all_results = []
-    projects_db = db.query(db.Project).options(
-        load_only(db.Project.id, db.Project.owner, db.Project.name),
-        selectinload(db.Project.versions).load_only(db.Version.id)).all()
-    labels_db_implementation = db.query(db.Label).options(
-        selectinload(db.Label.heuristic).options(
-            selectinload(db.Heuristic.executions)
-            .defer(db.Execution.output).defer(db.Execution.user)
-        )
-    ).filter(db.Label.type == type_characterization[0]).all()
-    labels_db_classes = db.query(db.Label).options(
-        selectinload(db.Label.heuristic).options(
-            selectinload(db.Heuristic.executions)
-            .defer(db.Execution.output).defer(db.Execution.user)
-        )
-    ).filter(db.Label.type == type_characterization[1]).all()
-    print("Search results in execution for label and project.")
-    print("File to be generated: ", type_characterization)
-    for j, project in enumerate(projects_db):
-        status = {
-        'Test': 0,
-        'Code': 0,
-        'None' : 0,
-        'Not Java': 0, 
-        'Total Project': 0
-    }
-        status['Project'] = project.name
-        for i,label in enumerate(labels_db_implementation):
-            if(len(index_projects)< len(projects_db)):
-                index_projects.append(project.name)
-                index_domains.append(project.domain)
-            # Search results in execution for label and project
-            execution = (
-                db.query(db.Execution)
-                .join(db.Execution.version)
-                .join(db.Execution.heuristic)
-                .filter(db.Version.project_id == project.id)
-                .filter(db.Heuristic.label_id == label.id).first()
-            )
-            if(execution is None) :
-                status['None'] += 1
-            else:
-                if(execution.output != ''):
-                    output = execution.output.split('\n\n')
-                    for k in output:                    
-                        file_path = REPOS_DIR + os.sep + project.owner + os.sep + project.name + os.sep + k.split('\n', 1)[0]
-                        file_path = file_path.replace('\x1b[m', '')
-                        if file_path.endswith('.java'):
-                            if "/src/test"in file_path:
-                                status['Test'] += 1   
-                            else:
-                                status['Code'] += 1   
-                        else:
-                            status['Not Java'] += 1          
-
-        for i,label in enumerate(labels_db_classes):
-            if(len(index_projects)< len(projects_db)):
-                index_projects.append(project.name)
-                index_domains.append(project.domain)
-            # Search results in execution for label and project
-            execution = (
-                db.query(db.Execution)
-                .join(db.Execution.version)
-                .join(db.Execution.heuristic)
-                .filter(db.Version.project_id == project.id)
-                .filter(db.Heuristic.label_id == label.id).first()
-            )
-            if(execution is None):
-                status['None'] += 1
-            else:
-                if(execution.output != ''):
-                    output = execution.output.split('\n\n')
-                    for k in output:                    
-                        file_path = REPOS_DIR + os.sep + project.owner + os.sep + project.name + os.sep + k.split('\n', 1)[0]
-                        file_path = file_path.replace('\x1b[m', '')
-                        if file_path.endswith('.java'):
-                            if "src/test"in file_path:
-                                status['Test'] += 1   
-                            else:
-                                status['Code'] += 1   
-                        else:
-                            status['Not Java'] += 1 
-        status['Total Project'] = count_number_files_project(project)                    
-        all_results.append(status.copy())
-        status.clear()
+    create_xlsx(
+        nameFile,
+        label_type=type_characterization,
+        select_versions="last",
+        mode="code_test",
+        sort_label_by_usage=False,
+        hide_unused=False,
+        total_files_header='Total Project'
+    )
     
-    save(all_results, nameFile)
 
 #conta os resultados dos aquivos de primeiro e segundo nível, separando por categoria
 def create_count_dbCode_Dependencies():
-    db.connect()
-    list_status_dbCode = []
-    index_projects = []
-    results_Label = []
-    status_dbCode = dict()
-    projects_db = db.query(db.Project).options(
-        load_only(db.Project.id, db.Project.owner, db.Project.name),
-        selectinload(db.Project.versions).load_only(db.Version.id)
-    ).all()
-    labels_db = db.query(db.Label).options(
-        selectinload(db.Label.heuristic).options(
-            selectinload(db.Heuristic.executions)
-            .defer(db.Execution.output).defer(db.Execution.user)
-        )
-    ).filter(db.Label.type == 'implementation').all()
-    print("Search results in execution for label and project.")
-    for i, project in enumerate(projects_db):
-        status_dbCode = {
-        'Project': project.name,
-        'DB-Code Test': 0,
-        'DB-Code Java': 0,
-        'DB-Code XML': 0,
-        'DB-Code Not Java/XML' : 0,
-        'None': 0, 
-        'Dependencies Test': 0,
-        'Dependencies Code': 0,
-        'Dependencies XML': 0,
-        'Dependencies Not Java/XML': 0,
-        'Total Project' : 0,
-        'Total DB' : 0
-    }   #busca as labels de banco labels de Bd - primeiro nível
-        for j, label in enumerate(labels_db):
-            if(len(index_projects)< len(projects_db)):
-                index_projects.append(project.name)
-            # Search results in execution for label and project
-            execution = (
-                db.query(db.Execution)
-                .join(db.Execution.version)
-                .join(db.Execution.heuristic)
-                .filter(db.Version.project_id == project.id)
-                .filter(db.Heuristic.label_id == label.id)
-                .filter(db.Execution.output != '').first()
-            )
-            if(execution is None):
-                status_dbCode['None'] += 1 
-            else:
-                output = execution.output.split('\n\n')
-                for k in output:
-                    file_path = REPOS_DIR + os.sep + project.owner + os.sep + project.name + os.sep + k.split('\n', 1)[0]
-                    file_path = file_path.replace('\x1b[m', '')
-                    if file_path.endswith('.java'):
-                        if "src/test" in file_path:
-                            status_dbCode['DB-Code Test'] += 1   
-                        else:
-                            status_dbCode['DB-Code Java'] += 1   
-                    else:
-                        if file_path.endswith('.xml'):
-                            status_dbCode['DB-Code XML'] += 1 
-                        else:
-                            status_dbCode['DB-Code Not Java/XML'] += 1 
-                status_dbCode['Total DB'] = len(output)
+    create_xlsx(
+        USAGE_FAN_IN_FILE,
+        label_type=['implementation', 'classes'],
+        select_versions="last",
+        mode="code_test_xml_rate",
+        sort_label_by_usage=False,
+        hide_unused=False,
+        total_files_header='Total Project'
+    )
+    
 
-        #busca as labels de banco labels de dependencia - segundo nível
-        label_classes_db = db.query(db.Label).options(
-            selectinload(db.Label.heuristic).options(
-                selectinload(db.Heuristic.executions)
-                .defer(db.Execution.output).defer(db.Execution.user)
-            )
-        ).filter(db.Label.name == project.owner + "." + project.name).first()
-        if (label_classes_db is None): 
-            print(project.owner+"."+project.name)
-            status_dbCode['Dependencies Test'] = 0
-            status_dbCode['Dependencies Code'] = 0
-            status_dbCode['Dependencies XML'] = 0 
-            status_dbCode['Dependencies Not Java/XML'] = 0
-            status_dbCode['Total DB'] = 0 
-            status_dbCode['Total Project'] = 0 
-        else:
-            execution = (
-                db.query(db.Execution)
-                .join(db.Execution.version)
-                .join(db.Execution.heuristic)
-                .filter(db.Version.project_id == project.id)
-                .filter(db.Heuristic.label_id == label_classes_db.id)
-                .filter(db.Execution.output != '').first()
-            )
-
-            if(execution is None):
-                results_Label.append("")
-            else:
-                output = execution.output.split('\n\n')
-                for k in output:
-                    file_path = REPOS_DIR + os.sep + project.owner + os.sep + project.name + os.sep + k.split('\n', 1)[0]
-                    file_path = file_path.replace('\x1b[m', '')
-                    if file_path.endswith('.java'):
-                        if "src/test" in file_path:
-                            status_dbCode['Dependencies Test'] += 1   
-                        else:
-                            status_dbCode['Dependencies Code'] += 1   
-                    else:
-                        if file_path.endswith('.xml'):
-                            status_dbCode['Dependencies XML'] += 1 
-                        else:
-                            status_dbCode['Dependencies Not Java/XML'] += 1 
-                else:
-                    results_Label.append(status_dbCode)
-            status_dbCode['Total DB'] += len(output)
-        
-        status_dbCode['Total Project']= int(count_number_files_project(project))
-        list_status_dbCode.append(calculate_rate(project, status_dbCode))
-       
-    save_local_pd(list_status_dbCode, USAGE_FAN_IN_FILE)
-
-def save_local_pd( dicResults, LocalToSave):
-    print("\n")
-    print(f'Saving all results to {LocalToSave}...', end=' ')
-    df = pd.DataFrame(dicResults)
-    df.to_excel(LocalToSave, index=False)
-    print('Done!')
-
-def calculate_rate(project, status_dbCode):
-
-    if(int(status_dbCode['Total Project']))>0:
-        status_dbCode_rate = {
-            'Projects': project.name,
-            'N DB-Code Test': int(status_dbCode['DB-Code Test']) if int(status_dbCode['DB-Code Test'])>0 else "",
-            'N DB-Code Java': int(status_dbCode['DB-Code Java']) if int(status_dbCode['DB-Code Java'])>0 else "",
-            'N DB-Code XML': int(status_dbCode['DB-Code XML']) if int(status_dbCode['DB-Code XML'])>0 else "",
-            'N DB-Code Not Java/XML' : int(status_dbCode['DB-Code Not Java/XML']) if int(status_dbCode['DB-Code Not Java/XML']) >0 else "",
-            'N Dependencies Test': int(status_dbCode['Dependencies Test']) if int(status_dbCode['Dependencies Test'])>0 else "",
-            'N Dependencies Code': int(status_dbCode['Dependencies Code']) if int(status_dbCode['Dependencies Code'])>0 else "",
-            'N Dependencies XML': int(status_dbCode['Dependencies XML']) if int(status_dbCode['Dependencies XML'])>0 else "",
-            'N Dependencies Not Java/XML': int(status_dbCode['Dependencies XML']) if int(status_dbCode['Dependencies XML'])>0 else "",
-            'N Total Project': int(status_dbCode['Total Project'])  if int(status_dbCode['Total Project'])>0 else "",
-            'N Total DB': int(status_dbCode['Total DB'])  if int(status_dbCode['Total DB'])>0 else "",
-            'DB-Code Test': int(status_dbCode['DB-Code Test'])/ int(status_dbCode['Total Project'])*100 if int(status_dbCode['DB-Code Test'])/int(status_dbCode['Total Project'])*100>0 else "",
-            'DB-Code Java': int(status_dbCode['DB-Code Java'])/int(status_dbCode['Total Project'])*100  if int(status_dbCode['DB-Code Java'])/int(status_dbCode['Total Project'])*100 >0 else "",
-            'DB-Code XML': int(status_dbCode['DB-Code XML'])/int(status_dbCode['Total Project'])*100  if int(status_dbCode['DB-Code XML'])/int(status_dbCode['Total Project'])*100>0 else "",
-            'Dependencies Test': int(status_dbCode['Dependencies Test'])/int(status_dbCode['Total Project'])*100  if int(status_dbCode['Dependencies Test'])/int(status_dbCode['Total Project'])*100>0 else "",
-            'Dependencies Code': int(status_dbCode['Dependencies Code'])/int(status_dbCode['Total Project'])*100  if int(status_dbCode['Dependencies Code'])/int(status_dbCode['Total Project'])*100 >0 else "",
-            'Dependencies XML': int(status_dbCode['Dependencies XML'])/int(status_dbCode['Total Project'])*100  if int(status_dbCode['Dependencies XML'])/int(status_dbCode['Total Project'])*100>0 else "", 
-            'Total DB': int(status_dbCode['Total DB'])/int(status_dbCode['Total Project'])*100  if int(status_dbCode['Total DB'])/int(status_dbCode['Total Project'])*100>0 else ""
-        }
-    else:
-        status_dbCode_rate = {
-            'Projects': project.name,
-            'N DB-Code Test': int(status_dbCode['DB-Code Test']) if int(status_dbCode['DB-Code Test'])>0 else "",
-            'N DB-Code Java': int(status_dbCode['DB-Code Java']) if int(status_dbCode['DB-Code Java'])>0 else "",
-            'N DB-Code XML': int(status_dbCode['DB-Code XML']) if int(status_dbCode['DB-Code XML'])>0 else "",
-            'N DB-Code Not Java/XML' : int(status_dbCode['DB-Code Not Java/XML']) if int(status_dbCode['DB-Code Not Java/XML']) >0 else "",
-            'N Dependencies Test': int(status_dbCode['Dependencies Test']) if int(status_dbCode['Dependencies Test'])>0 else "",
-            'N Dependencies Code': int(status_dbCode['Dependencies Code']) if int(status_dbCode['Dependencies Code'])>0 else "",
-            'N Dependencies XML': int(status_dbCode['Dependencies XML']) if int(status_dbCode['Dependencies XML'])>0 else "",
-            'N Dependencies Not Java/XML': int(status_dbCode['Dependencies XML']) if int(status_dbCode['Dependencies XML'])>0 else "",
-            'N Total Project': int(status_dbCode['Total Project'])  if int(status_dbCode['Total Project'])>0 else "",
-            'N Total DB': int(status_dbCode['Total DB'])  if int(status_dbCode['Total DB'])>0 else "",
-            'DB-Code Test':  "",
-            'DB-Code Java':  "",
-            'DB-Code XML':  "",
-            'Dependencies Test': "",
-            'Dependencies Code': "",
-            'Dependencies XML': "", 
-            'Total DB': ""
-        }
-        
-    return status_dbCode_rate
 
 def create_vulnerability_csv():
     results_Label = []
@@ -481,61 +90,15 @@ def create_vulnerability_csv():
     save_local(results_Label, VULNERABILITY_LABELS)
     
 def create_pomxml_characterization(type_characterization):
-    db.connect()
-    all_results = dict()
-    index_projects = []
-    index_domains = []
-    results_Label = []
-    projects_db = db.query(db.Project).options(
-        load_only(db.Project.id, db.Project.owner, db.Project.name),
-        selectinload(db.Project.versions).load_only(db.Version.id)
-    ).all()
-    labels_db = db.query(db.Label).options(selectinload(db.Label.heuristic).options(
-        selectinload(db.Heuristic.executions)
-        .defer(db.Execution.output).defer(db.Execution.user)
-    )).filter(db.Label.type == type_characterization).all()
-    print("Search results in execution for label and project.")
-    print("File to be generated: ", type_characterization)
-    for i,label in enumerate(labels_db):
-        for j, project in enumerate(projects_db):
-            if(len(index_projects)< len(projects_db)):
-                index_projects.append(project.name)
-                index_domains.append(project.domain)
-            # Search results in execution for label and project
-            execution = (
-                db.query(db.Execution)
-                .join(db.Execution.version)
-                .join(db.Execution.heuristic)
-                .filter(db.Version.project_id == project.id)
-                .filter(db.Heuristic.label_id == label.id).first()
-            )
-            if(execution is None):
-                print("None")
-                results_Label.append(0)
-            elif (execution.output == ''):
-                results_Label.append(0) 
-            else:
-                pom = False
-                output = execution.output.split('\n\n')
-                for k in output: #a forma de olhar os resultados está incorreta                 
-                    file_path = REPOS_DIR + os.sep + project.owner + os.sep + project.name + os.sep + k.split('\n', 1)[0]
-                    file_path = file_path.replace('\x1b[m', '')
-                    if file_path.endswith('pom.xml'):
-                        pom = True
-                if(pom==True):
-                    if(len(output)==1):
-                        results_Label.append(file_path)
-                    else:
-                        results_Label.append(len(output))
-                else:
-                    results_Label.append(-1)
-        else:
-            print(" ")            
-        if(i==0):
-            all_results["Projects"] = index_projects
-            all_results["Domains"] = index_domains
-        all_results[label.name] = results_Label.copy()
-        results_Label.clear()
+    create_xlsx(
+        'pomXml',
+        label_type=type_characterization,
+        select_versions="last",
+        mode="pom",
+        sort_label_by_usage=False,
+        hide_unused=False
+    )
+   
 
 
 
