@@ -1,4 +1,4 @@
-(\s{1,}|[.,(]|^)RenderersTests(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)AllJavaAstTreeDumpTest(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)AllDataflowRuleTests(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)AllPlsqlAstTreeDumpTest(\s{1,}|[.,(]|^)
+(\s|[.,(]|^)RenderersTests(\s|[.,(]|$)
+(\s|[.,(]|^)AllJavaAstTreeDumpTest(\s|[.,(]|$)
+(\s|[.,(]|^)AllDataflowRuleTests(\s|[.,(]|$)
+(\s|[.,(]|^)AllPlsqlAstTreeDumpTest(\s|[.,(]|$)

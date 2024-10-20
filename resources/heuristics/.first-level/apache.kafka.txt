@@ -1,4 +1,4 @@
-(\s{1,}|[.,(]|^)ForeignKeyJoinSuite(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)StoreQuerySuite(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)SuppressSuite(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)TaskSuite(\s{1,}|[.,(]|^)
+(\s|[.,(]|^)ForeignKeyJoinSuite(\s|[.,(]|$)
+(\s|[.,(]|^)StoreQuerySuite(\s|[.,(]|$)
+(\s|[.,(]|^)SuppressSuite(\s|[.,(]|$)
+(\s|[.,(]|^)TaskSuite(\s|[.,(]|$)

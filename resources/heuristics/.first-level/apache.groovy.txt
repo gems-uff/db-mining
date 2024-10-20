@@ -1,1 +1,1 @@
-(\s{1,}|[.,(]|^)GroovyDocToolTest(\s{1,}|[.,(]|^)
+(\s|[.,(]|^)GroovyDocToolTest(\s|[.,(]|$)

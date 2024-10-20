@@ -12,12 +12,9 @@ for i, row in df.iterrows():
     if row["A"] == row["B"]:
         execution_id = row['EXECUTION_ID']
         print(f'Saving execution {execution_id}.')
-        execution = db.query(db.Execution).options(defer('output')).filter(db.Execution.id == execution_id).first()
+        execution = db.query(db.Execution).options(defer(db.Execution.output)).filter(db.Execution.id == execution_id).first()
         # execution.isValidated = True
         # execution.isAccepted = row['A']
         # execution.user = 'Leonardo & Vanessa'
         print(execution)
 # db.commit()
-
-
-

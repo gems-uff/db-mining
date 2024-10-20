@@ -1,1 +1,1 @@
-(\s{1,}|[.,(]|^)DefaultPrettyPrinterTest(\s{1,}|[.,(]|^)
+(\s|[.,(]|^)DefaultPrettyPrinterTest(\s|[.,(]|$)

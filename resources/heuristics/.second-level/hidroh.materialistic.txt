@@ -1,6 +1,0 @@
-(\s{1,}|[.,(]|^)DataModule(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)FavoriteActivity(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)ItemActivity(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)ListFragment(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)MaterialisticDatabase(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)StoryRecyclerViewAdapter(\s{1,}|[.,(]|^)

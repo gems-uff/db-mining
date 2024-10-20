@@ -1,0 +1,6 @@
+(\s{1,}|[.,(]|^)CreateConsumerInstanceResponse(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)ConsumersResource(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)ConsumerPerformance(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)AbstractConsumerTest(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)AuthorizationErrorTest(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)SchemaProduceConsumeTest(\s{1,}|[.,(]|^)

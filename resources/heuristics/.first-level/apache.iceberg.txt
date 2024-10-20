@@ -1,1 +1,1 @@
-(\s{1,}|[.,(]|^)RESTCompatibilityKitSuite(\s{1,}|[.,(]|^)
+(\s|[.,(]|^)RESTCompatibilityKitSuite(\s|[.,(]|$)

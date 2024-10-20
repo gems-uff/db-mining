@@ -1,1 +1,1 @@
-(\s{1,}|[.,(]|^)HtmlReportGenerator(\s{1,}|[.,(]|^)
+(\s|[.,(]|^)HtmlReportGenerator(\s|[.,(]|$)

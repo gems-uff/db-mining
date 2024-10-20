@@ -1,1 +1,2 @@
-(\s{1,}|[.,(]|^)ConsecutivePythonTransformsTest(\s{1,}|[.,(]|^)
+(\s|[.,(]|^)ConsecutivePythonTransformsTest(\s|[.,(]|$)
+(\s|[.,(]|^)PrecombineGroupingTable(\s|[.,(]|$)

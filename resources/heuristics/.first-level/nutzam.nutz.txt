@@ -1,1 +1,1 @@
-(\s{1,}|[.,(]|^)TransactionTest(\s{1,}|[.,(]|^)
+(\s|[.,(]|^)TransactionTest(\s|[.,(]|$)

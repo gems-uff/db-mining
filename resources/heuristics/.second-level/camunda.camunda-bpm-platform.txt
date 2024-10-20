@@ -491,6 +491,7 @@
 (\s{1,}|[.,(]|^)TestFixture(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)TestFixture(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)TestFixture(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)TestFixture(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)JobMigrationScenario(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)TestFixture(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)TestFixture(\s{1,}|[.,(]|^)

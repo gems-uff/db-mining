@@ -1,1 +1,1 @@
-(\s{1,}|[.,(]|^)LlapConfigJsonCreator(\s{1,}|[.,(]|^)
+(\s|[.,(]|^)LlapConfigJsonCreator(\s|[.,(]|$)

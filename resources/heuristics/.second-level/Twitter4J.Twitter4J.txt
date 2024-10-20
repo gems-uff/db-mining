@@ -1,6 +1,0 @@
-(\s{1,}|[.,(]|^)HTMLEntity(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)ParseUtil(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)HTMLEntityTest(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)DirectMessageJSONImpl(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)StatusJSONImpl(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)UserJSONImpl(\s{1,}|[.,(]|^)

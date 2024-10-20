@@ -1,4 +1,4 @@
-(\s{1,}|[.,(]|^)package-info(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)TestUseCustomExtensionHandlerFactory(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)JpaTest(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)PluginTest(\s{1,}|[.,(]|^)
+(\s|[.,(]|^)package-info(\s|[.,(]|$)
+(\s|[.,(]|^)JpaTest(\s|[.,(]|$)
+(\s|[.,(]|^)PluginTest(\s|[.,(]|$)
+(\s|[.,(]|^)TestUseCustomExtensionHandlerFactory(\s|[.,(]|$)
