@@ -93,7 +93,7 @@ def prepare_labels(label_tuples, counter, sort_label_by_usage, hide_unused):
 
 def create_xlsx(
     strategies,
-    header="owner,name,sha1,part_commit,date_commit,isLast",
+    header="owner,name,domain,sha1,part_commit,date_commit,isLast",
     sort_label_by_usage=False,
     hide_unused=False,
     verbose=True
@@ -200,10 +200,12 @@ class PopulateStrategy:
         return {
             self.header[0]: project.owner,
             self.header[1]: project.name,
-            self.header[2]: version.sha1,
-            self.header[3]: version.part_commit,
-            self.header[4]: version.date_commit,
-            self.header[5]: version.isLast
+            self.header[2]: project.domain,
+            self.header[3]: version.sha1,
+            self.header[4]: version.part_commit,
+            self.header[5]: version.date_commit,
+            self.header[6]: version.isLast
+
         }
 
     def add_label(self, row, version, project, label):
