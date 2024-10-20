@@ -1,8 +1,0 @@
-(\s{1,}|[.,(]|^)LiquibaseCommandLine(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)Main(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)AbstractCliWrapperCommandStep(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)DbDocCommandStep(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)Main(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)AbstractAntTaskTest(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)MainTest(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)XMLChangeLogSerializerTest(\s{1,}|[.,(]|^)

@@ -1,4 +1,4 @@
-(\s{1,}|[.,(]|^)BootstrapDataPopulator(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)HibernateDao(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)Role(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)User(\s{1,}|[.,(]|^)
+(\s|[.,(]|^)BootstrapDataPopulator(\s|[.,(]|$)
+(\s|[.,(]|^)HibernateDao(\s|[.,(]|$)
+(\s|[.,(]|^)Role(\s|[.,(]|$)
+(\s|[.,(]|^)User(\s|[.,(]|$)

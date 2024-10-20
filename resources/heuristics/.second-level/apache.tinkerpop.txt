@@ -1,5 +1,0 @@
-(\s{1,}|[.,(]|^)GraphBinaryRemoteComputerFeatureTest(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)SparkGraphFeatureIntegrateTest(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)TinkerGraphComputerFeatureTest(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)TinkerShuffleGraphFeatureTest(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)TinkerTransactionGraphComputerFeatureTest(\s{1,}|[.,(]|^)

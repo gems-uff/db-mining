@@ -1,2 +1,2 @@
-(\s{1,}|[.,(]|^)XMLChangeLogSerializerTest(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)Main(\s{1,}|[.,(]|^)
+(\s|[.,(]|^)Main(\s|[.,(]|$)
+(\s|[.,(]|^)XMLChangeLogSerializerTest(\s|[.,(]|$)

@@ -1,5 +1,0 @@
-(\s{1,}|[.,(]|^)ProductionConfigurationTests(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)AbstractGatewayControllerEndpoint(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)GatewayControllerEndpoint(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)GatewayLegacyControllerEndpoint(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)ProductionConfigurationTests(\s{1,}|[.,(]|^)
