@@ -222,7 +222,7 @@ class PopulateStrategy:
 
 class ExistsStrategy(PopulateStrategy):
     def add_label(self, row, version, project, label):
-        row[label] = int(bool(self.get_executions(version, label)))
+        row[label[0]] = int(bool(self.get_executions(version, label)))
 
 
 class CountOutputStrategy(PopulateStrategy):
