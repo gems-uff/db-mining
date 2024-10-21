@@ -1,4 +1,4 @@
-(\s{1,}|[.,(]|^)SwfFlashDevelopExporter(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)MainFrameMenu(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)MainPanel(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)TagTreeContextMenu(\s{1,}|[.,(]|^)
+(\s|[.,(]|^)SwfFlashDevelopExporter(\s|[.,(]|$)
+(\s|[.,(]|^)MainFrameMenu(\s|[.,(]|$)
+(\s|[.,(]|^)MainPanel(\s|[.,(]|$)
+(\s|[.,(]|^)TagTreeContextMenu(\s|[.,(]|$)

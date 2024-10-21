@@ -1,0 +1,8 @@
+(\s|[.,(]|^)AccountMapper(\s|[.,(]|$)
+(\s|[.,(]|^)AccountServiceImpl(\s|[.,(]|$)
+(\s|[.,(]|^)OrderMapper(\s|[.,(]|$)
+(\s|[.,(]|^)OrderServiceImpl(\s|[.,(]|$)
+(\s|[.,(]|^)PraiseMapper(\s|[.,(]|$)
+(\s|[.,(]|^)PraiseServiceImpl(\s|[.,(]|$)
+(\s|[.,(]|^)StorageMapper(\s|[.,(]|$)
+(\s|[.,(]|^)StorageServiceImpl(\s|[.,(]|$)

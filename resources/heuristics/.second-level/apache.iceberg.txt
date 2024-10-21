@@ -1,0 +1,3 @@
+(\s|[.,(]|^)RESTCompatibilityKitCatalogTests(\s|[.,(]|$)
+(\s|[.,(]|^)RESTCompatibilityKitSuite(\s|[.,(]|$)
+(\s|[.,(]|^)RESTCompatibilityKitViewCatalogTests(\s|[.,(]|$)

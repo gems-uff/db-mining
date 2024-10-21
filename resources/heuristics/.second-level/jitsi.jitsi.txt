@@ -1,2 +1,2 @@
-(\s{1,}|[.,(]|^)ScServiceDiscoveryManager(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)Entities(\s{1,}|[.,(]|^)
+(\s|[.,(]|^)ScServiceDiscoveryManager(\s|[.,(]|$)
+(\s|[.,(]|^)Entities(\s|[.,(]|$)
