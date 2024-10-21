@@ -264,7 +264,10 @@ class RateOutputStrategy(CountOutputStrategy):
     def add_label(self, row, version, project, label):
         super().add_label(row, version, project, label)
         if row[label[0]]:
-            row[label[0]] = row[label[0]] / self.project_file_map[version.project_id] * 100
+            if self.project_file_map[version.project_id] >0:
+                row[label[0]] = row[label[0]] / self.project_file_map[version.project_id] * 100
+            else:
+                row[label[0]] = 0
 
 
 class CodeTestStrategy(CountOutputStrategy):
