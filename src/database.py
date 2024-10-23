@@ -193,7 +193,7 @@ def query_projects(eager=True, with_version=True):
     projects_db = query(Project)
     if with_version:
         projects_db = projects_db.options(
-            load_only(Project.id, Project.owner, Project.name),
+            load_only(Project.id, Project.owner, Project.name, Project.domain),
             selectinload(Project.versions).load_only(Version.id)
         )
     else:
