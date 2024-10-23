@@ -81,8 +81,8 @@ def main():
             count += 1
         results.append([
             owner, name, len(commits), last_sha1, 
-            '; '.join(sha1 for sha1, date in commits),
-            '; '.join(date.isoformat() for sha1, date in commits),
+            ', '.join(sha1 for sha1, date in commits),
+            ', '.join(date.isoformat() for sha1, date in commits),
         ])
 
 
