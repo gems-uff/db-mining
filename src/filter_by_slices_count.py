@@ -91,7 +91,8 @@ def main():
     if args.export:
         print(f"Saving all slices to {args.export}")
         resdf = pd.DataFrame(results, columns=['owner', 'name', 'count', 'commit', 'slices', 'dates'])
-        resdf.to_excel(args.export, index=False)
+        #resdf.to_excel(args.export, index=False)
+        resdf.to_csv(args.export, index=False, sep=";")
 
 if __name__ == '__main__':
     main()
