@@ -1,0 +1,7 @@
+(\s|[.,(]|^)Project(\s|[.,(]|$)
+(\s|[.,(]|^)Queries(\s|[.,(]|$)
+(\s|[.,(]|^)Skill(\s|[.,(]|$)
+(\s|[.,(]|^)User(\s|[.,(]|$)
+(\s|[.,(]|^)HibernateCacheTest(\s|[.,(]|$)
+(\s|[.,(]|^)HibernateSubject(\s|[.,(]|$)
+(\s|[.,(]|^)IndexedCacheTest(\s|[.,(]|$)

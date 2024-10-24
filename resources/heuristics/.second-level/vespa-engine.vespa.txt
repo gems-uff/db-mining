@@ -1,0 +1,3 @@
+(\s|[.,(]|^)StorageClusterTest(\s|[.,(]|$)
+(\s|[.,(]|^)VespaXmlUpdateReaderTestCase(\s|[.,(]|$)
+(\s|[.,(]|^)SimpleFeederTest(\s|[.,(]|$)

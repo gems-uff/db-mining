@@ -1,0 +1,4 @@
+(\s|[.,(]|^)EurekaClientSuite(\s|[.,(]|$)
+(\s|[.,(]|^)EurekaServerMockApplication(\s|[.,(]|$)
+(\s|[.,(]|^)RestTemplateEurekaHttpClientTests(\s|[.,(]|$)
+(\s|[.,(]|^)WebClientEurekaHttpClientTests(\s|[.,(]|$)

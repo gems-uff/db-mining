@@ -1,0 +1,4 @@
+(\s|[.,(]|^)RenderersTests(\s|[.,(]|$)
+(\s|[.,(]|^)AllJavaAstTreeDumpTest(\s|[.,(]|$)
+(\s|[.,(]|^)AllDataflowRuleTests(\s|[.,(]|$)
+(\s|[.,(]|^)AllPlsqlAstTreeDumpTest(\s|[.,(]|$)

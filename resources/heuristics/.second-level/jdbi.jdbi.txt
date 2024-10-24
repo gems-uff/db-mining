@@ -1,0 +1,3 @@
+(\s|[.,(]|^)TestUseCustomExtensionHandlerFactory(\s|[.,(]|$)
+(\s|[.,(]|^)JpaTest(\s|[.,(]|$)
+(\s|[.,(]|^)PluginTest(\s|[.,(]|$)
