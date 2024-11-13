@@ -1,7 +1,0 @@
-([.,\s(]|^)HttpServiceDiscoveryTest([.,\s(]|$)
-([.,\s(]|^)AbstractPluginDataInit([.,\s(]|$)
-([.,\s(]|^)ContextPathPluginTest([.,\s(]|$)
-([.,\s(]|^)RedirectPluginTest([.,\s(]|$)
-([.,\s(]|^)SentinelPluginTest([.,\s(]|$)
-([.,\s(]|^)WafPluginTest([.,\s(]|$)
-([.,\s(]|^)PluginControllerTest([.,\s(]|$)

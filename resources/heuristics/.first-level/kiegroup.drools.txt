@@ -16,4 +16,5 @@
 (\s{1,}|[.,(]|^)TransactionTestObject(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)JpaBasedPersistenceTest(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)ReloadSessionTest(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)JPAKnowledgeService(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)PersistenceUtil(\s{1,}|[.,(]|^)

@@ -1,0 +1,6 @@
+(\s|[.,(]|^)AbstractLogEventWrapperEntity(\s|[.,(]|$)
+(\s|[.,(]|^)BasicLogEventEntity(\s|[.,(]|$)
+(\s|[.,(]|^)JpaDatabaseManager(\s|[.,(]|$)
+(\s|[.,(]|^)TestBaseEntity(\s|[.,(]|$)
+(\s|[.,(]|^)TestBasicEntity(\s|[.,(]|$)
+(\s|[.,(]|^)LogEventEntity(\s|[.,(]|$)

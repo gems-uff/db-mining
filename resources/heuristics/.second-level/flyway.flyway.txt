@@ -1,0 +1,3 @@
+(\s|[.,(]|^)HtmlReportGenerator(\s|[.,(]|$)
+(\s|[.,(]|^)DashboardRenderer(\s|[.,(]|$)
+(\s|[.,(]|^)HtmlUtils(\s|[.,(]|$)

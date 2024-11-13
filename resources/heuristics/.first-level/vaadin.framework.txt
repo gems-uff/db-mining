@@ -1,0 +1,3 @@
+(\s|[.,(]|^)BeanBinderTest(\s|[.,(]|$)
+(\s|[.,(]|^)NotEmptyTest(\s|[.,(]|$)
+(\s|[.,(]|^)DataProvider(\s|[.,(]|$)

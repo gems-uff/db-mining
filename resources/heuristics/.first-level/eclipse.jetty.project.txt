@@ -1,6 +1,3 @@
 (\s{1,}|[.,(]|^)Dump(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)RequestTest(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)EmbeddedQueryManagerTest(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)RemoteQueryManagerTest(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)InfinispanTestSupport(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)RemoteInfinispanTestSupport(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)InfinispanSessionData(\s{1,}|[.,(]|^)

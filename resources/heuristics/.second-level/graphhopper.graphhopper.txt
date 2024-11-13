@@ -1,1 +1,3 @@
-([.,\s(]|^)GraphHopperBundle([.,\s(]|$)
+(\s{1,}|[.,(]|^)GraphHopperBundle(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)IsochroneResource(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)IsochroneResourceUtilTest(\s{1,}|[.,(]|^)

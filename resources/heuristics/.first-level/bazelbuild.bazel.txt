@@ -1,0 +1,2 @@
+(\s|[.,(]|^)HeapOffsetHelper(\s|[.,(]|$)
+(\s|[.,(]|^)FrontierSerializerTestBase(\s|[.,(]|$)

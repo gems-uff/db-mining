@@ -1,6 +1,0 @@
-[^a-zA-Z|^\/"\_#|0-9]EncryptionHandshake[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]HandshakeHandler[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]WhisperMessage[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]ECIESCoderTest[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]CryptoTestCase[^a-zA-Z|^\/"\_#|0-9]
-[^a-zA-Z|^\/"\_#|0-9]EnvelopeTest[^a-zA-Z|^\/"\_#|0-9]

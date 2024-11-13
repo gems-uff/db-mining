@@ -1,0 +1,2 @@
+(\s|[.,(]|^)ManagedService(\s|[.,(]|$)
+(\s|[.,(]|^)ManagedAtmosphereHandlerTest(\s|[.,(]|$)

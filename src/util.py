@@ -18,7 +18,9 @@ HEURISTICS_DIR_FIRST_LEVEL = HEURISTICS_DIR + os.sep + '.first-level'
 HEURISTICS_DIR_SECOND_LEVEL = HEURISTICS_DIR + os.sep + '.second-level'
 HEURISTICS_DIR_TEMP_FILES = HEURISTICS_DIR + os.sep + '.tempFiles'
 HEURISTICS_DIR_VULNERABILITIES = HEURISTICS_DIR + os.sep + '.vulnerabilities'
-HEURISTICS_DIR_IMPLEMENTATION = HEURISTICS_DIR + os.sep + 'implementation'
+HEURISTICS_DIR_IMPLEMENTATION = HEURISTICS_DIR + os.sep + '.implementation'
+HEURISTICS_DIR_QUERY = HEURISTICS_DIR + os.sep + '.query'
+IMAGES_DIR = RESOURCE_DIR + os.sep + 'images'
 
 SEQ_PATTERNS_DIR = RESOURCE_DIR + os.sep + 'seq_patterns'
 
@@ -27,11 +29,14 @@ REACT_BUILD_DIR = BASE_DIR + os.sep + 'web' + os.sep + 'build'
 REACT_STATIC_DIR = REACT_BUILD_DIR + os.sep + 'static'
 
 # Files
-PROJECTS_FILE = RESOURCE_DIR + os.sep + 'projects.xlsx'
+PROJECTS_FILE = RESOURCE_DIR + os.sep + 'projects_2024.xlsx'
 POMRESULTS = RESOURCE_DIR + os.sep + 'pomXmlResults.xlsx'
-FILTERED_FILE = RESOURCE_DIR + os.sep + 'filtered_projects.xlsx'
+FILTERED_FILE = RESOURCE_DIR + os.sep + 'filtered_projects_2021.xlsx'
+FILTERED_FILE_ORM_BD = RESOURCE_DIR + os.sep + 'filtered_projects_2021_ORMBD.xlsx'
+FILE_BDENGINE = RESOURCE_DIR + os.sep + 'DB_ENGINES_setembro_2024.xlsx'
 ANNOTATED_FILE = RESOURCE_DIR + os.sep + 'annotated.xlsx'
-ANNOTATED_FILE_JAVA = RESOURCE_DIR + os.sep + 'annotated_java.xlsx' #'annotated_java_test.xlsx' 
+ANNOTATED_FILE_JAVA = RESOURCE_DIR + os.sep + 'annotated_java_filtered_by_slice.xlsx' #'annotated_java_test.xlsx'
+ANNOTATED_FILE_JAVA_COMPLET = RESOURCE_DIR + os.sep + 'filtered_projects_2024 - 07_09_24.xlsx' #'annotated_java_test.xlsx' 
 ANNOTATED_FILE_JAVA_TEST = RESOURCE_DIR + os.sep + 'annotated_java_test.xlsx'
 ANNOTATED_FILE_JAVA_SAMPLE = RESOURCE_DIR + os.sep + 'annotated_java_sample.xlsx'
 DBLP_FILE = RESOURCE_DIR + os.sep + 'dblp.xml'
@@ -64,6 +69,7 @@ HISTORICAL_INPUT_SEQUENCIAL_IN_OUT = SEQ_PATTERNS_DIR + os.sep + 'input_sequenci
 HISTORICAL_OUTPUT_SEQUENCIAL_IN_OUT = SEQ_PATTERNS_DIR + os.sep + 'output_seq_in_out.txt'
 HISTORICAL_DB_KEEP_OUT = RESOURCE_DIR + os.sep + 'databases_keep_out.xlsx'
 VULNERABILITY_LABELS = RESOURCE_DIR + os.sep + 'vulnetabilities_labels.xlsx'
+COMMIT_FILE = RESOURCE_DIR + os.sep + 'commit-count.csv'
 
 
 DATABASE_CONFIG_FILE = BASE_DIR + os.sep + 'database.json'

@@ -1,0 +1,49 @@
+Name,Support,Line Count,Lines,Bindings
+X -> InY & OutX -> Y,0.10638297872340426,25,3; 5; 69; 75; 13; 77; 207; 210; 20; 149; 214; 23; 87; 153; 220; 93; 221; 33; 44; 46; 48; 49; 113; 116; 57,
+Oracle -> InMS_SQL_Server & OutOracle -> MS_SQL_Server,0.00425531914893617,1,93,X = Oracle; Y = MS_SQL_Server
+PostgreSQL -> InOracle & OutPostgreSQL -> Oracle,0.01276595744680851,3,77; 13; 23,X = PostgreSQL; Y = Oracle
+SAPSQLAnywhere -> InPostgreSQL & OutSAPSQLAnywhere -> PostgreSQL,0.00425531914893617,1,220,X = SAPSQLAnywhere; Y = PostgreSQL
+SAPSQLAnywhere -> InIBM_DB2 & OutSAPSQLAnywhere -> IBM_DB2,0.00425531914893617,1,153,X = SAPSQLAnywhere; Y = IBM_DB2
+SAPSQLAnywhere -> InHyperSQL & OutSAPSQLAnywhere -> HyperSQL,0.00425531914893617,1,69,X = SAPSQLAnywhere; Y = HyperSQL
+SAPAdaptiveServer -> InPostgreSQL & OutSAPAdaptiveServer -> PostgreSQL,0.00425531914893617,1,220,X = SAPAdaptiveServer; Y = PostgreSQL
+SAPAdaptiveServer -> InIBM_DB2 & OutSAPAdaptiveServer -> IBM_DB2,0.00425531914893617,1,153,X = SAPAdaptiveServer; Y = IBM_DB2
+SAPAdaptiveServer -> InHyperSQL & OutSAPAdaptiveServer -> HyperSQL,0.00425531914893617,1,69,X = SAPAdaptiveServer; Y = HyperSQL
+IBM_DB2 -> InHyperSQL & OutIBM_DB2 -> HyperSQL,0.00425531914893617,1,69,X = IBM_DB2; Y = HyperSQL
+H2 -> InHyperSQL & OutH2 -> HyperSQL,0.00425531914893617,1,221,X = H2; Y = HyperSQL
+HyperSQL -> InOracle & OutHyperSQL -> Oracle,0.00425531914893617,1,49,X = HyperSQL; Y = Oracle
+HyperSQL -> InPostgreSQL & OutHyperSQL -> PostgreSQL,0.00851063829787234,2,116; 20,X = HyperSQL; Y = PostgreSQL
+HyperSQL -> InSAPSQLAnywhere & OutHyperSQL -> SAPSQLAnywhere,0.00425531914893617,1,3,X = HyperSQL; Y = SAPSQLAnywhere
+HyperSQL -> InSAPAdaptiveServer & OutHyperSQL -> SAPAdaptiveServer,0.00425531914893617,1,3,X = HyperSQL; Y = SAPAdaptiveServer
+HyperSQL -> InIBM_DB2 & OutHyperSQL -> IBM_DB2,0.00425531914893617,1,49,X = HyperSQL; Y = IBM_DB2
+HyperSQL -> InH2 & OutHyperSQL -> H2,0.00851063829787234,2,3; 20,X = HyperSQL; Y = H2
+HyperSQL -> InMySQL & OutHyperSQL -> MySQL,0.00425531914893617,1,116,X = HyperSQL; Y = MySQL
+MySQL -> InOracle & OutMySQL -> Oracle,0.00425531914893617,1,23,X = MySQL; Y = Oracle
+MySQL -> InPostgreSQL & OutMySQL -> PostgreSQL,0.00425531914893617,1,57,X = MySQL; Y = PostgreSQL
+MySQL -> InIBM_DB2 & OutMySQL -> IBM_DB2,0.00425531914893617,1,87,X = MySQL; Y = IBM_DB2
+MySQL -> InH2 & OutMySQL -> H2,0.00425531914893617,1,210,X = MySQL; Y = H2
+MS_SQL_Server -> InIBM_DB2 & OutMS_SQL_Server -> IBM_DB2,0.00425531914893617,1,153,X = MS_SQL_Server; Y = IBM_DB2
+MS_SQL_Server -> InHyperSQL & OutMS_SQL_Server -> HyperSQL,0.00425531914893617,1,69,X = MS_SQL_Server; Y = HyperSQL
+PostgreSQL -> InRedis & OutPostgreSQL -> Redis,0.00851063829787234,2,75; 77,X = PostgreSQL; Y = Redis
+H2 -> InRedis & OutH2 -> Redis,0.00425531914893617,1,207,X = H2; Y = Redis
+MySQL -> InRedis & OutMySQL -> Redis,0.00425531914893617,1,75,X = MySQL; Y = Redis
+Hazelcast -> InRedis & OutHazelcast -> Redis,0.00425531914893617,1,221,X = Hazelcast; Y = Redis
+GoogleCloudDatastore -> InRedis & OutGoogleCloudDatastore -> Redis,0.00425531914893617,1,214,X = GoogleCloudDatastore; Y = Redis
+PostgreSQL -> InMongoDB & OutPostgreSQL -> MongoDB,0.00425531914893617,1,77,X = PostgreSQL; Y = MongoDB
+Cassandra -> InOracle & OutCassandra -> Oracle,0.00425531914893617,1,5,X = Cassandra; Y = Oracle
+Cassandra -> InRedis & OutCassandra -> Redis,0.00425531914893617,1,48,X = Cassandra; Y = Redis
+Redis -> InOracle & OutRedis -> Oracle,0.00425531914893617,1,5,X = Redis; Y = Oracle
+H2 -> InDynamoDB & OutH2 -> DynamoDB,0.00425531914893617,1,44,X = H2; Y = DynamoDB
+GoogleCloudDatastore -> InMySQL & OutGoogleCloudDatastore -> MySQL,0.00425531914893617,1,214,X = GoogleCloudDatastore; Y = MySQL
+GoogleCloudDatastore -> InMongoDB & OutGoogleCloudDatastore -> MongoDB,0.00425531914893617,1,214,X = GoogleCloudDatastore; Y = MongoDB
+SQLite -> InPostgreSQL & OutSQLite -> PostgreSQL,0.00425531914893617,1,33,X = SQLite; Y = PostgreSQL
+SQLite -> InMySQL & OutSQLite -> MySQL,0.00425531914893617,1,33,X = SQLite; Y = MySQL
+Informix -> InHyperSQL & OutInformix -> HyperSQL,0.00425531914893617,1,69,X = Informix; Y = HyperSQL
+MS_SQL_Server -> InRedis & OutMS_SQL_Server -> Redis,0.00425531914893617,1,75,X = MS_SQL_Server; Y = Redis
+SQLite -> InMS_SQL_Server & OutSQLite -> MS_SQL_Server,0.00425531914893617,1,33,X = SQLite; Y = MS_SQL_Server
+GoogleCloudDatastore -> InMS_SQL_Server & OutGoogleCloudDatastore -> MS_SQL_Server,0.00425531914893617,1,214,X = GoogleCloudDatastore; Y = MS_SQL_Server
+Hazelcast -> InMongoDB & OutHazelcast -> MongoDB,0.00425531914893617,1,46,X = Hazelcast; Y = MongoDB
+PostgreSQL -> InCouchbase & OutPostgreSQL -> Couchbase,0.00425531914893617,1,77,X = PostgreSQL; Y = Couchbase
+Teradata -> InHyperSQL & OutTeradata -> HyperSQL,0.00425531914893617,1,113,X = Teradata; Y = HyperSQL
+Couchbase -> InGoogleCloudFilestore & OutCouchbase -> GoogleCloudFilestore,0.00425531914893617,1,77,X = Couchbase; Y = GoogleCloudFilestore
+CouchDB -> InGoogleCloudFilestore & OutCouchDB -> GoogleCloudFilestore,0.00425531914893617,1,77,X = CouchDB; Y = GoogleCloudFilestore
+Realm -> InPostgreSQL & OutRealm -> PostgreSQL,0.00425531914893617,1,149,X = Realm; Y = PostgreSQL

@@ -1,0 +1,3 @@
+(\s|[.,(]|^)ServiceImpl(\s|[.,(]|$)
+(\s|[.,(]|^)CompareWriter(\s|[.,(]|$)
+(\s|[.,(]|^)DbWriteTest(\s|[.,(]|$)

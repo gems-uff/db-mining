@@ -1,0 +1,3 @@
+(\s|[.,(]|^)AppShareabilityDatabase(\s|[.,(]|$)
+(\s|[.,(]|^)AppShareabilityManager(\s|[.,(]|$)
+(\s|[.,(]|^)AppShareabilityStatus(\s|[.,(]|$)

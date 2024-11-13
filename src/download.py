@@ -12,7 +12,6 @@ def main():
     parser = argparse.ArgumentParser(
         prog='download',
         description='Download repositories from xlsx')
-
     parser.add_argument(
         '-i', '--input', default=ANNOTATED_FILE_JAVA,
         help="Input xlsx file")
@@ -22,6 +21,18 @@ def main():
     parser.add_argument(
         '-f', '--filter', default=[], nargs="*",
         help="Regex filter for repository")
+    parser.add_argument(
+        '-pi', '--min-project', default=1, type=int,
+        help="First project in interval"
+    )
+    parser.add_argument(
+        '-pf', '--max-project', default=None, type=int,
+        help="Last project in interval"
+    )
+    parser.add_argument(
+        '--dry-run', action="store_true",
+        help="Dry-run. Do not close repositories"
+    )
 
     args = parser.parse_args()
 
@@ -34,17 +45,25 @@ def main():
     print('Removing discarded repositories.')
     df = df[df.discardReason == '']
     df = filter_repositories(df, args.filter)
-    total = len(df)
+
+    rows = [
+        iterrow for i, iterrow in enumerate(df.iterrows())
+        if i >= args.min_project - 1 and (not args.max_project or i < args.max_project)
+    ]
+    total = len(rows)
 
     print(f'Cloning/updating {total} repositories...')
-    for i, row in df.iterrows():
+    for i, (_, row) in enumerate(rows):
         print(f'Processing repository {row["owner"]}/{row["name"]}.')
+        if args.dry_run:
+            continue
         source = args.uriformat.format(**row)
         target = REPOS_DIR + os.sep + row['owner'] + os.sep + row['name']
 
         if os.path.isdir(target):
             os.chdir(target)
             subprocess.run(['git', 'remote', 'update'])
+            subprocess.run(['git', 'remote', 'set-head', 'origin', '-a'])
             subprocess.run(['git', 'reset', '--hard', '-q', 'origin/HEAD'])
             subprocess.run(['git', 'clean', '-d', '-f', '-x', '-q'])
             subprocess.run(['git', 'status', '-s'])

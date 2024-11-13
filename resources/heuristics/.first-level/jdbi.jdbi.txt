@@ -1,0 +1,4 @@
+(\s|[.,(]|^)package-info(\s|[.,(]|$)
+(\s|[.,(]|^)JpaTest(\s|[.,(]|$)
+(\s|[.,(]|^)PluginTest(\s|[.,(]|$)
+(\s|[.,(]|^)TestUseCustomExtensionHandlerFactory(\s|[.,(]|$)

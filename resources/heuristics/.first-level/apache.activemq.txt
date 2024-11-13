@@ -1,3 +1,2 @@
-(\s{1,}|[.,(]|^)CamelShutdownHook(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)VirtualTopicDLQTest(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)RequestReplyNoAdvisoryNetworkTest(\s{1,}|[.,(]|^)
+(\s|[.,(]|^)VirtualTopicDLQTest(\s|[.,(]|$)
+(\s|[.,(]|^)RequestReplyNoAdvisoryNetworkTest(\s|[.,(]|$)

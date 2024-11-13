@@ -1,0 +1,4 @@
+(\s|[.,(]|^)AccountMapper(\s|[.,(]|$)
+(\s|[.,(]|^)OrderMapper(\s|[.,(]|$)
+(\s|[.,(]|^)PraiseMapper(\s|[.,(]|$)
+(\s|[.,(]|^)StorageMapper(\s|[.,(]|$)

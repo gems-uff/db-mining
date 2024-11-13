@@ -1,0 +1,6 @@
+(\s|[.,(]|^)ArmeriaServerFactory(\s|[.,(]|$)
+(\s|[.,(]|^)RestClientTest(\s|[.,(]|$)
+(\s|[.,(]|^)AnnotatedDocServiceTest(\s|[.,(]|$)
+(\s|[.,(]|^)AnnotatedServiceFactoryTest(\s|[.,(]|$)
+(\s|[.,(]|^)HttpServerCorsTest(\s|[.,(]|$)
+(\s|[.,(]|^)BlogService(\s|[.,(]|$)

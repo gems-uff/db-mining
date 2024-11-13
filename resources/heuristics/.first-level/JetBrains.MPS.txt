@@ -1,4 +1,0 @@
-(\s{1,}|[.,(]|^)PutDataExpression_EditorBuilder_a(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)ActionDeclaration_EditorBuilder_a(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)ModelPersistence(\s{1,}|[.,(]|^)
-(\s{1,}|[.,(]|^)IconResource(\s{1,}|[.,(]|^)

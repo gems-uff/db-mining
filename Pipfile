@@ -21,6 +21,7 @@ scholarly = "*"
 pyjwt = "*"
 psycopg2-binary = "*"
 awsebcli = "*"
+numpy = "*"
 
 [requires]
 python_version = "3.7"

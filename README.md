@@ -31,8 +31,9 @@ To find out which DBMS is used by a given project, we use heuristics that are ba
   
 | Name          | Goal                                                | Input          | Output        |
 | ------------- | --------------------------------------------------- | -------------- | ------------- |
-| extract.py    | Runs git grep and populates the relational DBMS with the results            | annotated_java.xlsx | None       |
-| create_file_dbCode.py    | Generates .txt files that contains dbCode Heuristics            | DataBase (Implementation Heuristics) | Path .first-level |
+| extract_last.py    | Runs git grep on the HEAD commit and populates the relational DBMS with the results            | annotated_java.xlsx | None       |
+| extract.py    | Runs git grep on the history and populates the relational DBMS with the results            | annotated_java.xlsx | None       |
+| create_1st_level_heuristics.py    | Generates .txt files that contains dbCode Heuristics            | DataBase (Implementation Heuristics) | Path .first-level |
 | extract_classes.py    | Runs git grep and populates the database with dependencies of dbCode            | Path .first-level | None          |
 | create_vulnerabilityDatabase.py    | Produces a database about vulnerabilities            | Vulnerability_Version_20061101_Date_20220913.xlsx | None        |
 | extract_historical_vulnerabilities.py    | Runs git grep and populates the database with historial of vulnerabilities            | DataBase | None        |
@@ -44,13 +45,13 @@ The table below shows the workflow for analyzing the results for the current ver
 
 | Name          | Goal                                                | Input          | Output        |
 | ------------- | --------------------------------------------------- | -------------- | ------------- |
-| results_dbCode_dependencies.py    | Counts the results of bdCode and its dependencies to the project          | DataBase (Second Level) | Path .second-level and usage_fan_in_file.xlsx          |
+| create_2nd_level_heuristics.py    | Counts the results of bdCode and its dependencies to the project          | DataBase (Second Level) | Path .second-level and usage_fan_in_file.xlsx          |
 | results_in_xlsx.py    | Generates the xlsx that it will be used to analyze the results           | DataBase | count_implementation.xlsx, count_sql.xlsx, database.xlsx, implementation.xlsx, implementation_names.xlsx, query.xlsx          |
 | results_database_characterization.ipynb    | Produces statistics about database Heuristics            | database.xlsx | None          |
 | results_implementation_characterization.ipynb   | Produces statistics about implementation Heuristics            | database.xlsx, implementation.xlsx, implementation_names.xlsx, query.xlsx | None          |
   
 ## Historical Analysis
-The table below shows the workflow for the historical analysis of the results. This analysis only requires the execution of the **Heuristics Extraction script** in historical mode: `extract.py -s 10 -l all`".
+The table below shows the workflow for the historical analysis of the results. This analysis only requires the execution of the **Heuristics Extraction script** in historical mode: `extract.py`".
 
 | Name          | Goal                                                | Input          | Output        |
 | ------------- | --------------------------------------------------- | -------------- | ------------- |
@@ -232,7 +233,16 @@ The URL http://localhost:3000 is served by Node.js and has hot reload capability
 ## <a name="own-analysis"></a>Steps for creating your own analysis
 
 ### Steps for Current Analysis
-*Soon...*
+1. Go into the project directory:
+`~$ cd db-mining`
+
+2. Run the `results_in_xlsx.py` to generate a one-hot coded dataset with the results of the current Analysis:
+
+`~/db-mining$ python src/results_in_xlsx.py`
+
+3. Execute the next scripts in Google Colab or Jupyter Notebook platforms. 
+
+4. Run the `results_implementation_characterization.ipynb` to produce statistics about DBMS adopted.
 
 ### Steps for Historical Analysis
 

@@ -3,6 +3,7 @@ import json
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_utils import database_exists, create_database, drop_database
+from sqlalchemy.orm import load_only, selectinload
 
 from util import DATABASE_DEBUG, REACT_STATIC_DIR, REACT_BUILD_DIR, DATABASE_CONFIG_FILE, get_database_uri
 
@@ -31,7 +32,6 @@ elif config['database_type'].lower() == 'postgresql':
     application.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://' + config['username'] + ':' + config['password'] + '@' + config['host'] + ':' + config['port'] + '/' + config['database_name']
 
 db = SQLAlchemy(application, session_options={"expire_on_commit": False})
-
 
 ###########################################
 # SQLALCHEMY CLASSES
@@ -134,6 +134,7 @@ class Vulnerability(db.Model):
 ###########################################
 
 def connect():
+    application.app_context().push()
     if config['drop_database'] == 'True':
         print('Deleting database...')
         drop_database(application.config['SQLALCHEMY_DATABASE_URI'])
@@ -183,6 +184,42 @@ def delete(instance):
 
 def main():
     connect()
+
+###########################################
+# COMMON QUERIES
+###########################################
+
+def query_projects(eager=True, with_version=True):
+    projects_db = query(Project)
+    if with_version:
+        projects_db = projects_db.options(
+            load_only(Project.id, Project.owner, Project.name, Project.domain),
+            selectinload(Project.versions).load_only(Version.id)
+        )
+    else:
+        projects_db = projects_db.options(
+            load_only(Project.id, Project.owner, Project.name),
+        )
+    if eager:
+        return projects_db.all()
+    return projects_db
+
+
+def query_labels(label_type=None, eager=True, with_execution=True):
+    labels_db = query(Label)
+    if with_execution:
+        labels_db = labels_db.options(
+            selectinload(Label.heuristic).options(
+                selectinload(Heuristic.executions)
+                .defer(Execution.output)
+                .defer(Execution.user)
+            )
+        )
+    if label_type:
+        labels_db = labels_db.filter(Label.type == label_type)
+    if eager:
+        return labels_db.all()
+    return labels_db
 
 
 if __name__ == "__main__":

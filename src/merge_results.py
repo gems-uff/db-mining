@@ -22,15 +22,23 @@ def merge_lines_db():
         'Deleted': 0
     }
     db.connect()
-    projects_db = db.query(db.Project).options(load_only('id', 'owner', 'name'), selectinload(db.Project.versions).load_only('id')).all()
+    projects_db = db.query(db.Project).options(
+        load_only(db.Project.id, db.Project.owner, db.Project.name),
+        selectinload(db.Project.versions).load_only(db.Version.id)).all()
     for j, project in enumerate(projects_db):
         name_project = project.owner+'.'+project.name
-        labels_db = db.query(db.Label).options(selectinload(db.Label.heuristic).options(selectinload(db.Heuristic.executions).defer('output').defer('user'))).filter(db.Label.name == name_project).first()
-        list_execution = db.query(db.Execution) \
-                .join(db.Execution.version) \
-                .join(db.Execution.heuristic) \
-                .filter(db.Version.project_id == project.id) \
-                .filter(db.Heuristic.label_id == labels_db.id).all()
+        labels_db = db.query(db.Label).options(
+            selectinload(db.Label.heuristic).options(
+                selectinload(db.Heuristic.executions)
+                .defer(db.Execution.output).defer(db.Execution.user)
+            )).filter(db.Label.name == name_project).first()
+        list_execution = (
+            db.query(db.Execution)
+            .join(db.Execution.version)
+            .join(db.Execution.heuristic)
+            .filter(db.Version.project_id == project.id)
+            .filter(db.Heuristic.label_id == labels_db.id).all()
+        )
         if(list_execution is None):
             status['None'] += 1
         elif(len(list(list_execution)) == 1):

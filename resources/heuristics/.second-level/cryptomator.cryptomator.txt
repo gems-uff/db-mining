@@ -1,0 +1,5 @@
+(\s|[.,(]|^)FxApplicationModule(\s|[.,(]|$)
+(\s|[.,(]|^)FxApplicationWindows(\s|[.,(]|$)
+(\s|[.,(]|^)UpdateReminderComponent(\s|[.,(]|$)
+(\s|[.,(]|^)UpdateReminderController(\s|[.,(]|$)
+(\s|[.,(]|^)UpdateReminderModule(\s|[.,(]|$)

@@ -1,0 +1,4 @@
+(\s|[.,(]|^)ClipboardCommands(\s|[.,(]|$)
+(\s|[.,(]|^)GenerationCommands(\s|[.,(]|$)
+(\s|[.,(]|^)RegionCommands(\s|[.,(]|$)
+(\s|[.,(]|^)PlatformCommandManager(\s|[.,(]|$)

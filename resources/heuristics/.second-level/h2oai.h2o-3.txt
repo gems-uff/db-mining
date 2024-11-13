@@ -1,3 +1,0 @@
-([.,\s(]|^)BinaryMerge([.,\s(]|$)
-([.,\s(]|^)Merge([.,\s(]|$)
-([.,\s(]|^)SortCombine([.,\s(]|$)

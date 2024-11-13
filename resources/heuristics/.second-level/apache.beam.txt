@@ -1,0 +1,6 @@
+(\s|[.,(]|^)ConsecutivePythonTransformsTest(\s|[.,(]|$)
+(\s|[.,(]|^)PrecombineGroupingTableBenchmark(\s|[.,(]|$)
+(\s|[.,(]|^)Caches(\s|[.,(]|$)
+(\s|[.,(]|^)CombineRunners(\s|[.,(]|$)
+(\s|[.,(]|^)PrecombineGroupingTable(\s|[.,(]|$)
+(\s|[.,(]|^)PrecombineGroupingTableTest(\s|[.,(]|$)

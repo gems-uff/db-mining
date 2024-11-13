@@ -1,0 +1,6 @@
+(\s|[.,(]|^)JournalListMvGenerator(\s|[.,(]|$)
+(\s|[.,(]|^)BibDatabaseWriter(\s|[.,(]|$)
+(\s|[.,(]|^)ISIDOREFetcher(\s|[.,(]|$)
+(\s|[.,(]|^)SeveralPlainCitationParser(\s|[.,(]|$)
+(\s|[.,(]|^)PseudonymizationResultCsvWriter(\s|[.,(]|$)
+(\s|[.,(]|^)BibliographyConsistencyCheckResultWriter(\s|[.,(]|$)

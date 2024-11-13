@@ -1,0 +1,5 @@
+(\s|[.,(]|^)TargetCodeGeneratorLoader(\s|[.,(]|$)
+(\s|[.,(]|^)CppGenerator(\s|[.,(]|$)
+(\s|[.,(]|^)DtosPropertyTest(\s|[.,(]|$)
+(\s|[.,(]|^)CppEnumTest(\s|[.,(]|$)
+(\s|[.,(]|^)CppGeneratorTest(\s|[.,(]|$)

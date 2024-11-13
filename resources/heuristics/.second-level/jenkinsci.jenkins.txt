@@ -1,2 +1,4 @@
-([.,\s(]|^)CLIMethod([.,\s(]|$)
-([.,\s(]|^)TimeZoneProperty([.,\s(]|$)
+(\s|[.,(]|^)TimeZoneProperty(\s|[.,(]|$)
+(\s|[.,(]|^)ListBoxModel(\s|[.,(]|$)
+(\s|[.,(]|^)RelativePathTest(\s|[.,(]|$)
+(\s|[.,(]|^)Jenkins19124Test(\s|[.,(]|$)

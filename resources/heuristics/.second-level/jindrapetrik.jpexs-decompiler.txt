@@ -1,0 +1,4 @@
+(\s|[.,(]|^)SwfFlashDevelopExporter(\s|[.,(]|$)
+(\s|[.,(]|^)MainFrameMenu(\s|[.,(]|$)
+(\s|[.,(]|^)MainPanel(\s|[.,(]|$)
+(\s|[.,(]|^)TagTreeContextMenu(\s|[.,(]|$)

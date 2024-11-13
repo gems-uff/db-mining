@@ -1,2 +1,0 @@
-([.,\s(]|^)PinnedReposPresenter([.,\s(]|$)
-([.,\s(]|^)RepoPagerActivity([.,\s(]|$)

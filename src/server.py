@@ -34,15 +34,18 @@ def react(path):
 @application.route('/api/status', methods=['GET'])
 @login_required
 def get_status():
-    result_set = db.query(db.Version.project_id.label('project_id'),
-                          db.Heuristic.label_id.label('label_id'),
-                          db.Execution.isValidated.label('isValidated'),
-                          db.Execution.isAccepted.label('isAccepted'),
-                          db.Execution.user.label('user')
-                          ) \
-        .join(db.Version.executions) \
-        .join(db.Execution.heuristic) \
+    result_set = (
+        db.query(
+            db.Version.project_id.label('project_id'),
+            db.Heuristic.label_id.label('label_id'),
+            db.Execution.isValidated.label('isValidated'),
+            db.Execution.isAccepted.label('isAccepted'),
+            db.Execution.user.label('user')
+        )
+        .join(db.Version.executions)
+        .join(db.Execution.heuristic)
         .filter(db.Execution.output != '').all()
+    )
 
     status = {}
     for row in result_set:
@@ -62,30 +65,36 @@ def get_status():
 @application.route('/api/projects', methods=['GET'])
 @login_required
 def get_projects():
-    projects = db.query(db.Project.id.label('id'),
-                        db.Project.owner.label('owner'),
-                        db.Project.name.label('name'),
-                        db.Project.primaryLanguage.label('primaryLanguage'),
-                        db.Project.domain.label('domain')
-                        ) \
-        .order_by(func.lower(db.Project.owner)) \
+    projects = (
+        db.query(
+            db.Project.id.label('id'),
+            db.Project.owner.label('owner'),
+            db.Project.name.label('name'),
+            db.Project.primaryLanguage.label('primaryLanguage'),
+            db.Project.domain.label('domain')
+        )
+        .order_by(func.lower(db.Project.owner))
         .order_by(func.lower(db.Project.name)).all()
+    )
     return jsonify([project._asdict() for project in projects])
 
 
 def labels_query(project_id):
-    return db.query(db.Label.id.label('id'),
-                    db.Label.name.label('name'),
-                    db.Label.type.label('type'),
-                    db.Execution.output.label('output')
-                    ) \
-        .join(db.Label.heuristic) \
-        .join(db.Heuristic.executions) \
-        .join(db.Execution.version) \
-        .filter(db.Version.project_id == project_id) \
-        .filter(db.Execution.output != '') \
-        .order_by(func.lower(db.Label.type)) \
+    return (
+        db.query(
+            db.Label.id.label('id'),
+            db.Label.name.label('name'),
+            db.Label.type.label('type'),
+            db.Execution.output.label('output')
+        )
+        .join(db.Label.heuristic)
+        .join(db.Heuristic.executions)
+        .join(db.Execution.version)
+        .filter(db.Version.project_id == project_id)
+        .filter(db.Execution.output != '')
+        .order_by(func.lower(db.Label.type))
         .order_by(func.lower(db.Label.name))
+    )
 
 
 def label2dict(label, project_id):
@@ -106,11 +115,13 @@ def get_labels(project_id):
 def put_label(project_id, label_id):
     data = request.get_json()
 
-    execution = db.query(db.Execution) \
-        .join(db.Execution.version) \
-        .join(db.Execution.heuristic) \
-        .filter(db.Version.project_id == project_id) \
+    execution = (
+        db.query(db.Execution)
+        .join(db.Execution.version)
+        .join(db.Execution.heuristic)
+        .filter(db.Version.project_id == project_id)
         .filter(db.Heuristic.label_id == label_id).first()
+    )
     execution.isValidated = data['isValidated']
     execution.isAccepted = data['isAccepted']
     execution.user = g.user

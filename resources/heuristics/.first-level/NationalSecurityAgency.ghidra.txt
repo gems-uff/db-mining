@@ -1,0 +1,6 @@
+(\s|[.,(]|^)GnuDemanglerParserTest(\s|[.,(]|$)
+(\s|[.,(]|^)MDMangUtils(\s|[.,(]|$)
+(\s|[.,(]|^)MDMangBaseTest(\s|[.,(]|$)
+(\s|[.,(]|^)MDMangUtilsTest(\s|[.,(]|$)
+(\s|[.,(]|^)SymbolPathParserTest(\s|[.,(]|$)
+(\s|[.,(]|^)YaraGhidraGUIScript(\s|[.,(]|$)

@@ -2,6 +2,7 @@
 (\s{1,}|[.,(]|^)SpringTestController(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)EntityManager(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)EnumUseInSql491(\s{1,}|[.,(]|^)
+(\s{1,}|[.,(]|^)JakartaSampleEntity(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)SampleEntity(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)JpaSql(\s{1,}|[.,(]|^)
 (\s{1,}|[.,(]|^)UserEntity(\s{1,}|[.,(]|^)

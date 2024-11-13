@@ -1,0 +1,8 @@
+(\s|[.,(]|^)DartParser(\s|[.,(]|$)
+(\s|[.,(]|^)DartGeneratedParserUtilBase(\s|[.,(]|$)
+(\s|[.,(]|^)DartParserDefinition(\s|[.,(]|$)
+(\s|[.,(]|^)DartTokenTypesSets(\s|[.,(]|$)
+(\s|[.,(]|^)DartExpressionCodeFragmentImpl(\s|[.,(]|$)
+(\s|[.,(]|^)JdlParser(\s|[.,(]|$)
+(\s|[.,(]|^)JdlParserDefinition(\s|[.,(]|$)
+(\s|[.,(]|^)HCLParser(\s|[.,(]|$)
