@@ -3,5 +3,3 @@ ianywhere\.ml\.jdbcodbc\.jdbc3\.IDriver
 sybase\.jdbc\.sqlanywhere\.IDriver
 jdbc:sqlanywhere
 jdbc:ianywhere
-jdbc:sybase
-import\s*com\.sybase\.jdbc4\.jdbc
