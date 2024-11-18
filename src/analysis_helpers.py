@@ -2,6 +2,26 @@ import re
 import os
 from util import VARIABLES
 
+RELATIONAL_ONLY_DBS = ['Oracle', 'MySQL', 'MS SQL Server', 'PostgreSQL', 'IBM DB2', 
+                  'MS Access', 'SQLite',  'Snowflake', 'Teradata', 'SapHana', 
+                  'FileMaker', 'SAP Adaptive Server', 'Informix', 'Firebird', 'Vertica', 
+                  'Impala', 'ClickHouse', 'H2',  'Singlestore', 'Interbase', 
+                  'Ingres', 'SAP SQL Anywhere', 'HyperSQL']
+NONRELATIONAL_ONLY_DBS = ['Aerospike', 'ArangoDB', 'Cassandra', 'CouchDB', 'Couchbase',
+       'DynamoDB', 'Etcd', 'Firebase Realtime', 'Google Cloud Datastore',
+       'GoogleCloudFirestore', 'HBase', 'Hazelcast',
+       'Influx DB', 'Kdb+', 'MarkLogic', 'Microsoft Azure CosmosDB',
+       'Microsoft Azure Table Storage', 'MongoDB', 'Neo4j', 'PostGIS', 'Realm',
+       'Redis', 'Riak KV']
+MULTIMODEL_RELATIONAL = ['Ignite-Sql', 'Virtuoso-Sql']
+MULTIMODEL_NONRELATIONAL = ['Ignite-NoSql', 'Virtuoso-NoSql']
+
+RELATIONAL_DBS = RELATIONAL_ONLY_DBS + MULTIMODEL_RELATIONAL
+NONRELATIONAL_DBS = NONRELATIONAL_ONLY_DBS + MULTIMODEL_NONRELATIONAL
+MULTIMODEL_DBS = MULTIMODEL_RELATIONAL + MULTIMODEL_NONRELATIONAL
+
+
+
 def tex_escape(text):
     """
         :param text: a plain text message
