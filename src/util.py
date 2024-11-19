@@ -21,6 +21,7 @@ HEURISTICS_DIR_VULNERABILITIES = HEURISTICS_DIR + os.sep + '.vulnerabilities'
 HEURISTICS_DIR_IMPLEMENTATION = HEURISTICS_DIR + os.sep + '.implementation'
 HEURISTICS_DIR_QUERY = HEURISTICS_DIR + os.sep + '.query'
 IMAGES_DIR = RESOURCE_DIR + os.sep + 'images'
+PAPEROUT_DIR = RESOURCE_DIR + os.sep + 'paperout'
 
 SEQ_PATTERNS_DIR = RESOURCE_DIR + os.sep + 'seq_patterns'
 
