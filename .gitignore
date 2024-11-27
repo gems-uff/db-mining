@@ -197,3 +197,6 @@ dbmining.sqlite
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+
+#Uoutput size4
+resources/seq_patterns/output_tam4_sid.txt
