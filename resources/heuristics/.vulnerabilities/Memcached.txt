@@ -1,3 +1,0 @@
-<\s*artifactId\s*>\s*Memcached-Java-Client
-<\s*artifactId\s*>\s*spymemcached
-<\s*artifactId\s*>\s*xmemcached

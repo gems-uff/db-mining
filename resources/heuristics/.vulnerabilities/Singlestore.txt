@@ -1,0 +1,2 @@
+<\s*artifactId\s*>\s*singlestore-jdbc-client
+<\s*artifactId\s*>\s*cdata-singlestore-connector

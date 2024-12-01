@@ -1,4 +1,1 @@
-import\s{1,}com\.vertica\.jdbc
-com\.vertica\.jdbc\.Driver
-jdbc:vertica
 <\s*artifactId\s*>\s*vertica-jdbc

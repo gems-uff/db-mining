@@ -1,1 +1,3 @@
-<\s*artifactId\s*>\s*clickhouse
+<\s*artifactId\s*>\s*clickhouse-jdbc
+<\s*artifactId\s*>\s*clickhouse-native-jdbc
+<\s*artifactId\s*>\s*clickhouse4j
