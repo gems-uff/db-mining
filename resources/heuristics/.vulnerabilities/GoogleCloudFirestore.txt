@@ -1,0 +1,1 @@
+<\s*artifactId\s*>\s*google-cloud-firestore

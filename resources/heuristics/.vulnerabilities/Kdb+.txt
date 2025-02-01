@@ -1,0 +1,2 @@
+<\s*artifactId\s*>\s*spring-kdb
+<\s*artifactId\s*>\s*kxi-java-sdk
