@@ -26,19 +26,28 @@ def is_multimodule_pom(pom_path):
 
 def identify_build_tools(base_path):
     project_tools = defaultdict(lambda: {"Maven": 0, "Gradle": 0, "Multimodule": 0})
-
+    total_projects = 0
+    multimodule_projects = 0
+    
     for root, dirs, files in os.walk(base_path):
-        # Verifica arquivos característicos na pasta atual
         project_name = extract_project_name(root)
         
+        if project_name == "Unknown":
+            continue
+
         if 'pom.xml' in files:
             project_tools[project_name]["Maven"] += 1
             pom_path = os.path.join(root, "pom.xml")
             if is_multimodule_pom(pom_path):
                 project_tools[project_name]["Multimodule"] += 1
+                multimodule_projects += 1
 
         elif 'build.gradle' in files or 'build.gradle.kts' in files:
             project_tools[project_name]["Gradle"] += 1
+        
+        total_projects += 1
+        if total_projects % 10 == 0:  # Log a cada 10 projetos analisados
+            print(f"Projetos analisados: {total_projects}, com multimódulos: {multimodule_projects}")
 
     return project_tools
 
@@ -55,30 +64,18 @@ def main():
         print(f"A pasta '{REPOS_DIR}' não existe. Certifique-se de que o caminho está correto.")
         return
 
-    # Identificar projetos e ferramentas de build
+    print("Iniciando a análise dos projetos...")
     project_tools = identify_build_tools(REPOS_DIR)
+    print("Análise concluída.")
 
-    # Salvar resultados em CSV
     save_results_to_csv(project_tools, BUILD_TOOLS_REPORT)
+    print(f"Resultados salvos no arquivo: {BUILD_TOOLS_REPORT}")
 
-    # Exibir resultados
-    print("=== Resultados ===")
-    multimodule_projects = 0
-    for project, tools in project_tools.items():
-        print(f"Projeto: {project}")
-        print(f"  - Maven: {tools['Maven']}")
-        print(f"  - Gradle: {tools['Gradle']}")
-        print(f"  - Multimodule: {tools['Multimodule']}")
-
-        if tools["Multimodule"] > 0:
-            multimodule_projects += 1
-
-    # Resumo
-    total_projects = len(project_tools)
     print("\n=== Resumo ===")
+    total_projects = len(project_tools)
+    multimodule_projects = sum(1 for tools in project_tools.values() if tools["Multimodule"] > 0)
     print(f"Total de projetos analisados: {total_projects}")
     print(f"Projetos com multimódulos: {multimodule_projects}")
-    print(f"Resultados salvos no arquivo: {BUILD_TOOLS_REPORT}")
 
 if __name__ == "__main__":
     main()
