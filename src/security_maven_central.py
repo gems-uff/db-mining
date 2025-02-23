@@ -9,7 +9,7 @@ API_TOKEN = "57a1511224eb4cd7f8de724d493ed3226ae5fc15"
 API_URL = "https://ossindex.sonatype.org/api/v3/component-report"
 
 # Pacote a ser consultado
-package_purl = "pkg:maven/org.postgresql/postgresql@2.6.0"
+package_purl = "pkg:maven/org.postgresql/postgresql@42.6.0"
 payload = {"coordinates": [package_purl]}
 
 # Requisição autenticada
