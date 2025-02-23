@@ -1,7 +1,8 @@
 import os
-import pandas as pd
 import xml.etree.ElementTree as ET
 from util import ANNOTATED_FILE_JAVA_TEST, REPOS_DIR
+
+import pandas as pd
 
 def is_multimodule_pom(pom_path):
     """Verifica se um arquivo pom.xml contém a tag <modules> indicando multimódulos"""
