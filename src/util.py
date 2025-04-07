@@ -73,7 +73,7 @@ HISTORICAL_DB_KEEP_OUT = RESOURCE_DIR + os.sep + 'databases_keep_out.xlsx'
 VULNERABILITY_LABELS = RESOURCE_DIR + os.sep + 'vulnetabilities_labels.xlsx'
 COMMIT_FILE = RESOURCE_DIR + os.sep + 'commit-count.csv'
 BUILD_TOOLS_REPORT = RESOURCE_DIR + os.sep + 'build_tools_report.csv'
-
+VULNERABILITY_COUNT = RESOURCE_DIR + os.sep + 'countMissingVersionPom.csv'
 VARIABLES = RESOURCE_DIR + os.sep + 'variables.txt'
 
 
