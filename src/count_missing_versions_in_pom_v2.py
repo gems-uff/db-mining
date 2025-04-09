@@ -63,7 +63,7 @@ def load_executions(execution_fields, heuristic_map, version_ids, project_map, v
     
     # Expressão regular para encontrar 'pom.xml' e verificar a ausência de '<version>'
     pom_pattern = re.compile(r'pom\.xml', re.IGNORECASE)
-    version_pattern = re.compile(r'<version>.*?</version>', re.IGNORECASE)
+    version_pattern = re.compile(r'version>.*?', re.IGNORECASE)
     
     count = 0
     for execution in execution_db:
@@ -82,14 +82,17 @@ def load_executions(execution_fields, heuristic_map, version_ids, project_map, v
         
         # Verifica se contém 'pom.xml'
         if pom_pattern.search(output):
-            print(output)
-            print("\n\n")# Verifica se não contém uma declaração de versão
+            #print(output)
+            #print("\n\n")
+            # Verifica se não contém uma declaração de versão
             if not version_pattern.search(output):
                 project_counter[project_name]["pom_no_version"] += 1
             else:
                 project_counter[project_name]["normal_output"] += 1
         else:
-            project_counter[project_name]["normal_output"] += 1  # Considera como um output normal
+            print("The project no conatains pom.xml")
+
+            #project_counter[project_name]["normal_output"] += 1  # Considera como um output normal
             
     if verbose:
         print(f"Found {count} executions. Matches found: {sum(sum(c.values()) for c in project_counter.values())}.")
@@ -97,16 +100,19 @@ def load_executions(execution_fields, heuristic_map, version_ids, project_map, v
     # Salvar os resultados em um arquivo CSV
     with open(output_csv_path, mode='w', newline='', encoding='utf-8') as csv_file:
         csv_writer = csv.writer(csv_file)
-        csv_writer.writerow(['project_name', 'normal_output_count', 'pom_no_version_count'])  # Cabeçalhos
         
+        # Escreve os cabeçalhos
+        csv_writer.writerow(['project_name', 'normal_output_count', 'pom_no_version_count'])
+        
+        # Escreve os dados de cada projeto
         for project_name, counts in project_counter.items():
             csv_writer.writerow([
                 project_name,
-                counts["normal_output"],
-                counts["pom_no_version"]
+                counts.get("normal_output", 0),
+                counts.get("pom_no_version", 0)
             ])
                 
-    print(f"Resultados salvos em: {output_csv_path}")
+    print(f"✅ Resultados salvos em: {output_csv_path}")
     return project_counter, version_map
 
 

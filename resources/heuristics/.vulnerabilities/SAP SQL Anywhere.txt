@@ -1,5 +1,3 @@
-ianywhere\.ml\.jdbcodbc\.IDriver
-ianywhere\.ml\.jdbcodbc\.jdbc3\.IDriver
-sybase\.jdbc\.sqlanywhere\.IDriver
-jdbc:sqlanywhere
-jdbc:ianywhere
+<\s*artifactId\s*>\s*sqlanywhere
+<\s*artifactId\s*>\s*ianywhere
+<\s*artifactId\s*>\s*sajdbc
