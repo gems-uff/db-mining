@@ -20,15 +20,6 @@ def main():
     )
     process_projects(args)
 
-    <dependencies>
-    <dependency>
-        <groupId>com.h2database</groupId>
-        <artifactId>h2 </artifactId>
-        <version>2.2.224</version> <!-- Verifique se esta é a versão mais recente -->
-        <scope>runtime</scope> <!-- opcional, depende do uso -->
-    </dependency>
-</dependencies>
-
 
 if __name__ == "__main__":
     main()
