@@ -71,6 +71,7 @@ class Version(db.Model):
     date_commit = db.Column(db.String) #acrescentei
     project = db.relationship('Project', back_populates='versions')
     executions = db.relationship('Execution', back_populates='version', cascade="all, delete-orphan")
+    vulnerabilities = db.relationship('VersionVulnerability', back_populates='version', cascade="all, delete-orphan")
 
 
 label_category = db.Table('label_category',
@@ -111,7 +112,7 @@ class Execution(db.Model):
     version_id = db.Column(db.Integer, db.ForeignKey('version.id'))
     heuristic = db.relationship('Heuristic', back_populates='executions')
     version = db.relationship('Version', back_populates='executions')
-    versionVulnerability = db.relationship('VersionVulnerability', back_populates='execution', cascade="all, delete-orphan")
+    vulnerabilities = db.relationship('VersionVulnerability', back_populates='execution', cascade="all, delete-orphan")
 
 
 class Vulnerability(db.Model):
@@ -127,16 +128,16 @@ class Vulnerability(db.Model):
     version = db.Column(db.String)
     label_id = db.Column(db.Integer, db.ForeignKey('label.id'))
     label = db.relationship('Label')
-    versionVulnerability = db.relationship('VersionVulnerability', back_populates='vulnerability', cascade="all, delete-orphan")
     
 class VersionVulnerability(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     versionNumber = db.Column(db.String)
     file = db.Column(db.String)
+    version_id = db.Column(db.Integer, db.ForeignKey('version.id'))
     execution_id = db.Column(db.Integer, db.ForeignKey('execution.id'))
-    vulnerability_id = db.Column(db.Integer, db.ForeignKey('vulnerability.id'))
-    execution = db.relationship('Execution', back_populates='versionVulnerability')
-    vulnerability = db.relationship('Vulnerability', back_populates='versionVulnerability')
+    version = db.relationship('Version', back_populates='vulnerabilities')
+    execution = db.relationship('Execution', back_populates='vulnerabilities')
+
 
 
 ###########################################

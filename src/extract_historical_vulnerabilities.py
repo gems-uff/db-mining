@@ -91,7 +91,7 @@ def parse_heuristic_output(output, version, project, execution):
             if ":" in line and primeira_linha:
                 _, caminho_arquivo = line.split(":", 1) # usa 1 para evitar problemas se houver ":" no caminho
                 primeira_linha = False
-            if '<version>' in line:
+            if re.search(r'<\s*version\s*>', line):
                 pom_version = extract_version(line)
                 break
 
@@ -104,6 +104,45 @@ def parse_heuristic_output(output, version, project, execution):
         })
 
     return resultados
+
+def save_vulnerabilities(results_list):
+    status = {
+        'Saved': 0,
+        'Errors': 0
+    }
+    errors = []
+
+    for item in results_list:
+        try:
+            db.create(
+                db.VersionVulnerability,
+                versionNumber=item['versionNumber'],
+                file=item['file'],
+                version_id=item['version_id'],
+                execution_id=item['execution_id']
+            )
+            status['Saved'] += 1
+        except Exception as e:
+            status['Errors'] += 1
+            errors.append({
+                'item': item,
+                'error': str(e)
+            })
+
+    try:
+        db.commit()
+    except Exception as e:
+        print(red(f"\n Commit failed: {e}"))
+        return
+
+    print(f"\n Vulnerabilities saved: {status['Saved']}")
+    print(f"⚠️ Save errors: {status['Errors']}")
+
+    if errors:
+        print("🔍 Failed items:")
+        for err in errors:
+            print(f" - {err['item']} → {err['error']}")
+
 
 def process_projects(args):
     vulnerability_results = []
@@ -169,7 +208,7 @@ def process_projects(args):
                             commit=commit_sha,
                             label_type=args.label_type,
                             verbose=args.verbose)
-
+                        
                         #cria a execution no banco
                         execution = db.create(db.Execution, output=output,
                             version=version, heuristic=heuristic,
@@ -177,24 +216,22 @@ def process_projects(args):
 
                         status['Success'] += 1
                         print(green('ok.'))
-                        do_commit() 
-
-                        if output: #entra aqui se tem resultado
-                            vulnerability_results += parse_heuristic_output(output, version, project, execution)
-                           
+                        do_commit()         
                     except subprocess.TimeoutExpired:
                         print(red('Git timeout.'))
                         status['Git timeout'] += 1
                     except subprocess.CalledProcessError:
                         print(red('Git error.'))
                         status['Git error'] += 1
-
+                        
+                    if output: #entra aqui se tem resultado
+                            vulnerability_results += parse_heuristic_output(output, version, project, execution)
         except Exception as e:
             print(red(f'Unexpected error: {e}'))
             status['Git error'] += 1
-    new_list_vulnerabilidades = remove_duplicates(vulnerability_results)
-    print(new_list_vulnerabilidades)
-    #salvar aqui: new_list_vulnerabilidades
+        
+        cleaned_results = remove_duplicates(vulnerability_results)
+        save_vulnerabilities(cleaned_results)
     db.close()
 
 def main():
