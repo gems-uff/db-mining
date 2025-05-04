@@ -138,7 +138,11 @@ class VersionVulnerability(db.Model):
     version = db.relationship('Version', back_populates='vulnerabilities')
     execution = db.relationship('Execution', back_populates='vulnerabilities')
 
-
+class Packagepurl(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    pattern = db.Column(db.String)
+    label_id = db.Column(db.Integer, db.ForeignKey('label.id'))
+    label = db.relationship('Label')
 
 ###########################################
 # DATABASE CONNECT, COMMIT, CLOSE
