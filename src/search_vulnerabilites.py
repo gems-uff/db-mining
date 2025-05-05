@@ -235,13 +235,16 @@ def process_vulnerabilites(args, connect=True):
             if response.status_code == 200:
                 #precisa segmentar o retorno e salvar no banco em caso das vulnerabilitades serem retornadas
                 data = response.json()
-                vulns = extract_vulnerabilities(data)
-                if vulns:
-                    for v in vulns: #mudar aqui para salvar no banco e não só imprimir em tela.
-                        #parei aqui, precisa ter todos os campos do banco, assim está gerando um erro.
-                        db.create(db.Vulnerability, name={v.get('title')}, reference={v.get('id')}, description={v.get('description')}, version=executionVulnerability.versionNumber)
-                        print(green('ok.'))
-                        do_commit()
+                all_vulns_list = extract_vulnerabilities(data)
+                if all_vulns_list:
+                    for v in all_vulns_list: #mudar aqui para salvar no banco e não só imprimir em tela.
+                        vulnerabilidade_bd = db.query(db.Vulnerability).filter_by(label_id=label.id,reference=v.get('id')).first()
+                        if not vulnerabilidade_bd:
+                            db.create(db.Vulnerability, name=v.get('title'), reference=v.get('id'), description=v.get('description'), version=executionVulnerability.versionNumber, label_id=label.id)
+                            print(green('ok.'))
+                            do_commit()
+                        else:
+                            print(f"Vulnerabilidade {v.get('id')} já existe no banco.")
                 else:
                     print("Nenhuma vulnerabilidade encontrada.")
             else:
