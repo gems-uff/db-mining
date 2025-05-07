@@ -1,8 +1,6 @@
 import requests
 import os
-import subprocess
-import argparse
-import sys
+import time
 from timeit import default_timer as timer
 from email.utils import parsedate_to_datetime
 from datetime import timezone
@@ -14,7 +12,7 @@ import database as db
 from sqlalchemy.orm import load_only, selectinload
 from sqlalchemy import update, func
 from requests.auth import HTTPBasicAuth 
-from util import PACKAGEPURL, red, green, yellow, CODE_DEBUG
+from util import PACKAGEPURL, red, green, yellow
 from extract import populate_labels_fs, print_results, do_commit
 from typing import Union, List
 
@@ -29,12 +27,27 @@ API_URL = "https://ossindex.sonatype.org/api/v3/component-report"
 package_purl = "pkg:maven/org.postgresql/postgresql@42.6.0"
 payload = {"coordinates": [package_purl]}
 
-#Busco todos os package_purl da pasta, salvo no banco e atualizo os tipos.
-#Busto as package_purl no banco e 
-#Para cada package_purl, busco todas as versões encontradas, faço a filtragem delas, retirando as versões repetidas. 
-#busco cada uma das versões no ossindex
-#se a vulnerabilidade for reportada, salvo tal vulnerabilidade no banco. Se não for, não terá registro.
-#Depois, posso vincular a vulnerabilidade à histíria. 
+MAX_RETRIES = 5  # número máximo de tentativas para 429
+BACKOFF_BASE = 2  # tempo inicial de espera (segundos)
+
+    # Etapas principais da função process_vulnerabilites():
+    # 1. Conecta ao banco de dados.
+    # 2. Carrega todos os labels do tipo 'packagepurl' do sistema de arquivos e do banco.
+    # 3. Para cada label:
+    #    - Busca heurísticas associadas ao tipo 'packagepurl' e 'vulnerabilities'.
+    #    - Se houver heurísticas de vulnerabilidade:
+    #        - Obtém as versões únicas e válidas via get_unique_version_vulnerabilities().
+    # 4. Para cada versão encontrada:
+    #    - Constrói o payload no formato 'package_purl@version'.
+    #    - Realiza requisição POST autenticada à API do OSS Index.
+    #    - Se a resposta for 200:
+    #        - Extrai as vulnerabilidades do JSON retornado.
+    #        - Para cada vulnerabilidade:
+    #            - Verifica se já existe no banco (por label_id e reference).
+    #            - Se não existir, salva no banco com db.create() e faz commit.
+    #            - Se já existir, exibe uma mensagem informando que a vulnerabilidade já está registrada.
+    #    - Se a resposta for erro (ex: 429 ou 500), imprime o código e a mensagem de erro.
+
 
 
 def get_or_create_purl_labels(purl_dir=PACKAGEPURL, label_type=None, skip_remove=False):
@@ -171,17 +184,27 @@ def get_unique_version_vulnerabilities(heuristic_ids: Union[int, List[int]]):
 
 def build_ossindex_payload(base_purl: str, version: str) -> dict:
     """
-    Retorna o payload para a requisição ao OSS Index com o package PURL e versão fornecidos.
+    Retorna o payload para a requisição ao OSS Index com base em um ou mais package PURLs e uma versão.
 
     Parâmetros:
-        base_purl (str): Exemplo → "pkg:maven/org.postgresql/postgresql"
-        version (str): Exemplo → "42.6.0"
+        base_purl (str): Uma ou mais PURLs separadas por vírgula ou quebra de linha. Ex:
+                         "pkg:maven/org.mariadb.jdbc/mariadb-java-client@\npkg:maven/mysql/mysql-connector-java@"
+        version (str): Versão a ser usada. Ex: "8.0.33"
 
     Retorna:
-        dict: Exemplo → {"coordinates": ["pkg:maven/org.postgresql/postgresql@42.6.0"]}
+        dict: Payload com a chave "coordinates" contendo a lista completa de PURLs com versão.
     """
-    full_purl = f"{base_purl}{version}"
-    return {"coordinates": [full_purl]}
+    # Quebra a string em linhas ou vírgulas, remove espaços e ignora vazios
+    base_purls = [
+        purl.strip()
+        for purl in base_purl.replace(',', '\n').splitlines()
+        if purl.strip()
+    ]
+
+    # Concatena a versão em cada purl
+    coordinates = [f"{purl}{version}" for purl in base_purls]
+
+    return {"coordinates": coordinates}
 
 def extract_vulnerabilities(response_json):
     """
@@ -202,68 +225,87 @@ def extract_vulnerabilities(response_json):
 
     return all_vulns
 
-#realiza o processamento macro
-def process_vulnerabilites(args, connect=True):
+#realiza o processamento principal
+def process_vulnerabilites(args, connect=True): 
     if connect:
         db.connect()
     cwd = os.getcwd()
 
-    labels = get_or_create_purl_labels(
-    purl_dir=PACKAGEPURL,
-    label_type='packagepurl',
-    skip_remove=False)
+    #Busca todas as labels, do tipo packagepurl no BD. Aqui ainda não temos as 'heurísticas'. 
+    labels = get_or_create_purl_labels( purl_dir=PACKAGEPURL, label_type='packagepurl', skip_remove=False)
 
-    for i, label in enumerate(labels):
-        # Buscar heurísticas do tipo packagepurl
-        purl_heuristics = search_packgepurl_vulnerabilites(label, label_type='packagepurl')
-        print("Heurísticas tipo 'packagepurl':", purl_heuristics)
+    status = {
+        'Success': 0,
+        'Skipped': 0,
+        'No vulnerabilities': 0,
+        'Rate limit': 0,
+        'HTTP error': 0,
+        'Total requests': 0
+    }
 
-        vulnerability_heuristics = search_packgepurl_vulnerabilites(label, label_type='vulnerabilities')
-        print("Heurísticas tipo 'vulnerabilities':", vulnerability_heuristics)
+    for i, label in enumerate(labels): #em cada BD
+        #Busco as heurísticas dos BDs para serem buscadas na execution, passo a seguir. 
+        vulnerability_heuristics_bd = search_packgepurl_vulnerabilites(label, label_type='vulnerabilities')
 
-        if vulnerability_heuristics:
-            # executions_db = search_results_db(vulnerability_heuristics[0].id) #se usar esta precisa usa tmb este método depois: executions_db = filtrar_executions_unicos(executions_db)
-            #print("Resultados filtragem por método:", len(executions_db))
-            executions_db_query = get_unique_version_vulnerabilities(vulnerability_heuristics[0].id)
-            print("Filtragem query:", len(executions_db_query))
+        if vulnerability_heuristics_bd:
+            #Busca os registros de VersionVulnerability com versionNumber distintos e válidos associados às execuções de um ou mais heuristic_id(s)
+            executions_db_query = get_unique_version_vulnerabilities(vulnerability_heuristics_bd[0].id)
         else:
-            print("Nenhuma heurística de vulnerabilidade encontrada.")
+            print("No vulnerability-related heuristic was found.")
         for j, executionVulnerability in enumerate(executions_db_query):
-            #TODO Voltar aqui e corrigir o hitmilit da API
+            #Busca heurísticas do tipo Package URL. aqui de fato são as strings que são usadas na chamada da API (sempre retorna 1)
+            purl_heuristics = search_packgepurl_vulnerabilites(label, label_type='packagepurl')
             payload = build_ossindex_payload(purl_heuristics[0].pattern, executionVulnerability.versionNumber) 
-            response = requests.post(API_URL, json=payload, auth=HTTPBasicAuth(USERNAME, API_TOKEN))
-            if response.status_code == 200:
-                #precisa segmentar o retorno e salvar no banco em caso das vulnerabilitades serem retornadas
-                data = response.json()
-                all_vulns_list = extract_vulnerabilities(data)
-                if all_vulns_list:
-                    for v in all_vulns_list: #mudar aqui para salvar no banco e não só imprimir em tela.
-                        vulnerabilidade_bd = db.query(db.Vulnerability).filter_by(label_id=label.id,reference=v.get('id')).first()
-                        if not vulnerabilidade_bd:
-                            db.create(db.Vulnerability, name=v.get('title'), reference=v.get('id'), description=v.get('description'), version=executionVulnerability.versionNumber, label_id=label.id)
-                            print(green('ok.'))
-                            do_commit()
-                        else:
-                            print(f"Vulnerabilidade {v.get('id')} já existe no banco.")
+            for attempt in range(MAX_RETRIES):
+                response = requests.post(API_URL, json=payload, auth=HTTPBasicAuth(USERNAME, API_TOKEN))
+                status['Total requests'] += 1
+
+                if response.status_code == 200:
+                    data = response.json()
+                    all_vulns_list = extract_vulnerabilities(data)
+                    if all_vulns_list:
+                        for v in all_vulns_list:
+                            vulnerabilidade_bd = db.query(db.Vulnerability).filter_by(label_id=label.id, reference=v.get('id')).first()
+                            if not vulnerabilidade_bd:
+                                db.create(
+                                    db.Vulnerability,
+                                    name=v.get('title'),
+                                    reference=v.get('id'),
+                                    description=v.get('description'),
+                                    version=executionVulnerability.versionNumber,
+                                    label_id=label.id
+                                )
+                                print(green('ok.'))
+                                do_commit()
+                                status['Success'] += 1
+                            else:
+                                print(f"Vulnerability {v.get('id')} already exists in the database.")
+                                status['Skipped'] += 1
+                    else:
+                        print("No vulnerabilities was found.")
+                        status['No vulnerabilities'] += 1
+                        break  # validar se este brear está correto aqui.
+
+                elif response.status_code == 429:
+                    wait_time = BACKOFF_BASE ** attempt
+                    print(f"Rate limit reached (429). Waiting {wait_time} seconds before retrying...")
+                    time.sleep(wait_time)
+                    status['Rate limit'] += 1
                 else:
-                    print("Nenhuma vulnerabilidade encontrada.")
-            else:
-                print(f"Erro {response.status_code}: {response.text}")
+                    print(f"Erro {response.status_code}: {response.text}")
+                    status['HTTP error'] += 1
+                break  # para o loop se for outro tipo de erro
 
+    print("\nResumo de execução:")
+    for key, value in status.items():
+        print(f"{key}: {value}")
 
+    if connect:
+        db.close()
 
 def main():
     args = ('extract', 'Extract heuristics from repositories')
     process_vulnerabilites(args)
-    
-# Requisição autenticada
-    #response = requests.post(API_URL, json=payload, auth=HTTPBasicAuth(USERNAME, API_TOKEN))
-
-    # Exibir resposta
-    #if response.status_code == 200:
-    #    print(response.json())
-    #else:
-    #    print(f"Erro {response.status_code}: {response.text}")
 
 
 if __name__ == "__main__":
