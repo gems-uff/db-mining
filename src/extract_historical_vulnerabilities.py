@@ -72,11 +72,22 @@ def remove_duplicates(lista_vulnerabilidades):
     print(f"Total limpo: {len(cleaned_data)}")
     return cleaned_data
 
-def extract_version(linha):
+def extract_version_v1(linha):
     """Extrai a versão a partir de uma linha com a tag <version>."""
     pom_version = linha.strip().replace('<version>', '').replace('</version>', '')
     match = re.search(r'\b\d+(?:\.\d+){1,3}\b', pom_version)
-    return match.group() if match else None
+    if match:
+        return match.group().strip()
+    return  None
+
+def extract_version(line):
+    """
+    Extrai o conteúdo de uma linha com a tag <version>.
+    """
+    match = re.search(r'<\s*version\s*>(.*?)<\s*/\s*version\s*>', line)
+    if match:
+        return match.group(1).strip()
+    return None
 
 def parse_heuristic_output(output, version, project, execution):
     blocos = re.split(r'(?=\b[0-9a-f]{40}:[^\n]+)', output) # Regex para dividir pelos hashes de commit
@@ -95,15 +106,28 @@ def parse_heuristic_output(output, version, project, execution):
                 pom_version = extract_version(line)
                 break
 
-        resultados.append({
-            'versionNumber': pom_version,
-            'file': caminho_arquivo,
-            'version_id': version.id,
-            'project_id': project.id,
-            'execution_id': execution.id
-        })
+        version_vulnerability_bd = ( 
+                db.query(db.VersionVulnerability)
+                .join(db.Version, db.VersionVulnerability.version_id == db.Version.id)
+                .join(db.Execution, db.Execution.version_id == db.Version.id)
+                .filter(
+                    db.VersionVulnerability.versionNumber == pom_version,
+                    db.Version.project_id == project.id,
+                    db.Execution.heuristic_id == execution.heuristic_id,
+                    db.VersionVulnerability.file == caminho_arquivo).first())
 
-    return resultados
+        if not version_vulnerability_bd:
+            # Salva imediatamente no banco
+            db.create(
+                db.VersionVulnerability,
+                versionNumber=pom_version,
+                file=caminho_arquivo,
+                version_id=version.id,
+                execution_id=execution.id)
+                
+            do_commit()
+        else:
+            print(f"Version {pom_version} is already registered for project {project.name}.")
 
 def save_vulnerabilities(results_list):
     status = {
@@ -225,7 +249,7 @@ def process_projects(args):
                         status['Git error'] += 1
                         
                     if output: #entra aqui se tem resultado
-                            vulnerability_results += parse_heuristic_output(output, version, project, execution)
+                        parse_heuristic_output(output, version, project, execution)
         except Exception as e:
             print(red(f'Unexpected error: {e}'))
             status['Git error'] += 1
