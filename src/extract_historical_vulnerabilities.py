@@ -89,20 +89,28 @@ def extract_version(line):
         return match.group(1).strip()
     return None
 
-def parse_heuristic_output(output, version, project, execution):
-    blocos = re.split(r'(?=\b[0-9a-f]{40}:[^\n]+)', output) # Regex para dividir pelos hashes de commit
-    blocos = [bloco.strip() for bloco in blocos if bloco.strip()]
-    resultados = []
+def parse_heuristic_output(output, version, project, execution, label):
+    blocks = re.split(r'(?=\b[0-9a-f]{40}:[^\n]+)', output) # Regex para dividir pelos hashes de commit
+    blocks = [block.strip() for block in blocks if block.strip()]
 
-    for bloco in blocos:
+    pattern_artifact = re.compile(label.heuristic.pattern)
+
+    for block in blocks:
         pom_version = None
-        primeira_linha = True
+        first_line = True
+        db_found = False
         #o output é uma lista de retornos, preciso quebrar cada retorno e depois extrair as listas
-        for line in bloco.splitlines():
-            if ":" in line and primeira_linha:
-                _, caminho_arquivo = line.split(":", 1) # usa 1 para evitar problemas se houver ":" no caminho
-                primeira_linha = False
-            if re.search(r'<\s*version\s*>', line):
+        for line in block.splitlines():
+            if ":" in line and first_line:
+                _, file_path = line.split(":", 1) # usa 1 para evitar problemas se houver ":" no caminho
+                file_path = file_path.strip()
+                first_line = False
+
+            if pattern_artifact.search(line):
+                db_found = True
+                continue
+            
+            if db_found and re.search(r'<\s*version\s*>', line):
                 pom_version = extract_version(line)
                 break
 
@@ -114,14 +122,14 @@ def parse_heuristic_output(output, version, project, execution):
                     db.VersionVulnerability.versionNumber == pom_version,
                     db.Version.project_id == project.id,
                     db.Execution.heuristic_id == execution.heuristic_id,
-                    db.VersionVulnerability.file == caminho_arquivo).first())
+                    db.VersionVulnerability.file == file_path).first())
 
         if not version_vulnerability_bd:
             # Salva imediatamente no banco
             db.create(
                 db.VersionVulnerability,
                 versionNumber=pom_version,
-                file=caminho_arquivo,
+                file=file_path,
                 version_id=version.id,
                 execution_id=execution.id)
                 
@@ -249,7 +257,7 @@ def process_projects(args):
                         status['Git error'] += 1
                         
                     if output: #entra aqui se tem resultado
-                        parse_heuristic_output(output, version, project, execution)
+                        parse_heuristic_output(output, version, project, execution, label)
         except Exception as e:
             print(red(f'Unexpected error: {e}'))
             status['Git error'] += 1
