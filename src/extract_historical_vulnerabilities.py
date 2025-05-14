@@ -114,15 +114,15 @@ def parse_heuristic_output(output, version, project, execution, label):
                 pom_version = extract_version(line)
                 break
 
-        version_vulnerability_bd = ( 
-                db.query(db.VersionVulnerability)
-                .join(db.Version, db.VersionVulnerability.version_id == db.Version.id)
-                .join(db.Execution, db.Execution.version_id == db.Version.id)
-                .filter(
-                    db.VersionVulnerability.versionNumber == pom_version,
-                    db.Version.project_id == project.id,
-                    db.Execution.heuristic_id == execution.heuristic_id,
-                    db.VersionVulnerability.file == file_path).first())
+        version_vulnerability_bd = (
+            db.query(db.VersionVulnerability)
+            .join(db.Version, db.VersionVulnerability.version_id == db.Version.id)
+            .join(db.Execution, db.VersionVulnerability.execution_id == db.Execution.id)
+            .filter(
+                db.Version.project_id == project.id,
+                db.Execution.heuristic_id == execution.heuristic_id,
+                db.VersionVulnerability.versionNumber == pom_version,
+                db.VersionVulnerability.file == file_path).first())
 
         if not version_vulnerability_bd:
             # Salva imediatamente no banco
@@ -174,7 +174,6 @@ def save_vulnerabilities(results_list):
         print("🔍 Failed items:")
         for err in errors:
             print(f" - {err['item']} → {err['error']}")
-
 
 def process_projects(args):
     vulnerability_results = []
@@ -261,9 +260,7 @@ def process_projects(args):
         except Exception as e:
             print(red(f'Unexpected error: {e}'))
             status['Git error'] += 1
-        
-        cleaned_results = remove_duplicates(vulnerability_results)
-        save_vulnerabilities(cleaned_results)
+    
     db.close()
 
 def main():
