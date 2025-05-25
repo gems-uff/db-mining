@@ -1,0 +1,3 @@
+pkg:maven/org.apache.ignite/ignite-spring@
+pkg:maven/org.anyline/anyline-data-jdbc-ignite-thin@
+pkg:maven/org.apache.ignite/ignite-rest-http@

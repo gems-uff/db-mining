@@ -1,0 +1,1 @@
+pkg:maven/org.firebirdsql.jdbc/jaybird@
