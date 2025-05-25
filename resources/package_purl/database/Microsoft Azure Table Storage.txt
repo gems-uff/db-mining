@@ -1,0 +1,1 @@
+pkg:maven/com.azure/azure-data-tables@
