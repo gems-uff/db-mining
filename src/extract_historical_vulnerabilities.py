@@ -6,14 +6,13 @@ import re
 
 import database as db
 from extract import (
-    get_or_create_projects, index_executions, do_commit, print_results,
-    get_or_create_labels,
-    GREP_COMMAND, CHECKOUT_COMMAND, read_args, find_heuristic,
-    maybe_checkout, prepare_commits, prepare_version
+    get_or_create_projects, index_executions, do_commit,
+    get_or_create_labels, read_args, find_heuristic,
+    maybe_checkout, prepare_version
 )
 from util import REPOS_DIR, red, green, yellow, HEURISTICS_DIR_VULNERABILITIES
 
-GREP_COMMAND_LOG_COMMAND = [
+GREP_COMMAND_LOG_COMMAND_POM = [
     'git',
     'log',
     '-p',
@@ -22,9 +21,70 @@ GREP_COMMAND_LOG_COMMAND = [
     '**/pom.xml'
 ]
 
+GREP_COMMAND_LOG_COMMAND_GRADLE = [
+    'git',
+    'log',
+    '-p',
+    '--reverse',
+    '--',
+    '**/build.gradle'
+]
+
+GREP_COMMAND_LOG_COMMAND_GRADLE_KTS = [
+    'git', 'log', '-p', '--reverse', '--', '**/build.gradle.kts'
+]
+
+def list_relevant_commits():
+    """
+    Retorna uma lista única de commits (em ordem cronológica) que alteraram arquivos
+    pom.xml, build.gradle ou build.gradle.kts.
+    """
+    commands = [
+        GREP_COMMAND_LOG_COMMAND_POM,
+        GREP_COMMAND_LOG_COMMAND_GRADLE,
+        GREP_COMMAND_LOG_COMMAND_GRADLE_KTS
+    ]
+    
+    seen_shas = set()
+    commits = []
+
+    for cmd in commands:
+        try:
+            p = subprocess.run(cmd, capture_output=True)
+            output = p.stdout.decode(errors='replace').replace('\x00', '\uFFFD')
+            current_commit = None
+
+            for line in output.splitlines():
+                if line.startswith('commit '):
+                    if current_commit and current_commit['sha'] not in seen_shas:
+                        seen_shas.add(current_commit['sha'])
+                        commits.append(current_commit)
+                    current_commit = {'sha': line.split()[1]}
+                elif line.startswith('Date:') and current_commit is not None:
+                    date_str = line.replace('Date:', '').strip()
+                    try:
+                        commit_date = datetime.strptime(date_str, '%a %b %d %H:%M:%S %Y %z').date()
+                        current_commit['date'] = commit_date
+                    except ValueError:
+                        current_commit['date'] = None
+
+            if current_commit and current_commit['sha'] not in seen_shas:
+                seen_shas.add(current_commit['sha'])
+                commits.append(current_commit)
+
+        except subprocess.TimeoutExpired:
+            print(red(f' Git timeout during log with command: {" ".join(cmd)}'))
+        except subprocess.CalledProcessError:
+            print(red(f' Git error during log with command: {" ".join(cmd)}'))
+
+    # Ordenar cronologicamente
+    commits.sort(key=lambda c: c['date'] or datetime.min)
+
+    return commits
+
 def list_pom_commits():
     """Retorna a lista de commits que alteraram algum pom.xml (ordem cronológica)."""
-    cmd = GREP_COMMAND_LOG_COMMAND
+    cmd = GREP_COMMAND_LOG_COMMAND_POM
     try:
         p = subprocess.run(cmd, capture_output=True)
         output = p.stdout.decode(errors='replace').replace('\x00', '\uFFFD')
@@ -89,30 +149,48 @@ def extract_version(line):
         return match.group(1).strip()
     return None
 
+def remove_ansi_sequences(text):
+    """
+    Remove códigos de escape ANSI (cores, negrito etc.) de uma string.
+    """
+    ansi_escape = re.compile(r'\x1b\[[0-9;]*m')
+    return ansi_escape.sub('', text)
+
 def parse_heuristic_output(output, version, project, execution, label):
     blocks = re.split(r'(?=\b[0-9a-f]{40}:[^\n]+)', output) # Regex para dividir pelos hashes de commit
     blocks = [block.strip() for block in blocks if block.strip()]
 
-    pattern_artifact = re.compile(label.heuristic.pattern)
+    #pattern_artifact = re.compile(label.heuristic.pattern)
+    pattern_artifact = re.compile(r'(' + '|'.join(label.heuristic.pattern.splitlines()) + r')', re.IGNORECASE)
 
     for block in blocks:
         pom_version = None
         first_line = True
         db_found = False
+        file_path = None
         #o output é uma lista de retornos, preciso quebrar cada retorno e depois extrair as listas
         for line in block.splitlines():
+            clean_line = remove_ansi_sequences(line)
             if ":" in line and first_line:
                 _, file_path = line.split(":", 1) # usa 1 para evitar problemas se houver ":" no caminho
                 file_path = file_path.strip()
                 first_line = False
+                continue
 
-            if pattern_artifact.search(line):
+            if not file_path.endswith(('pom.xml', 'build.gradle', 'build.gradle.kts')):
+                print(f"Ignored file: {file_path}")
+                break
+
+            if not db_found and pattern_artifact.search(clean_line):
                 db_found = True
                 continue
             
-            if db_found and re.search(r'<\s*version\s*>', line):
-                pom_version = extract_version(line)
+            if db_found and re.search(r'<\s*version\s*>', clean_line):
+                pom_version = extract_version(clean_line)
                 break
+            
+        if not file_path or not file_path.endswith(('pom.xml', 'build.gradle', 'build.gradle.kts')):
+            continue
 
         version_vulnerability_bd = (
             db.query(db.VersionVulnerability)
@@ -213,7 +291,7 @@ def process_projects(args):
             continue
 
         try:
-            commits = list_pom_commits()
+            commits = list_relevant_commits()
             total_commit = len(commits)
             print(f"\nProcessing {total_commit} pom.xml commits of {project.name} project.")
             for commit_index, commit in enumerate(commits):
