@@ -1,0 +1,1 @@
+pkg:maven/org.webjars.npm/oracle@

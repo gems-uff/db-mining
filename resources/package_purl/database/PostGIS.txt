@@ -1,0 +1,1 @@
+pkg:maven/org.postgis/postgis-jdbc@
