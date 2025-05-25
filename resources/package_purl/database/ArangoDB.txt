@@ -1,1 +1,4 @@
 pkg:maven/com.arangodb/arangodb-java-driver@
+pkg:maven/com.arangodb/arangodb-java-driver-async@
+pkg:maven/com.arangodb/vst-protocol@
+pkg:maven/com.arangodb/velocypack-module-scala@

@@ -1,1 +1,2 @@
 pkg:maven/com.aerospike/aerospike-client@
+pkg:maven/com.aerospike/aerospike-client-bc@

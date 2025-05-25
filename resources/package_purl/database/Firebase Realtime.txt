@@ -1,1 +1,2 @@
 pkg:maven/com.dipien/firebase-database@
+pkg:maven/com.google.firebase/firebase-database@

@@ -1,1 +1,4 @@
 pkg:maven/org.apache.cassandra/cassandra@
+pkg:maven/org.apache.cassandra/cassandra-all@
+pkg:maven/org.apache.cassandra/java-driver-core@
+pkg:maven/org.apache.cassandra/cassandra-thrift@
