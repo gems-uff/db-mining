@@ -156,6 +156,17 @@ def remove_ansi_sequences(text):
     ansi_escape = re.compile(r'\x1b\[[0-9;]*m')
     return ansi_escape.sub('', text)
 
+def extract_gradle_version(line, pattern_artifact):
+    """
+    Extrai a versão de uma dependência em arquivos build.gradle ou build.gradle.kts.
+    Espera algo como: implementation 'group:artifact:version'
+    """
+    match = re.search(rf"{pattern_artifact.pattern}:[\'\"]?([^\s:\'\"\)]+)[\'\"]?", line)
+    if match:
+        return match.group(1).strip()
+    return None
+
+
 def parse_heuristic_output(output, version, project, execution, label):
     blocks = re.split(r'(?=\b[0-9a-f]{40}:[^\n]+)', output) # Regex para dividir pelos hashes de commit
     blocks = [block.strip() for block in blocks if block.strip()]
@@ -168,16 +179,18 @@ def parse_heuristic_output(output, version, project, execution, label):
         first_line = True
         db_found = False
         file_path = None
+        
         #o output é uma lista de retornos, preciso quebrar cada retorno e depois extrair as listas
         for line in block.splitlines():
             clean_line = remove_ansi_sequences(line)
+            
             if ":" in line and first_line:
                 _, file_path = line.split(":", 1) # usa 1 para evitar problemas se houver ":" no caminho
                 file_path = file_path.strip()
                 first_line = False
                 continue
 
-            if not file_path.endswith(('pom.xml', 'build.gradle', 'build.gradle.kts')):
+            if not file_path or not file_path.endswith(('pom.xml', 'build.gradle', 'build.gradle.kts')):
                 print(f"Ignored file: {file_path}")
                 break
 
@@ -185,9 +198,14 @@ def parse_heuristic_output(output, version, project, execution, label):
                 db_found = True
                 continue
             
-            if db_found and re.search(r'<\s*version\s*>', clean_line):
-                pom_version = extract_version(clean_line)
-                break
+            if db_found:
+                if file_path.endswith('pom.xml') and re.search(r'<\s*version\s*>', clean_line):
+                    pom_version = extract_version(clean_line)
+                    break
+                elif file_path.endswith(('build.gradle', 'build.gradle.kts')):
+                    pom_version = extract_gradle_version(clean_line, pattern_artifact)
+                    if pom_version:
+                        break
             
         if not file_path or not file_path.endswith(('pom.xml', 'build.gradle', 'build.gradle.kts')):
             continue
