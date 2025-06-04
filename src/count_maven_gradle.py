@@ -3,7 +3,7 @@ import csv
 import xml.etree.ElementTree as ET
 import pandas as pd
 from collections import defaultdict
-from util import REPOS_DIR, BUILD_TOOLS_REPORT, ANNOTATED_FILE_JAVA_TEST
+from util import REPOS_DIR, BUILD_TOOLS_REPORT, ANNOTATED_FILE_JAVA
 
 def is_multimodule_pom(pom_path):
     try:
@@ -67,7 +67,7 @@ def main():
         return
 
     print("Iniciando a análise dos projetos do annotated...")
-    project_tools = identify_build_tools_from_annotated(ANNOTATED_FILE_JAVA_TEST)
+    project_tools = identify_build_tools_from_annotated(ANNOTATED_FILE_JAVA)
     print("Análise concluída.")
 
     save_results_to_csv(project_tools, BUILD_TOOLS_REPORT)
