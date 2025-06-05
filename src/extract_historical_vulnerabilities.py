@@ -3,6 +3,8 @@ import subprocess
 from datetime import datetime
 from sqlalchemy.sql.expression import null
 import re
+import xml.etree.ElementTree as ET
+from io import StringIO
 
 import database as db
 from extract import (
@@ -166,6 +168,28 @@ def extract_gradle_version(line, pattern_artifact):
         return match.group(1).strip()
     return None
 
+def extract_version_from_pom_dom(xml_content, artifact_id_regex):
+    """
+    Extrai a versão usando DOM do XML. Espera uma string com o conteúdo de um pom.xml.
+    """
+    try:
+        tree = ET.parse(StringIO(xml_content))
+        root = tree.getroot()
+        ns = {'m': 'http://maven.apache.org/POM/4.0.0'}
+
+        for dep in root.findall(".//m:dependency", ns):
+            group_id = dep.find("m:groupId", ns)
+            artifact_id = dep.find("m:artifactId", ns)
+            version = dep.find("m:version", ns)
+
+            if group_id is not None and artifact_id is not None:
+                identifier = f"{group_id.text}:{artifact_id.text}"
+                if re.search(artifact_id_regex.pattern, identifier, re.IGNORECASE):
+                    return version.text if version is not None else None
+    except ET.ParseError:
+        pass  # ignore malformed xml
+
+    return None
 
 def parse_heuristic_output(output, version, project, execution, label):
     blocks = re.split(r'(?=\b[0-9a-f]{40}:[^\n]+)', output) # Regex para dividir pelos hashes de commit
@@ -198,14 +222,13 @@ def parse_heuristic_output(output, version, project, execution, label):
                 db_found = True
                 continue
             
-            if db_found:
-                if file_path.endswith('pom.xml') and re.search(r'<\s*version\s*>', clean_line):
-                    pom_version = extract_version(clean_line)
+            if db_found and file_path.endswith('pom.xml'):
+                    pom_version = extract_version_from_pom_dom(block, pattern_artifact)
                     break
-                elif file_path.endswith(('build.gradle', 'build.gradle.kts')):
-                    pom_version = extract_gradle_version(clean_line, pattern_artifact)
-                    if pom_version:
-                        break
+            elif file_path.endswith(('build.gradle', 'build.gradle.kts')):
+                pom_version = extract_gradle_version(clean_line, pattern_artifact)
+                if pom_version:
+                    break
             
         if not file_path or not file_path.endswith(('pom.xml', 'build.gradle', 'build.gradle.kts')):
             continue
