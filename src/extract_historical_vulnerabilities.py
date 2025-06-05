@@ -374,7 +374,7 @@ def process_projects(args):
                         print(red('Git error.'))
                         status['Git error'] += 1
                         
-                    if output: #entra aqui se tem resultado
+                    if output: #entra aqui se tem resultado teste
                         parse_heuristic_output(output, version, project, execution, label)
         except Exception as e:
             print(red(f'Unexpected error: {e}'))
