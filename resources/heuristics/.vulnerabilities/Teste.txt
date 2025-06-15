@@ -1,0 +1,54 @@
+| Banco                        | groupId                       | artifactId                                           |
+| ---------------------------- | ----------------------------- | ---------------------------------------------------- |
+| **Oracle**                   | com.oracle.database.jdbc      | ojdbc8 / ojdbc10 / ojdbc17 ([mvnrepository.com][1])  |
+| **MySQL / MariaDB**          | com.mysql                     | mysql-connector-j (ou antigo: mysql-connector-java)  |
+| **MS SQL Server**            | `com.microsoft.sqlserver`     | `mssql-jdbc` *(exemplo comum)*                       |
+| **PostgreSQL / CockroachDB** | org.postgresql                | postgresql                                           |
+| **IBM DB2**                  | com.ibm.db2                   | db2jcc / db2jcc4                                     |
+| **MS Access**                | net.ucanaccess                | ucanaccess                                           |
+| **SQLite**                   | org.xerial                    | sqlite-jdbc                                          |
+| **Snowflake**                | net.snowflake                 | snowflake-jdbc                                       |
+| **Teradata**                 | com.teradata.jdbc             | terajdbc                                             |
+| **SAP Hana**                 | com.sap.cloud.db.jdbc         | ngdbc                                                |
+| **FileMaker**                | org.openestate.io             | OpenEstate-IO-Filemaker                              |
+| **Firebird**                 | org.firebirdsql.jdbc          | jaybird                                              |
+| **Informix**                 | com.ibm.informix              | informix-jdbc-complete                               |
+| **Vertica**                  | com.vertica.jdbc              | vertica-jdbc                                         |
+| **Impala**                   | org.apache.hive Impala-driver | impala-jdbc                                          |
+| **ClickHouse**               | ru.yandex.clickhouse          | clickhouse-jdbc                                      |
+| **H2**                       | com.h2database                | h2                                                   |
+| **SingleStore**              | com.singlestore               | singlestore-jdbc-client                              |
+| **Ignite (JDBC)**            | org.apache.ignite             | ignite-spring / ignite-rest-http                     |
+| **Interbase**                | org.apache.hop                | hop-databases-interbase                              |
+| **Ingres**                   | com.ingres.jdbc               | iijdbc                                               |
+| **Virtuoso (SQL)**           | org.apache.clerezza           | virtuoso.jdbc                                        |
+| **SAP SQL Anywhere**         | io.ebean                      | ebean-platform-sqlanywhere                           |
+| **HyperSQL**                 | org.hsqldb                    | hsqldb                                               |
+
+[1]: https://mvnrepository.com/artifact/com.oracle.database.jdbc?utm_source=chatgpt.com "com.oracle.database.jdbc - Maven Repository"
+
+| Banco                      | groupId                          | artifactId                          |
+| -------------------------- | -------------------------------- | ----------------------------------- |
+| **MongoDB**                | org.mongodb                      | mongodb-driver                      |
+| **Redis**                  | com.lambdaworks                  | lettuce-core OR `jedis`             |
+| **Cassandra**              | org.apache.cassandra             | cassandra-driver-core               |
+| **DynamoDB**               | software.amazon.awssdk           | dynamodb                            |
+| **Neo4j**                  | org.neo4j                        | neo4j-java-driver                   |
+| **HBase**                  | org.apache.hbase                 | hbase-client                        |
+| **Azure CosmosDB**         | com.microsoft.azure.azure-cosmos | azure-cosmos                        |
+| **PostGIS**                | org.postgis                      | postgis-jdbc                        |
+| **Couchbase**              | com.couchbase.client             | couchbase-client                    |
+| **InfluxDB**               | com.influxdb                     | influxdb-client-java                |
+| **Firebase Realtime DB**   | com.google.firebase              | firebase-database                   |
+| **CouchDB**                | org.cloudhoist                   | couchdb                             |
+| **Etcd**                   | com.ibm.etcd                     | etcd-java                           |
+| **Hazelcast**              | com.hazelcast                    | hazelcast                           |
+| **MarkLogic**              | com.marklogic                    | marklogic-client-api                |
+| **Realm**                  | io.realm                         | realm-android-library-object-server |
+| **Kdb+**                   | dev.kdblib                       | kdb                                 |
+| **Google Cloud Firestore** | com.google.cloud                 | google-cloud-firestore              |
+| **Riak KV**                | com.basho.riak                   | riak-client                         |
+| **Azure Table Storage**    | com.azure                        | azure-data-tables                   |
+| **Aerospike**              | com.aerospike                    | aerospike-client                    |
+| **ArangoDB**               | com.arangodb                     | arangodb-java-driver                |
+| **Virtuoso (NoSQL)**       | org.testcontainers               | virtuoso                            |

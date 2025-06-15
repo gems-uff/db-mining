@@ -5,16 +5,20 @@ from sqlalchemy.sql.expression import null
 import re
 import xml.etree.ElementTree as ET
 from io import StringIO
-
 import database as db
-from extract import (
-    get_or_create_projects, index_executions, do_commit,
+from extract import (get_or_create_projects, index_executions, do_commit,
     get_or_create_labels, read_args, find_heuristic,
     maybe_checkout, prepare_version
 )
 from util import REPOS_DIR, red, green, yellow, HEURISTICS_DIR_VULNERABILITIES
 
-GREP_COMMAND_LOG_COMMAND_POM = [
+# 1 - Busca todos os commis relacionados à alterações no Pom.xml
+# 2 - Busca todos os arquivos de pom.xml presentes no projeto para a versão modificada.
+# 3 - Busca todos os BDs que vamos usar na coleta.
+# 4 - Para cada arquivo de pom buscar todos os BDs da listagem do item 3. Extraindo a versão de cada um deles. 
+
+
+GREP_COMMAND_LOG_COMMAND_POM = [ #revisado
     'git',
     'log',
     '-p',
@@ -23,68 +27,7 @@ GREP_COMMAND_LOG_COMMAND_POM = [
     '**/pom.xml'
 ]
 
-GREP_COMMAND_LOG_COMMAND_GRADLE = [
-    'git',
-    'log',
-    '-p',
-    '--reverse',
-    '--',
-    '**/build.gradle'
-]
-
-GREP_COMMAND_LOG_COMMAND_GRADLE_KTS = [
-    'git', 'log', '-p', '--reverse', '--', '**/build.gradle.kts'
-]
-
-def list_relevant_commits():
-    """
-    Retorna uma lista única de commits (em ordem cronológica) que alteraram arquivos
-    pom.xml, build.gradle ou build.gradle.kts.
-    """
-    commands = [
-        GREP_COMMAND_LOG_COMMAND_POM,
-        GREP_COMMAND_LOG_COMMAND_GRADLE,
-        GREP_COMMAND_LOG_COMMAND_GRADLE_KTS
-    ]
-    
-    seen_shas = set()
-    commits = []
-
-    for cmd in commands:
-        try:
-            p = subprocess.run(cmd, capture_output=True)
-            output = p.stdout.decode(errors='replace').replace('\x00', '\uFFFD')
-            current_commit = None
-
-            for line in output.splitlines():
-                if line.startswith('commit '):
-                    if current_commit and current_commit['sha'] not in seen_shas:
-                        seen_shas.add(current_commit['sha'])
-                        commits.append(current_commit)
-                    current_commit = {'sha': line.split()[1]}
-                elif line.startswith('Date:') and current_commit is not None:
-                    date_str = line.replace('Date:', '').strip()
-                    try:
-                        commit_date = datetime.strptime(date_str, '%a %b %d %H:%M:%S %Y %z').date()
-                        current_commit['date'] = commit_date
-                    except ValueError:
-                        current_commit['date'] = None
-
-            if current_commit and current_commit['sha'] not in seen_shas:
-                seen_shas.add(current_commit['sha'])
-                commits.append(current_commit)
-
-        except subprocess.TimeoutExpired:
-            print(red(f' Git timeout during log with command: {" ".join(cmd)}'))
-        except subprocess.CalledProcessError:
-            print(red(f' Git error during log with command: {" ".join(cmd)}'))
-
-    # Ordenar cronologicamente
-    commits.sort(key=lambda c: c['date'] or datetime.min)
-
-    return commits
-
-def list_pom_commits():
+def list_pom_commits():#revisado 
     """Retorna a lista de commits que alteraram algum pom.xml (ordem cronológica)."""
     cmd = GREP_COMMAND_LOG_COMMAND_POM
     try:
@@ -114,186 +57,40 @@ def list_pom_commits():
         print(red('Git error during log.'))
     return []
 
-def remove_duplicates(lista_vulnerabilidades):
-    """
-    Remove entradas duplicadas com base em ('file', 'versionNumber').
+def find_all_pom_files(project_path):#revisado
+    pom_files = []
+    for root, dirs, files in os.walk(project_path):
+        if 'pom.xml' in files:
+            pom_files.append(os.path.join(root, 'pom.xml'))
+    return pom_files
 
-    :param lista_vulnerabilidades: lista de dicionários com dados de vulnerabilidade
-    :return: lista com entradas únicas
-    """
-    unique_entries = set()
-    cleaned_data = []
-
-    for entry in lista_vulnerabilidades:
-        key = (entry['file'], entry['versionNumber'])
-        if key not in unique_entries:
-            unique_entries.add(key)
-            cleaned_data.append(entry)
-
-    print(f"Total original: {len(lista_vulnerabilidades)}")
-    print(f"Total limpo: {len(cleaned_data)}")
-    return cleaned_data
-
-def extract_version_v1(linha):
-    """Extrai a versão a partir de uma linha com a tag <version>."""
-    pom_version = linha.strip().replace('<version>', '').replace('</version>', '')
-    match = re.search(r'\b\d+(?:\.\d+){1,3}\b', pom_version)
-    if match:
-        return match.group().strip()
-    return  None
-
-def extract_version(line):
-    """
-    Extrai o conteúdo de uma linha com a tag <version>.
-    """
-    match = re.search(r'<\s*version\s*>(.*?)<\s*/\s*version\s*>', line)
-    if match:
-        return match.group(1).strip()
-    return None
-
-def remove_ansi_sequences(text):
-    """
-    Remove códigos de escape ANSI (cores, negrito etc.) de uma string.
-    """
-    ansi_escape = re.compile(r'\x1b\[[0-9;]*m')
-    return ansi_escape.sub('', text)
-
-def extract_gradle_version(line, pattern_artifact):
-    """
-    Extrai a versão de uma dependência em arquivos build.gradle ou build.gradle.kts.
-    Espera algo como: implementation 'group:artifact:version'
-    """
-    match = re.search(rf"{pattern_artifact.pattern}:[\'\"]?([^\s:\'\"\)]+)[\'\"]?", line)
-    if match:
-        return match.group(1).strip()
-    return None
-
-def extract_version_from_pom_dom(xml_content, artifact_id_regex):
-    """
-    Extrai a versão usando DOM do XML. Espera uma string com o conteúdo de um pom.xml.
-    """
+def extract_db_versions_from_pom(file_path, db_patterns): #revisado
+    """Extrai versões de bancos de dados do pom.xml dado."""
     try:
-        tree = ET.parse(StringIO(xml_content))
+        tree = ET.parse(file_path)
         root = tree.getroot()
         ns = {'m': 'http://maven.apache.org/POM/4.0.0'}
+        results = []
 
         for dep in root.findall(".//m:dependency", ns):
             group_id = dep.find("m:groupId", ns)
             artifact_id = dep.find("m:artifactId", ns)
             version = dep.find("m:version", ns)
-
             if group_id is not None and artifact_id is not None:
-                identifier = f"{group_id.text}:{artifact_id.text}"
-                if re.search(artifact_id_regex.pattern, identifier, re.IGNORECASE):
-                    return version.text if version is not None else None
-    except ET.ParseError:
-        pass  # ignore malformed xml
-
-    return None
-
-def parse_heuristic_output(output, version, project, execution, label):
-    blocks = re.split(r'(?=\b[0-9a-f]{40}:[^\n]+)', output) # Regex para dividir pelos hashes de commit
-    blocks = [block.strip() for block in blocks if block.strip()]
-
-    #pattern_artifact = re.compile(label.heuristic.pattern)
-    pattern_artifact = re.compile(r'(' + '|'.join(label.heuristic.pattern.splitlines()) + r')', re.IGNORECASE)
-
-    for block in blocks:
-        pom_version = None
-        first_line = True
-        db_found = False
-        file_path = None
-        
-        #o output é uma lista de retornos, preciso quebrar cada retorno e depois extrair as listas
-        for line in block.splitlines():
-            clean_line = remove_ansi_sequences(line)
-            
-            if ":" in line and first_line:
-                _, file_path = line.split(":", 1) # usa 1 para evitar problemas se houver ":" no caminho
-                file_path = file_path.strip()
-                first_line = False
-                continue
-
-            if not file_path or not file_path.endswith(('pom.xml', 'build.gradle', 'build.gradle.kts')):
-                print(f"Ignored file: {file_path}")
-                break
-
-            if not db_found and pattern_artifact.search(clean_line):
-                db_found = True
-                continue
-            
-            if db_found and file_path.endswith('pom.xml'):
-                    pom_version = extract_version_from_pom_dom(block, pattern_artifact)
-                    break
-            elif file_path.endswith(('build.gradle', 'build.gradle.kts')):
-                pom_version = extract_gradle_version(clean_line, pattern_artifact)
-                if pom_version:
-                    break
-            
-        if not file_path or not file_path.endswith(('pom.xml', 'build.gradle', 'build.gradle.kts')):
-            continue
-
-        version_vulnerability_bd = (
-            db.query(db.VersionVulnerability)
-            .join(db.Version, db.VersionVulnerability.version_id == db.Version.id)
-            .join(db.Execution, db.VersionVulnerability.execution_id == db.Execution.id)
-            .filter(
-                db.Version.project_id == project.id,
-                db.Execution.heuristic_id == execution.heuristic_id,
-                db.VersionVulnerability.versionNumber == pom_version,
-                db.VersionVulnerability.file == file_path).first())
-
-        if not version_vulnerability_bd:
-            # Salva imediatamente no banco
-            db.create(
-                db.VersionVulnerability,
-                versionNumber=pom_version,
-                file=file_path,
-                version_id=version.id,
-                execution_id=execution.id)
-                
-            do_commit()
-        else:
-            print(f"Version {pom_version} is already registered for project {project.name}.")
-
-def save_vulnerabilities(results_list):
-    status = {
-        'Saved': 0,
-        'Errors': 0
-    }
-    errors = []
-
-    for item in results_list:
-        try:
-            db.create(
-                db.VersionVulnerability,
-                versionNumber=item['versionNumber'],
-                file=item['file'],
-                version_id=item['version_id'],
-                execution_id=item['execution_id']
-            )
-            status['Saved'] += 1
-        except Exception as e:
-            status['Errors'] += 1
-            errors.append({
-                'item': item,
-                'error': str(e)
-            })
-
-    try:
-        db.commit()
+                ga = f"{group_id.text}:{artifact_id.text}"
+                for pattern in db_patterns:
+                    if re.search(pattern, ga, re.IGNORECASE):
+                        results.append({
+                            'file': file_path,
+                            'group_artifact': ga,
+                            'version': version.text if version is not None else 'undefined'
+                        })
+        return results
     except Exception as e:
-        print(red(f"\n Commit failed: {e}"))
-        return
+        print(yellow(f"Erro ao processar {file_path}: {e}"))
+        return []
 
-    print(f"\n Vulnerabilities saved: {status['Saved']}")
-    print(f"⚠️ Save errors: {status['Errors']}")
-
-    if errors:
-        print("🔍 Failed items:")
-        for err in errors:
-            print(f" - {err['item']} → {err['error']}")
-
+#parei aqui, preciso avaliar o resto do código. 
 def process_projects(args):
     vulnerability_results = []
     db.connect()
@@ -315,7 +112,7 @@ def process_projects(args):
         skip_remove=args.skip_remove
     )
 
-    labels = get_or_create_labels(
+    labels = get_or_create_labels( #preciso mudar aqui para aceitar o novo item, mapeando o GroupID e ArtifactID 
         heuristics_dir=args.heuristics,
         label_type=args.label_type,
         skip_remove=args.skip_remove
@@ -323,6 +120,7 @@ def process_projects(args):
 
     executions = index_executions(labels)
     print(f"\nProcessing {len(labels)} heuristics over {len(projects)} projects commits.")
+    
     for project in projects:
         try:
             os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
@@ -332,7 +130,7 @@ def process_projects(args):
             continue
 
         try:
-            commits = list_relevant_commits()
+            commits = list_pom_commits()
             total_commit = len(commits)
             print(f"\nProcessing {total_commit} pom.xml commits of {project.name} project.")
             for commit_index, commit in enumerate(commits):
@@ -344,7 +142,20 @@ def process_projects(args):
                     commit_index + 1,
                     commit_date, commits[-1]['sha'] if commits else None)
 
-                for label in labels:
+                poms = find_all_pom_files()
+                for pom in poms:
+                    versions = extract_db_versions_from_pom(pom, labels)
+                    for entry in versions:
+                        db.create(db.VersionVulnerability,
+                              versionNumber=entry['version'],
+                              file=entry['file'],
+                              version_id=version.id,
+                              execution_id=None)
+                        print(green(f"{entry['group_artifact']} {entry['version']} → salvo."))
+
+                db.do_commit()
+
+            """  for label in labels:
                     heuristic = label.heuristic
                     execution = executions.get((heuristic, version), None)
                     if execution:
@@ -359,7 +170,7 @@ def process_projects(args):
                             label_type=args.label_type,
                             verbose=args.verbose)
                         
-                        #cria a execution no banco
+                        #cria a execution no banco - isso pode sair.
                         execution = db.create(db.Execution, output=output,
                             version=version, heuristic=heuristic,
                             isValidated=False, isAccepted=False)
@@ -375,7 +186,7 @@ def process_projects(args):
                         status['Git error'] += 1
                         
                     if output: #entra aqui se tem resultado teste
-                        parse_heuristic_output(output, version, project, execution, label)
+                        parse_heuristic_output(output, version, project, execution, label) """
         except Exception as e:
             print(red(f'Unexpected error: {e}'))
             status['Git error'] += 1
