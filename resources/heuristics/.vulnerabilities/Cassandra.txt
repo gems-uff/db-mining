@@ -1,1 +1,1 @@
-<\s*artifactId\s*>\s*cassandra
+org.apache.cassandra:cassandra-driver-core

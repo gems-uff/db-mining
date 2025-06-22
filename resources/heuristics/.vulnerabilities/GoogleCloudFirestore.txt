@@ -1,1 +1,1 @@
-<\s*artifactId\s*>\s*google-cloud-firestore
+com.google.cloud:google-cloud-firestore  

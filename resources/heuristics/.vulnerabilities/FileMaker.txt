@@ -1,1 +1,2 @@
-com\.filemaker\.jdbc\.Driver
+org.openestate.io:com.filemaker.jdbc.Driver
+org.openestate.io:OpenEstate-IO-Filemaker 

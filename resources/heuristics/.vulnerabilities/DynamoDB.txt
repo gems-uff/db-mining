@@ -1,1 +1,1 @@
-<\s*artifactId\s*dynamodb
+software.amazon.awssdk:dynamodb

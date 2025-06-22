@@ -57,42 +57,64 @@ def list_pom_commits():#revisado
         print(red('Git error during log.'))
     return []
 
-def find_all_pom_files(project_path):#revisado
-    pom_files = []
-    for root, dirs, files in os.walk(project_path):
-        if 'pom.xml' in files:
-            pom_files.append(os.path.join(root, 'pom.xml'))
-    return pom_files
 
-def extract_db_versions_from_pom(file_path, db_patterns): #revisado
-    """Extrai versões de bancos de dados do pom.xml dado."""
+def find_all_pom_files(project):
+    """ Retorna todos os arquivos pom.xml presentes na estrutura do projeto no estado 
+    atual do repositório (após o checkout já realizado externamente). """
+    project_path = os.path.join(REPOS_DIR, project.owner, project.name)
+    try:
+        # Garante que estamos no diretório correto do repositório
+        os.chdir(project_path)
+
+        pom_files = []
+        for root, dirs, files in os.walk('.'):
+            if 'pom.xml' in files:
+                full_path = os.path.abspath(os.path.join(root, 'pom.xml'))
+                pom_files.append(full_path)
+
+        return pom_files
+    except Exception as e:
+        print(f"Erro ao buscar arquivos pom.xml no diretório '{project_path}': {e}")
+        return []
+
+
+def extract_db_versions_from_pom(file_path, label):
+    """
+    Extrai versões de bancos de dados do pom.xml dado, com base em múltiplas linhas de padrões.
+    """
     try:
         tree = ET.parse(file_path)
         root = tree.getroot()
         ns = {'m': 'http://maven.apache.org/POM/4.0.0'}
         results = []
 
+        # Compila a regex a partir de múltiplas linhas do padrão
+        raw_pattern = label.heuristic.pattern.strip()
+        pattern_lines = [line.strip() for line in raw_pattern.splitlines() if line.strip()]
+        combined_pattern = r'(' + '|'.join(pattern_lines) + r')'
+        regex = re.compile(combined_pattern, re.IGNORECASE)
+
         for dep in root.findall(".//m:dependency", ns):
             group_id = dep.find("m:groupId", ns)
             artifact_id = dep.find("m:artifactId", ns)
             version = dep.find("m:version", ns)
+
             if group_id is not None and artifact_id is not None:
                 ga = f"{group_id.text}:{artifact_id.text}"
-                for pattern in db_patterns:
-                    if re.search(pattern, ga, re.IGNORECASE):
-                        results.append({
-                            'file': file_path,
-                            'group_artifact': ga,
-                            'version': version.text if version is not None else 'undefined'
-                        })
+                if regex.search(ga):
+                    results.append({
+                        'file': file_path,
+                        'group_artifact': ga,
+                        'version': version.text if version is not None else 'undefined'
+                    })
         return results
     except Exception as e:
         print(yellow(f"Erro ao processar {file_path}: {e}"))
         return []
 
+
 #parei aqui, preciso avaliar o resto do código. 
 def process_projects(args):
-    vulnerability_results = []
     db.connect()
     status = {
         'Success': 0,
@@ -112,18 +134,18 @@ def process_projects(args):
         skip_remove=args.skip_remove
     )
 
-    labels = get_or_create_labels( #preciso mudar aqui para aceitar o novo item, mapeando o GroupID e ArtifactID 
+    labels = get_or_create_labels( #cria as labels já com groupId e artifactId 
         heuristics_dir=args.heuristics,
         label_type=args.label_type,
         skip_remove=args.skip_remove
     )
 
-    executions = index_executions(labels)
     print(f"\nProcessing {len(labels)} heuristics over {len(projects)} projects commits.")
     
     for project in projects:
         try:
             os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
+            last_versions = {}
         except NotADirectoryError:
             print(red('Repository not found.'))
             status['Repository not found'] += 1
@@ -136,57 +158,55 @@ def process_projects(args):
             for commit_index, commit in enumerate(commits):
                 commit_sha = commit['sha']
                 commit_date = commit.get('date')
-                head_sha1 = maybe_checkout(args, commit_sha, None)
+                head_sha1 = maybe_checkout(args, commit_sha, None) #muda de commit
                 version, is_new = prepare_version(
                     project, commit_sha, total_commit,
                     commit_index + 1,
                     commit_date, commits[-1]['sha'] if commits else None)
 
-                poms = find_all_pom_files()
-                for pom in poms:
-                    versions = extract_db_versions_from_pom(pom, labels)
-                    for entry in versions:
-                        db.create(db.VersionVulnerability,
-                              versionNumber=entry['version'],
-                              file=entry['file'],
-                              version_id=version.id,
-                              execution_id=None)
-                        print(green(f"{entry['group_artifact']} {entry['version']} → salvo."))
+                poms = find_all_pom_files(project) #aqui retorna todos os arquivos para o commit específico
+                if poms:
+                    for pom in poms:
+                        for label in labels: #buscar no pom a label e retornar a version, validando se a versão salva é a mesma da anterior.
+                            heuristic = label.heuristic
+                            #results = null
+                            results = extract_db_versions_from_pom(pom, label)
+                            for result in results:
+                                key = (result['file'], label.id)
+                                new_version = result['version']
 
-                db.do_commit()
+                                if key not in last_versions or last_versions[key] != new_version:
+                                    try:
+                                        output = find_heuristic(
+                                            project, label, args.heuristics,
+                                            commit=commit_sha,
+                                            label_type=args.label_type,
+                                            verbose=args.verbose)
 
-            """  for label in labels:
-                    heuristic = label.heuristic
-                    execution = executions.get((heuristic, version), None)
-                    if execution:
-                        print(yellow('already done.'))
-                        status['Skipped'] += 1
-                        continue
+                                        execution = db.create(db.Execution, output=output,
+                                            version=version, heuristic=label.heuristic,
+                                            isValidated=False, isAccepted=False)
+                                        do_commit()
 
-                    try:
-                        output = find_heuristic(
-                            project, label, args.heuristics,
-                            commit=commit_sha,
-                            label_type=args.label_type,
-                            verbose=args.verbose)
-                        
-                        #cria a execution no banco - isso pode sair.
-                        execution = db.create(db.Execution, output=output,
-                            version=version, heuristic=heuristic,
-                            isValidated=False, isAccepted=False)
+                                        version_vulnerability = db.create(db.VersionVulnerability,
+                                            versionNumber=new_version,
+                                            file=result['file'],
+                                            version_id=version.id,
+                                            execution_id=execution.id)
 
-                        status['Success'] += 1
-                        print(green('ok.'))
-                        do_commit()         
-                    except subprocess.TimeoutExpired:
-                        print(red('Git timeout.'))
-                        status['Git timeout'] += 1
-                    except subprocess.CalledProcessError:
-                        print(red('Git error.'))
-                        status['Git error'] += 1
-                        
-                    if output: #entra aqui se tem resultado teste
-                        parse_heuristic_output(output, version, project, execution, label) """
+                                        last_versions[key] = new_version  # atualiza o cache
+                                        status['Success'] += 1
+                                        print(green('ok.'))
+                                        do_commit()
+                                    except subprocess.TimeoutExpired:
+                                        print(red('Git timeout.'))
+                                        status['Git timeout'] += 1
+                                    except subprocess.CalledProcessError:
+                                        print(red('Git error.'))
+                                        status['Git error'] += 1
+                                else:
+                                    status['Iguais'] += 1
+                                    #print(yellow(f"Versão '{new_version}' já registrada anteriormente para {result['file']} — ignorado."))
         except Exception as e:
             print(red(f'Unexpected error: {e}'))
             status['Git error'] += 1

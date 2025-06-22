@@ -1,2 +1,2 @@
-<\s*artifactId\s*>\s*jaybird
-<\s*artifactId\s*>\s*fbclient
+org.firebirdsql.jdbc:fbclient
+org.firebirdsql.jdbc:jaybird

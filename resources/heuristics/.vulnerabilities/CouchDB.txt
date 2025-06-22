@@ -1,1 +1,2 @@
-<\s*artifactId\s*>\s*org\.ektorp
+org.cloudhoist:org.ektorp
+org.cloudhoist:couchdb

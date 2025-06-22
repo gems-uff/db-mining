@@ -1,1 +1,1 @@
-<\s*artifactId\s*>\s*h2
+com.h2database:h2 

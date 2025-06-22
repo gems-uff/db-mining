@@ -1,1 +1,1 @@
-firebase-database
+com.google.firebase:firebase-database

@@ -1,1 +1,1 @@
-<\s*artifactId\s*>\s*aerospike-client
+com.aerospike:aerospike-client
