@@ -1,1 +1,2 @@
-<\s*artifactId\s*>\s*ImpalaJDBC
+org.apache.hive:impala-jdbc
+impala-driver:impala-jdbc

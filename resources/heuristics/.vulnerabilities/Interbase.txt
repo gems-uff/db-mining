@@ -1,1 +1,2 @@
 <\s*artifactId\s*>\s*interclient
+org.apache.hop:hop-databases-interbase

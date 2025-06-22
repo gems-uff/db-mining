@@ -1,3 +1,2 @@
-org\.mongodb
-mongodb-driver
-mongodb-java-driver
+org.mongodb:mongodb-java-driver
+org.mongodb:mongodb-driver

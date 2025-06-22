@@ -1,1 +1,1 @@
-(com\.ibm\.informix\.+)\n(\s*<artifactId\s*>\s*jdbc)
+com.ibm.informix:informix-jdbc-complete

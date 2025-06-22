@@ -1,2 +1,0 @@
-org\.apache\.ignite\.IgniteJdbcThinDriver
-jdbc:ignite:thin

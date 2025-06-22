@@ -1,1 +1,2 @@
-<\s*artifactId\s*>hbase
+org.apache.hbase:hbase-client
+org.apache.hbase:hbase

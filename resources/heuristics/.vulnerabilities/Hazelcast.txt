@@ -1,1 +1,1 @@
-<*\sartifactId*\s>*\shazelcast
+com.hazelcast:hazelcast

@@ -1,1 +1,2 @@
-<\s*artifactId\s*>\s*ignite
+org.apache.ignite:ignite-spring
+org.apache.ignite:ignite-rest-http

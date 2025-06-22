@@ -1,1 +1,1 @@
-<\s*artifactId\s*>\s*influxdb-client-java
+com.influxdb:influxdb-client-java
