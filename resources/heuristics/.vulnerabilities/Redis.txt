@@ -1,2 +1,2 @@
-<\s*artifactId\s*>\s*lettuce
-<\s*artifactId\s*>\s*jedis
+com.lambdaworks:lettuce-core 
+com.lambdaworks:jedis 

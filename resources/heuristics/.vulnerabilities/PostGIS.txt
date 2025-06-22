@@ -1,1 +1,1 @@
-<\s*artifactId\s*>\s*postgis-jdbc
+org.postgis:postgis-jdbc

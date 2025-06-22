@@ -1,1 +1,2 @@
 gt-jdbc-teradata
+com.teradata.jdbc:terajdbc

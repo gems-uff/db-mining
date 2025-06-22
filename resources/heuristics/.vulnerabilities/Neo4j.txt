@@ -1,1 +1,1 @@
-<\s*artifactId\s*>\s*neo4j
+org.neo4j:neo4j-java-driver

@@ -1,1 +1,1 @@
-<*\sartifactId*\s>*\ssnowflake-jdbc
+net.snowflake:snowflake-jdbc

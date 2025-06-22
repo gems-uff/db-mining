@@ -1,3 +1,4 @@
 <\s*artifactId\s*>\s*sqlanywhere
 <\s*artifactId\s*>\s*ianywhere
 <\s*artifactId\s*>\s*sajdbc
+io.ebean:ebean-platform-sqlanywhere

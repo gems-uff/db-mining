@@ -1,1 +1,1 @@
-jdbc:virtuoso
+org.apache.clerezza:virtuoso.jdbc

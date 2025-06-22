@@ -1,1 +1,1 @@
-<\s*artifactId\s*>riak-client
+com.basho.riak:riak-client

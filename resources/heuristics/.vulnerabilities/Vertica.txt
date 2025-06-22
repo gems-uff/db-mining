@@ -1,1 +1,1 @@
-<\s*artifactId\s*>\s*vertica-jdbc
+com.vertica.jdbc:vertica-jdbc
