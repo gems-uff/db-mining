@@ -1,2 +1,4 @@
-org.openestate.io:com.filemaker.jdbc.Driver
-org.openestate.io:OpenEstate-IO-Filemaker 
+com\.filemaker:jdbc
+org\.filemaker:filemaker-client
+com\.filemaker:xml-api-client
+org\.openestate\.io:OpenEstate-IO-Filemaker

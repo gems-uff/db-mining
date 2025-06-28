@@ -1,1 +1,3 @@
-com.google.cloud:google-cloud-firestore  
+com\.google\.cloud:google-cloud-firestore
+com\.google\.cloud:spring-cloud-gcp-starter-firestore
+com\.google\.apis:google-api-services-firestore

@@ -1,3 +1,6 @@
-ru.yandex.clickhouse:clickhouse-jdbc
-ru.yandex.clickhouse:clickhouse-native-jdbc
-ru.yandex.clickhouse:clickhouse4j
+ru\.yandex\.clickhouse:clickhouse-jdbc
+com\.clickhouse:clickhouse-jdbc
+com\.clickhouse:clickhouse-client
+com\.clickhouse:clickhouse-http-client
+com\.clickhouse:clickhouse-grpc-client
+com\.github\.housepower:clickhouse-native-jdbc

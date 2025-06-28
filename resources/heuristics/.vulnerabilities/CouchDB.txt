@@ -1,2 +1,4 @@
-org.cloudhoist:org.ektorp
-org.cloudhoist:couchdb
+org\.ektorp:org\.ektorp
+org\.lightcouch:lightcouch
+org\.jcouchdb:jcouchdb
+com\.cloudant:cloudant-client

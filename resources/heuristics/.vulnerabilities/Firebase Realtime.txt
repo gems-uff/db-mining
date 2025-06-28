@@ -1,1 +1,4 @@
-com.google.firebase:firebase-database
+com\.google\.firebase:firebase-admin
+com\.google\.cloud:google-cloud-firestore
+com\.google\.firebase:firebase-database
+com\.google\.firebase:firebase-firestore

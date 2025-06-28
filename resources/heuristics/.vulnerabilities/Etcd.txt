@@ -1,2 +1,2 @@
-com.ibm.etcd:etcd-java
-com.ibm.etcd:jetcd-core
+io\.etcd:jetcd
+com\.ibm\.etcd:etcd-java

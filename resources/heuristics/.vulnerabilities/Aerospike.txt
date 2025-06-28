@@ -1,1 +1,3 @@
-com.aerospike:aerospike-client
+com\.aerospike:aerospike-client
+org\.springframework\.data:spring-data-aerospike
+com\.github\.aerospike:aerospike-helper

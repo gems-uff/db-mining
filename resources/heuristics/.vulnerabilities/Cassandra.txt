@@ -1,1 +1,2 @@
-org.apache.cassandra:cassandra-driver-core
+com\.datastax\.oss:.*cassandra.*
+org\.apache\.cassandra:.* 

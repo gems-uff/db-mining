@@ -1,2 +1,2 @@
-org.firebirdsql.jdbc:fbclient
-org.firebirdsql.jdbc:jaybird
+org\.firebirdsql\.jdbc:fbclient
+org\.firebirdsql\.jdbc:jaybird

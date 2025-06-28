@@ -1,1 +1,1 @@
-com.arangodb :arangodb-java-driver
+com\.arangodb:arangodb-*
