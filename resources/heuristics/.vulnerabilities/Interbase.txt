@@ -1,2 +1,3 @@
-<\s*artifactId\s*>\s*interclient
-org.apache.hop:hop-databases-interbase
+com\.embarcadero:interclient
+com\.embarcadero:interbase-jdbc
+com\.codegear:interbase-jdbc

@@ -1,1 +1,2 @@
-com.influxdb:influxdb-client-java
+com\.influxdb:influxdb.*
+org\.influxdb:influxdb-java

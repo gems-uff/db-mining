@@ -1,1 +1,3 @@
-com.ibm.informix:informix-jdbc-complete
+com\.ibm\.informix:jdbc
+com\.ibm\.informix:informix-jdbc
+com\.informix:jdbc

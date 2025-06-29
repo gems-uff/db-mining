@@ -1,2 +1,2 @@
-org.apache.hive:impala-jdbc
-impala-driver:impala-jdbc
+com\.cloudera\.impala:jdbc
+com\.cloudera\.impala:ClouderaImpalaJDBC
