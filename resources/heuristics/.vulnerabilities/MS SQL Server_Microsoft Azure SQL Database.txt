@@ -1,2 +1,2 @@
-<\s*artifactId\s*>\s*spring-cloud-azure-dependencies
-com.microsoft.sqlserver:mssql-jdbc
+com\.microsoft\.sqlserver:mssql-jdbc
+com\.microsoft:sqljdbc.*

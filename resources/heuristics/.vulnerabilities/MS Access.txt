@@ -1,1 +1,1 @@
-net.ucanaccess:ucanaccess
+net\.sf\.ucanaccess:ucanaccess

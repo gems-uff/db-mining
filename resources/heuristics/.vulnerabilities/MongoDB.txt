@@ -1,2 +1,3 @@
-org.mongodb:mongodb-java-driver
-org.mongodb:mongodb-driver
+org\.mongodb:mongodb-driver.*
+org\.springframework\.boot:spring-boot-starter-data-mongodb
+org\.springframework\.data:spring-data-mongodb

@@ -1,1 +1,2 @@
-com.microsoft.azure.azure-cosmos:azure-cosmos
+com\.azure:azure-cosmos
+com\.microsoft\.azure:azure-cosmosdb.*
