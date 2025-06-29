@@ -1,1 +1,1 @@
-org.xerial:sqlite-jdbc
+org\.xerial:sqlite-jdbc

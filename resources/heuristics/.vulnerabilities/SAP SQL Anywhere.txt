@@ -1,4 +1,3 @@
-<\s*artifactId\s*>\s*sqlanywhere
-<\s*artifactId\s*>\s*ianywhere
-<\s*artifactId\s*>\s*sajdbc
-io.ebean:ebean-platform-sqlanywhere
+com\.sap\.sqlanywhere:sajdbc4
+com\.sybase:sajdbc
+ianywhere:sajdbc

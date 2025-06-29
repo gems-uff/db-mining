@@ -1,3 +1,2 @@
-org.postgresql.Driver
-com.cockroachlabs
-org.postgresql:postgresql
+org\.postgresql:postgresql
+com\.cockroachlabs:.*

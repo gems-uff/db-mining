@@ -1,2 +1,1 @@
-<\s*artifactId\s*>\s*cdata-singlestore-connector
-com.singlestore:singlestore-jdbc-client
+com\.singlestore:singlestore-jdbc-client

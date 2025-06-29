@@ -1,1 +1,3 @@
-com.sap.cloud.db.jdbc:ngdbc
+com\.sap\.cloud\.db\.jdbc:ngdbc
+com\.sap\.hana:ngdbc
+com\.sap:hana-jdbc

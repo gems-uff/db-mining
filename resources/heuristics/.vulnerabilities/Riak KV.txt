@@ -1,1 +1,1 @@
-com.basho.riak:riak-client
+com\.basho\.riak:riak.*

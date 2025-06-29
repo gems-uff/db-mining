@@ -1,1 +1,3 @@
-com.vertica.jdbc:vertica-jdbc
+com\.vertica\.jdbc:vertica-jdbc
+com\.vertica:vertica.*
+com\.hp\.vertica:vertica-jdbc

@@ -1,2 +1,4 @@
-<\s*artifactId\s*>\s*jconn
-<\s*artifactId\s*>\s*sybase-ase
+com\.sybase:jconn4
+com\.sap\.ase:jconnect
+com\.sap\.jdbc:jconn
+sybase:jconn3
