@@ -1,1 +1,2 @@
-com.hazelcast:hazelcast
+com\.hazelcast:hazelcast.*
+com\.hazelcast\.jet:hazelcast-jet

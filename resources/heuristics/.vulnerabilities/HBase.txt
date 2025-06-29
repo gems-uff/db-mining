@@ -1,2 +1,2 @@
-org.apache.hbase:hbase-client
-org.apache.hbase:hbase
+org\.apache\.hbase:hbase.*
+org\.springframework\.data:spring-data-hadoop
