@@ -80,7 +80,7 @@ def find_all_pom_files(project):
 
 def extract_db_versions_from_pom(file_path, label):
     """
-    Extrai versões de bancos de dados do pom.xml dado, com base em múltiplas linhas de padrões.
+    Extrai versões de bancos de dados do pom.xml, resolvendo variáveis do tipo ${...}.
     """
     try:
         tree = ET.parse(file_path)
@@ -88,12 +88,25 @@ def extract_db_versions_from_pom(file_path, label):
         ns = {'m': 'http://maven.apache.org/POM/4.0.0'}
         results = []
 
-        # Compila a regex a partir de múltiplas linhas do padrão
+        # 1. Carrega propriedades definidas no <properties>
+        properties = {}
+        properties_node = root.find('m:properties', ns)
+        if properties_node is not None:
+            for prop in properties_node:
+                tag = prop.tag.split('}')[-1]  # remove namespace
+                properties[tag] = prop.text.strip() if prop.text else ''
+
+        # 2. Regex de correspondência com groupId:artifactId
         raw_pattern = label.heuristic.pattern.strip()
         pattern_lines = [line.strip() for line in raw_pattern.splitlines() if line.strip()]
         combined_pattern = r'(' + '|'.join(pattern_lines) + r')'
-        regex = re.compile(combined_pattern, re.IGNORECASE)
+        try:
+            regex = re.compile(combined_pattern, re.IGNORECASE)
+        except re.error as regex_err:
+            print(yellow(f"Regex inválido na heurística '{label.name}': {regex_err}"))
+            return []
 
+        # 3. Itera sobre as dependências
         for dep in root.findall(".//m:dependency", ns):
             group_id = dep.find("m:groupId", ns)
             artifact_id = dep.find("m:artifactId", ns)
@@ -102,10 +115,17 @@ def extract_db_versions_from_pom(file_path, label):
             if group_id is not None and artifact_id is not None:
                 ga = f"{group_id.text}:{artifact_id.text}"
                 if regex.search(ga):
+                    version_text = version.text.strip() if version is not None and version.text else 'undefined'
+
+                    # 4. Resolve variáveis como ${...}
+                    if version_text.startswith('${') and version_text.endswith('}'):
+                        var_name = version_text[2:-1]  # remove ${ e }
+                        version_text = properties.get(var_name, version_text)  # substitui ou mantém original
+
                     results.append({
                         'file': file_path,
                         'group_artifact': ga,
-                        'version': version.text if version is not None else 'undefined'
+                        'version': version_text
                     })
         return results
     except Exception as e:
@@ -114,8 +134,9 @@ def extract_db_versions_from_pom(file_path, label):
 
 
 #parei aqui, preciso avaliar o resto do código. 
-def process_projects(args):
-    db.connect()
+def process_projects(args, connect=True):
+    if connect:
+        db.connect()
     status = {
         'Success': 0,
         'Skipped': 0,
@@ -210,8 +231,8 @@ def process_projects(args):
         except Exception as e:
             print(red(f'Unexpected error: {e}'))
             status['Git error'] += 1
-    
-    db.close()
+    if connect:
+        db.close()
 
 def main():
     args = read_args(

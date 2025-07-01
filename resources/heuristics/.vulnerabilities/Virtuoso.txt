@@ -1,1 +1,3 @@
-org.apache.clerezza:virtuoso.jdbc
+virtuoso:virtjdbc4
+virtuoso:virtuoso-jdbc
+com\.openlink\.virtuoso:virtjdbc
