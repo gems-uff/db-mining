@@ -1,2 +1,1 @@
 com\.ingres\.jdbc:iijdbc
-com\.actian\.jdbc:iijdbc

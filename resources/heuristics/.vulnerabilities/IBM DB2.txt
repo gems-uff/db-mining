@@ -1,3 +1,2 @@
-com\.ibm\.db2:jcc.*
-com\.ibm\.db2:db2jcc.*
-com\.ibm\.db2:spring-data-db2
+com\.ibm\.db2:jcc
+com.ibm.db2.jcc:db2jcc

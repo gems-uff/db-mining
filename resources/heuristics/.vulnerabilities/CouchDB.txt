@@ -1,4 +1,4 @@
 org\.ektorp:org\.ektorp
 org\.lightcouch:lightcouch
-org\.jcouchdb:jcouchdb
+com\.google\.code\.jcouchdb:jcouchdb
 com\.cloudant:cloudant-client

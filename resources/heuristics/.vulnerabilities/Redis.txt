@@ -1,5 +1,4 @@
-com\.lambdaworks:lettuce-core 
-com\.lambdaworks:jedis 
+com\.lambdaworks:lettuce
 redis\.clients:jedis
 io\.lettuce:lettuce-core
 org\.redisson:redisson

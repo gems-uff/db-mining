@@ -1,4 +1,1 @@
 com\.sybase:jconn4
-com\.sap\.ase:jconnect
-com\.sap\.jdbc:jconn
-sybase:jconn3

@@ -1,3 +1,1 @@
-virtuoso:virtjdbc4
-virtuoso:virtuoso-jdbc
 com\.openlink\.virtuoso:virtjdbc

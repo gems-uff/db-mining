@@ -1,3 +1,2 @@
 com\.teradata\.jdbc:tdgssconfig
 com\.teradata\.jdbc:tera.*
-com\.teradata:teradata-jdbc

@@ -1,2 +1,2 @@
 org\.postgresql:postgresql
-com\.cockroachlabs:.*
+io\.cockroachdb:spring-data-cockroachdb
