@@ -133,6 +133,7 @@ class VersionVulnerability(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     versionNumber = db.Column(db.String)
     file = db.Column(db.String)
+    commitsBetween = db.Column(db.Integer)
     version_id = db.Column(db.Integer, db.ForeignKey('version.id'))
     execution_id = db.Column(db.Integer, db.ForeignKey('execution.id'))
     version = db.relationship('Version', back_populates='vulnerabilities')
