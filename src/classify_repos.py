@@ -40,6 +40,10 @@ BUILD_MARKERS = {
 # Helpers e detector robusto de monorepo Maven
 # ---------------------------------------------------------------------------
 
+# ---------------------------------------------------------------------------
+# Helpers e detector robusto de monorepo Maven (+ diagnóstico)
+# ---------------------------------------------------------------------------
+
 def _read_xml_ns_aware(p: Path):
     txt = p.read_text(encoding="utf-8", errors="ignore")
     try:
@@ -56,7 +60,6 @@ def _has_modules_in_pom(pom_path: Path) -> bool:
     if root is None:
         # fallback: regex (captura inclusive dentro de perfis)
         return bool(re.search(r"<modules[^>]*>.*?<module>.+?</module>.*?</modules>", txt, re.S))
-
     # Procura modules em qualquer lugar (raiz, perfis, etc.)
     mods = root.findall(".//{*}modules")
     if not mods:
@@ -72,7 +75,6 @@ def _extract_gav(pom_path: Path):
     """Retorna (groupId, artifactId, version, packaging) do POM (best effort)."""
     root, txt, q = _read_xml_ns_aware(pom_path)
     if root is None:
-        # heurística simples via regex
         def _rgx(tag):
             m = re.search(rf"<{tag}>([^<]+)</{tag}>", txt)
             return m.group(1).strip() if m else None
@@ -123,40 +125,66 @@ def _pom_has_parent_gav(pom_path: Path, parent_gav: tuple) -> bool:
 
 def is_maven_monorepo(root: Path) -> bool:
     """
-    Considera MONOREPO_MAVEN quando:
+    MONOREPO_MAVEN quando:
       1) há <modules> no pom.xml da raiz; OU
       2) há agregador 1 nível abaixo com <modules>; OU
       3) (fallback) o pom da raiz tem <packaging>pom</packaging> e
-         >= 2 subprojetos declaram <parent> apontando para esse pom.
+         >= 2 subprojetos declaram <parent> apontando para esse pom; OU
+      4) (sinal extra) root tem artifactId == 'parent' + packaging 'pom' e >= 1 subprojeto com POM.
     """
     root_pom = root / "pom.xml"
     if not root_pom.is_file():
         return False
 
     # 1) <modules> na raiz?
-    if _has_modules_in_pom(root_pom):
+    has_modules_root = _has_modules_in_pom(root_pom)
+    if has_modules_root:
+        # DEBUG específico p/ zookeeper
+        if root.name == "zookeeper":
+            print("[DBG:zookeeper] modules na raiz = True")
         return True
 
     # 2) agregador 1 nível abaixo?
+    has_modules_child = False
     for child in root.iterdir():
         if child.is_dir():
             p = child / "pom.xml"
             if p.is_file() and _has_modules_in_pom(p):
-                return True
+                has_modules_child = True
+                break
+    if has_modules_child:
+        if root.name == "zookeeper":
+            print("[DBG:zookeeper] modules em subdir = True")
+        return True
 
-    # 3) Heurística de parent quando não há <modules>
+    # 3) Heurística de parent
     gid, aid, ver, pkg = _extract_gav(root_pom)
+    children_with_parent = 0
+    total_child_poms = 0
     if (pkg or "").lower().strip() == "pom" and (gid and aid):
-        children_with_parent = 0
         for child in root.iterdir():
             if child.is_dir():
                 p = child / "pom.xml"
-                if p.is_file() and _pom_has_parent_gav(p, (gid, aid, ver, pkg)):
-                    children_with_parent += 1
-        # limiar: 2+ filhos já indicam agregação prática do monorepo
+                if p.is_file():
+                    total_child_poms += 1
+                    if _pom_has_parent_gav(p, (gid, aid, ver, pkg)):
+                        children_with_parent += 1
+        if root.name == "zookeeper":
+            print(f"[DBG:zookeeper] packaging={pkg} aid={aid} gid={gid} "
+                  f"child_poms={total_child_poms} children_with_parent={children_with_parent}")
+
         if children_with_parent >= 2:
             return True
 
+        # 4) Sinal extra: parent puro
+        if (aid or "").strip() == "parent" and total_child_poms >= 1:
+            if root.name == "zookeeper":
+                print("[DBG:zookeeper] artifactId=parent + packaging=pom + >=1 child POM → MONOREPO")
+            return True
+
+    # DEBUG final (por que NÃO é monorepo)
+    if root.name == "zookeeper":
+        print("[DBG:zookeeper] NÃO classificou como monorepo (todas as heurísticas falharam)")
     return False
 
 # ---------------------------------------------------------------------------
