@@ -36,27 +36,9 @@ BUILD_MARKERS = {
     "python": ["pyproject.toml", "setup.py"],
 }
 
-def is_maven_monorepo(root: Path) -> bool:
-    pom = root / "pom.xml"
-    if not pom.is_file():
-        return False
-    text = pom.read_text(encoding="utf-8", errors="ignore")
-    try:
-        root_xml = ET.fromstring(text)
-    except ET.ParseError:
-        # Fallback textual, evita falso negativo por parse
-        return bool(re.search(r"<modules[^>]*>.*?<module>.+?</module>.*?</modules>", text, re.S))
-
-    # Descobre o namespace dinamicamente
-    ns_uri = root_xml.tag.split('}')[0].strip('{') if root_xml.tag.startswith('{') else None
-    def q(name):  # wildcard-friendly
-        return f"{{{ns_uri}}}{name}" if ns_uri else name
-
-    modules = root_xml.find(q("modules")) or root_xml.find(".//{*}modules")
-    if modules is None:
-        return False
-    items = modules.findall(q("module")) or modules.findall(".//{*}module")
-    return len(items) > 0
+print(f"[DBG] {repo_path.name}: maven_monorepo={maven_monorepo} "
+      f"gradle_multi={gradle_multi} node_ws={node_ws} "
+      f"roots={len(project_roots)}")
 
 
 def has_gradle_multiproject(root: Path) -> bool:
