@@ -7,6 +7,7 @@ import subprocess
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import List, Tuple, Dict
+from util import RESOURCE_DIR
 
 # === dependências do seu projeto ===
 import database as db
@@ -39,17 +40,24 @@ def is_maven_monorepo(root: Path) -> bool:
     pom = root / "pom.xml"
     if not pom.is_file():
         return False
+    text = pom.read_text(encoding="utf-8", errors="ignore")
     try:
-        ns = {"m": "http://maven.apache.org/POM/4.0.0"}
-        tree = ET.parse(pom)
-        root_xml = tree.getroot()
-        modules = root_xml.find("m:modules", ns) or root_xml.find("modules")
-        if modules is None:
-            return False
-        items = modules.findall("m:module", ns) or modules.findall("module")
-        return len(items) > 0
+        root_xml = ET.fromstring(text)
     except ET.ParseError:
+        # Fallback textual, evita falso negativo por parse
+        return bool(re.search(r"<modules[^>]*>.*?<module>.+?</module>.*?</modules>", text, re.S))
+
+    # Descobre o namespace dinamicamente
+    ns_uri = root_xml.tag.split('}')[0].strip('{') if root_xml.tag.startswith('{') else None
+    def q(name):  # wildcard-friendly
+        return f"{{{ns_uri}}}{name}" if ns_uri else name
+
+    modules = root_xml.find(q("modules")) or root_xml.find(".//{*}modules")
+    if modules is None:
         return False
+    items = modules.findall(q("module")) or modules.findall(".//{*}module")
+    return len(items) > 0
+
 
 def has_gradle_multiproject(root: Path) -> bool:
     for fname in ("settings.gradle", "settings.gradle.kts"):
@@ -82,8 +90,11 @@ def find_project_roots(repo_root: Path) -> List[Path]:
         has_marker = any(any(m in file_set for m in markers) for markers in BUILD_MARKERS.values())
         if has_marker:
             roots.append(curpath)
-            dirs[:] = []  # não desce mais dentro desta raiz
+            # só pare de descer em *sub*projetos; na raiz continue descendo
+            if curpath != repo_root:
+                dirs[:] = []
     return roots
+
 
 def classify_repo(repo_path: Path) -> Tuple[str, Dict[str, bool]]:
     repo_path = repo_path.resolve()
