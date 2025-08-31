@@ -36,10 +36,132 @@ BUILD_MARKERS = {
     "python": ["pyproject.toml", "setup.py"],
 }
 
-print(f"[DBG] {repo_path.name}: maven_monorepo={maven_monorepo} "
-      f"gradle_multi={gradle_multi} node_ws={node_ws} "
-      f"roots={len(project_roots)}")
+# ---------------------------------------------------------------------------
+# Helpers e detector robusto de monorepo Maven
+# ---------------------------------------------------------------------------
 
+def _read_xml_ns_aware(p: Path):
+    txt = p.read_text(encoding="utf-8", errors="ignore")
+    try:
+        root = ET.fromstring(txt)
+    except ET.ParseError:
+        return None, txt, None  # cai no fallback textual depois
+    ns_uri = root.tag.split('}')[0].strip('{') if root.tag.startswith('{') else None
+    def q(name):  # query com namespace dinâmico
+        return f"{{{ns_uri}}}{name}" if ns_uri else name
+    return root, txt, q
+
+def _has_modules_in_pom(pom_path: Path) -> bool:
+    root, txt, q = _read_xml_ns_aware(pom_path)
+    if root is None:
+        # fallback: regex (captura inclusive dentro de perfis)
+        return bool(re.search(r"<modules[^>]*>.*?<module>.+?</module>.*?</modules>", txt, re.S))
+
+    # Procura modules em qualquer lugar (raiz, perfis, etc.)
+    mods = root.findall(".//{*}modules")
+    if not mods:
+        m = root.find(q("modules")) if q else root.find("modules")
+        mods = [m] if m is not None else []
+    for m in mods:
+        items = m.findall(".//{*}module") or m.findall("module")
+        if items:
+            return True
+    return False
+
+def _extract_gav(pom_path: Path):
+    """Retorna (groupId, artifactId, version, packaging) do POM (best effort)."""
+    root, txt, q = _read_xml_ns_aware(pom_path)
+    if root is None:
+        # heurística simples via regex
+        def _rgx(tag):
+            m = re.search(rf"<{tag}>([^<]+)</{tag}>", txt)
+            return m.group(1).strip() if m else None
+        return _rgx("groupId"), _rgx("artifactId"), _rgx("version"), _rgx("packaging")
+
+    def _find_text(tag):
+        n = root.find(q(tag)) if q else root.find(tag)
+        return (n.text or "").strip() if n is not None and n.text else None
+
+    gid = _find_text("groupId")
+    aid = _find_text("artifactId")
+    ver = _find_text("version")
+    pkg = _find_text("packaging")
+
+    # groupId/version podem vir do parent
+    if not gid or not ver:
+        par = root.find(".//{*}parent")
+        if par is not None:
+            if not gid:
+                g = par.find(".//{*}groupId") or par.find("groupId")
+                gid = (g.text or "").strip() if g is not None and g.text else gid
+            if not ver:
+                v = par.find(".//{*}version") or par.find("version")
+                ver = (v.text or "").strip() if v is not None and v.text else ver
+    return gid, aid, ver, pkg
+
+def _pom_has_parent_gav(pom_path: Path, parent_gav: tuple) -> bool:
+    """Verifica se pom_path declara <parent> correspondente a parent_gav (gid, aid)."""
+    pgid, paid = parent_gav[:2]
+    if not pgid or not paid:
+        return False
+    root, txt, q = _read_xml_ns_aware(pom_path)
+    if root is None:
+        mg = re.search(r"<parent>.*?<groupId>([^<]+)</groupId>.*?</parent>", txt, re.S)
+        ma = re.search(r"<parent>.*?<artifactId>([^<]+)</artifactId>.*?</parent>", txt, re.S)
+        g = mg.group(1).strip() if mg else None
+        a = ma.group(1).strip() if ma else None
+        return (g == pgid and a == paid)
+
+    par = root.find(".//{*}parent")
+    if par is None:
+        return False
+    g = par.find(".//{*}groupId") or par.find("groupId")
+    a = par.find(".//{*}artifactId") or par.find("artifactId")
+    g = (g.text or "").strip() if g is not None and g.text else None
+    a = (a.text or "").strip() if a is not None and a.text else None
+    return (g == pgid and a == paid)
+
+def is_maven_monorepo(root: Path) -> bool:
+    """
+    1) <modules> no pom.xml da raiz OU em um subdiretório (1 nível).
+    2) Heurística: packaging == pom na raiz E vários subprojetos com <parent>
+       apontando para o GAV do POM raiz.
+    """
+    root_pom = root / "pom.xml"
+    if not root_pom.is_file():
+        return False
+
+    # 1) <modules> na raiz?
+    if _has_modules_in_pom(root_pom):
+        return True
+
+    # 1b) agregador 1 nível abaixo?
+    for child in root.iterdir():
+        if child.is_dir():
+            p = child / "pom.xml"
+            if p.is_file() and _has_modules_in_pom(p):
+                return True
+
+    # 2) Heurística de parent quando não há <modules>
+    gid, aid, ver, pkg = _extract_gav(root_pom)
+    if (pkg or "").lower().strip() == "pom" and (gid and aid):
+        count_children = 0
+        scanned = 0
+        for child in root.iterdir():
+            if child.is_dir():
+                p = child / "pom.xml"
+                if p.is_file():
+                    scanned += 1
+                    if _pom_has_parent_gav(p, (gid, aid, ver, pkg)):
+                        count_children += 1
+        if scanned >= 2 and count_children >= 2:
+            return True
+
+    return False
+
+# ---------------------------------------------------------------------------
+# Detectores auxiliares (Gradle / Node)
+# ---------------------------------------------------------------------------
 
 def has_gradle_multiproject(root: Path) -> bool:
     for fname in ("settings.gradle", "settings.gradle.kts"):
@@ -63,6 +185,10 @@ def has_node_workspaces(root: Path) -> bool:
     except Exception:
         return False
 
+# ---------------------------------------------------------------------------
+# Scanner de raízes de projeto (Maven/Gradle/Node/Python)
+# ---------------------------------------------------------------------------
+
 def find_project_roots(repo_root: Path) -> List[Path]:
     roots = []
     for cur, dirs, files in os.walk(repo_root):
@@ -77,15 +203,23 @@ def find_project_roots(repo_root: Path) -> List[Path]:
                 dirs[:] = []
     return roots
 
+# ---------------------------------------------------------------------------
+# Classificação do repositório
+# ---------------------------------------------------------------------------
 
 def classify_repo(repo_path: Path) -> Tuple[str, Dict[str, bool]]:
     repo_path = repo_path.resolve()
     if not repo_path.is_dir():
         return ("DESCONHECIDO", {"erro": True, "gradle_multi": False, "node_workspaces": False})
+
     maven_monorepo = is_maven_monorepo(repo_path)
     gradle_multi = has_gradle_multiproject(repo_path)
     node_ws = has_node_workspaces(repo_path)
     project_roots = find_project_roots(repo_path)
+
+    # DEBUG opcional:
+    # print(f"[DBG] {repo_path.name}: maven_monorepo={maven_monorepo}, "
+    #       f"gradle_multi={gradle_multi}, node_ws={node_ws}, roots={len(project_roots)}")
 
     if maven_monorepo:
         return ("MONOREPO_MAVEN", {"gradle_multi": gradle_multi, "node_workspaces": node_ws})
@@ -95,10 +229,13 @@ def classify_repo(repo_path: Path) -> Tuple[str, Dict[str, bool]]:
         return ("SINGLE_REPO", {"gradle_multi": gradle_multi, "node_workspaces": node_ws})
     return ("DESCONHECIDO", {"gradle_multi": gradle_multi, "node_workspaces": node_ws})
 
+# ---------------------------------------------------------------------------
+# Utilidades Git e contagens
+# ---------------------------------------------------------------------------
+
 def build_repo_path(owner: str, name: str) -> Path:
     return Path(REPOS_DIR) / owner / name
 
-# ---------- NOVO: contagens de POMs e commits ----------
 def list_all_poms(repo_root: Path) -> List[Path]:
     poms = []
     for cur, dirs, files in os.walk(repo_root):
@@ -146,7 +283,6 @@ def count_pom_commits(repo_root: Path, max_count: int = None) -> int:
     if not poms:
         return 0
 
-    # Para não ultrapassar limites de linha de comando, pode particionar se houver muitos poms.
     commits = set()
     chunk = 200  # razoável na prática
     pom_paths = [str(p.relative_to(repo_root)) for p in poms]
@@ -158,7 +294,10 @@ def count_pom_commits(repo_root: Path, max_count: int = None) -> int:
                 commits.add(line)
     return len(commits)
 
-# ---------- CLI extra ----------
+# ---------------------------------------------------------------------------
+# CLI extra e main
+# ---------------------------------------------------------------------------
+
 def parse_extra_cli() -> argparse.Namespace:
     p = argparse.ArgumentParser(add_help=False)
     p.add_argument("--out-xlsx", default="classificacao.xlsx")
@@ -198,7 +337,7 @@ def main():
         node_flag = bool(flags.get("node_workspaces", False))
         err_flag = bool(flags.get("erro", False))
 
-        # NOVO: contagens
+        # contagens
         total_poms = count_repo_poms(repo_path) if not err_flag else 0
         total_pom_commits = count_pom_commits(
             repo_path, max_count=extra.max_commit_scan if extra.max_commit_scan > 0 else None
