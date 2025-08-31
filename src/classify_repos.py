@@ -45,7 +45,7 @@ def _read_xml_ns_aware(p: Path):
     try:
         root = ET.fromstring(txt)
     except ET.ParseError:
-        return None, txt, None  # cai no fallback textual depois
+        return None, txt, None  # cai no fallback textual
     ns_uri = root.tag.split('}')[0].strip('{') if root.tag.startswith('{') else None
     def q(name):  # query com namespace dinâmico
         return f"{{{ns_uri}}}{name}" if ns_uri else name
@@ -123,9 +123,11 @@ def _pom_has_parent_gav(pom_path: Path, parent_gav: tuple) -> bool:
 
 def is_maven_monorepo(root: Path) -> bool:
     """
-    1) <modules> no pom.xml da raiz OU em um subdiretório (1 nível).
-    2) Heurística: packaging == pom na raiz E vários subprojetos com <parent>
-       apontando para o GAV do POM raiz.
+    Considera MONOREPO_MAVEN quando:
+      1) há <modules> no pom.xml da raiz; OU
+      2) há agregador 1 nível abaixo com <modules>; OU
+      3) (fallback) o pom da raiz tem <packaging>pom</packaging> e
+         >= 2 subprojetos declaram <parent> apontando para esse pom.
     """
     root_pom = root / "pom.xml"
     if not root_pom.is_file():
@@ -135,26 +137,24 @@ def is_maven_monorepo(root: Path) -> bool:
     if _has_modules_in_pom(root_pom):
         return True
 
-    # 1b) agregador 1 nível abaixo?
+    # 2) agregador 1 nível abaixo?
     for child in root.iterdir():
         if child.is_dir():
             p = child / "pom.xml"
             if p.is_file() and _has_modules_in_pom(p):
                 return True
 
-    # 2) Heurística de parent quando não há <modules>
+    # 3) Heurística de parent quando não há <modules>
     gid, aid, ver, pkg = _extract_gav(root_pom)
     if (pkg or "").lower().strip() == "pom" and (gid and aid):
-        count_children = 0
-        scanned = 0
+        children_with_parent = 0
         for child in root.iterdir():
             if child.is_dir():
                 p = child / "pom.xml"
-                if p.is_file():
-                    scanned += 1
-                    if _pom_has_parent_gav(p, (gid, aid, ver, pkg)):
-                        count_children += 1
-        if scanned >= 2 and count_children >= 2:
+                if p.is_file() and _pom_has_parent_gav(p, (gid, aid, ver, pkg)):
+                    children_with_parent += 1
+        # limiar: 2+ filhos já indicam agregação prática do monorepo
+        if children_with_parent >= 2:
             return True
 
     return False
