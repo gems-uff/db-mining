@@ -37,19 +37,18 @@ BUILD_MARKERS = {
 }
 
 # ---------------------------------------------------------------------------
-# Helpers e detector robusto de monorepo Maven
-# ---------------------------------------------------------------------------
-
-# ---------------------------------------------------------------------------
-# Helpers e detector robusto de monorepo Maven (+ diagnóstico)
+# Helpers XML / Maven
 # ---------------------------------------------------------------------------
 
 def _read_xml_ns_aware(p: Path):
-    txt = p.read_text(encoding="utf-8", errors="ignore")
+    try:
+        txt = p.read_text(encoding="utf-8", errors="ignore")
+    except Exception:
+        return None, "", None
     try:
         root = ET.fromstring(txt)
     except ET.ParseError:
-        return None, txt, None  # cai no fallback textual
+        return None, txt, None  # fallback textual
     ns_uri = root.tag.split('}')[0].strip('{') if root.tag.startswith('{') else None
     def q(name):  # query com namespace dinâmico
         return f"{{{ns_uri}}}{name}" if ns_uri else name
@@ -58,7 +57,6 @@ def _read_xml_ns_aware(p: Path):
 def _has_modules_in_pom(pom_path: Path) -> bool:
     root, txt, q = _read_xml_ns_aware(pom_path)
     if root is None:
-        # fallback: regex (captura inclusive dentro de perfis)
         return bool(re.search(r"<modules[^>]*>.*?<module>.+?</module>.*?</modules>", txt, re.S))
     # Procura modules em qualquer lugar (raiz, perfis, etc.)
     mods = root.findall(".//{*}modules")
@@ -123,69 +121,63 @@ def _pom_has_parent_gav(pom_path: Path, parent_gav: tuple) -> bool:
     a = (a.text or "").strip() if a is not None and a.text else None
     return (g == pgid and a == paid)
 
-def is_maven_monorepo(root: Path) -> bool:
+# >>> NOVO: varredura de sub-POMs e checagem de vínculo com o POM raiz
+def _list_subpom_paths(repo_root: Path) -> List[Path]:
+    subpoms = []
+    for cur, dirs, files in os.walk(repo_root):
+        # não descer em diretórios ignorados
+        dirs[:] = [d for d in dirs if d not in IGNORES]
+        curp = Path(cur)
+        if curp == repo_root:
+            # pular a raiz; queremos apenas subpastas
+            if "pom.xml" in files:
+                # não adiciona o pom da raiz
+                pass
+            continue
+        if "pom.xml" in files:
+            subpoms.append(curp / "pom.xml")
+    return subpoms
+
+def _assess_maven_structure(repo_root: Path) -> Dict[str, object]:
     """
-    MONOREPO_MAVEN quando:
-      1) há <modules> no pom.xml da raiz; OU
-      2) há agregador 1 nível abaixo com <modules>; OU
-      3) (fallback) o pom da raiz tem <packaging>pom</packaging> e
-         >= 2 subprojetos declaram <parent> apontando para esse pom; OU
-      4) (sinal extra) root tem artifactId == 'parent' + packaging 'pom' e >= 1 subprojeto com POM.
+    Retorna diagnóstico do layout Maven:
+      - has_root_pom
+      - root_has_modules
+      - root_gav (gid, aid, ver, pkg)
+      - subpom_count
+      - linked_to_root_count (via <parent>)
     """
-    root_pom = root / "pom.xml"
-    if not root_pom.is_file():
-        return False
+    root_pom = repo_root / "pom.xml"
+    has_root = root_pom.is_file()
+    diag = {
+        "has_root_pom": has_root,
+        "root_has_modules": False,
+        "root_gav": (None, None, None, None),
+        "subpom_count": 0,
+        "linked_to_root_count": 0,
+    }
+    if not has_root:
+        # sem POM na raiz → não decide ainda; classificação final usa outros sinais
+        return diag
 
-    # 1) <modules> na raiz?
-    has_modules_root = _has_modules_in_pom(root_pom)
-    if has_modules_root:
-        # DEBUG específico p/ zookeeper
-        if root.name == "zookeeper":
-            print("[DBG:zookeeper] modules na raiz = True")
-        return True
-
-    # 2) agregador 1 nível abaixo?
-    has_modules_child = False
-    for child in root.iterdir():
-        if child.is_dir():
-            p = child / "pom.xml"
-            if p.is_file() and _has_modules_in_pom(p):
-                has_modules_child = True
-                break
-    if has_modules_child:
-        if root.name == "zookeeper":
-            print("[DBG:zookeeper] modules em subdir = True")
-        return True
-
-    # 3) Heurística de parent
+    # raiz tem modules?
+    root_has_modules = _has_modules_in_pom(root_pom)
     gid, aid, ver, pkg = _extract_gav(root_pom)
-    children_with_parent = 0
-    total_child_poms = 0
-    if (pkg or "").lower().strip() == "pom" and (gid and aid):
-        for child in root.iterdir():
-            if child.is_dir():
-                p = child / "pom.xml"
-                if p.is_file():
-                    total_child_poms += 1
-                    if _pom_has_parent_gav(p, (gid, aid, ver, pkg)):
-                        children_with_parent += 1
-        if root.name == "zookeeper":
-            print(f"[DBG:zookeeper] packaging={pkg} aid={aid} gid={gid} "
-                  f"child_poms={total_child_poms} children_with_parent={children_with_parent}")
+    diag["root_has_modules"] = root_has_modules
+    diag["root_gav"] = (gid, aid, ver, pkg)
 
-        if children_with_parent >= 2:
-            return True
+    # contar sub-POMs e quantos apontam parent para a raiz
+    subpoms = _list_subpom_paths(repo_root)
+    diag["subpom_count"] = len(subpoms)
 
-        # 4) Sinal extra: parent puro
-        if (aid or "").strip() == "parent" and total_child_poms >= 1:
-            if root.name == "zookeeper":
-                print("[DBG:zookeeper] artifactId=parent + packaging=pom + >=1 child POM → MONOREPO")
-            return True
+    if (gid and aid):
+        linked = 0
+        for sp in subpoms:
+            if _pom_has_parent_gav(sp, (gid, aid, ver, pkg)):
+                linked += 1
+        diag["linked_to_root_count"] = linked
 
-    # DEBUG final (por que NÃO é monorepo)
-    if root.name == "zookeeper":
-        print("[DBG:zookeeper] NÃO classificou como monorepo (todas as heurísticas falharam)")
-    return False
+    return diag
 
 # ---------------------------------------------------------------------------
 # Detectores auxiliares (Gradle / Node)
@@ -232,30 +224,79 @@ def find_project_roots(repo_root: Path) -> List[Path]:
     return roots
 
 # ---------------------------------------------------------------------------
-# Classificação do repositório
+# Classificação do repositório (AJUSTADA)
 # ---------------------------------------------------------------------------
 
-def classify_repo(repo_path: Path) -> Tuple[str, Dict[str, bool]]:
+def classify_repo(repo_path: Path) -> Tuple[str, Dict[str, object]]:
     repo_path = repo_path.resolve()
     if not repo_path.is_dir():
         return ("DESCONHECIDO", {"erro": True, "gradle_multi": False, "node_workspaces": False})
 
-    maven_monorepo = is_maven_monorepo(repo_path)
     gradle_multi = has_gradle_multiproject(repo_path)
     node_ws = has_node_workspaces(repo_path)
     project_roots = find_project_roots(repo_path)
 
-    # DEBUG opcional:
-    # print(f"[DBG] {repo_path.name}: maven_monorepo={maven_monorepo}, "
-    #       f"gradle_multi={gradle_multi}, node_ws={node_ws}, roots={len(project_roots)}")
+    # >>> Diagnóstico Maven detalhado (regras explicitadas)
+    mdiag = _assess_maven_structure(repo_path)
+    has_root_pom = mdiag["has_root_pom"]
+    root_has_modules = mdiag["root_has_modules"]
+    gid, aid, ver, pkg = mdiag["root_gav"]
+    subpom_count = mdiag["subpom_count"]
+    linked_to_root = mdiag["linked_to_root_count"]
 
-    if maven_monorepo:
-        return ("MONOREPO_MAVEN", {"gradle_multi": gradle_multi, "node_workspaces": node_ws})
+    # --- Regras Maven puras (as 3 situações desejadas) ---
+    if has_root_pom:
+        if root_has_modules:
+            # 1) POM raiz com <modules> → monorepo Maven
+            return ("MONOREPO_MAVEN", {
+                "gradle_multi": gradle_multi,
+                "node_workspaces": node_ws,
+                "maven_diag": mdiag
+            })
+
+        # Sem <modules> na raiz:
+        if subpom_count == 0:
+            # 2) Raiz tem POM e não existem sub-POMs → single project
+            return ("SINGLE_REPO", {
+                "gradle_multi": gradle_multi,
+                "node_workspaces": node_ws,
+                "maven_diag": mdiag
+            })
+
+        # existem sub-POMs
+        if linked_to_root > 0:
+            # 3) Há vínculo via <parent> com POM raiz → trata como MONOREPO_MAVEN (parent-only)
+            return ("MONOREPO_MAVEN", {
+                "gradle_multi": gradle_multi,
+                "node_workspaces": node_ws,
+                "maven_diag": mdiag
+            })
+        else:
+            # 4) Sub-POMs sem vínculo com a raiz → MULTIPROJETOS
+            return ("MULTIPROJETOS", {
+                "gradle_multi": gradle_multi,
+                "node_workspaces": node_ws,
+                "maven_diag": mdiag
+            })
+
+    # --- Sem POM na raiz: caímos no número de raízes encontradas (marcadores de build) ---
     if len(project_roots) > 1:
-        return ("MULTIPROJETOS", {"gradle_multi": gradle_multi, "node_workspaces": node_ws})
+        return ("MULTIPROJETOS", {
+            "gradle_multi": gradle_multi,
+            "node_workspaces": node_ws,
+            "maven_diag": mdiag
+        })
     if len(project_roots) == 1:
-        return ("SINGLE_REPO", {"gradle_multi": gradle_multi, "node_workspaces": node_ws})
-    return ("DESCONHECIDO", {"gradle_multi": gradle_multi, "node_workspaces": node_ws})
+        return ("SINGLE_REPO", {
+            "gradle_multi": gradle_multi,
+            "node_workspaces": node_ws,
+            "maven_diag": mdiag
+        })
+    return ("DESCONHECIDO", {
+        "gradle_multi": gradle_multi,
+        "node_workspaces": node_ws,
+        "maven_diag": mdiag
+    })
 
 # ---------------------------------------------------------------------------
 # Utilidades Git e contagens
@@ -303,7 +344,6 @@ def count_pom_commits(repo_root: Path, max_count: int = None) -> int:
     # 1) Tenta glob pathspec:
     try_cmd = _git(repo_root, ["-c", "globpathspecs=true"] + base_cmd + ["--", ":(glob)**/pom.xml"])
     if try_cmd.returncode == 0 and try_cmd.stdout:
-        # dedup não é necessário aqui; rev-list já entrega sem repetição para um pathspec
         return len(try_cmd.stdout.strip().splitlines())
 
     # 2) Fallback: lista todos os poms e passa cada um explicitamente.
@@ -365,7 +405,6 @@ def main():
         node_flag = bool(flags.get("node_workspaces", False))
         err_flag = bool(flags.get("erro", False))
 
-        # contagens
         total_poms = count_repo_poms(repo_path) if not err_flag else 0
         total_pom_commits = count_pom_commits(
             repo_path, max_count=extra.max_commit_scan if extra.max_commit_scan > 0 else None
