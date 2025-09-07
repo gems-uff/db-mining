@@ -1,20 +1,25 @@
-import os
-import re
-import json
-import sys
-import argparse
-import subprocess
-import xml.etree.ElementTree as ET
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Classificação de repositórios: SINGLE_REPO | MONOREPO_MAVEN | MULTIPROJETOS | DESCONHECIDO
+
+Regras Maven:
+1) POM na raiz com <modules> ....................... MONOREPO_MAVEN
+2) POM na raiz sem <modules> e sem sub-POMs ........ SINGLE_REPO
+3) POM na raiz sem <modules>, mas sub-POMs com <parent> = raiz ... MONOREPO_MAVEN
+4) POM na raiz sem <modules>, sub-POMs sem vínculo .. MULTIPROJETOS
+5) Sem POM na raiz:
+   - se houver >1 "raiz de projeto" (Maven/Gradle/Node/Python) ... MULTIPROJETOS
+   - se houver 1 .................................................. SINGLE_REPO
+"""
+
+import os, re, json, argparse, subprocess, xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import List, Tuple, Dict
-from util import RESOURCE_DIR
 
 # === dependências do seu projeto ===
 import database as db
-from extract import (
-    get_or_create_projects,
-    read_args,
-)
+from extract import get_or_create_projects, read_args
 from util import REPOS_DIR, yellow
 
 # opcional para gerar planilha
@@ -57,6 +62,7 @@ def _read_xml_ns_aware(p: Path):
 def _has_modules_in_pom(pom_path: Path) -> bool:
     root, txt, q = _read_xml_ns_aware(pom_path)
     if root is None:
+        # fallback regex (pega até em perfis)
         return bool(re.search(r"<modules[^>]*>.*?<module>.+?</module>.*?</modules>", txt, re.S))
     # Procura modules em qualquer lugar (raiz, perfis, etc.)
     mods = root.findall(".//{*}modules")
@@ -76,27 +82,26 @@ def _extract_gav(pom_path: Path):
         def _rgx(tag):
             m = re.search(rf"<{tag}>([^<]+)</{tag}>", txt)
             return m.group(1).strip() if m else None
-        return _rgx("groupId"), _rgx("artifactId"), _rgx("version"), _rgx("packaging")
-
-    def _find_text(tag):
-        n = root.find(q(tag)) if q else root.find(tag)
-        return (n.text or "").strip() if n is not None and n.text else None
-
-    gid = _find_text("groupId")
-    aid = _find_text("artifactId")
-    ver = _find_text("version")
-    pkg = _find_text("packaging")
-
-    # groupId/version podem vir do parent
-    if not gid or not ver:
-        par = root.find(".//{*}parent")
-        if par is not None:
-            if not gid:
+        gid = _rgx("groupId")
+        aid = _rgx("artifactId")
+        ver = _rgx("version")
+        pkg = _rgx("packaging")
+    else:
+        def _find_text(tag):
+            n = root.find(q(tag)) if q else root.find(tag)
+            return (n.text or "").strip() if n is not None and n.text else None
+        gid = _find_text("groupId")
+        aid = _find_text("artifactId")
+        ver = _find_text("version")
+        pkg = _find_text("packaging")
+        # groupId/version podem vir do parent
+        if not gid or not ver:
+            par = root.find(".//{*}parent")
+            if par is not None:
                 g = par.find(".//{*}groupId") or par.find("groupId")
-                gid = (g.text or "").strip() if g is not None and g.text else gid
-            if not ver:
                 v = par.find(".//{*}version") or par.find("version")
-                ver = (v.text or "").strip() if v is not None and v.text else ver
+                gid = (g.text or "").strip() if (not gid and g is not None and g.text) else gid
+                ver = (v.text or "").strip() if (not ver and v is not None and v.text) else ver
     return gid, aid, ver, pkg
 
 def _pom_has_parent_gav(pom_path: Path, parent_gav: tuple) -> bool:
@@ -111,7 +116,6 @@ def _pom_has_parent_gav(pom_path: Path, parent_gav: tuple) -> bool:
         g = mg.group(1).strip() if mg else None
         a = ma.group(1).strip() if ma else None
         return (g == pgid and a == paid)
-
     par = root.find(".//{*}parent")
     if par is None:
         return False
@@ -121,7 +125,6 @@ def _pom_has_parent_gav(pom_path: Path, parent_gav: tuple) -> bool:
     a = (a.text or "").strip() if a is not None and a.text else None
     return (g == pgid and a == paid)
 
-# >>> NOVO: varredura de sub-POMs e checagem de vínculo com o POM raiz
 def _list_subpom_paths(repo_root: Path) -> List[Path]:
     subpoms = []
     for cur, dirs, files in os.walk(repo_root):
@@ -129,11 +132,7 @@ def _list_subpom_paths(repo_root: Path) -> List[Path]:
         dirs[:] = [d for d in dirs if d not in IGNORES]
         curp = Path(cur)
         if curp == repo_root:
-            # pular a raiz; queremos apenas subpastas
-            if "pom.xml" in files:
-                # não adiciona o pom da raiz
-                pass
-            continue
+            continue  # não adiciona o pom da raiz
         if "pom.xml" in files:
             subpoms.append(curp / "pom.xml")
     return subpoms
@@ -157,30 +156,25 @@ def _assess_maven_structure(repo_root: Path) -> Dict[str, object]:
         "linked_to_root_count": 0,
     }
     if not has_root:
-        # sem POM na raiz → não decide ainda; classificação final usa outros sinais
         return diag
-
     # raiz tem modules?
     root_has_modules = _has_modules_in_pom(root_pom)
     gid, aid, ver, pkg = _extract_gav(root_pom)
     diag["root_has_modules"] = root_has_modules
     diag["root_gav"] = (gid, aid, ver, pkg)
-
     # contar sub-POMs e quantos apontam parent para a raiz
     subpoms = _list_subpom_paths(repo_root)
     diag["subpom_count"] = len(subpoms)
-
     if (gid and aid):
         linked = 0
         for sp in subpoms:
             if _pom_has_parent_gav(sp, (gid, aid, ver, pkg)):
                 linked += 1
         diag["linked_to_root_count"] = linked
-
     return diag
 
 # ---------------------------------------------------------------------------
-# Detectores auxiliares (Gradle / Node)
+# Detectores auxiliares (Gradle / Node) - flags de contexto
 # ---------------------------------------------------------------------------
 
 def has_gradle_multiproject(root: Path) -> bool:
@@ -206,7 +200,7 @@ def has_node_workspaces(root: Path) -> bool:
         return False
 
 # ---------------------------------------------------------------------------
-# Scanner de raízes de projeto (Maven/Gradle/Node/Python)
+# Scanner de "raízes de projeto" (Maven/Gradle/Node/Python)
 # ---------------------------------------------------------------------------
 
 def find_project_roots(repo_root: Path) -> List[Path]:
@@ -218,13 +212,13 @@ def find_project_roots(repo_root: Path) -> List[Path]:
         has_marker = any(any(m in file_set for m in markers) for markers in BUILD_MARKERS.values())
         if has_marker:
             roots.append(curpath)
-            # só pare de descer em *sub*projetos; na raiz continue descendo
+            # ao entrar num subprojeto, não descer mais
             if curpath != repo_root:
                 dirs[:] = []
     return roots
 
 # ---------------------------------------------------------------------------
-# Classificação do repositório (AJUSTADA)
+# Classificação do repositório
 # ---------------------------------------------------------------------------
 
 def classify_repo(repo_path: Path) -> Tuple[str, Dict[str, object]]:
@@ -236,70 +230,31 @@ def classify_repo(repo_path: Path) -> Tuple[str, Dict[str, object]]:
     node_ws = has_node_workspaces(repo_path)
     project_roots = find_project_roots(repo_path)
 
-    # >>> Diagnóstico Maven detalhado (regras explicitadas)
     mdiag = _assess_maven_structure(repo_path)
     has_root_pom = mdiag["has_root_pom"]
     root_has_modules = mdiag["root_has_modules"]
-    gid, aid, ver, pkg = mdiag["root_gav"]
     subpom_count = mdiag["subpom_count"]
     linked_to_root = mdiag["linked_to_root_count"]
 
-    # --- Regras Maven puras (as 3 situações desejadas) ---
+    # --- Regras Maven ---
     if has_root_pom:
         if root_has_modules:
-            # 1) POM raiz com <modules> → monorepo Maven
-            return ("MONOREPO_MAVEN", {
-                "gradle_multi": gradle_multi,
-                "node_workspaces": node_ws,
-                "maven_diag": mdiag
-            })
-
-        # Sem <modules> na raiz:
+            return ("MONOREPO_MAVEN", {"gradle_multi": gradle_multi, "node_workspaces": node_ws, "maven_diag": mdiag})
         if subpom_count == 0:
-            # 2) Raiz tem POM e não existem sub-POMs → single project
-            return ("SINGLE_REPO", {
-                "gradle_multi": gradle_multi,
-                "node_workspaces": node_ws,
-                "maven_diag": mdiag
-            })
-
-        # existem sub-POMs
+            return ("SINGLE_REPO", {"gradle_multi": gradle_multi, "node_workspaces": node_ws, "maven_diag": mdiag})
         if linked_to_root > 0:
-            # 3) Há vínculo via <parent> com POM raiz → trata como MONOREPO_MAVEN (parent-only)
-            return ("MONOREPO_MAVEN", {
-                "gradle_multi": gradle_multi,
-                "node_workspaces": node_ws,
-                "maven_diag": mdiag
-            })
-        else:
-            # 4) Sub-POMs sem vínculo com a raiz → MULTIPROJETOS
-            return ("MULTIPROJETOS", {
-                "gradle_multi": gradle_multi,
-                "node_workspaces": node_ws,
-                "maven_diag": mdiag
-            })
+            return ("MONOREPO_MAVEN", {"gradle_multi": gradle_multi, "node_workspaces": node_ws, "maven_diag": mdiag})
+        return ("MULTIPROJETOS", {"gradle_multi": gradle_multi, "node_workspaces": node_ws, "maven_diag": mdiag})
 
-    # --- Sem POM na raiz: caímos no número de raízes encontradas (marcadores de build) ---
+    # --- Sem POM na raiz: decide por “raízes de projeto” ---
     if len(project_roots) > 1:
-        return ("MULTIPROJETOS", {
-            "gradle_multi": gradle_multi,
-            "node_workspaces": node_ws,
-            "maven_diag": mdiag
-        })
+        return ("MULTIPROJETOS", {"gradle_multi": gradle_multi, "node_workspaces": node_ws, "maven_diag": mdiag})
     if len(project_roots) == 1:
-        return ("SINGLE_REPO", {
-            "gradle_multi": gradle_multi,
-            "node_workspaces": node_ws,
-            "maven_diag": mdiag
-        })
-    return ("DESCONHECIDO", {
-        "gradle_multi": gradle_multi,
-        "node_workspaces": node_ws,
-        "maven_diag": mdiag
-    })
+        return ("SINGLE_REPO", {"gradle_multi": gradle_multi, "node_workspaces": node_ws, "maven_diag": mdiag})
+    return ("DESCONHECIDO", {"gradle_multi": gradle_multi, "node_workspaces": node_ws, "maven_diag": mdiag})
 
 # ---------------------------------------------------------------------------
-# Utilidades Git e contagens
+# Utilidades Git e contagens (opcionais)
 # ---------------------------------------------------------------------------
 
 def build_repo_path(owner: str, name: str) -> Path:
@@ -317,49 +272,35 @@ def count_repo_poms(repo_root: Path) -> int:
     return len(list_all_poms(repo_root))
 
 def _git(repo_root: Path, args: List[str]) -> subprocess.CompletedProcess:
-    return subprocess.run(
-        ["git"] + args,
-        cwd=str(repo_root),
-        capture_output=True,
-        text=True,
-        check=False,
-    )
+    return subprocess.run(["git"] + args, cwd=str(repo_root),
+                          capture_output=True, text=True, check=False)
 
 def is_git_repo(repo_root: Path) -> bool:
     r = _git(repo_root, ["rev-parse", "--is-inside-work-tree"])
     return r.returncode == 0 and r.stdout.strip() == "true"
 
 def count_pom_commits(repo_root: Path, max_count: int = None) -> int:
-    """
-    Conta commits que tocaram QUALQUER pom.xml no repositório.
-    Tenta pathspec glob (Git >= 2.13). Se falhar, faz fallback listando todos os poms.
-    """
+    """Conta commits que tocaram QUALQUER pom.xml no repositório."""
     if not is_git_repo(repo_root):
         return 0
-
     base_cmd = ["rev-list", "--all", "--no-merges"]
-    if max_count is not None and max_count > 0:
+    if max_count and max_count > 0:
         base_cmd = ["rev-list", f"--max-count={max_count}", "--all", "--no-merges"]
-
-    # 1) Tenta glob pathspec:
-    try_cmd = _git(repo_root, ["-c", "globpathspecs=true"] + base_cmd + ["--", ":(glob)**/pom.xml"])
-    if try_cmd.returncode == 0 and try_cmd.stdout:
-        return len(try_cmd.stdout.strip().splitlines())
-
-    # 2) Fallback: lista todos os poms e passa cada um explicitamente.
+    # tenta glob pathspec
+    r = _git(repo_root, ["-c", "globpathspecs=true"] + base_cmd + ["--", ":(glob)**/pom.xml"])
+    if r.returncode == 0 and r.stdout:
+        return len(r.stdout.strip().splitlines())
+    # fallback listando poms explicitamente
+    commits = set()
     poms = list_all_poms(repo_root)
     if not poms:
         return 0
-
-    commits = set()
-    chunk = 200  # razoável na prática
-    pom_paths = [str(p.relative_to(repo_root)) for p in poms]
-    for i in range(0, len(pom_paths), chunk):
-        part = pom_paths[i:i+chunk]
-        r = _git(repo_root, base_cmd + ["--"] + part)
-        if r.returncode == 0 and r.stdout:
-            for line in r.stdout.strip().splitlines():
-                commits.add(line)
+    chunk = 200
+    rels = [str(p.relative_to(repo_root)) for p in poms]
+    for i in range(0, len(rels), chunk):
+        rr = _git(repo_root, base_cmd + ["--"] + rels[i:i+chunk])
+        if rr.returncode == 0 and rr.stdout:
+            commits |= set(rr.stdout.strip().splitlines())
     return len(commits)
 
 # ---------------------------------------------------------------------------
@@ -452,13 +393,8 @@ def main():
     if HAS_PANDAS:
         try:
             df = pd.DataFrame(rows)
-            resumo = pd.DataFrame(
-                [{"classe": k, "quantidade": v} for k, v in counts.items()]
-            )
-            resumo2 = pd.DataFrame([{
-                "total_poms": soma_poms,
-                "total_pom_commits": soma_commits
-            }])
+            resumo = pd.DataFrame([{"classe": k, "quantidade": v} for k, v in counts.items()])
+            resumo2 = pd.DataFrame([{"total_poms": soma_poms, "total_pom_commits": soma_commits}])
             with pd.ExcelWriter(extra.out_xlsx, engine="openpyxl") as writer:
                 df.to_excel(writer, index=False, sheet_name="classificacao")
                 resumo.to_excel(writer, index=False, sheet_name="resumo_classe")
