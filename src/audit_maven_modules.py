@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Auditoria Maven (DB-mining) — v2 (recursivo + ancestral correto)
+Auditoria Maven (DB-mining) — v3 (recursivo + ancestral correto + reclassificação por GAV)
 
 O que faz:
 - Para cada projeto (owner/name) vindo do banco/lista (get_or_create_projects):
@@ -10,16 +10,15 @@ O que faz:
      - diretório existe
      - existe pom.xml no módulo
      - módulo declara <parent> apontando para o ancestral declarado mais próximo
-       (e se não houver ancestral declarado, compara com o POM raiz).
-  3) Lista pom.xml existentes fora da árvore de módulos declarados (POMs "não declarados") e informa:
-     - caminho relativo e absoluto
-     - profundidade (nº de barras)
-     - ancestral declarado mais próximo (se existir)
-     - se aponta parent correto para o ancestral esperado
+       (e, se não houver ancestral declarado, compara com o POM raiz).
+  3) Lista pom.xml fora da árvore de módulos declarados (POMs "não declarados"):
+     - Se o <parent> do POM "não declarado" aponta para QUALQUER GAV de módulo declarado
+       (incluindo o root), reclassifica como "undeclared-via-declared-parent".
+     - Caso contrário, usa a regra por caminho (nearest ancestor) para classificar.
 Saídas:
 - projetos.csv: resumo por repositório
-- modulos.csv : status por módulo/subpom (inclui info detalhada de undeclared POMs)
-- (opcional) XLSX consolidado se pandas estiver disponível
+- modulos.csv : status por módulo/subpom
+- (opcional) XLSX consolidado (se pandas disponível)
 """
 
 import os, re, csv, argparse
@@ -70,7 +69,6 @@ def _extract_gav(pom_path: Path) -> Tuple[Optional[str], Optional[str], Optional
     """Retorna (groupId, artifactId, version) do POM; herda gid/version do <parent> se ausentes."""
     root, txt, q = _read_xml_ns_aware(pom_path)
     if root is None:
-        # fallback simples
         def rgx(tag):
             m = re.search(rf"<{tag}>([^<]+)</{tag}>", txt)
             return m.group(1).strip() if m else None
@@ -107,7 +105,6 @@ def _list_declared_modules(pom_file: Path) -> List[str]:
                 val = _text_of(item)
                 if val:
                     mods.append(val.strip())
-    # normaliza (ordem preservada, sem duplicatas)
     seen, out = set(), []
     for m in mods:
         if m and m not in seen:
@@ -153,29 +150,21 @@ def _child_has_parent(child_pom: Path, parent_gav: Tuple[Optional[str], Optional
     return True, "ok"
 
 def _nearest_declared_ancestor_exclusive(rel_dir: str, declared_set: set) -> Optional[str]:
-    """
-    Retorna o módulo declarado mais próximo (ancestral) de rel_dir, EXCLUINDO ele próprio.
-    Ex.: rel_dir='examples/foo/bar' e declared_set contém 'examples' e 'examples/foo'
-         -> retorna 'examples/foo'
-    """
+    """Retorna o módulo declarado mais próximo (ancestral) de rel_dir, EXCLUINDO ele próprio."""
     parts = Path(rel_dir).parts
-    for i in range(len(parts)-1, 0, -1):  # começa um nível acima
+    for i in range(len(parts)-1, 0, -1):
         cand = str(Path(*parts[:i]))
         if cand in declared_set:
             return cand
     return None
 
 def _collect_declared_modules_recursive(repo_root: Path, root_pom: Path) -> List[str]:
-    """
-    Coleta módulos declarados de forma recursiva.
-    Para cada POM declarado, os módulos filhos são concatenados ao caminho do pai
-    (respeitando paths relativos entre POMs).
-    """
+    """Coleta módulos declarados de forma recursiva concatenando paths relativos entre POMs."""
     queue = _list_declared_modules(root_pom)
     seen, out = set(), []
     while queue:
         rel = queue.pop(0)
-        norm_rel = str(Path(rel))  # normaliza separadores
+        norm_rel = str(Path(rel))
         if norm_rel in seen:
             continue
         seen.add(norm_rel)
@@ -185,24 +174,59 @@ def _collect_declared_modules_recursive(repo_root: Path, root_pom: Path) -> List
         if pom.is_file():
             child_mods = _list_declared_modules(pom)
             for cm in child_mods:
-                # cm é relativo ao pom atual -> concatenar
                 combined = str(Path(norm_rel) / cm)
                 if combined not in seen:
                     queue.append(combined)
     return out
 
-def _extract_gav_map(repo_root: Path, declared: List[str]) -> Dict[str, Tuple[Optional[str], Optional[str], Optional[str]]]:
-    """Mapa módulo->GAV para todos os módulos declarados; inclui a chave '' para o root."""
+def _build_gav_indexes(repo_root: Path, declared: List[str]):
+    """
+    Retorna:
+    - gav_by_module: módulo declarado -> (gid, aid, ver)
+    - module_by_gav: (gid, aid) -> set(mod_paths)   (ignorando version)
+    Inclui a chave "" para o root.
+    """
     gav_by_module: Dict[str, Tuple[Optional[str], Optional[str], Optional[str]]] = {}
-    root_pom = repo_root / "pom.xml"
-    gav_by_module[""] = _extract_gav(root_pom)
+    module_by_gav: Dict[Tuple[str, str], set] = {}
+
+    root_gav = _extract_gav(repo_root/"pom.xml")
+    gav_by_module[""] = root_gav
+    if root_gav and root_gav[0] and root_gav[1]:
+        module_by_gav.setdefault((root_gav[0], root_gav[1]), set()).add("")
+
     for rel in declared:
         pom = repo_root / rel / "pom.xml"
-        if pom.is_file():
-            gav_by_module[rel] = _extract_gav(pom)
-    return gav_by_module
+        if not pom.is_file():
+            continue
+        g = _extract_gav(pom)  # (gid, aid, ver)
+        gav_by_module[rel] = g
+        if g and g[0] and g[1]:
+            module_by_gav.setdefault((g[0], g[1]), set()).add(rel)
 
-def _expected_parent_gav_for(rel_dir: str, declared_set: set, gav_map: Dict[str, Tuple[Optional[str], Optional[str], Optional[str]]]):
+    return gav_by_module, module_by_gav
+
+def _get_child_parent_gav(child_pom: Path) -> Tuple[Optional[str], Optional[str], Optional[str]]:
+    """Retorna o GAV do <parent> do child (pode ter version None)."""
+    root, txt, q = _read_xml_ns_aware(child_pom)
+    if root is None:
+        mg = re.search(r"<parent>.*?<groupId>([^<]+)</groupId>.*?</parent>", txt, re.S|re.I)
+        ma = re.search(r"<parent>.*?<artifactId>([^<]+)</artifactId>.*?</parent>", txt, re.S|re.I)
+        mv = re.search(r"<parent>.*?<version>([^<]+)</version>.*?</parent>", txt, re.S|re.I)
+        return (
+            mg.group(1).strip() if mg else None,
+            ma.group(1).strip() if ma else None,
+            mv.group(1).strip() if mv else None,
+        )
+    par = root.find(q("parent"))
+    if par is None:
+        return None, None, None
+    gid = _text_of(par.find(q("groupId")))
+    aid = _text_of(par.find(q("artifactId")))
+    ver = _text_of(par.find(q("version")))
+    return gid, aid, ver
+
+def _expected_parent_gav_for(rel_dir: str, declared_set: set,
+                             gav_map: Dict[str, Tuple[Optional[str], Optional[str], Optional[str]]]):
     """
     Para um diretório (rel_dir), retorna (gav_esperado, ancestral_usado):
     - ancestral é o módulo declarado mais próximo (excluindo o próprio), se houver;
@@ -228,19 +252,19 @@ def audit_repo(repo_root: Path) -> Dict[str, object]:
         "child_without_parent": 0,
         "undeclared_poms": 0,
         "notes": "",
-        "module_rows": []  # cada item: {repo_path, module, status, detail, rel_path, abs_path, depth, nearest_declared_ancestor}
+        "module_rows": []
     }
     if not root_pom.is_file():
         res["notes"] = "no-root-pom"
         return res
 
-    # 1) módulos declarados (RECUSIVO)
+    # 1) módulos declarados (recursivo)
     declared = _collect_declared_modules_recursive(repo_root, root_pom)
     declared_set = set(declared)
     res["declared_modules_count"] = len(declared)
 
-    # mapa GAV dos declarados + root
-    gav_map = _extract_gav_map(repo_root, declared)
+    # mapas de GAV
+    gav_map, module_by_gav = _build_gav_indexes(repo_root, declared)
 
     # 1.a) validar cada módulo declarado
     for m in declared:
@@ -274,7 +298,6 @@ def audit_repo(repo_root: Path) -> Dict[str, object]:
             })
             continue
 
-        # parent esperado = ancestral declarado mais próximo (ou root)
         exp_gav, anc = _expected_parent_gav_for(m, declared_set, gav_map)
         ok, why = _child_has_parent(mpom, exp_gav)
         status = "ok" if ok else "parent-problem"
@@ -296,27 +319,44 @@ def audit_repo(repo_root: Path) -> Dict[str, object]:
     subs = _list_subpom_paths(repo_root)
     seen_undeclared = set()
     for sp in subs:
-        rel_dir = str(sp.parent.relative_to(repo_root))  # diretório do pom
+        rel_dir = str(sp.parent.relative_to(repo_root))
         if rel_dir in declared_set:
             continue
         if rel_dir in seen_undeclared:
             continue
         seen_undeclared.add(rel_dir)
 
-        exp_gav, anc = _expected_parent_gav_for(rel_dir, declared_set, gav_map)
-        ok, why = _child_has_parent(sp, exp_gav)
-        st = "undeclared-with-parent" if ok else f"undeclared-{why}"
+        # (A) expectativa por caminho (ancestral mais próximo)
+        exp_gav_path, anc_by_path = _expected_parent_gav_for(rel_dir, declared_set, gav_map)
+        ok_path, why_path = _child_has_parent(sp, exp_gav_path)
+
+        # (B) expectativa por GAV: se o <parent> do filho bate com ALGUM módulo declarado
+        p_gid, p_aid, p_ver = _get_child_parent_gav(sp)
+        declared_parents_by_gav = module_by_gav.get((p_gid, p_aid), set()) if (p_gid and p_aid) else set()
+        anc_by_gav = next(iter(declared_parents_by_gav), "")
+
+        if declared_parents_by_gav:
+            # Pai é um módulo declarado (por GAV) => não é erro, é estrutura multinível
+            st = "undeclared-via-declared-parent"
+            det = f"<parent> aponta para módulo declarado: {p_gid}:{p_aid}"
+            nearest = anc_by_gav if anc_by_gav else anc_by_path
+        else:
+            # sem pai declarado por GAV -> manter regra por caminho
+            st = "undeclared-with-parent" if ok_path else f"undeclared-{why_path}"
+            det = "POM não listado em <modules> (após expansão recursiva)"
+            nearest = anc_by_path
 
         res["module_rows"].append({
             "repo_path": str(repo_root),
-            "module": rel_dir,            # pasta do POM
+            "module": rel_dir,
             "status": st,
-            "detail": "POM não listado em <modules> (após expansão recursiva)",
+            "detail": det,
             "rel_path": f"{rel_dir}/pom.xml",
             "abs_path": str(sp.resolve()),
             "depth": rel_dir.count(os.sep),
-            "nearest_declared_ancestor": anc
+            "nearest_declared_ancestor": nearest
         })
+
     res["undeclared_poms"] = len(seen_undeclared)
     return res
 
@@ -335,10 +375,10 @@ def build_repo_path(owner: str, name: str) -> Path:
     return Path(REPOS_DIR) / owner / name
 
 def main():
-    # usa o mesmo read_args do seu projeto para carregar a lista de repositórios
     args = read_args(
-        'audit_maven_modules_v2',
-        'Audita módulos Maven de forma recursiva e valida <parent> contra o ancestral declarado mais próximo.',
+        'audit_maven_modules_v3',
+        'Audita módulos Maven de forma recursiva; valida <parent> contra ancestral mais próximo; '
+        'reclassifica POMs não declarados cujo <parent> aponta para módulo declarado.',
         default_label_type="vulnerabilities",
         default_skip_remove=True
     )
