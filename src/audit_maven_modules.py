@@ -1,247 +1,297 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 """
-Auditoria Maven — Primeiro Nível (root only)
+Auditoria Maven (DB-mining) — 1º nível (módulos do <modules> da raiz)
 
 Objetivo:
-- Contar e validar SOMENTE os módulos listados no <modules> do POM da raiz:
-  * diretório existe?
-  * existe pom.xml?
-  * <parent> (groupId/artifactId e, se presente, version) aponta para o POM raiz?
+- Verificar, por repositório, se os módulos listados em <modules> do pom.xml da raiz
+  declaram o POM raiz como <parent> (comparando groupId/artifactId sempre, e version se
+  presente em ambos).
+- Encontrar POMs de 1º nível (diretórios imediatamente sob a raiz) que apontam o raiz
+  como <parent>, mas não estão listados em <modules> (descompasso).
+
+Entradas:
+- Lista de projetos via DB-mining: `read_args(...)` + `get_or_create_projects(...)`
+  (usa `args.input`, `args.filter`, etc. conforme seu padrão).
 
 Saídas:
-- root_projetos.csv  : resumo por repositório (apenas 1º nível)
-- root_modulos.csv   : linhas detalhadas por módulo de 1º nível
-- (opcional) root_auditoria.xlsx com as duas abas acima
+- CSV `--out-projects` (default: projetos_rootlevel.csv): resumo por repositório
+- CSV `--out-modules`  (default: modulos_rootlevel.csv): detalhe por módulo/filho
+- XLSX opcional `--out-xlsx` (default: auditoria_rootlevel.xlsx) se pandas disponível
 
-Dependências internas (do seu projeto DB-mining):
-- database as db
-- extract.get_or_create_projects, extract.read_args
-- util.REPOS_DIR, util.yellow
+Uso (exemplos):
+  python audit_maven_modules_rootlevel_dbmining.py --input /caminho/projetos.csv
+  python audit_maven_modules_rootlevel_dbmining.py --filter owner=apache --out-xlsx auditoria.xlsx
 """
 
-import os, re, csv, argparse
+import csv
+import sys
 from pathlib import Path
+from typing import Dict, Optional, Tuple, List, Set
 import xml.etree.ElementTree as ET
-from typing import List, Tuple, Optional, Dict
+import argparse
 
-# === dependências do seu projeto ===
+# ==== dependências do seu projeto (DB-mining) ====
 import database as db
 from extract import get_or_create_projects, read_args
 from util import REPOS_DIR, yellow
 
-# opcional XLSX
+# XLSX opcional
 try:
     import pandas as pd
     HAS_PANDAS = True
 except Exception:
     HAS_PANDAS = False
 
-IGNORES = {
-    ".git", "target", "build", "dist", "out", "node_modules", "venv",
-    ".venv", "__pycache__", ".idea", ".vscode", ".mvn", ".gradle"
-}
+# ----------------- helpers XML ----------------- #
 
-# ---------------------------------------------------------------------------
-# Helpers XML / Maven
-# ---------------------------------------------------------------------------
+def _strip_ns(tag: str) -> str:
+    return tag.split('}', 1)[1] if '}' in tag else tag
 
-def _read_xml_ns_aware(p: Path):
-    """Retorna (root, txt, q) com helper q(tag) para lidar com namespace; root=None se parse falhar."""
+def _find_text(el: Optional[ET.Element], name: str) -> Optional[str]:
+    if el is None:
+        return None
+    for child in el:
+        if _strip_ns(child.tag) == name:
+            val = (child.text or '').strip()
+            return val or None
+    return None
+
+def parse_pom_gav(pom_path: Path) -> Tuple[Optional[str], Optional[str], Optional[str]]:
+    """(groupId, artifactId, version) do POM (herda gid/version do <parent> se ausentes)."""
     try:
-        txt = p.read_text(encoding="utf-8", errors="ignore")
-    except Exception:
-        return None, "", None
-    try:
-        root = ET.fromstring(txt)
-    except ET.ParseError:
-        return None, txt, None
-    ns_uri = root.tag.split('}')[0].strip('{') if root.tag.startswith('{') else None
-    def q(name: str):
-        return f"{{{ns_uri}}}{name}" if ns_uri else name
-    return root, txt, q
+        root = ET.parse(pom_path).getroot()
+    except ET.ParseError as e:
+        print(f"[WARN] XML inválido: {pom_path} ({e})", file=sys.stderr)
+        return None, None, None
 
-def _text_of(node):
-    return (node.text or "").strip() if node is not None and node.text else None
+    gid = _find_text(root, "groupId")
+    aid = _find_text(root, "artifactId")
+    ver = _find_text(root, "version")
 
-def _extract_gav(pom_path: Path) -> Tuple[Optional[str], Optional[str], Optional[str]]:
-    """Retorna (groupId, artifactId, version) do POM; herda gid/version do <parent> se ausentes."""
-    root, txt, q = _read_xml_ns_aware(pom_path)
-    if root is None:
-        # fallback simples via regex
-        def rgx(tag):
-            m = re.search(rf"<{tag}>([^<]+)</{tag}>", txt)
-            return m.group(1).strip() if m else None
-        gid, aid, ver = rgx("groupId"), rgx("artifactId"), rgx("version")
-        if not gid or not ver:
-            mg = re.search(r"<parent>.*?<groupId>([^<]+)</groupId>.*?</parent>", txt, re.S|re.I)
-            mv = re.search(r"<parent>.*?<version>([^<]+)</version>.*?</parent>", txt, re.S|re.I)
-            gid = gid or (mg.group(1).strip() if mg else None)
-            ver = ver or (mv.group(1).strip() if mv else None)
-        return gid, aid, ver
+    parent = None
+    for child in root:
+        if _strip_ns(child.tag) == "parent":
+            parent = child
+            break
 
-    gid = _text_of(root.find(q("groupId")))
-    aid = _text_of(root.find(q("artifactId")))
-    ver = _text_of(root.find(q("version")))
-    par = root.find(q("parent"))
-    if par is not None:
-        pg = _text_of(par.find(q("groupId")))
-        pv = _text_of(par.find(q("version")))
+    if parent is not None:
+        pg = _find_text(parent, "groupId")
+        pv = _find_text(parent, "version")
         gid = gid or pg
         ver = ver or pv
+
     return gid, aid, ver
 
-def _list_declared_modules_root_only(root_pom: Path) -> List[str]:
-    """Lê SOMENTE os módulos do POM raiz (não recursivo)."""
-    root, txt, q = _read_xml_ns_aware(root_pom)
-    mods: List[str] = []
-    if root is None:
-        for m in re.findall(r"<modules[^>]*>(.*?)</modules>", txt, flags=re.S|re.I):
-            mods += [x.strip() for x in re.findall(r"<module>([^<]+)</module>", m, flags=re.I)]
-    else:
-        mn = root.find(q("modules"))
-        if mn is not None:
-            for item in (mn.findall(".//{*}module") or mn.findall("module")):
-                val = _text_of(item)
-                if val:
-                    mods.append(val.strip())
-    # normaliza (ordem preservada, sem duplicatas)
+def parse_modules_from_root_pom(pom_path: Path) -> List[str]:
+    """Extrai <modules>/<module> do POM raiz (valores exatamente como declarados)."""
+    try:
+        root = ET.parse(pom_path).getroot()
+    except ET.ParseError:
+        return []
+    modules: List[str] = []
+    for child in root:
+        if _strip_ns(child.tag) == "modules":
+            for m in child:
+                if _strip_ns(m.tag) == "module":
+                    name = (m.text or '').strip()
+                    if name:
+                        modules.append(name)
+    # de-duplicado preservando ordem
     seen, out = set(), []
-    for m in mods:
-        if m and m not in seen:
+    for m in modules:
+        if m not in seen:
             out.append(m); seen.add(m)
     return out
 
-def _child_has_parent(child_pom: Path, parent_gav: Tuple[Optional[str], Optional[str], Optional[str]]) -> Tuple[bool, str]:
-    """Verifica se o child possui <parent> com gid/aid do pai; se version presente no child, compara também."""
-    pgid, paid, pver = parent_gav
-    root, txt, q = _read_xml_ns_aware(child_pom)
-    if root is None:
-        mg = re.search(r"<parent>.*?<groupId>([^<]+)</groupId>.*?</parent>", txt, re.S|re.I)
-        ma = re.search(r"<parent>.*?<artifactId>([^<]+)</artifactId>.*?</parent>", txt, re.S|re.I)
-        mv = re.search(r"<parent>.*?<version>([^<]+)</version>.*?</parent>", txt, re.S|re.I)
-        cg, ca, cv = (mg.group(1).strip() if mg else None,
-                      ma.group(1).strip() if ma else None,
-                      mv.group(1).strip() if mv else None)
-    else:
-        par = root.find(q("parent"))
-        if par is None:
-            return False, "no-parent"
-        cg = _text_of(par.find(q("groupId")))
-        ca = _text_of(par.find(q("artifactId")))
-        cv = _text_of(par.find(q("version")))
-    if not (cg and ca):
-        return False, "parent-incomplete"
-    if (pgid and paid) and ((cg != pgid) or (ca != paid)):
-        return False, f"parent-mismatch(child={cg}:{ca} vs root={pgid}:{paid})"
-    if cv and pver and (cv != pver):
-        return False, f"parent-version-diff(child={cv}, root={pver})"
-    return True, "ok"
+def parse_parent_gav(pom_path: Path) -> Tuple[Optional[str], Optional[str], Optional[str]]:
+    """(parent.groupId, parent.artifactId, parent.version) de um POM filho; None se sem <parent>."""
+    try:
+        root = ET.parse(pom_path).getroot()
+    except ET.ParseError:
+        return None, None, None
+    parent = None
+    for child in root:
+        if _strip_ns(child.tag) == "parent":
+            parent = child
+            break
+    if parent is None:
+        return None, None, None
+    return (
+        _find_text(parent, "groupId"),
+        _find_text(parent, "artifactId"),
+        _find_text(parent, "version"),
+    )
 
-# ---------------------------------------------------------------------------
-# Auditoria (apenas 1º nível)
-# ---------------------------------------------------------------------------
+def gav_str(g: Optional[str], a: Optional[str], v: Optional[str]) -> str:
+    return f"{g or '?'}:{a or '?'}:{v or '?'}"
 
-def audit_repo_root_level(repo_root: Path) -> Dict[str, object]:
+def parent_matches_root(
+    child_parent: Tuple[Optional[str], Optional[str], Optional[str]],
+    root_gav: Tuple[Optional[str], Optional[str], Optional[str]],
+) -> Tuple[bool, str]:
+    """Compara parent(child) com GAV do raiz: GA devem bater; versão só se presente em ambos."""
+    c_g, c_a, c_v = child_parent
+    r_g, r_a, r_v = root_gav
+
+    if not c_g or not c_a:
+        return False, "child-without-parent-or-missing-ga"
+    if not r_g or not r_a:
+        return False, "root-missing-ga"
+    if c_g != r_g or c_a != r_a:
+        return False, "parent-ga-mismatch"
+    if c_v and r_v and c_v != r_v:
+        return False, "parent-version-mismatch"
+    return True, ""
+
+# ----------------- varredura (1º nível) ----------------- #
+
+def scan_project_rootlevel(project_path: Path) -> Dict:
     """
-    Audita somente os módulos listados no <modules> do POM raiz.
-    Retorna resumo + linhas por módulo (1º nível).
+    Lê pom.xml da raiz, avalia módulos listados (1º nível) e encontra filhos de 1º nível
+    não listados que referenciam o raiz como <parent>.
     """
-    repo_root = repo_root.resolve()
-    root_pom = repo_root / "pom.xml"
+    project_path = project_path.resolve()
+    root_pom = project_path / "pom.xml"
+    if not root_pom.exists():
+        return {
+            "project": str(project_path),
+            "error": "missing-root-pom",
+            "root_gav": None,
+            "module_rows": [],
+            "summary": {
+                "has_root_pom": False,
+                "listed_modules": 0,
+                "listed_modules_parent_ok": 0,
+                "listed_modules_parent_bad": 0,
+                "unlisted_children_parent_ok": 0,
+                "coverage_listed_ok_over_listed": "0.000",
+            },
+        }
 
-    res = {
-        "repo_path": str(repo_root),
-        "has_root_pom": root_pom.is_file(),
-        "first_level_declared": 0,
-        "ok": 0,
-        "parent_problem": 0,
-        "missing_dir": 0,
-        "missing_pom": 0,
-        "rows": [],  # cada item: dict com info do módulo de 1º nível
-        "notes": ""
-    }
+    root_gav = parse_pom_gav(root_pom)
+    root_modules = parse_modules_from_root_pom(root_pom)
 
-    if not root_pom.is_file():
-        res["notes"] = "no-root-pom"
-        return res
+    module_rows: List[Dict] = []
+    ok_count = 0
 
-    # GAV do pai esperado (root)
-    root_gav = _extract_gav(root_pom)  # (groupId, artifactId, version)
+    # normaliza entradas do <modules>
+    normalized: List[Tuple[str, Path, bool]] = []
+    for m in root_modules:
+        is_nested = ("/" in m) or ("\\" in m)  # só 1º nível interessa
+        mod_dir = (project_path / m).resolve()
+        normalized.append((m, mod_dir, is_nested))
 
-    # SOMENTE 1º nível (não recursivo)
-    first_level = _list_declared_modules_root_only(root_pom)
-    res["first_level_declared"] = len(first_level)
-
-    for m in first_level:
-        mdir = repo_root / m
-        depth = m.count(os.sep)
-
-        if not mdir.exists():
-            res["missing_dir"] += 1
-            res["rows"].append({
-                "module": m, "level": 1, "status": "missing-dir",
-                "detail": "Diretório não existe",
-                "rel_path": "", "abs_path": "", "depth": depth
-            })
-            continue
-
-        mpom = mdir / "pom.xml"
-        if not mpom.is_file():
-            res["missing_pom"] += 1
-            res["rows"].append({
-                "module": m, "level": 1, "status": "missing-pom",
-                "detail": "pom.xml não encontrado",
-                "rel_path": "", "abs_path": "", "depth": depth
-            })
-            continue
-
-        ok, why = _child_has_parent(mpom, root_gav)
-        if ok:
-            res["ok"] += 1
-            status, detail = "ok", "parent=root"
+    # Avalia listados
+    for m_name, m_dir, is_nested in normalized:
+        pom = m_dir / "pom.xml"
+        if is_nested:
+            status = "listed-nested-path"
+            reason = "nested-module-path"
+            match_parent = False
+            child_parent_gav = (None, None, None)
+            exists = False
+        elif not pom.exists():
+            status = "listed-missing-pom"
+            reason = "missing-module-pom"
+            match_parent = False
+            child_parent_gav = (None, None, None)
+            exists = False
         else:
-            res["parent_problem"] += 1
-            status, detail = "parent-problem", why
+            child_parent_gav = parse_parent_gav(pom)
+            match_parent, reason = parent_matches_root(child_parent_gav, root_gav)
+            status = "listed-ok" if match_parent else "listed-parent-mismatch"
+            exists = True
+            if match_parent:
+                ok_count += 1
 
-        res["rows"].append({
-            "module": m, "level": 1, "status": status, "detail": detail,
-            "rel_path": f"{m}/pom.xml",
-            "abs_path": str(mpom.resolve()),
-            "depth": depth
+        module_rows.append({
+            "project_path": str(project_path),
+            "root_gav": gav_str(*root_gav),
+            "module_listed": True,
+            "module_name": m_name,
+            "module_path": str(m_dir.relative_to(project_path) if m_dir.exists() else m_name),
+            "module_pom_exists": exists,
+            "child_parent_gav": gav_str(*child_parent_gav),
+            "parent_matches_root": match_parent,
+            "status": status,
+            "reason": reason,
         })
 
-    return res
+    # Filhos de 1º nível não listados, mas com parent=root
+    listed_set: Set[str] = {n for (n, _, _) in normalized}
+    extra_children = 0
+    for entry in project_path.iterdir():
+        if not entry.is_dir():
+            continue
+        if entry.name.startswith(".") or entry.name in (".git", "target", "build", "dist", "out", "node_modules"):
+            continue
+        if entry.name in listed_set:
+            continue
+        pom = entry / "pom.xml"
+        if not pom.exists():
+            continue
+        child_parent_gav = parse_parent_gav(pom)
+        match_parent, _ = parent_matches_root(child_parent_gav, root_gav)
+        if match_parent:
+            extra_children += 1
+            module_rows.append({
+                "project_path": str(project_path),
+                "root_gav": gav_str(*root_gav),
+                "module_listed": False,
+                "module_name": entry.name,
+                "module_path": entry.name,
+                "module_pom_exists": True,
+                "child_parent_gav": gav_str(*child_parent_gav),
+                "parent_matches_root": True,
+                "status": "unlisted-child-with-root-parent",
+                "reason": "unlisted-but-parent-matches-root",
+            })
 
-# ---------------------------------------------------------------------------
-# CLI e execução
-# ---------------------------------------------------------------------------
+    total_listed = len(root_modules)
+    coverage = (ok_count / total_listed) if total_listed else 0.0
+
+    summary = {
+        "has_root_pom": True,
+        "listed_modules": total_listed,
+        "listed_modules_parent_ok": ok_count,
+        "listed_modules_parent_bad": total_listed - ok_count,
+        "unlisted_children_parent_ok": extra_children,
+        "coverage_listed_ok_over_listed": f"{coverage:.3f}",
+    }
+
+    return {
+        "project": str(project_path),
+        "error": None,
+        "root_gav": root_gav,
+        "module_rows": module_rows,
+        "summary": summary,
+    }
+
+# ----------------- CLI (DB-mining style) ----------------- #
 
 def parse_extra_cli() -> argparse.Namespace:
     p = argparse.ArgumentParser(add_help=False)
-    p.add_argument("--out-projects", default="root_projetos.csv",
-                   help="CSV de resumo por repositório (1º nível)")
-    p.add_argument("--out-modules", default="root_modulos.csv",
-                   help="CSV de módulos do 1º nível")
-    p.add_argument("--out-xlsx", default="root_auditoria.xlsx",
-                   help="Arquivo XLSX consolidado (opcional, se pandas disponível)")
+    p.add_argument("--out-projects", default="projetos_rootlevel.csv")
+    p.add_argument("--out-modules",  default="modulos_rootlevel.csv")
+    p.add_argument("--out-xlsx",     default="auditoria_rootlevel.xlsx")
     return p.parse_known_args()[0]
 
 def build_repo_path(owner: str, name: str) -> Path:
     return Path(REPOS_DIR) / owner / name
 
 def main():
-    # usa seu read_args padrão para carregar a lista de repositórios
+    # carrega lista de projetos com os mesmos parâmetros do seu pipeline
     args = read_args(
-        'audit_maven_root_modules',
-        'Valida APENAS o primeiro nível: módulos listados no <modules> do POM raiz e seu <parent> apontando para o root.',
+        'audit_maven_modules_rootlevel',
+        'Audita módulos Maven (1º nível) e confere <parent> com o POM raiz.',
         default_label_type="vulnerabilities",
         default_skip_remove=True
     )
     extra = parse_extra_cli()
 
     db.connect()
-
     projects = get_or_create_projects(
         create_version=False,
         filename=args.input,
@@ -251,60 +301,68 @@ def main():
         skip_remove=args.skip_remove
     )
 
-    print(f"\nFound {len(projects)} projects. Auditing ROOT level...\n")
+    print(f"\n[INFO] Projetos carregados: {len(projects)}\n")
 
     proj_rows, mod_rows = [], []
 
     for project in projects:
         repo_path = build_repo_path(project.owner, project.name)
-        res = audit_repo_root_level(repo_path)
+        res = scan_project_rootlevel(repo_path)
 
-        print(f"{project.owner}/{project.name}: "
-              f"root_pom={res['has_root_pom']}, "
-              f"declared(1st)={res['first_level_declared']}, "
-              f"ok={res['ok']}, "
-              f"parent_problem={res['parent_problem']}, "
-              f"missing_dir={res['missing_dir']}, "
-              f"missing_pom={res['missing_pom']}")
+        s = res["summary"]
+        print(f"{project.owner}/{project.name} -> root_pom={s['has_root_pom']}, "
+              f"listed={s['listed_modules']}, ok={s['listed_modules_parent_ok']}, "
+              f"bad={s['listed_modules']-s['listed_modules_parent_ok']}, "
+              f"unlisted_children={s['unlisted_children_parent_ok']}, "
+              f"coverage={s['coverage_listed_ok_over_listed']}")
 
         proj_rows.append({
             "owner": project.owner,
             "name": project.name,
-            "repo_path": res["repo_path"],
-            "has_root_pom": res["has_root_pom"],
-            "first_level_declared": res["first_level_declared"],
-            "ok": res["ok"],
-            "parent_problem": res["parent_problem"],
-            "missing_dir": res["missing_dir"],
-            "missing_pom": res["missing_pom"],
-            "notes": res["notes"]
+            "repo_path": str(repo_path),
+            "has_root_pom": s["has_root_pom"],
+            "listed_modules": s["listed_modules"],
+            "listed_modules_parent_ok": s["listed_modules_parent_ok"],
+            "listed_modules_parent_bad": s["listed_modules_parent_bad"],
+            "unlisted_children_parent_ok": s["unlisted_children_parent_ok"],
+            "coverage_listed_ok_over_listed": s["coverage_listed_ok_over_listed"],
         })
 
-        for r in res["rows"]:
+        for r in res["module_rows"]:
             mod_rows.append({
                 "owner": project.owner,
                 "name": project.name,
-                **r
+                "repo_path": r["project_path"],
+                "root_gav": r["root_gav"],
+                "module_listed": r["module_listed"],
+                "module_name": r["module_name"],
+                "module_path": r["module_path"],
+                "module_pom_exists": r["module_pom_exists"],
+                "child_parent_gav": r["child_parent_gav"],
+                "parent_matches_root": r["parent_matches_root"],
+                "status": r["status"],
+                "reason": r["reason"],
             })
 
     # CSVs
     try:
         with open(extra.out_projects, "w", newline="", encoding="utf-8") as f:
             w = csv.DictWriter(f, fieldnames=[
-                "owner","name","repo_path","has_root_pom",
-                "first_level_declared","ok","parent_problem",
-                "missing_dir","missing_pom","notes"
+                "owner","name","repo_path","has_root_pom","listed_modules",
+                "listed_modules_parent_ok","listed_modules_parent_bad",
+                "unlisted_children_parent_ok","coverage_listed_ok_over_listed"
             ])
             w.writeheader(); w.writerows(proj_rows)
-        print(f"[OK] CSV (projetos 1º nível): {extra.out_projects}")
+        print(f"[OK] CSV (projetos): {extra.out_projects}")
 
         with open(extra.out_modules, "w", newline="", encoding="utf-8") as f:
             w = csv.DictWriter(f, fieldnames=[
-                "owner","name","module","level","status","detail",
-                "rel_path","abs_path","depth"
+                "owner","name","repo_path","root_gav","module_listed","module_name",
+                "module_path","module_pom_exists","child_parent_gav",
+                "parent_matches_root","status","reason"
             ])
             w.writeheader(); w.writerows(mod_rows)
-        print(f"[OK] CSV (módulos 1º nível): {extra.out_modules}")
+        print(f"[OK] CSV (módulos): {extra.out_modules}")
     except Exception as e:
         print(yellow(f"[WARN] Falha ao salvar CSVs: {e}"))
 
@@ -314,8 +372,8 @@ def main():
             df_proj = pd.DataFrame(proj_rows)
             df_mods = pd.DataFrame(mod_rows)
             with pd.ExcelWriter(extra.out_xlsx, engine="openpyxl") as writer:
-                df_proj.to_excel(writer, index=False, sheet_name="projetos_root")
-                df_mods.to_excel(writer, index=False, sheet_name="modulos_root")
+                df_proj.to_excel(writer, index=False, sheet_name="projetos")
+                df_mods.to_excel(writer, index=False, sheet_name="modulos")
             print(f"[OK] XLSX salvo em: {extra.out_xlsx}")
         except Exception as e:
             print(yellow(f"[WARN] Falha ao salvar XLSX: {e}"))
