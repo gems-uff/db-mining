@@ -5,6 +5,35 @@ import csv
 import os
 import xml.etree.ElementTree as ET
 
+"""
+Descrição:
+-----------
+Este script percorre todos os repositórios localizados em `REPOS_DIR` e analisa cada arquivo
+`pom.xml` encontrado, verificando se há dependências Maven declaradas sem a tag <version>.
+O objetivo é identificar projetos que dependem implicitamente de versões herdadas (via parent POM
+ou dependencyManagement), o que pode indicar configurações frágeis ou dependências não explicitamente
+definidas.
+
+Funcionamento:
+---------------
+1. Varre recursivamente a pasta base (`REPOS_DIR`) em busca de arquivos `pom.xml`.
+2. Para cada `pom.xml` encontrado:
+   - Faz o parsing do XML utilizando o namespace Maven padrão (`http://maven.apache.org/POM/4.0.0`);
+   - Busca todos os elementos `<dependency>`;
+   - Verifica se há algum `<dependency>` sem a tag `<version>`.
+3. Registra o nome do projeto (extraído do caminho do arquivo) caso alguma dependência esteja sem versão.
+4. Gera um relatório CSV contendo apenas os nomes dos projetos afetados.
+
+Saídas:
+--------
+- `projects_with_missing_versions.csv`: arquivo CSV com a lista dos projetos que possuem pelo menos
+  uma dependência sem `<version>`.
+- Resumo exibido no console com:
+  - Total de projetos analisados;
+  - Total de projetos com dependências sem versão;
+  - Lista dos projetos identificados.
+"""
+
 NAMESPACE = {'m': 'http://maven.apache.org/POM/4.0.0'}
 
 def extract_project_name(path):

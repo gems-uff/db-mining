@@ -8,6 +8,10 @@ from collections import defaultdict, Counter
 import re
 from util import (REPOS_DIR, VULNERABILITY_COUNT)
 
+#O script percorre execuções de heurísticas (provavelmente de varreduras nos projetos) 
+# e conta, por projeto, quantas execuções indicam a presença de um pom.xml sem uma tag 
+# <version> (possivelmente para identificar POMs sem versão definida) vs. execuções “normais” 
+# (com <version>). Depois, salva esse resumo em CSV.
 
 NAMESPACE = {'m': 'http://maven.apache.org/POM/4.0.0'}
 

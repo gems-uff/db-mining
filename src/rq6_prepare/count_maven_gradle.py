@@ -5,6 +5,12 @@ import pandas as pd
 from collections import defaultdict
 from util import REPOS_DIR, BUILD_TOOLS_REPORT, ANNOTATED_FILE_JAVA
 
+"""
+Descrição:
+-----------
+Este script identifica automaticamente quais projetos Java são **multimódulos** e quais
+ferramentas de build utilizam (**Maven** ou **Gradle**). """
+
 def is_multimodule_pom(pom_path):
     try:
         tree = ET.parse(pom_path)
