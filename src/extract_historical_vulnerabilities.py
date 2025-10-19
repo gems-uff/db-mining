@@ -12,6 +12,11 @@ from extract import (get_or_create_projects, index_executions, do_commit,
     maybe_checkout, prepare_version
 )
 from util import REPOS_DIR, red, green, yellow, HEURISTICS_DIR_VULNERABILITIES
+from typing import Optional
+
+# Rodar somente na raiz do repo e não em cada módulo?
+ROOT_ONLY = True
+
 
 # 1 - Busca todos os commits relacionados a alterações no pom.xml
 # 2 - Busca todos os arquivos de pom.xml presentes no projeto para a versão modificada.
@@ -37,15 +42,15 @@ GREP_COMMAND_LOG_COMMAND_POM = [  # revisado
 # SUBSTITUÍDO por dependency:tree
 # -----------------------------
 
-def generate_dependency_tree(file_path: str):
+def generate_dependency_tree(file_path: str, non_recursive: bool = False):
     """
     Executa 'mvn dependency:tree' no diretório do pom.xml e grava em dep-tree.txt.
+    Se non_recursive=True, adiciona '-N' para não entrar nos módulos.
     Retorna o caminho do arquivo gerado ou None em caso de falha.
     """
     pom_dir = os.path.dirname(file_path)
     output_file = os.path.join(pom_dir, 'dep-tree.txt')
     try:
-        # Limpamos arquivo anterior para evitar confusão entre commits
         if os.path.isfile(output_file):
             try:
                 os.remove(output_file)
@@ -57,8 +62,11 @@ def generate_dependency_tree(file_path: str):
             "dependency:tree",
             "-DoutputFile=dep-tree.txt",
             "-DoutputType=text",
-            "-DincludeScope=compile"  # você pode ajustar (compile,runtime,test) se quiser
+            "-DincludeScope=compile"
         ]
+        if non_recursive:
+            cmd.insert(1, "-N")  # mvn -N -q dependency:tree ...
+
         subprocess.run(
             cmd,
             cwd=pom_dir,
@@ -200,7 +208,10 @@ def extract_all_versions_from_pom(file_path, labels):
     """
     results_per_label = {label.id: [] for label in labels}
     try:
-        tree_path = generate_dependency_tree(file_path)
+        repo_root = os.getcwd()
+        is_root_pom = os.path.abspath(file_path) == os.path.join(repo_root, 'pom.xml')
+
+        tree_path = generate_dependency_tree(file_path, non_recursive=is_root_pom and ROOT_ONLY)
         if not tree_path:
             print(yellow(f"Sem dependency:tree para {file_path}."))
             return results_per_label
@@ -495,9 +506,20 @@ def process_projects(args, connect=True):
                 # repo_root para funções auxiliares
                 repo_root = os.getcwd()
 
-                poms = find_all_pom_files(project)
+                repo_root = os.getcwd()
+
+                if ROOT_ONLY:
+                    root_pom = get_root_pom_path()
+                    if not root_pom:
+                        print(yellow(f"{project.name}: sem pom.xml na raiz; nada a processar em ROOT_ONLY."))
+                        continue
+                    poms = [root_pom]
+                else:
+                    poms = find_all_pom_files(project)
+
                 if not poms:
                     continue
+
 
                 exec_id_by_label = {}
                 for label in labels:
@@ -565,6 +587,16 @@ def process_projects(args, connect=True):
 
     if connect:
         db.close()
+
+def get_root_pom_path() -> Optional[str]:
+
+    """
+    Retorna o caminho absoluto para o pom.xml da raiz do repositório atual (cwd),
+    ou None se não existir.
+    """
+    root_pom = os.path.abspath(os.path.join(os.getcwd(), 'pom.xml'))
+    return root_pom if os.path.isfile(root_pom) else None
+
 
 def main():
     args = read_args(
