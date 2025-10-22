@@ -23,11 +23,6 @@ ROOT_ONLY = True
 # 3 - Busca todos os BDs que vamos usar na coleta.
 # 4 - Para cada arquivo de pom buscar todos os BDs da listagem do item 3, extraindo a versão de cada um.
 
-# -------------------------------------------------------------------
-# Config Maven (portável): usa $MAVEN_BIN se setado, senão 'mvn'
-# -------------------------------------------------------------------
-MAVEN_BIN = os.environ.get("MAVEN_BIN", "mvn")
-
 GREP_COMMAND_LOG_COMMAND_POM = [  # revisado
     'git',
     'log',
@@ -36,11 +31,6 @@ GREP_COMMAND_LOG_COMMAND_POM = [  # revisado
     '--',
     '**/pom.xml'
 ]
-
-# -----------------------------
-# ANTIGO: generate_effective_pom
-# SUBSTITUÍDO por dependency:tree
-# -----------------------------
 
 def generate_dependency_tree(file_path: str, non_recursive: bool = False):
     """
@@ -58,11 +48,10 @@ def generate_dependency_tree(file_path: str, non_recursive: bool = False):
                 pass
 
         cmd = [
-            MAVEN_BIN, "-q",
+            "mvn",
             "dependency:tree",
             "-DoutputFile=dep-tree.txt",
-            "-DoutputType=text",
-            "-DincludeScope=compile"
+            "-DoutputType=text"
         ]
         if non_recursive:
             cmd.insert(1, "-N")  # mvn -N -q dependency:tree ...
@@ -74,6 +63,7 @@ def generate_dependency_tree(file_path: str, non_recursive: bool = False):
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL
         )
+        print(f"Dependency:tree {pom_dir}.")
         return output_file if os.path.isfile(output_file) else None
     except subprocess.CalledProcessError:
         print(yellow(f"Não foi possível gerar dependency:tree para {file_path}."))
@@ -206,6 +196,7 @@ def extract_all_versions_from_pom(file_path, labels):
     Extrai versões de bancos de dados a partir do dependency:tree do módulo do POM informado.
     Retorna dict {label.id: [ {file, group_artifact, version}, ... ] }
     """
+
     results_per_label = {label.id: [] for label in labels}
     try:
         repo_root = os.getcwd()
@@ -504,8 +495,6 @@ def process_projects(args, connect=True):
                     commit_date, commits[-1]['sha'] if commits else None)
 
                 # repo_root para funções auxiliares
-                repo_root = os.getcwd()
-
                 repo_root = os.getcwd()
 
                 if ROOT_ONLY:
