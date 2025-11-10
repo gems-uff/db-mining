@@ -1,0 +1,2 @@
+com.oracle.database.jdbc:ojdbc.*
+com.oracle:ojdbc.*

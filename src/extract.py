@@ -465,6 +465,16 @@ def read_args(
         '--grep-version', dest="may_grep_workspace", action="store_false",
         help="Grep by version."
     )
+    # dentro de read_args(...) que monta o argparse:
+    parser.add_argument(
+        "--latest-only", action="store_true",
+        help="Processa apenas o último commit que tocou algum pom.xml"
+    )
+    parser.add_argument(
+        "--max-commits", type=int, default=None,
+        help="Limita a N commits mais recentes que tocaram algum pom.xml"
+    )
+    
     parser.set_defaults(may_grep_workspace=default_grep_workspace)
     
     return parser.parse_args()

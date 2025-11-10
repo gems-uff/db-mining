@@ -7,77 +7,43 @@ import re
 import xml.etree.ElementTree as ET
 from io import StringIO
 import database as db
-from extract import (get_or_create_projects, index_executions, do_commit,
+from extract import (
+    get_or_create_projects, index_executions, do_commit,
     get_or_create_labels, read_args, find_heuristic,
     maybe_checkout, prepare_version
 )
 from util import REPOS_DIR, red, green, yellow, HEURISTICS_DIR_VULNERABILITIES
 from typing import Optional
 
-# Rodar somente na raiz do repo e não em cada módulo?
-ROOT_ONLY = True
+# Configurações
+ROOT_ONLY = True          # processar apenas o pom da raiz para tarefas auxiliares (arquivos externos etc.)
+USE_ALL_DEPS = True       # usar o consolidado all-dependencies.txt para extrair versões de DBs
 
-
-# 1 - Busca todos os commits relacionados a alterações no pom.xml
-# 2 - Busca todos os arquivos de pom.xml presentes no projeto para a versão modificada.
-# 3 - Busca todos os BDs que vamos usar na coleta.
-# 4 - Para cada arquivo de pom buscar todos os BDs da listagem do item 3, extraindo a versão de cada um.
-
-GREP_COMMAND_LOG_COMMAND_POM = [  # revisado
-    'git',
-    'log',
-    '-p',
-    '--reverse',
-    '--',
-    '**/pom.xml'
+# ---------------------------------
+# Geração e listagem de commits POM
+# ---------------------------------
+GREP_COMMAND_LOG_COMMAND_POM = [
+    'git', 'log', '-p', '--reverse', '--', '**/pom.xml'
 ]
 
-def generate_dependency_tree(file_path: str, non_recursive: bool = False):
+def list_pom_commits(latest_only: bool = False, max_commits: Optional[int] = None):
     """
-    Executa 'mvn dependency:tree' no diretório do pom.xml e grava em dep-tree.txt.
-    Se non_recursive=True, adiciona '-N' para não entrar nos módulos.
-    Retorna o caminho do arquivo gerado ou None em caso de falha.
+    Retorna commits que alteraram algum pom.xml.
+    Se latest_only=True, retorna só o último; se max_commits=N, retorna os N mais recentes.
     """
-    pom_dir = os.path.dirname(file_path)
-    output_file = os.path.join(pom_dir, 'dep-tree.txt')
+    base = ['git', 'log', '-p']
+    if latest_only:
+        base += ['-n', '1']
+    elif max_commits:
+        base += ['-n', str(max_commits)]
+    else:
+        base += ['--reverse']
+    base += ['--', '**/pom.xml']
+
     try:
-        if os.path.isfile(output_file):
-            try:
-                os.remove(output_file)
-            except OSError:
-                pass
-
-        cmd = [
-            "mvn",
-            "dependency:tree",
-            "-DoutputFile=dep-tree.txt",
-            "-DoutputType=text"
-        ]
-        if non_recursive:
-            cmd.insert(1, "-N")  # mvn -N -q dependency:tree ...
-
-        subprocess.run(
-            cmd,
-            cwd=pom_dir,
-            check=True,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL
-        )
-        print(f"Dependency:tree {pom_dir}.")
-        return output_file if os.path.isfile(output_file) else None
-    except subprocess.CalledProcessError:
-        print(yellow(f"Não foi possível gerar dependency:tree para {file_path}."))
-        return None
-
-def list_pom_commits():  # revisado
-    """Retorna a lista de commits que alteraram algum pom.xml (ordem cronológica)."""
-    cmd = GREP_COMMAND_LOG_COMMAND_POM
-    try:
-        p = subprocess.run(cmd, capture_output=True)
+        p = subprocess.run(base, capture_output=True, check=False)
         output = p.stdout.decode(errors='replace').replace('\x00', '\uFFFD')
-        commits = []
-        current_commit = None
-
+        commits, current_commit = [], None
         for line in output.splitlines():
             if line.startswith('commit '):
                 if current_commit:
@@ -85,7 +51,6 @@ def list_pom_commits():  # revisado
                 current_commit = {'sha': line.split()[1]}
             elif line.startswith('Date:') and current_commit is not None:
                 date_str = line.replace('Date:', '').strip()
-                # Formatos de data do git podem variar; cobrimos o padrão default
                 try:
                     commit_date = datetime.strptime(date_str, '%a %b %d %H:%M:%S %Y %z').date()
                     current_commit['date'] = commit_date
@@ -93,6 +58,9 @@ def list_pom_commits():  # revisado
                     current_commit['date'] = None
         if current_commit:
             commits.append(current_commit)
+
+        if latest_only or max_commits:
+            commits = list(reversed(commits))  # ordem cronológica crescente
         return commits
     except subprocess.TimeoutExpired:
         print(red('Git timeout during log.'))
@@ -100,7 +68,7 @@ def list_pom_commits():  # revisado
         print(red('Git error during log.'))
     return []
 
-def find_all_pom_files(project):  # revisado
+def find_all_pom_files(project):
     """Retorna todos os arquivos pom.xml presentes no projeto no estado atual (após checkout)."""
     project_path = os.path.join(REPOS_DIR, project.owner, project.name)
     try:
@@ -115,7 +83,7 @@ def find_all_pom_files(project):  # revisado
         print(f"Erro ao buscar arquivos pom.xml no diretório '{project_path}': {e}")
         return []
 
-def count_commits_between(start_sha, end_sha):  # revisado
+def count_commits_between(start_sha, end_sha):
     """Conta quantos commits existem entre start_sha (exclusivo) e end_sha (inclusivo)."""
     try:
         cmd = ["git", "rev-list", "--count", f"{start_sha}..{end_sha}"]
@@ -126,24 +94,191 @@ def count_commits_between(start_sha, end_sha):  # revisado
         print(yellow(f"Erro ao contar commits entre {start_sha} e {end_sha}: {e}"))
         return 0
 
-def clean_effective_pom(raw_content):
-    # Mantido apenas caso ainda queira usar em algum fallback futuro
-    idx = raw_content.find("<project")
-    return raw_content[idx:] if idx != -1 else raw_content
+# -----------------------------
+# Utils de POM (arquivos externos)
+# -----------------------------
+def _strip_ns(tag: str) -> str:
+    return tag.split('}', 1)[-1] if '}' in tag else tag
 
-# -----------------------------
-# Parsing do dependency:tree
-# -----------------------------
-_DEP_LINE_RE = re.compile(r'^\s*(?:\[INFO\]\s*)?(?:[\|\+\-\\ ]*)\s*([^\s:]+):([^\s:]+):([^\s:]+):([^\s:]+)(?::([^\s:]+))?')
+def _resolve_basedir(path_text: str, pom_dir: str) -> str:
+    if not path_text:
+        return path_text
+    return (path_text
+            .replace('${project.basedir}', pom_dir)
+            .replace('${basedir}', pom_dir))
+
+def find_external_files_in_pom(file_path: str) -> list[str]:
+    """
+    Varre <configuration> e coleta caminhos de arquivo externos.
+    Retorna caminhos ABSOLUTOS existentes no filesystem (estado do commit).
+    """
+    ns = {'m': 'http://maven.apache.org/POM/4.0.0'}
+    pom_dir = os.path.dirname(file_path)
+    try:
+        eff = os.path.join(pom_dir, 'effective-pom.xml')
+        tree = ET.parse(eff if os.path.isfile(eff) else file_path)
+    except Exception:
+        return []
+
+    root = tree.getroot()
+    found = []
+
+    for conf in root.findall('.//m:configuration', ns):
+        for node in conf.iter():
+            name = _strip_ns(node.tag).lower()
+            if name in ('file', 'configfile', 'include'):
+                if node.text and node.text.strip():
+                    raw = node.text.strip()
+                    resolved = _resolve_basedir(raw, pom_dir)
+                    if not os.path.isabs(resolved):
+                        resolved = os.path.normpath(os.path.join(pom_dir, resolved))
+                    found.append(resolved)
+
+    for n in root.findall('.//m:configuration//m:files//m:file', ns):
+        if n.text and n.text.strip():
+            raw = n.text.strip()
+            resolved = _resolve_basedir(raw, pom_dir)
+            if not os.path.isabs(resolved):
+                resolved = os.path.normpath(os.path.join(pom_dir, resolved))
+            found.append(resolved)
+
+    uniq = []
+    seen = set()
+    for p in found:
+        if p not in seen and os.path.isfile(p):
+            uniq.append(p)
+            seen.add(p)
+    return uniq
+
+def list_commits_for_file(repo_root: str, rel_path: str) -> list[dict]:
+    """
+    Lista commits que alteraram 'rel_path' (relativo à raiz do repo), seguindo renomes.
+    Retorna [{'sha':..., 'date':...}, ...]
+    """
+    try:
+        p = subprocess.run(
+            ['git', 'log', '--follow', '--format=%H|%ad', '--date=iso-strict', '--', rel_path],
+            capture_output=True, check=True
+        )
+        commits = []
+        for ln in p.stdout.decode(errors='replace').splitlines():
+            if '|' in ln:
+                sha, dt = ln.split('|', 1)
+                commits.append({'sha': sha.strip(), 'date': dt.strip()})
+        return commits
+    except subprocess.CalledProcessError:
+        return []
+
+# -----------------------------------------------
+# Geração do consolidado e parsers de dependências
+# -----------------------------------------------
+def generate_all_dependencies(repo_root: str) -> Optional[str]:
+    """
+    Executa 'mvn dependency:tree -DoutputType=text' na raiz do repositório
+    e salva a saída completa em 'all-dependencies.txt'.
+    Retorna o caminho do arquivo ou None se falhar.
+    """
+    out_path = os.path.join(repo_root, "all-dependencies.txt")
+    try:
+        with open(out_path, "w", encoding="utf-8") as fh:
+            subprocess.run(
+                ["mvn", "dependency:tree", "-DoutputType=text"],
+                cwd=repo_root,
+                check=True,
+                stdout=fh,
+                stderr=subprocess.DEVNULL
+            )
+        print(f"Dependency:tree (consolidado) gerado em: {out_path}")
+        return out_path if os.path.isfile(out_path) else None
+    except subprocess.CalledProcessError:
+        print(yellow("Não foi possível gerar all-dependencies.txt na raiz."))
+        return None
+
+# linhas do tipo:
+# [INFO] --- maven-dependency-plugin:...:tree (default-cli) @ modulo-x ---
+_MODULE_HEADER_RE = re.compile(r'^\s*\[INFO\]\s+--- .* @ ([^ ]+) ---')
+
+# linhas do tipo:
+# [INFO] |  +- group:artifact:type:version[:scope]
+_DEP_LINE_RE = re.compile(
+    r'^\s*(?:\[INFO\]\s*)?(?:[\|\+\-\\ ]*)\s*([^\s:]+):([^\s:]+):([^\s:]+):([^\s:]+)(?::([^\s:]+))?'
+)
+
+_POM_FROM_RE = re.compile(r'^\s*\[INFO\]\s+from\s+(.+?/pom\.xml)\s*$')
+
+def parse_consolidated_dependency_tree(all_dep_path: str):
+    """
+    Lê o all-dependencies.txt e retorna uma lista de dicts:
+    [{'group', 'artifact', 'version', 'scope', 'module', 'module_pom'}]
+    """
+    results = []
+    if not all_dep_path or not os.path.isfile(all_dep_path):
+        return results
+
+    current_module = ''
+    current_module_pom = ''
+    try:
+        with open(all_dep_path, 'r', encoding='utf-8', errors='replace') as f:
+            for ln in f:
+                m_hdr = _MODULE_HEADER_RE.match(ln)
+                if m_hdr:
+                    current_module = m_hdr.group(1).strip()
+                    current_module_pom = ''  # reseta; virá numa linha "from .../pom.xml" logo abaixo (quando houver)
+                    continue
+
+                m_from = _POM_FROM_RE.match(ln)
+                if m_from:
+                    # caminho do pom.xml daquele módulo
+                    current_module_pom = os.path.abspath(m_from.group(1).strip())
+                    continue
+
+                m = _DEP_LINE_RE.match(ln)
+                if not m:
+                    continue
+
+                group, artifact, _type, version, scope = m.groups()
+                results.append({
+                    'group': group.strip(),
+                    'artifact': artifact.strip(),
+                    'version': (version or '').strip(),
+                    'scope': (scope or '').strip(),
+                    'module': current_module,
+                    'module_pom': current_module_pom
+                })
+    except Exception as e:
+        print(yellow(f"Falha ao parsear all-dependencies.txt: {e}"))
+    return results
+
+# Parser “por POM” (mantido como fallback opcional)
+def generate_dependency_tree(file_path: str, non_recursive: bool = False):
+    """
+    Executa 'mvn dependency:tree' no diretório do pom.xml e grava em dep-tree.txt.
+    Retorna o caminho do arquivo gerado ou None em caso de falha.
+    """
+    pom_dir = os.path.dirname(file_path)
+    output_file = os.path.join(pom_dir, 'dep-tree.txt')
+    try:
+        if os.path.isfile(output_file):
+            try:
+                os.remove(output_file)
+            except OSError:
+                pass
+
+        cmd = ["mvn", "dependency:tree", "-DoutputFile=dep-tree.txt", "-DoutputType=text"]
+        if non_recursive:
+            cmd.insert(1, "-N")  # mvn -N dependency:tree
+
+        with open(os.devnull, "w") as devnull:
+            subprocess.run(cmd, cwd=pom_dir, check=True, stdout=devnull, stderr=devnull)
+
+        print(f"Dependency:tree gerado em: {output_file}.")
+        return output_file if os.path.isfile(output_file) else None
+    except subprocess.CalledProcessError:
+        print(yellow(f"Não foi possível gerar dependency:tree para {file_path}."))
+        return None
 
 def parse_dependency_tree_file(dep_tree_path: str):
-    """
-    Lê o dep-tree.txt e retorna lista de dicts:
-    [{'group':..., 'artifact':..., 'version':..., 'scope':...}, ...]
-    Aceita linhas no formato típico:
-      [INFO] +- group:artifact:type:version[:scope]
-    Ignora linhas que não sigam o padrão.
-    """
+    """Parser de dep-tree.txt por POM."""
     results = []
     if not dep_tree_path or not os.path.isfile(dep_tree_path):
         return results
@@ -155,27 +290,77 @@ def parse_dependency_tree_file(dep_tree_path: str):
                 if not m:
                     continue
                 group, artifact, _type, version, scope = m.groups()
-                # Algumas linhas de árvore incluem o próprio projeto como raiz; manter ou não é opcional.
                 results.append({
                     'group': group.strip(),
                     'artifact': artifact.strip(),
-                    'version': version.strip(),
+                    'version': (version or '').strip(),
                     'scope': (scope or '').strip()
                 })
     except Exception as e:
         print(yellow(f"Falha ao parsear dependency:tree: {e}"))
     return results
 
-def parse_and_extract_from_tree(dep_entries, label):
+# -----------------------------
+# Aplicação das heurísticas
+# -----------------------------
+def parse_and_extract_from_consolidated(dep_entries, label, scopes_accept=None, source_path: Optional[str]=None):
+
     """
-    Aplica a heurística (label) sobre a lista de dependências resolvidas do dependency:tree
-    Retorna lista de dicts {file, group_artifact, version}.
+    Aplica a heurística sobre a lista de dependências do arquivo consolidado.
+    - Normaliza padrões (remove espaços e baixa caixa).
+    - Casa por substring no "group:artifact" já normalizado.
+    - Opcional: filtra por escopos (ex.: scopes_accept={'compile','runtime','provided','test'}).
+    Retorna [{file, group_artifact, version}].
     """
     results = []
-    # cada label.heuristic.pattern pode ter múltiplas linhas (groupId:artifactId)
+
+    # 1) normaliza os padrões da heurística (um por linha)
+    raw_lines = [ln for ln in (label.heuristic.pattern or "").splitlines() if ln.strip()]
+    patterns = []
+    for ln in raw_lines:
+        # remove todos os espaços e baixa caixa (assim "com.h2database : h2" casa com "com.h2database:h2")
+        patterns.append(re.sub(r"\s+", "", ln).lower())
+
+    if not patterns:
+        return results
+
+    # 2) percorre dependências e aplica match normalizado
+    for d in dep_entries:
+        ga_norm = f"{d['group']}:{d['artifact']}".lower().replace(" ", "")
+        if scopes_accept is not None:
+            sc = (d.get('scope') or "").lower()
+            if sc and sc not in scopes_accept:
+                continue
+            
+        # casa por substring (exato o suficiente para "com.h2database:h2", mas tolerante para "h2database:h2")
+        if any(pat in ga_norm for pat in patterns):
+            version_text = d['version'] if d['version'] else 'undefined'
+            # origem bem detalhada
+            origin_parts = []
+            if source_path:
+                origin_parts.append(os.path.abspath(source_path))
+            origin_parts.append(d.get('module','').strip() or '?module')
+            mpom = d.get('module_pom','').strip()
+            if mpom:
+                origin_parts.append(f"[{mpom}]")
+            origin = " @ ".join(origin_parts[:-1]) + (f" {origin_parts[-1]}" if len(origin_parts) >= 1 else "")
+
+            results.append({
+                'file': origin,  # <=== vai para VersionVulnerability.file
+                'group_artifact': f"{d['group']}:{d['artifact']}",
+                'version': version_text
+            })
+
+    return results
+
+def parse_and_extract_from_tree(dep_entries, label):
+    """
+    (Fallback) Aplica a heurística na lista de dependências de um único POM (dep-tree.txt).
+    """
+    results = []
     pattern_lines = [line.strip() for line in label.heuristic.pattern.strip().splitlines() if line.strip()]
     try:
-        regex = re.compile(r'(' + '|'.join(pattern_lines) + r')', re.IGNORECASE)
+        regex = re.compile(r'(' + '|'.join(map(re.escape, pattern_lines)) + r')', re.IGNORECASE)
     except re.error as regex_err:
         print(yellow(f"Regex inválido na heurística '{label.name}': {regex_err}"))
         return results
@@ -185,93 +370,15 @@ def parse_and_extract_from_tree(dep_entries, label):
         if regex.search(ga):
             version_text = d['version'] if d['version'] else 'undefined'
             results.append({
-                'file': '(dependency:tree)',  # origem lógica; podemos anexar o caminho do POM chamador ao montar
+                'file': '(dependency:tree)',
                 'group_artifact': ga,
                 'version': version_text
             })
     return results
 
-def extract_all_versions_from_pom(file_path, labels):
-    """
-    Extrai versões de bancos de dados a partir do dependency:tree do módulo do POM informado.
-    Retorna dict {label.id: [ {file, group_artifact, version}, ... ] }
-    """
-
-    results_per_label = {label.id: [] for label in labels}
-    try:
-        repo_root = os.getcwd()
-        is_root_pom = os.path.abspath(file_path) == os.path.join(repo_root, 'pom.xml')
-
-        tree_path = generate_dependency_tree(file_path, non_recursive=is_root_pom and ROOT_ONLY)
-        if not tree_path:
-            print(yellow(f"Sem dependency:tree para {file_path}."))
-            return results_per_label
-
-        dep_entries = parse_dependency_tree_file(tree_path)
-        if not dep_entries:
-            print(yellow(f"Nenhuma dependência resolvida em {file_path}."))
-            return results_per_label
-
-        for label in labels:
-            parsed = parse_and_extract_from_tree(dep_entries, label)
-            # Anexa o caminho do pom que gerou a árvore para melhor rastreabilidade
-            for item in parsed:
-                item['file'] = f"{file_path} (dependency:tree)"
-            results_per_label[label.id].extend(parsed)
-
-        return results_per_label
-    except Exception as e:
-        print(yellow(f"Erro ao processar dependency:tree de {file_path}: {e}"))
-        return results_per_label
-
-def count_numbers(args, connect=True):
-    if connect:
-        db.connect()
-    status = {
-        'Success': 0,
-        'Skipped': 0,
-        'Iguais': 0,
-        'Repository not found': 0,
-        'Git error': 0,
-        'Git timeout': 0,
-    }
-
-    projects = get_or_create_projects(
-        create_version=True,
-        filename=args.input,
-        filters=args.filter,
-        min_project=args.min_project,
-        max_project=args.max_project,
-        skip_remove=args.skip_remove
-    )
-
-    labels = get_or_create_labels(  # cria as labels já com groupId e artifactId
-        heuristics_dir=args.heuristics,
-        label_type=args.label_type,
-        skip_remove=args.skip_remove
-    )
-
-    print(f"\nProcessing {len(labels)} heuristics over {len(projects)} projects commits.")
-
-    for project in projects:
-        try:
-            os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
-            last_versions = {}
-        except NotADirectoryError:
-            print(red('Repository not found.'))
-            status['Repository not found'] += 1
-            continue
-
-        try:
-            commits = list_pom_commits()
-            total_commit = len(commits)
-            poms = find_all_pom_files(project)
-            total_pom = len(poms)
-            print(f"\nProcessing {total_commit} projects commits over {total_pom} pom.xml")
-        except Exception as e:
-            print(red(f'Unexpected error: {e}'))
-            status['Git error'] += 1
-
+# ---------------------------------
+# DB helpers (inalterados do seu projeto)
+# ---------------------------------
 def get_last_verson_project(project):
     return (db.query(db.Version)
                .filter_by(project_id=project.id)
@@ -335,80 +442,36 @@ def get_previous_vuln_sha(project_id, file_path, heuristic_id, current_version_i
              .first())
     return row[0] if row else None
 
-def _strip_ns(tag: str) -> str:
-    return tag.split('}', 1)[-1] if '}' in tag else tag
-
-def _resolve_basedir(path_text: str, pom_dir: str) -> str:
-    if not path_text:
-        return path_text
-    return (path_text
-            .replace('${project.basedir}', pom_dir)
-            .replace('${basedir}', pom_dir))
-
-def find_external_files_in_pom(file_path: str) -> list[str]:
+# ---------------------------------
+# Checkout para o outro commit
+# ---------------------------------
+def git_checkout(commit_sha: str, verbose: bool = False) -> str:
     """
-    Varre <configuration> e coleta caminhos de arquivo externos.
-    Retorna caminhos ABSOLUTOS existentes no filesystem (estado do commit).
-    Observação: aqui mantivemos o parse do POM (ou effective, se existir localmente)
-    apenas para a análise auxiliar de arquivos externos referenciados.
+    Faz checkout forçado do commit e retorna o SHA atual.
+    Lança CalledProcessError em falha.
     """
-    ns = {'m': 'http://maven.apache.org/POM/4.0.0'}
-    pom_dir = os.path.dirname(file_path)
+    out = subprocess.DEVNULL if not verbose else None
+    # checkout forçado para funcionar mesmo em dirty state
+    subprocess.run(["git", "checkout", "-f", commit_sha],
+                   check=True, stdout=out, stderr=out)
+    return git_rev_parse(verbose=verbose)
 
-    try:
-        eff = os.path.join(pom_dir, 'effective-pom.xml')
-        tree = ET.parse(eff if os.path.isfile(eff) else file_path)
-    except Exception:
-        return []
-
-    root = tree.getroot()
-    found = []
-
-    for conf in root.findall('.//m:configuration', ns):
-        for node in conf.iter():
-            name = _strip_ns(node.tag).lower()
-            if name in ('file', 'configfile', 'include'):
-                if node.text and node.text.strip():
-                    raw = node.text.strip()
-                    resolved = _resolve_basedir(raw, pom_dir)
-                    if not os.path.isabs(resolved):
-                        resolved = os.path.normpath(os.path.join(pom_dir, resolved))
-                    found.append(resolved)
-
-    for n in root.findall('.//m:configuration//m:files//m:file', ns):
-        if n.text and n.text.strip():
-            raw = n.text.strip()
-            resolved = _resolve_basedir(raw, pom_dir)
-            if not os.path.isabs(resolved):
-                resolved = os.path.normpath(os.path.join(pom_dir, resolved))
-            found.append(resolved)
-
-    uniq = []
-    seen = set()
-    for p in found:
-        if p not in seen and os.path.isfile(p):
-            uniq.append(p)
-            seen.add(p)
-    return uniq
-
-def list_commits_for_file(repo_root: str, rel_path: str) -> list[dict]:
+def git_rev_parse(ref: str = "HEAD", verbose: bool = False) -> str:
     """
-    Lista commits que alteraram 'rel_path' (relativo à raiz do repo), seguindo renomes.
-    Retorna [{'sha':..., 'date':...}, ...]
+    Retorna o SHA de ref, por padrão HEAD.
     """
-    try:
-        p = subprocess.run(
-            ['git', 'log', '--follow', '--format=%H|%ad', '--date=iso-strict', '--', rel_path],
-            capture_output=True, check=True
-        )
-        commits = []
-        for ln in p.stdout.decode(errors='replace').splitlines():
-            if '|' in ln:
-                sha, dt = ln.split('|', 1)
-                commits.append({'sha': sha.strip(), 'date': dt.strip()})
-        return commits
-    except subprocess.CalledProcessError:
-        return []
+    out = subprocess.run(["git", "rev-parse", ref],
+                         check=True, capture_output=True)
+    return out.stdout.decode().strip()
+
+
+# ---------------------------------
+# Pipeline principal
+# ---------------------------------
+def get_root_pom_path() -> Optional[str]:
+    """Retorna o caminho absoluto para o pom.xml da raiz do repositório atual (cwd), ou None."""
+    root_pom = os.path.abspath(os.path.join(os.getcwd(), 'pom.xml'))
+    return root_pom if os.path.isfile(root_pom) else None
 
 def process_projects(args, connect=True):
     if connect:
@@ -431,7 +494,7 @@ def process_projects(args, connect=True):
         skip_remove=args.skip_remove
     )
 
-    labels = get_or_create_labels(  # cria as labels já com groupId e artifactId
+    labels = get_or_create_labels(
         heuristics_dir=args.heuristics,
         label_type=args.label_type,
         skip_remove=args.skip_remove
@@ -442,26 +505,31 @@ def process_projects(args, connect=True):
     for project in projects:
         try:
             os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
-            last_versions = {}
         except NotADirectoryError:
             print(red('Repository not found.'))
             status['Repository not found'] += 1
             continue
 
         try:
-            commits = list_pom_commits()
+            commits = list_pom_commits(
+                latest_only=getattr(args, "latest_only", False),
+                max_commits=getattr(args, "max_commits", None)
+            )
             if not commits:
                 print(yellow(f"{project.name}: no commits touching pom.xml."))
                 continue
 
+            # Ajuste de slices
+            if getattr(args, "latest_only", False):
+                commits = commits[-1:]
+            elif getattr(args, "max_commits", None):
+                commits = commits[-args.max_commits:]
+
             total_commit = len(commits)
 
-            # 1) pega a última Version persistida (linha inteira)
+            # Retomada (heurística simples)
             last_verson = get_last_verson_project(project)
             last_execution = get_last_execution_for_version(last_verson.id) if last_verson else None
-
-            # 2) Heurística simplificada para decidir retomar (mantida)
-            #    OBS: comparar 'last_execution' com SHA exige campo correspondente; mantido como no original.
             if last_execution and hasattr(last_execution, "sha") and last_execution.sha == commits[-1]['sha']:
                 have = set(h_id for (h_id,) in db.query(db.Execution.heuristic_id)
                                           .filter_by(version_id=last_verson.id).all())
@@ -487,16 +555,27 @@ def process_projects(args, connect=True):
                 commit_sha = commit['sha']
                 commit_date = commit.get('date')
 
-                head_sha1 = maybe_checkout(args, commit_sha, None)
+                # checkout do commit
+                #_ = maybe_checkout(args, commit_sha, None)
+                # checkout do commit, agora sempre
+                try:
+                    current_commit = git_checkout(commit_sha, getattr(args, "verbose", False))
+                    if current_commit != commit_sha:
+                        raise RuntimeError(f"Git error, checkout falhou, {current_commit} diferente de {commit_sha}")
+                except subprocess.CalledProcessError as e:
+                    print(red(f"Falha no checkout do commit {commit_sha[:7]}, {e}"))
+                    status['Git error'] += 1
+                    continue
 
                 version, is_new = prepare_version(
                     project, commit_sha, total_commit,
                     commit_index + 1,
-                    commit_date, commits[-1]['sha'] if commits else None)
+                    commit_date, commits[-1]['sha'] if commits else None
+                )
 
-                # repo_root para funções auxiliares
                 repo_root = os.getcwd()
 
+                # (Opcional) manter análise de arquivos externos referenciados em POM
                 if ROOT_ONLY:
                     root_pom = get_root_pom_path()
                     if not root_pom:
@@ -506,38 +585,44 @@ def process_projects(args, connect=True):
                 else:
                     poms = find_all_pom_files(project)
 
-                if not poms:
-                    continue
-
-
-                exec_id_by_label = {}
-                for label in labels:
-                    eid = get_or_create_execution(project, label, version, commit_sha, args)
-                    exec_id_by_label[label.id] = (eid, label.heuristic.id)
-
+                # Apenas logs/auxiliar (não impacta a coleta de DBs do consolidado)
                 for pom in poms:
-                    # 1) detectar arquivos externos referenciados
                     external_files = find_external_files_in_pom(pom)
-
-                    # 2) para cada arquivo, listar commits que o tocaram
                     for abs_path in external_files:
                         try:
                             rel_path = os.path.relpath(abs_path, repo_root)
                         except ValueError:
-                            continue  # se estiver fora do repo, ignora
-
+                            continue
                         file_commits = list_commits_for_file(repo_root, rel_path)
                         if args.verbose:
                             print(yellow(f"[ext] {rel_path} mudou em {len(file_commits)} commits "
                                          f"(ex.: {[c['sha'][:7] for c in file_commits[:3]]})"))
 
-                    # 3) roda extração de versões de TODOS os DBs para esse POM via dependency:tree
-                    results_dict = extract_all_versions_from_pom(pom, labels)
+                # ====== MODO PRINCIPAL: CONSOLIDADO ======
+                if USE_ALL_DEPS:
+                    all_deps = generate_all_dependencies(repo_root=repo_root)
+                    if not all_deps:
+                        print(yellow(f"{project.name}: não foi possível gerar all-dependencies.txt; pulando commit {commit_sha[:7]}."))
+                        continue
+
+                    dep_entries = parse_consolidated_dependency_tree(all_deps)
+                    if not dep_entries:
+                        print(yellow(f"{project.name}: all-dependencies.txt sem dependências reconhecidas; pulando commit {commit_sha[:7]}."))
+                        continue
+
+                    # cria/recupera executions por label (uma vez por commit)
+                    exec_id_by_label = {}
                     for label in labels:
-                        eid, heuristic_id = exec_id_by_label[label.id]
-                        for result in results_dict[label.id]:
+                        eid = get_or_create_execution(project, label, version, commit_sha, args)
+                        exec_id_by_label[label.id] = (eid, label.heuristic.id)
+
+                    # aplica heurísticas e persiste
+                    for label in labels:
+                        parsed = parse_and_extract_from_consolidated(dep_entries, label, source_path=all_deps)
+                        for result in parsed:
                             file_path = result['file']
                             new_version = result['version']
+                            eid, heuristic_id = exec_id_by_label[label.id]
 
                             if vuln_exists(version.id, file_path, heuristic_id, new_version):
                                 status['Skipped'] += 1
@@ -563,11 +648,65 @@ def process_projects(args, connect=True):
                                 status['Success'] += 1
                                 print(green('ok.'))
                             except subprocess.TimeoutExpired:
-                                print(red('Git timeout.'))
-                                status['Git timeout'] += 1
+                                print(red('Git timeout.')); status['Git timeout'] += 1
                             except subprocess.CalledProcessError:
-                                print(red('Git error.'))
-                                status['Git error'] += 1
+                                print(red('Git error.')); status['Git error'] += 1
+
+                # ====== (Opcional) Fallback por POM ======
+                else:
+                    # Se quiser manter o fluxo “por POM” em vez do consolidado
+                    exec_id_by_label = {}
+                    for label in labels:
+                        eid = get_or_create_execution(project, label, version, commit_sha, args)
+                        exec_id_by_label[label.id] = (eid, label.heuristic.id)
+
+                    for pom in poms:
+                        tree_path = generate_dependency_tree(pom, non_recursive=False)
+                        if not tree_path:
+                            print(yellow(f"Sem dependency:tree para {pom}."))
+                            continue
+
+                        dep_entries = parse_dependency_tree_file(tree_path)
+                        if not dep_entries:
+                            print(yellow(f"Nenhuma dependência resolvida em {pom}."))
+                            continue
+
+                        for label in labels:
+                            parsed = parse_and_extract_from_tree(dep_entries, label)
+                            # Anexa o caminho do pom que gerou a árvore para melhor rastreabilidade
+                            for item in parsed:
+                                file_path = f"{pom} (dependency:tree)"
+                                new_version = item['version']
+                                eid, heuristic_id = exec_id_by_label[label.id]
+
+                                if vuln_exists(version.id, file_path, heuristic_id, new_version):
+                                    status['Skipped'] += 1
+                                    continue
+
+                                prev_sha = get_previous_vuln_sha(project.id, file_path, heuristic_id, version.id)
+                                if prev_sha:
+                                    try:
+                                        commits_between = count_commits_between(prev_sha, commit_sha)
+                                    except Exception:
+                                        commits_between = 0
+                                else:
+                                    commits_between = 0
+
+                                try:
+                                    db.create(db.VersionVulnerability,
+                                              versionNumber=new_version,
+                                              file=file_path,
+                                              version_id=version.id,
+                                              commitsBetween=commits_between,
+                                              execution_id=eid)
+                                    do_commit()
+                                    status['Success'] += 1
+                                    print(green('ok.'))
+                                except subprocess.TimeoutExpired:
+                                    print(red('Git timeout.')); status['Git timeout'] += 1
+                                except subprocess.CalledProcessError:
+                                    print(red('Git error.')); status['Git error'] += 1
+
         except subprocess.TimeoutExpired:
             continue
         except Exception as e:
@@ -576,16 +715,6 @@ def process_projects(args, connect=True):
 
     if connect:
         db.close()
-
-def get_root_pom_path() -> Optional[str]:
-
-    """
-    Retorna o caminho absoluto para o pom.xml da raiz do repositório atual (cwd),
-    ou None se não existir.
-    """
-    root_pom = os.path.abspath(os.path.join(os.getcwd(), 'pom.xml'))
-    return root_pom if os.path.isfile(root_pom) else None
-
 
 def main():
     args = read_args(
@@ -599,8 +728,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-# Observações finais:
-# - Caso queira incluir scopes adicionais (runtime/test), ajuste -DincludeScope.
-# - Se seu Maven for muito antigo e não suportar outputType, remova -DoutputType=text.
-# - Para forçar um binário específico: export MAVEN_BIN=/caminho/para/mvn
