@@ -1,4 +1,2 @@
 org.mariadb.jdbc:mariadb-java-client
 org.mariadb:r2dbc-mariadb
-mysql:mysql-connector-java
-com.mysql:mysql-connector-j
