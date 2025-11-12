@@ -8,40 +8,42 @@ import xml.etree.ElementTree as ET
 from io import StringIO
 import database as db
 from extract import (
-    get_or_create_projects, index_executions, do_commit,
-    get_or_create_labels, read_args, find_heuristic,
-    maybe_checkout, prepare_version
+    get_or_create_projects, do_commit, maybe_checkout, do_rev_parse,
+    get_or_create_labels, read_args, find_heuristic, prepare_version
 )
 from util import REPOS_DIR, red, green, yellow, HEURISTICS_DIR_VULNERABILITIES
-from typing import Optional
+from typing import Optional, List, Dict
+from sqlalchemy import func
 
 # Configurações
+GREP_COMMAND_LOG_COMMAND_POM = ['git', 'log', '--first-parent', '-p', '--reverse', '--', '**/pom.xml']
 ROOT_ONLY = True          # processar apenas o pom da raiz para tarefas auxiliares (arquivos externos etc.)
 USE_ALL_DEPS = True       # usar o consolidado all-dependencies.txt para extrair versões de DBs
 
 # ---------------------------------
 # Geração e listagem de commits POM
 # ---------------------------------
-GREP_COMMAND_LOG_COMMAND_POM = [
-    'git', 'log', '-p', '--reverse', '--', '**/pom.xml'
-]
 
-def list_pom_commits(latest_only: bool = False, max_commits: Optional[int] = None):
+def list_pom_commits(
+    latest_only: bool = False,
+    max_commits: Optional[int] = None,
+) -> List[Dict]:
     """
-    Retorna commits que alteraram algum pom.xml.
-    Se latest_only=True, retorna só o último; se max_commits=N, retorna os N mais recentes.
+    Retorna commits que alteraram algum pom.xml em qualquer nível de diretório.
+    Considera apenas commits que listam pom.xml em --name-only.
     """
-    base = ['git', 'log', '-p']
+    cmd = list(GREP_COMMAND_LOG_COMMAND_POM)
+    
+    # Limite
     if latest_only:
-        base += ['-n', '1']
+        cmd[1:1] += ['-n', '1']
     elif max_commits:
-        base += ['-n', str(max_commits)]
-    else:
-        base += ['--reverse']
-    base += ['--', '**/pom.xml']
+        cmd[1:1] += ['-n', str(max_commits)]
+
+    #print("\n>>> Comando git:", ' '.join(GREP_COMMAND_LOG_COMMAND_POM))
 
     try:
-        p = subprocess.run(base, capture_output=True, check=False)
+        p = subprocess.run(cmd, capture_output=True, check=False)
         output = p.stdout.decode(errors='replace').replace('\x00', '\uFFFD')
         commits, current_commit = [], None
         for line in output.splitlines():
@@ -62,11 +64,13 @@ def list_pom_commits(latest_only: bool = False, max_commits: Optional[int] = Non
         if latest_only or max_commits:
             commits = list(reversed(commits))  # ordem cronológica crescente
         return commits
+
     except subprocess.TimeoutExpired:
         print(red('Git timeout during log.'))
     except subprocess.CalledProcessError:
         print(red('Git error during log.'))
     return []
+
 
 def find_all_pom_files(project):
     """Retorna todos os arquivos pom.xml presentes no projeto no estado atual (após checkout)."""
@@ -82,6 +86,44 @@ def find_all_pom_files(project):
     except Exception as e:
         print(f"Erro ao buscar arquivos pom.xml no diretório '{project_path}': {e}")
         return []
+
+def resume_from_first_incomplete_for_dict_commits(project, labels, commits, session=None):
+    """
+    Corta a lista para reiniciar no primeiro commit ainda incompleto.
+    Um commit está completo quando count(Execution) da Version do seu SHA
+    é maior ou igual a len(labels) deste run.
+    Retorna: commits_aparados, start_idx  .  Se todos completos, retorna [], None.
+    """
+    if not commits:
+        return [], None
+
+    total_heuristics = len(labels)
+    if total_heuristics == 0:
+        return [], None
+
+    sha_list = [c['sha'] for c in commits]
+
+    sess = session or db.db.session
+    rows = (
+        sess.query(db.Version.sha1, func.count(db.Execution.id))
+            .join(db.Execution, db.Execution.version_id == db.Version.id)
+            .filter(db.Version.project_id == project.id,
+                    db.Version.sha1.in_(sha_list))
+            .group_by(db.Version.sha1)
+            .all()
+    )
+    count_by_sha = {sha: cnt for sha, cnt in rows}
+
+    start_idx = None
+    for i, sha in enumerate(sha_list):
+        if count_by_sha.get(sha, 0) < total_heuristics:
+            start_idx = i
+            break
+
+    if start_idx is None:
+        return [], None
+
+    return commits[start_idx:], start_idx
 
 def count_commits_between(start_sha, end_sha):
     """Conta quantos commits existem entre start_sha (exclusivo) e end_sha (inclusivo)."""
@@ -197,13 +239,9 @@ def generate_all_dependencies(repo_root: str) -> Optional[str]:
 # linhas do tipo:
 # [INFO] --- maven-dependency-plugin:...:tree (default-cli) @ modulo-x ---
 _MODULE_HEADER_RE = re.compile(r'^\s*\[INFO\]\s+--- .* @ ([^ ]+) ---')
-
 # linhas do tipo:
 # [INFO] |  +- group:artifact:type:version[:scope]
-_DEP_LINE_RE = re.compile(
-    r'^\s*(?:\[INFO\]\s*)?(?:[\|\+\-\\ ]*)\s*([^\s:]+):([^\s:]+):([^\s:]+):([^\s:]+)(?::([^\s:]+))?'
-)
-
+_DEP_LINE_RE = re.compile(r'^\s*(?:\[INFO\]\s*)?(?:[\|\+\-\\ ]*)\s*([^\s:]+):([^\s:]+):([^\s:]+):([^\s:]+)(?::([^\s:]+))?')
 _POM_FROM_RE = re.compile(r'^\s*\[INFO\]\s+from\s+(.+?/pom\.xml)\s*$')
 
 def parse_consolidated_dependency_tree(all_dep_path: str):
@@ -379,25 +417,6 @@ def parse_and_extract_from_tree(dep_entries, label):
 # ---------------------------------
 # DB helpers (inalterados do seu projeto)
 # ---------------------------------
-def get_last_verson_project(project):
-    return (db.query(db.Version)
-               .filter_by(project_id=project.id)
-               .order_by(db.Version.id.desc())
-               .first())
-
-def get_last_execution_for_version(version_id):
-    return (db.query(db.Execution)
-               .filter_by(version_id=version_id)
-               .order_by(db.Execution.id.desc())
-               .first())
-
-def get_last_vuln_for_project(project):
-    q = (db.query(db.VersionVulnerability)
-           .join(db.Version, db.Version.id == db.VersionVulnerability.version_id)
-           .filter(db.Version.project_id == project.id)
-           .order_by(desc(db.Version.id), desc(db.VersionVulnerability.id))
-           .first())
-    return q
 
 def vuln_exists(version_id, file_path, heuristic_id, version_num):
     q = (db.query(db.VersionVulnerability.id)
@@ -443,34 +462,12 @@ def get_previous_vuln_sha(project_id, file_path, heuristic_id, current_version_i
     return row[0] if row else None
 
 # ---------------------------------
-# Checkout para o outro commit
-# ---------------------------------
-def git_checkout(commit_sha: str, verbose: bool = False) -> str:
-    """
-    Faz checkout forçado do commit e retorna o SHA atual.
-    Lança CalledProcessError em falha.
-    """
-    out = subprocess.DEVNULL if not verbose else None
-    # checkout forçado para funcionar mesmo em dirty state
-    subprocess.run(["git", "checkout", "-f", commit_sha],
-                   check=True, stdout=out, stderr=out)
-    return git_rev_parse(verbose=verbose)
-
-def git_rev_parse(ref: str = "HEAD", verbose: bool = False) -> str:
-    """
-    Retorna o SHA de ref, por padrão HEAD.
-    """
-    out = subprocess.run(["git", "rev-parse", ref],
-                         check=True, capture_output=True)
-    return out.stdout.decode().strip()
-
-
-# ---------------------------------
 # Pipeline principal
 # ---------------------------------
 def get_root_pom_path() -> Optional[str]:
     """Retorna o caminho absoluto para o pom.xml da raiz do repositório atual (cwd), ou None."""
     root_pom = os.path.abspath(os.path.join(os.getcwd(), 'pom.xml'))
+    print(root_pom)
     return root_pom if os.path.isfile(root_pom) else None
 
 def process_projects(args, connect=True):
@@ -503,6 +500,7 @@ def process_projects(args, connect=True):
     print(f"\nProcessing {len(labels)} heuristics over {len(projects)} projects commits.")
     
     for project in projects:
+        name = project.name
         try:
             os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
         except NotADirectoryError:
@@ -511,55 +509,38 @@ def process_projects(args, connect=True):
             continue
 
         try:
+            
+            # Janela de commits com a sua função atual
             commits = list_pom_commits(
-                latest_only=getattr(args, "latest_only", False),
-                max_commits=getattr(args, "max_commits", None)
+                latest_only=getattr(args, 'latest_only', False),
+                max_commits=getattr(args, 'max_commits', None)
             )
-            if not commits:
-                print(yellow(f"{project.name}: no commits touching pom.xml."))
+            total_commit = len(commits)
+            print(f"\nProcessing {total_commit} commits of {project.name} project.")
+
+            # Retomada: começar no primeiro commit ainda incompleto
+            commits, _start_idx = resume_from_first_incomplete_for_dict_commits(project, labels, commits)
+            if _start_idx is None or total_commit == 0:
+                print(green(f"{project.owner}/{project.name}: janela já completa, nada a fazer."))
                 continue
 
-            # Ajuste de slices
-            if getattr(args, "latest_only", False):
-                commits = commits[-1:]
-            elif getattr(args, "max_commits", None):
-                commits = commits[-args.max_commits:]
-
-            total_commit = len(commits)
-
-            # Retomada (heurística simples)
-            last_verson = get_last_verson_project(project)
-            last_execution = get_last_execution_for_version(last_verson.id) if last_verson else None
-            if last_execution and hasattr(last_execution, "sha") and last_execution.sha == commits[-1]['sha']:
-                have = set(h_id for (h_id,) in db.query(db.Execution.heuristic_id)
-                                          .filter_by(version_id=last_verson.id).all())
-                all_ids = set(lbl.heuristic.id for lbl in labels)
-                if all_ids.issubset(have):
-                    print(green(f"{project.name}: already complete up to latest commit ({last_execution.sha[:7]}). Skipping."))
-                    continue
-
-            if last_execution and hasattr(last_execution, "sha"):
-                try:
-                    start_idx = next(i for i, c in enumerate(commits) if c['sha'] == last_execution.sha)
-                    print(yellow(f"{project.name}: resuming at saved commit {last_execution.sha[:7]} (to fill gaps)."))
-                except StopIteration:
-                    print(yellow(f"{project.name}: saved SHA {last_execution.sha[:7]} not found. Reprocessing from start."))
-                    start_idx = 0
-            else:
-                start_idx = 0
-
-            print(f"\nProcessing {total_commit - start_idx} pom.xml commits of {project.name} project.")
-
-            for commit_index in range(start_idx, total_commit):
-                commit = commits[commit_index]
-                commit_sha = commit['sha']
-                commit_date = commit.get('date')
-
-                # checkout do commit
-                #_ = maybe_checkout(args, commit_sha, None)
+            for i, c in enumerate(commits, start=1):
+                if isinstance(c, dict):
+                    commit_sha = c.get('sha')
+                    commit_date = c.get('date')
+                    commit_index = i
+                elif isinstance(c, (list, tuple)):
+                    commit_sha, commit_date = c[0], (c[1] if len(c) > 1 else None)
+                else:
+                    commit_sha, commit_date = c, None
+                    
                 # checkout do commit, agora sempre
                 try:
-                    current_commit = git_checkout(commit_sha, getattr(args, "verbose", False))
+                    #current_commit = do_checkout(commit_sha, getattr(args, "verbose", False))
+                    if args.may_grep_workspace or (args.checkout and args.restore):
+                        current_sha1 = do_rev_parse(args.verbose)
+                    head_sha1 = current_sha1 if args.may_grep_workspace else None
+                    current_commit = maybe_checkout(args, commit_sha, head_sha1)
                     if current_commit != commit_sha:
                         raise RuntimeError(f"Git error, checkout falhou, {current_commit} diferente de {commit_sha}")
                 except subprocess.CalledProcessError as e:
@@ -567,11 +548,17 @@ def process_projects(args, connect=True):
                     status['Git error'] += 1
                     continue
 
-                version, is_new = prepare_version(
+                try:
+                    version, is_new = prepare_version(
                     project, commit_sha, total_commit,
-                    commit_index + 1,
+                    commit_index,
                     commit_date, commits[-1]['sha'] if commits else None
                 )
+                    do_commit()
+                except Exception as e:
+                    print(red(f"{name}: erro ao preparar Version para {commit_sha[:7]}"))
+                    status['Git error'] += 1
+                    continue
 
                 repo_root = os.getcwd()
 
@@ -579,35 +566,32 @@ def process_projects(args, connect=True):
                 if ROOT_ONLY:
                     root_pom = get_root_pom_path()
                     if not root_pom:
-                        print(yellow(f"{project.name}: sem pom.xml na raiz; nada a processar em ROOT_ONLY."))
+                        print(yellow(f"{name}: sem pom.xml na raiz; nada a processar em ROOT_ONLY."))
                         continue
-                    poms = [root_pom]
-                else:
-                    poms = find_all_pom_files(project)
-
+                    
                 # Apenas logs/auxiliar (não impacta a coleta de DBs do consolidado)
-                for pom in poms:
-                    external_files = find_external_files_in_pom(pom)
-                    for abs_path in external_files:
-                        try:
-                            rel_path = os.path.relpath(abs_path, repo_root)
-                        except ValueError:
-                            continue
-                        file_commits = list_commits_for_file(repo_root, rel_path)
-                        if args.verbose:
-                            print(yellow(f"[ext] {rel_path} mudou em {len(file_commits)} commits "
-                                         f"(ex.: {[c['sha'][:7] for c in file_commits[:3]]})"))
+                # for pom in root_pom:
+                #     external_files = find_external_files_in_pom(pom)
+                #     for abs_path in external_files:
+                #         try:
+                #             rel_path = os.path.relpath(abs_path, repo_root)
+                #         except ValueError:
+                #             continue
+                #         file_commits = list_commits_for_file(repo_root, rel_path)
+                #         if args.verbose:
+                #             print(yellow(f"[ext] {rel_path} mudou em {len(file_commits)} commits "
+                #                          f"(ex.: {[c['sha'][:7] for c in file_commits[:3]]})"))
 
                 # ====== MODO PRINCIPAL: CONSOLIDADO ======
                 if USE_ALL_DEPS:
                     all_deps = generate_all_dependencies(repo_root=repo_root)
                     if not all_deps:
-                        print(yellow(f"{project.name}: não foi possível gerar all-dependencies.txt; pulando commit {commit_sha[:7]}."))
+                        print(yellow(f"{name}: não foi possível gerar all-dependencies.txt; pulando commit {commit_sha[:7]}."))
                         continue
 
                     dep_entries = parse_consolidated_dependency_tree(all_deps)
                     if not dep_entries:
-                        print(yellow(f"{project.name}: all-dependencies.txt sem dependências reconhecidas; pulando commit {commit_sha[:7]}."))
+                        print(yellow(f"{name}: all-dependencies.txt sem dependências reconhecidas; pulando commit {commit_sha[:7]}."))
                         continue
 
                     # cria/recupera executions por label (uma vez por commit)
@@ -660,6 +644,7 @@ def process_projects(args, connect=True):
                         eid = get_or_create_execution(project, label, version, commit_sha, args)
                         exec_id_by_label[label.id] = (eid, label.heuristic.id)
 
+                    poms = find_all_pom_files()
                     for pom in poms:
                         tree_path = generate_dependency_tree(pom, non_recursive=False)
                         if not tree_path:
@@ -712,6 +697,10 @@ def process_projects(args, connect=True):
         except Exception as e:
             print(red(f'Unexpected error: {e}'))
             status['Git error'] += 1
+            try:
+                db.db.session.rollback()
+            except Exception:
+                pass
 
     if connect:
         db.close()
@@ -724,6 +713,7 @@ def main():
         default_skip_remove=True,
         default_heuristics=HEURISTICS_DIR_VULNERABILITIES
     )
+    args.checkout = True
     process_projects(args)
 
 if __name__ == "__main__":
