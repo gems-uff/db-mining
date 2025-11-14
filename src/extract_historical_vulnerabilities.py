@@ -562,7 +562,7 @@ def process_projects(args, connect=True):
 
                 repo_root = os.getcwd()
 
-                # (Opcional) manter análise de arquivos externos referenciados em POM
+                # Manter análise de arquivos externos referenciados em POM
                 if ROOT_ONLY:
                     root_pom = get_root_pom_path()
                     if not root_pom:
@@ -570,17 +570,17 @@ def process_projects(args, connect=True):
                         continue
                     
                 # Apenas logs/auxiliar (não impacta a coleta de DBs do consolidado)
-                # for pom in root_pom:
-                #     external_files = find_external_files_in_pom(pom)
-                #     for abs_path in external_files:
-                #         try:
-                #             rel_path = os.path.relpath(abs_path, repo_root)
-                #         except ValueError:
-                #             continue
-                #         file_commits = list_commits_for_file(repo_root, rel_path)
-                #         if args.verbose:
-                #             print(yellow(f"[ext] {rel_path} mudou em {len(file_commits)} commits "
-                #                          f"(ex.: {[c['sha'][:7] for c in file_commits[:3]]})"))
+                for pom in root_pom:
+                    external_files = find_external_files_in_pom(pom)
+                    for abs_path in external_files:
+                        try:
+                            rel_path = os.path.relpath(abs_path, repo_root)
+                        except ValueError:
+                            continue
+                        file_commits = list_commits_for_file(repo_root, rel_path)
+                        if args.verbose:
+                            print(yellow(f"[ext] {rel_path} mudou em {len(file_commits)} commits "
+                                         f"(ex.: {[c['sha'][:7] for c in file_commits[:3]]})"))
 
                 # ====== MODO PRINCIPAL: CONSOLIDADO ======
                 if USE_ALL_DEPS:
