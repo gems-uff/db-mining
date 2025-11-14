@@ -272,15 +272,22 @@ def diagnose_external_dependency_files(args, output_csv: str = "external_version
         })
 
     # grava CSV
+        # grava CSV
     try:
         fieldnames = ["owner", "name", "has_external_version_files", "files", "reason"]
-        with open(output_csv, "w", newline="", encoding="utf-8") as f:
+
+        # pega a pasta onde está este arquivo .py  ou seja, o projeto db-mining
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        output_path = os.path.join(script_dir, output_csv)
+
+        with open(output_path, "w", newline="", encoding="utf-8") as f:
             writer = csv.DictWriter(f, fieldnames=fieldnames)
             writer.writeheader()
             writer.writerows(rows)
-        print(green(f"\nArquivo de diagnóstico salvo em {output_csv}"))
+        print(green(f"\nArquivo de diagnóstico salvo em {output_path}"))
     except Exception as e:
         print(red(f"Falha ao salvar CSV, {e}"))
+
 
     db.close()
 
