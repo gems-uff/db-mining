@@ -1,6 +1,7 @@
 import os
 import re
 import csv
+from typing import Optional, List, Dict
 from util import ANNOTATED_FILE_JAVA
 
 
@@ -84,7 +85,7 @@ def find_external_files_in_pom(file_path: str):
     return uniq
 
 
-def get_root_pom_path() -> str | None:
+def get_root_pom_path() -> Optional[str]:
     """
     Retorna o caminho absoluto do pom.xml na raiz do repositório atual.
 
@@ -98,7 +99,7 @@ def get_root_pom_path() -> str | None:
 # Helpers para padrões de DB
 # ============================
 
-def build_db_patterns_from_labels(labels) -> list[str]:
+def build_db_patterns_from_labels(labels) -> List[str]:
     """
     Extrai padrões das heurísticas de DB (label.heuristic.pattern)
     e normaliza para comparação simples em texto.
@@ -157,7 +158,7 @@ def file_has_dependency_declarations(path: str, db_patterns: list[str]) -> bool:
     return True
 
 
-def collect_external_version_files(root_pom: str, labels) -> list[str]:
+def collect_external_version_files(root_pom: str, labels) -> List[str]:
     """
     Usa o pom raiz para achar arquivos externos,
     depois filtra somente aqueles que parecem declarar versões ou dependências de DB.
