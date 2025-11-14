@@ -118,7 +118,7 @@ def build_db_patterns_from_labels(labels) -> List[str]:
     return list(patterns)
 
 
-def file_has_dependency_declarations(path: str, db_patterns: list[str]) -> bool:
+def file_has_dependency_declarations(path: str, db_patterns: List[str]) -> bool:
     """
     Verifica se um arquivo externo parece declarar versões ou dependências
     relacionadas às heurísticas de DB.
