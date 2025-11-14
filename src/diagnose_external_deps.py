@@ -1,7 +1,6 @@
 import os
 import re
 import csv
-from typing import Optional
 from util import ANNOTATED_FILE_JAVA
 
 
@@ -85,7 +84,7 @@ def find_external_files_in_pom(file_path: str):
     return uniq
 
 
-def get_root_pom_path() -> Optional[str]:
+def get_root_pom_path() -> str | None:
     """
     Retorna o caminho absoluto do pom.xml na raiz do repositório atual.
 
@@ -291,13 +290,13 @@ def main():
     com declarações de dependências ou versões de DB.
     """
     args = read_args(
-        'diagnose_external_deps',     # nome do script (posicional)
-        'Diagnose external files that declare DB dependencies or versions',
-        "vulnerabilities",
-        True,
-        HEURISTICS_DIR_VULNERABILITIES,
-        ANNOTATED_FILE_JAVA
-    )
+    'diagnose_external_deps',     # nome do script (posicional)
+    'Diagnose external files that declare DB dependencies or versions',
+    "vulnerabilities",
+    True,
+    HEURISTICS_DIR_VULNERABILITIES,
+    ANNOTATED_FILE_JAVA
+)
 
 
     diagnose_external_dependency_files(args)
