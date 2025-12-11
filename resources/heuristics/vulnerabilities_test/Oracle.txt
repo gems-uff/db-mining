@@ -1,2 +1,10 @@
-com.oracle.database.jdbc:ojdbc.*
-com.oracle:ojdbc.*
+com.oracle.database.jdbc:ojdbc*
+com.oracle.jdbc:ojdbc*
+com.oracle:ojdbc*
+com.oracle.database.jdbc:ucp
+com.oracle.database.ha:simplefan
+com.oracle.database.ha:ons
+com.oracle.database.security:oraclepki
+com.oracle.database.security:osdt_core
+com.oracle.database.security:osdt_cert
+com.oracle.database.nls:orai18n
