@@ -16,7 +16,7 @@ from typing import Optional, List, Dict
 from sqlalchemy import func
 
 # Configurações
-GREP_COMMAND_LOG_COMMAND_POM = ['git', 'log', '--first-parent', '-p', '--reverse', '--', '**/pom.xml']
+GREP_COMMAND_LOG_COMMAND_POM = ['git', 'log', '--first-parent', '-p', '--reverse', '--format=%H|%cI', '--', '**/pom.xml']
 ROOT_ONLY = True          # processar apenas o pom da raiz para tarefas auxiliares (arquivos externos etc.)
 USE_ALL_DEPS = True       # usar o consolidado all-dependencies.txt para extrair versões de DBs
 
@@ -24,45 +24,43 @@ USE_ALL_DEPS = True       # usar o consolidado all-dependencies.txt para extrair
 # Geração e listagem de commits POM
 # ---------------------------------
 
+from datetime import datetime
+
 def list_pom_commits(
     latest_only: bool = False,
     max_commits: Optional[int] = None,
 ) -> List[Dict]:
-    """
-    Retorna commits que alteraram algum pom.xml em qualquer nível de diretório.
-    Considera apenas commits que listam pom.xml em --name-only.
-    """
+    """ Retorna commits que alteraram algum pom.xml. Usa committer date (%cI). """
     cmd = list(GREP_COMMAND_LOG_COMMAND_POM)
-    
-    # Limite
+
     if latest_only:
         cmd[1:1] += ['-n', '1']
     elif max_commits:
         cmd[1:1] += ['-n', str(max_commits)]
 
-    #print("\n>>> Comando git:", ' '.join(GREP_COMMAND_LOG_COMMAND_POM))
-
     try:
         p = subprocess.run(cmd, capture_output=True, check=False)
         output = p.stdout.decode(errors='replace').replace('\x00', '\uFFFD')
-        commits, current_commit = [], None
-        for line in output.splitlines():
-            if line.startswith('commit '):
-                if current_commit:
-                    commits.append(current_commit)
-                current_commit = {'sha': line.split()[1]}
-            elif line.startswith('Date:') and current_commit is not None:
-                date_str = line.replace('Date:', '').strip()
-                try:
-                    commit_date = datetime.strptime(date_str, '%a %b %d %H:%M:%S %Y %z').date()
-                    current_commit['date'] = commit_date
-                except ValueError:
-                    current_commit['date'] = None
-        if current_commit:
-            commits.append(current_commit)
 
-        if latest_only or max_commits:
-            commits = list(reversed(commits))  # ordem cronológica crescente
+        commits = []
+        for line in output.splitlines():
+            if '|' not in line:
+                continue
+            sha, dt = line.split('|', 1)
+            sha = sha.strip()
+            dt = dt.strip()
+
+            commit_date = None
+            try:
+                # dt vem como 2010-06-18T12:34:56-03:00
+                commit_date = datetime.fromisoformat(dt).date()
+            except ValueError:
+                commit_date = None
+
+            commits.append({'sha': sha, 'date': commit_date})
+
+        # seu código assume “ordem cronológica crescente”
+        # como você já usa --reverse, já está ok
         return commits
 
     except subprocess.TimeoutExpired:
@@ -70,6 +68,7 @@ def list_pom_commits(
     except subprocess.CalledProcessError:
         print(red('Git error during log.'))
     return []
+
 
 
 def find_all_pom_files(project):
@@ -193,13 +192,11 @@ def find_external_files_in_pom(file_path: str) -> list[str]:
     return uniq
 
 def list_commits_for_file(repo_root: str, rel_path: str) -> list[dict]:
-    """
-    Lista commits que alteraram 'rel_path' (relativo à raiz do repo), seguindo renomes.
-    Retorna [{'sha':..., 'date':...}, ...]
-    """
+    """ Lista commits que alteraram 'rel_path', seguindo renomes. Usa committer date (%cI), não author date.
+    Retorna [{'sha':..., 'date':...}, ...] """
     try:
         p = subprocess.run(
-            ['git', 'log', '--follow', '--format=%H|%ad', '--date=iso-strict', '--', rel_path],
+            ['git', 'log', '--follow', '--format=%H|%cI', '--', rel_path],
             capture_output=True, check=True
         )
         commits = []
