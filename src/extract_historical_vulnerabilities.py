@@ -16,7 +16,12 @@ from typing import Optional, List, Dict
 from sqlalchemy import func
 
 # Configurações
-GREP_COMMAND_LOG_COMMAND_POM = ['git', 'log', '--first-parent', '-p', '--reverse', '--format=%H|%cI', '--', '**/pom.xml']
+GREP_COMMAND_LOG_COMMAND_POM = [
+    "git", "log", "--first-parent", "-p", "--reverse",
+    "--format=%H|%cI", "--",
+    "pom.xml", ":(glob)**/pom.xml"
+]
+
 ROOT_ONLY = True          # processar apenas o pom da raiz para tarefas auxiliares (arquivos externos etc.)
 USE_ALL_DEPS = True       # usar o consolidado all-dependencies.txt para extrair versões de DBs
 
@@ -392,6 +397,7 @@ def parse_and_extract_from_tree(dep_entries, label):
     """
     (Fallback) Aplica a heurística na lista de dependências de um único POM (dep-tree.txt).
     """
+    ORACLE_REGEX = re.compile(r"(oracle|ojdbc)", re.IGNORECASE)
     results = []
     pattern_lines = [line.strip() for line in label.heuristic.pattern.strip().splitlines() if line.strip()]
     try:
@@ -402,6 +408,8 @@ def parse_and_extract_from_tree(dep_entries, label):
 
     for d in dep_entries:
         ga = f"{d['group']}:{d['artifact']}"
+        if ORACLE_REGEX.search(ga):
+            matched = True
         if regex.search(ga):
             version_text = d['version'] if d['version'] else 'undefined'
             results.append({
@@ -567,17 +575,17 @@ def process_projects(args, connect=True):
                         continue
                     
                 # Apenas logs/auxiliar (não impacta a coleta de DBs do consolidado)
-                for pom in root_pom:
-                    external_files = find_external_files_in_pom(pom)
-                    for abs_path in external_files:
-                        try:
-                            rel_path = os.path.relpath(abs_path, repo_root)
-                        except ValueError:
-                            continue
-                        file_commits = list_commits_for_file(repo_root, rel_path)
-                        if args.verbose:
-                            print(yellow(f"[ext] {rel_path} mudou em {len(file_commits)} commits "
-                                         f"(ex.: {[c['sha'][:7] for c in file_commits[:3]]})"))
+                #for pom in root_pom:
+                external_files = find_external_files_in_pom(root_pom)
+                for abs_path in external_files:
+                    try:
+                        rel_path = os.path.relpath(abs_path, repo_root)
+                    except ValueError:
+                        continue
+                    file_commits = list_commits_for_file(repo_root, rel_path)
+                    if args.verbose:
+                        print(yellow(f"[ext] {rel_path} mudou em {len(file_commits)} commits "
+                                    f"(ex.: {[c['sha'][:7] for c in file_commits[:3]]})"))
 
                 # ====== MODO PRINCIPAL: CONSOLIDADO ======
                 if USE_ALL_DEPS:
