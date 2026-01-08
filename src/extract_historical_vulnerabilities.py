@@ -19,9 +19,8 @@ from sqlalchemy import func
 GREP_COMMAND_LOG_COMMAND_POM = [
     "git", "log", "--first-parent", "-p", "--reverse",
     "--format=%H|%cI", "--",
-    "pom.xml", ":(glob)**/pom.xml"
+    "pom.xml", "**/pom.xml"
 ]
-
 ROOT_ONLY = True          # processar apenas o pom da raiz para tarefas auxiliares (arquivos externos etc.)
 USE_ALL_DEPS = True       # usar o consolidado all-dependencies.txt para extrair versões de DBs
 
