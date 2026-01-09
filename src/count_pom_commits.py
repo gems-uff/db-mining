@@ -10,7 +10,7 @@ from util import REPOS_DIR, red, green, yellow
 GREP_COMMAND_LOG_COMMAND_POM = [
     "git", "log", "--first-parent", "-p", "--reverse",
     "--format=%H|%cI", "--",
-    "pom.xml", "**/pom.xml"
+    "pom.xml"
 ]
 
 _SHA_LINE_RE = re.compile(r"^[0-9a-f]{40}\|")
