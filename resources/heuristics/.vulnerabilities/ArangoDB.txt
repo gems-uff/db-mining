@@ -1,1 +1,1 @@
-com\.arangodb:arangodb-*
+com\.arangodb:arangodb(?:-.+)?

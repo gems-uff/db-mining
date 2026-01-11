@@ -1,2 +1,0 @@
-org.mariadb.jdbc:mariadb-java-client
-org.mariadb:r2dbc-mariadb

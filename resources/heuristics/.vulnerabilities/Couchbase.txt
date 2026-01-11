@@ -1,5 +1,1 @@
-com\.couchbase\.client:java-client
-com\.couchbase\.client:core-io
-com\.couchbase\.client:tracing-opentelemetry
-com\.couchbase\.client:dcp-client
-org\.springframework\.data:spring-data-couchbase
+(com\.couchbase\.client:(java-client|core-io|tracing-opentelemetry|dcp-client)|org\.springframework\.data:spring-data-couchbase)

@@ -352,6 +352,7 @@ def do_rev_parse(verbose):
         
 
 def do_checkout(commit, verbose):
+    print('\n')
     print(f"Checkout commit {commit}.")
     cmd = CHECKOUT_COMMAND + [commit]
     if verbose:

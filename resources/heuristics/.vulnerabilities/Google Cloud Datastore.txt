@@ -1,3 +1,1 @@
-com\.google\.cloud:google-cloud-datastore
-com\.google\.cloud:spring-cloud-gcp-starter-data-datastore
-com\.google\.apis:google-api-services-datastore
+com\.google\.(cloud|apis):.*datastore.*
