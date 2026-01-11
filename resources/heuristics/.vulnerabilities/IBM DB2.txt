@@ -1,2 +1,1 @@
-com\.ibm\.db2:jcc
-com.ibm.db2.jcc:db2jcc
+com\.ibm\.db2(\.[^:]+)?:((jcc)|(db2jcc))

@@ -1,2 +1,1 @@
-org\.apache\.hbase:hbase.*
-org\.springframework\.data:spring-data-hadoop
+org\.apache\.hbase:hbase(-.*)?

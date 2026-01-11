@@ -1,2 +1,1 @@
-com\.cloudera\.impala:jdbc
-com\.cloudera\.impala:ClouderaImpalaJDBC
+com\.cloudera\.impala:[^:]+

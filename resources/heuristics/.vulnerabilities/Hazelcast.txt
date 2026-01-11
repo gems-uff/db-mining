@@ -1,2 +1,1 @@
-com\.hazelcast:hazelcast.*
-com\.hazelcast\.jet:hazelcast-jet
+com\.hazelcast(\.jet)?:hazelcast(-jet)?(\..*)?
