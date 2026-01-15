@@ -1,1 +1,1 @@
-com\.h2database\s*:\s*h2
+com\.h2database.*:\s*h2

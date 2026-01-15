@@ -356,18 +356,8 @@ def parse_and_extract_from_consolidated(dep_entries, label, scopes_accept=None, 
     # 2) compila padrões
     patterns = []
     for ln in raw_lines:
-        ln = re.sub(r"\s+", "", ln)  # remove espaços
-
-        # se a linha parece regex (ex.: começa com (?i) ou tem ^ / $), compile como está
-        looks_like_regex = ln.startswith("(?") or ln.startswith("^") or ln.endswith("$")
-
-        if looks_like_regex:
-            patterns.append(re.compile(ln))
-        else:
-            # caso contrário, trata como literal group:artifact e casa exato
-            # re.IGNORECASE porque você normaliza ga_norm em lower, então tanto faz, mas ajuda se mudar depois
-            patterns.append(re.compile(rf"^{re.escape(ln.lower())}$", re.IGNORECASE))
-
+        patterns.append(re.compile(ln))
+        
     if not patterns:
         return results
 
@@ -678,7 +668,7 @@ def process_projects(args, connect=True):
                                           execution_id=eid)
                                 do_commit()
                                 status['Success'] += 1
-                                print(green('ok.'))
+                                print(green('VersionVulnerability ok.'))
                             except subprocess.TimeoutExpired:
                                 print(red('Git timeout.')); status['Git timeout'] += 1
                             except subprocess.CalledProcessError:
