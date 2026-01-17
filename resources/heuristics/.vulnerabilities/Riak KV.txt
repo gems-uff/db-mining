@@ -1,1 +1,1 @@
-com\.basho\.riak:riak.*
+com\.basho\.riak\s*:\s*riak.*

@@ -1,2 +1,2 @@
-com\.azure:azure-data-tables
-com\.microsoft\.azure:azure-storage
+com\.azure\s*:\s*azure-data-tables
+com\.microsoft\.azure\s*:\s*azure-storage

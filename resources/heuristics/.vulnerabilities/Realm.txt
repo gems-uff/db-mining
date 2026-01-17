@@ -1,1 +1,1 @@
-io\.realm:realm.*
+io\.realm\s*:\s*realm.*

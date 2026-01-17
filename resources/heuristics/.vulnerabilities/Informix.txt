@@ -1,1 +1,1 @@
-(com\.ibm\.informix|com\.informix)(\.[^:]+)?:(jdbc|informix-jdbc)
+(com\.ibm\.informix|com\.informix)(\.[^:]+)?\s*:\s*(jdbc|informix-jdbc)

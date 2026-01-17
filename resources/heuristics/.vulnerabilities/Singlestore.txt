@@ -1,1 +1,1 @@
-com\.singlestore:singlestore-jdbc-client
+com\.singlestore\s*:\s*singlestore-jdbc-client

@@ -1,2 +1,2 @@
-com\.vertica\.jdbc:vertica-jdbc
-com\.vertica:vertica.*
+com\.vertica\.jdbc\s*:\s*vertica-jdbc
+com\.vertica\s*:\s*vertica.*

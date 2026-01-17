@@ -1,2 +1,2 @@
-org\.postgis:postgis-jdbc
-org\.hibernate:hibernate-spatial.*
+org\.postgis\s*:\s*postgis-jdbc
+org\.hibernate\s*:\s*hibernate-spatial.*

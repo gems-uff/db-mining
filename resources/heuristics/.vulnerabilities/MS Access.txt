@@ -1,1 +1,1 @@
-net\.sf\.ucanaccess:ucanaccess
+net\.sf\.ucanaccess\s*:\s*ucanaccess

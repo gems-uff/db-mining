@@ -1,1 +1,1 @@
-com\.openlink\.virtuoso:virtjdbc
+com\.openlink\.virtuoso\s*:\s*virtjdbc

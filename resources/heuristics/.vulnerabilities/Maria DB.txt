@@ -1,0 +1,1 @@
+org\.mariadb(\.[^:]+)?\s*:\s*.*mariadb.*

@@ -1,1 +1,1 @@
-com\.sybase:jconn4
+com\.sybase\s*:\s*jconn4

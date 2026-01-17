@@ -1,2 +1,2 @@
-io\.etcd:jetcd
-com\.ibm\.etcd:etcd-java
+io\.etcd\s*:\s*jetcd
+com\.ibm\.etcd\s*:\s*etcd-java

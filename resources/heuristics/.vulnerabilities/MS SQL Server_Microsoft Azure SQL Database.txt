@@ -1,2 +1,2 @@
-com\.microsoft\.sqlserver:mssql-jdbc
-com\.hynnet:sqljdbc.*
+com\.microsoft\.sqlserver\s*:\s*mssql-jdbc
+com\.hynnet\s*:\s*sqljdbc.*

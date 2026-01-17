@@ -1,1 +1,1 @@
-org\.apache\.hbase:hbase(-.*)?
+org\.apache\.hbase\s*:\s*hbase(-.*)?

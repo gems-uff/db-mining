@@ -1,4 +1,4 @@
-software\.amazon\.awssdk:dynamodb
-com\.amazonaws:aws-java-sdk-dynamodb
-com\.github\.derjust:spring-data-dynamodb
-io\.github\.boostchicken:spring-data-dynamodb
+software\.amazon\.awssdk\s*:\s*dynamodb
+com\.amazonaws\s*:\s*aws-java-sdk-dynamodb
+com\.github\.derjust\s*:\s*spring-data-dynamodb
+io\.github\.boostchicken\s*:\s*spring-data-dynamodb

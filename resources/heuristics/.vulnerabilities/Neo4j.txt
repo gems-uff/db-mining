@@ -1,4 +1,4 @@
-org\.springframework\.boot:spring-boot-starter-data-neo4j
-org\.springframework\.data:spring-data-neo4j
-org\.neo4j:neo4j.*
-org\.neo4j\.driver:neo4j.*
+org\.springframework\.boot\s*:\s*spring-boot-starter-data-neo4j
+org\.springframework\.data\s*:\s*spring-data-neo4j
+org\.neo4j\s*:\s*neo4j.*
+org\.neo4j\.driver\s*:\s*neo4j.*

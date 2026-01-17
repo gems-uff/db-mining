@@ -1,6 +1,6 @@
-com\.lambdaworks:lettuce
-redis\.clients:jedis
-io\.lettuce:lettuce-core
-org\.redisson:redisson
-org\.springframework\.boot:spring-boot-starter-data-redis
-org\.springframework\.data:spring-data-redis
+com\.lambdaworks\s*:\s*lettuce
+redis\.clients\s*:\s*jedis
+io\.lettuce\s*:\s*lettuce-core
+org\.redisson\s*:\s*redisson
+org\.springframework\.boot\s*:\s*spring-boot-starter-data-redis
+org\.springframework\.data\s*:\s*spring-data-redis

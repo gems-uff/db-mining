@@ -1,2 +1,2 @@
-com\.influxdb:influxdb.*
-org\.influxdb:influxdb-java
+com\.influxdb\s*:\s*influxdb.*
+org\.influxdb\s*:\s*influxdb-java

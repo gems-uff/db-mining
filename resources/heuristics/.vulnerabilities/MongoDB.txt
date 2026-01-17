@@ -1,3 +1,3 @@
-org\.mongodb:mongodb-driver.*
-org\.springframework\.boot:spring-boot-starter-data-mongodb
-org\.springframework\.data:spring-data-mongodb
+org\.mongodb\s*:\s*mongodb-driver.*
+org\.springframework\.boot\s*:\s*spring-boot-starter-data-mongodb
+org\.springframework\.data\s*:\s*spring-data-mongodb

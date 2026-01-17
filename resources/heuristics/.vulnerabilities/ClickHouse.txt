@@ -1,5 +1,5 @@
-com\.clickhouse:clickhouse-jdbc
-com\.clickhouse:clickhouse-client
-com\.clickhouse:clickhouse-http-client
-com\.clickhouse:clickhouse-grpc-client
-com\.github\.housepower:clickhouse-native-jdbc
+com\.clickhouse\s*:\s*clickhouse-jdbc
+com\.clickhouse\s*:\s*clickhouse-client
+com\.clickhouse\s*:\s*clickhouse-http-client
+com\.clickhouse\s*:\s*clickhouse-grpc-client
+com\.github\.housepower\s*:\s*clickhouse-native-jdbc

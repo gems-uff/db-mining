@@ -1,1 +1,1 @@
-com\.sap\.sqlanywhere:sajdbc4
+com\.sap\.sqlanywhere\s*:\s*sajdbc4

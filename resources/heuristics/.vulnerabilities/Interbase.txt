@@ -1,4 +1,4 @@
-com\.embarcadero:interclient
-com\.embarcadero:interbase-jdbc
-jdbc\.interbase:interclient
-org\.apache\.hop:hop-databases-interbase
+com\.embarcadero\s*:\s*interclient
+com\.embarcadero\s*:\s*interbase-jdbc
+jdbc\.interbase\s*:\s*interclient
+org\.apache\.hop\s*:\s*hop-databases-interbase

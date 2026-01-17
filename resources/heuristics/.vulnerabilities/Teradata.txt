@@ -1,2 +1,2 @@
-com\.teradata\.jdbc:tdgssconfig
-com\.teradata\.jdbc:tera.*
+com\.teradata\.jdbc\s*:\s*tdgssconfig
+com\.teradata\.jdbc\s*:\s*tera.*

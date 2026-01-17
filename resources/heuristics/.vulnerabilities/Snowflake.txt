@@ -1,1 +1,1 @@
-net\.snowflake:snowflake-jdbc
+net\.snowflake\s*:\s*snowflake-jdbc

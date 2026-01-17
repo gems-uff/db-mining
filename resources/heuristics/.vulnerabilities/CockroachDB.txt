@@ -1,0 +1,1 @@
+io\.cockroachdb\s*:\s*spring\-data\-cockroachdb

@@ -1,1 +1,1 @@
-com\.aerospike(\.[^:]+)?:.*aerospike.*
+com\.aerospike(\.[^:]+)?\s*:\s*.*aerospike.*

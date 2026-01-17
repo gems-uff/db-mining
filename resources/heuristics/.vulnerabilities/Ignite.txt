@@ -1,1 +1,1 @@
-org\.apache\.ignite:ignite.*
+org\.apache\.ignite\s*:\s*ignite.*

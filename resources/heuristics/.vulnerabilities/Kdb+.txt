@@ -1,1 +1,1 @@
-com.kx:kxjdbc
+com.kx\s*:\s*kxjdbc
