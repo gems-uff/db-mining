@@ -1,0 +1,11 @@
+com\.oracle\.jdbc\s*:\s*ojdbc\d+
+com\.oracle\.database\.jdbc\s*:\s*ojdbc\d+
+com\.oracle\s*:\s*ojdbc\d+
+com\.oracle\.jdbc\s*:\s*ojdbc
+com\.oracle\.database\.jdbc\s*:\s*ucp
+com\.oracle\.database\.ha\s*:\s*simplefan
+com\.oracle\.database\.ha\s*:\s*ons
+com\.oracle\.database\.security\s*:\s*oraclepki
+com\.oracle\.database\.security\s*:\s*osdt_core
+com\.oracle\.database\.security\s*:\s*osdt_cert
+com\.oracle\.database\.nls\s*:\s*orai18n

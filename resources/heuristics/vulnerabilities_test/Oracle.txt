@@ -1,3 +1,0 @@
-com\.oracle(?:\.database\.jdbc|\.jdbc|)?:(?:ojdbc(?:\d+)?)$
-com\.oracle\.database\.jdbc:ucp$
-com\.oracle\.database\.(?:ha|security|nls):(simplefan|ons|oraclepki|osdt_core|osdt_cert|orai18n)$

@@ -1,1 +1,2 @@
 com\.cloudera\.impala\s*:\s*[^:]+
+com\.cloudera\.impala\s*:\s*impala*
