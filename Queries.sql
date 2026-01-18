@@ -197,7 +197,7 @@ SELECT
   l.name ,
   vv.file,
   vv.version_id,
-  p.name,
+  p.name as project_name,
   v.date_commit,
   v.sha1,
   v.project_id,
