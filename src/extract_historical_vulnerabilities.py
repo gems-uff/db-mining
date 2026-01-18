@@ -467,6 +467,23 @@ def read_text_file(path: str, max_chars: int = 2_000_000) -> str:
         txt = txt[:max_chars] + "\n\n[TRUNCATED]"
     return txt
 
+from urllib.parse import quote
+
+def build_maven_purl(group: str, artifact: str, version: Optional[str]) -> str:
+    """
+    pkg:maven/<groupId>/<artifactId>@<version>
+    Se version vier vazia ou 'undefined', salva sem o sufixo @version.
+    """
+    g = (group or "").strip()
+    a = (artifact or "").strip()
+    v = (version or "").strip()
+
+    base = f"pkg:maven/{quote(g, safe='')}/{quote(a, safe='')}"
+    if v and v.lower() != "undefined":
+        return base + f"@{quote(v, safe='')}"
+    return base
+
+
 # ---------------------------------
 # Pipeline principal
 # ---------------------------------
@@ -644,6 +661,11 @@ def process_projects(args, connect=True):
                         for result in parsed:
                             file_path = result['file']
                             new_version = result['version']
+                            
+                            ga = (result.get("group_artifact") or "")
+                            group, artifact = (ga.split(":", 1) + [""])[:2]
+
+                            purl_value = build_maven_purl(group, artifact, new_version)
                             eid, heuristic_id = exec_id_by_label[label.id]
 
                             if vuln_exists(version.id, file_path, heuristic_id, new_version):
@@ -665,6 +687,7 @@ def process_projects(args, connect=True):
                                           file=file_path,
                                           version_id=version.id,
                                           commitsBetween=commits_between,
+                                          purl=purl_value,
                                           execution_id=eid)
                                 do_commit()
                                 status['Success'] += 1
