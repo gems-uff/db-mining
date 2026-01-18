@@ -1,9 +1,10 @@
 import pandas as pd
 from itertools import combinations
+from util import VULNERABILITY_RESULTS, VULNERABILITY_OVERLAP_BY_PROJECT
 
 # Load data
-path = "/Users/camilapaiva/Documents/GitHub/db-mining/resources/vulnerabilities/_SELECT_vv_versionNumber_h_pattern_l_name_vv_file_vv_version_id__202601121903.csv"
-df = pd.read_csv(path)
+
+df = pd.read_csv(VULNERABILITY_RESULTS)
 
 # Normalize columns
 df["date_commit"] = pd.to_datetime(df["date_commit"], errors="coerce")
@@ -51,8 +52,7 @@ overlap_df = pd.DataFrame(rows).sort_values(
 )
 
 # Export to Excel
-out_path="/Users/camilapaiva/Documents/GitHub/db-mining/resources/vulnerabilities/overlap_versions_by_project.xlsx"
-with pd.ExcelWriter(out_path, engine="openpyxl") as writer:
+with pd.ExcelWriter(VULNERABILITY_OVERLAP_BY_PROJECT, engine="openpyxl") as writer:
     overlap_df.to_excel(writer, index=False, sheet_name="VersionOverlap")
 
-out_path
+VULNERABILITY_OVERLAP_BY_PROJECT

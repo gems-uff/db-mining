@@ -1,7 +1,8 @@
 import pandas as pd, numpy as np, os
+from util import VULNERABILITY_RESULTS, VULNERABILITY_VERSIONS_POR_MODULO
 
 
-df = pd.read_csv("/Users/camilapaiva/Documents/GitHub/db-mining/resources/vulnerabilities/_SELECT_vv_versionNumber_h_pattern_l_name_vv_file_vv_version_id__202601121903.csv")
+df = pd.read_csv(VULNERABILITY_RESULTS)
 df['date_commit'] = pd.to_datetime(df['date_commit'], errors='coerce')
 df = df.dropna(subset=['date_commit']).copy()
 for col in ['file','name','pattern','versionNumber','name.1','sha1']:
@@ -53,9 +54,8 @@ for (file_val, db_val), sub in df.groupby(['file','name'], sort=False):
 segments_all = pd.concat(segments_all, ignore_index=True)
 summary_all = pd.DataFrame(summary_all).sort_values(['db','file'])
 
-out_path="/Users/camilapaiva/Documents/GitHub/db-mining/resources/vulnerabilities/relatorio_versions_por_modulo.xlsx"
-with pd.ExcelWriter(out_path, engine="openpyxl") as writer:
+with pd.ExcelWriter(VULNERABILITY_VERSIONS_POR_MODULO, engine="openpyxl") as writer:
     summary_all.to_excel(writer, index=False, sheet_name="Resumo")
     segments_all.to_excel(writer, index=False, sheet_name="VersoesPorModulo")
 
-out_path, summary_all.head(), segments_all.head()
+VULNERABILITY_VERSIONS_POR_MODULO, summary_all.head(), segments_all.head()

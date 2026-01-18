@@ -17,11 +17,12 @@ HEURISTICS_DIR_EOI = HEURISTICS_DIR + os.sep + 'eo'
 HEURISTICS_DIR_FIRST_LEVEL = HEURISTICS_DIR + os.sep + '.first-level'
 HEURISTICS_DIR_SECOND_LEVEL = HEURISTICS_DIR + os.sep + '.second-level'
 HEURISTICS_DIR_TEMP_FILES = HEURISTICS_DIR + os.sep + '.tempFiles'
-HEURISTICS_DIR_VULNERABILITIES = HEURISTICS_DIR + os.sep + 'vulnerabilities_test'
+HEURISTICS_DIR_VULNERABILITIES = HEURISTICS_DIR + os.sep + 'vulnerabilities'
 HEURISTICS_DIR_IMPLEMENTATION = HEURISTICS_DIR + os.sep + '.implementation'
 HEURISTICS_DIR_QUERY = HEURISTICS_DIR + os.sep + '.query'
 IMAGES_DIR = RESOURCE_DIR + os.sep + 'images'
 PACKAGEPURL = RESOURCE_DIR + os.sep + 'package_purl' + os.sep + 'databaseteste'
+OUTPUT_CSV = RESOURCE_DIR + os.sep + 'vulnerabilities'
 
 SEQ_PATTERNS_DIR = RESOURCE_DIR + os.sep + 'seq_patterns'
 
@@ -76,6 +77,9 @@ COMMIT_FILE = RESOURCE_DIR + os.sep + 'commit-count.csv'
 BUILD_TOOLS_REPORT = RESOURCE_DIR + os.sep + 'build_tools_report.csv'
 VULNERABILITY_COUNT = RESOURCE_DIR + os.sep + 'countMissingVersionPom.csv'
 VARIABLES = RESOURCE_DIR + os.sep + 'variables.txt'
+VULNERABILITY_RESULTS = RESOURCE_DIR + os.sep + 'vulnerabilities' + os.sep + 'vulnerability_results.csv'
+VULNERABILITY_VERSIONS_POR_MODULO = RESOURCE_DIR + os.sep + 'vulnerabilities' + os.sep + 'relatorio_versions_por_modulo.xlsx'
+VULNERABILITY_OVERLAP_BY_PROJECT = RESOURCE_DIR + os.sep + 'vulnerabilities' + os.sep + 'overlap_versions_by_project.xlsx'
 
 
 DATABASE_CONFIG_FILE = BASE_DIR + os.sep + 'database.json'
