@@ -1,1 +1,2 @@
-(mysql|com\.mysql)(\.[^:]+)?\s*:\s*mysql-connector.*
+mysql(\.[^:]+)?\s*:\s*mysql-connector.*
+com\.mysql(\.[^:]+)?\s*:\s*mysql-connector.*
