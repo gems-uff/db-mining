@@ -272,13 +272,39 @@ The URL http://localhost:3000 is served by Node.js and has hot reload capability
 
 ### Steps for Vulnerabilities Analysis
 
-1. Run the `analise_historical_vulnerabilities.py` to populates the database with historial of vulnerabilities.
+1. Go into the project directory:
 
-2. Run the `export_to_csv_vuln.py` scripts. This script generates a CSV file containing the processed results.
+`~$ cd db-mining`
 
-3. Run the `analise_historical_vulnerabilities.py` script to generate an XLSX file containing the summary for the research questions.
+2. Download Maven version 3.9.9:
 
-4. Run the `search_vulnerabilites.py` to populates the database with vulnerabilities, using OSS Index.
+`cd ~ wget https://archive.apache.org/dist/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz`
+
+3. Extract Maven:
+
+`tar -xzf apache-maven-3.9.9-bin.tar.gz`
+
+4. Configure Maven environment variables:
+
+`nano ~/.bashrc`
+
+5. Add the following lines at the end of the file:
+
+`export MAVEN_HOME="$HOME/apache-maven-3.9.9"`
+`export PATH="$MAVEN_HOME/bin:$PATH"`
+
+6 . Save and verify the Maven installation:
+
+`source ~/.bashrc`
+`mvn -version`
+
+7. Run the `analise_historical_vulnerabilities.py` to populates the database with historial of vulnerabilities.
+
+8. Run the `export_to_csv_vuln.py` scripts. This script generates a CSV file containing the processed results.
+
+9. Run the `analise_historical_vulnerabilities.py` script to generate an XLSX file containing the summary for the research questions.
+
+10. Run the `search_vulnerabilites.py` to populates the database with vulnerabilities, using OSS Index.
 
 # Spreadsheets description
 
