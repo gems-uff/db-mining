@@ -3,3 +3,4 @@ com\.clickhouse\s*:\s*clickhouse-client
 com\.clickhouse\s*:\s*clickhouse-http-client
 com\.clickhouse\s*:\s*clickhouse-grpc-client
 com\.github\.housepower\s*:\s*clickhouse-native-jdbc
+ru\.yandex\.clickhouse\s*:\s*clickhouse-jdbc

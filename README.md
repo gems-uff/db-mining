@@ -278,7 +278,7 @@ The URL http://localhost:3000 is served by Node.js and has hot reload capability
 
 2. Download Maven version 3.9.9:
 
-`cd ~ wget https://archive.apache.org/dist/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz`
+`wget https://archive.apache.org/dist/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz`
 
 3. Extract Maven:
 

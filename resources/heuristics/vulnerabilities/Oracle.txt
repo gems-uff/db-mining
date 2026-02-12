@@ -9,3 +9,4 @@ com\.oracle\.database\.security\s*:\s*oraclepki
 com\.oracle\.database\.security\s*:\s*osdt_core
 com\.oracle\.database\.security\s*:\s*osdt_cert
 com\.oracle\.database\.nls\s*:\s*orai18n
+com\.oracle\.ojdbc\s*:\s*ojdbc(\d+)?
