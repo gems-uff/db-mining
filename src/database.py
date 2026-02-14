@@ -121,11 +121,13 @@ class Vulnerability(db.Model):
     status = db.Column(db.String)
     description = db.Column(db.String)
     reference = db.Column(db.String)
-    phase = db.Column(db.String)
-    votes = db.Column(db.String)
-    commets = db.Column(db.String)
-    year = db.Column(db.String)
     version = db.Column(db.String)
+    last_modified_at = db.Column(db.String) 
+    cvss_score = db.Column(db.String)
+    cvss_severity = db.Column(db.String)
+    cvss_vector = db.Column(db.String)
+    purl = db.Column(db.String)
+    published_at = db.Column(db.String)       # ISO string do NVD
     label_id = db.Column(db.Integer, db.ForeignKey('label.id'))
     label = db.relationship('Label')
     
