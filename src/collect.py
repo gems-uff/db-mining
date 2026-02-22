@@ -101,11 +101,17 @@ def main():
         has_next_page = True
         while has_next_page:
             print(f'Trying to retrieve the next {variables["repositoriesPerPage"]} repositories (> {stars} stars)...')
-            response = requests.post(url="https://api.github.com/graphql", json=request, headers=headers)
+            response = None
             try:
+                response = requests.post(url="https://api.github.com/graphql", json=request, headers=headers)
                 result = response.json()
             except:
-                print(f'Failed with http code {response.status_code} reason {response.reason}.')
+                if response:
+                    print(f'Failed with http code {response.status_code} reason {response.reason}.')
+                else:
+                    print(f'Failed to send the request.')
+                variables['repositoriesPerPage'] = int(max(1, variables['repositoriesPerPage'] * md))  # using AIMD
+                ai = 1  # resetting slow start
                 continue
 
             if 'Retry-After' in response.headers:  # reached retry limit
