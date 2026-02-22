@@ -2,19 +2,19 @@ import os
 import sys
 import subprocess
 from datetime import datetime, date
-from sqlalchemy.sql.expression import null
-from sqlalchemy import desc
 import re
 import xml.etree.ElementTree as ET
 from io import StringIO
 import database as db
 from extract import (
     get_or_create_projects, do_commit, maybe_checkout, do_rev_parse,
-    get_or_create_labels, read_args, find_heuristic, prepare_version
+    get_or_create_labels, read_args, prepare_version
 )
 from util import REPOS_DIR, red, green, yellow, HEURISTICS_DIR_VULNERABILITIES
 from typing import Optional, List, Dict
 from sqlalchemy import func
+from dataclasses import dataclass
+from typing import Optional
 
 # Configurações
 GREP_COMMAND_LOG_COMMAND_POM = [ "git", "log", "--first-parent",  "--reverse", "--format=%H|%cI", "--", "pom.xml", "**/pom.xml" ]
@@ -228,7 +228,7 @@ def list_commits_for_file(repo_root: str, rel_path: str) -> list[dict]:
 # -----------------------------------------------
 # Geração do consolidado e parsers de dependências
 # -----------------------------------------------
-def generate_all_dependencies(repo_root: str) -> Optional[str]:
+def generate_all_dependencies_semErros(repo_root: str) -> Optional[str]:
     """
     Executa 'mvn dependency:tree -DoutputType=text' na raiz do repositório
     e salva a saída completa em 'all-dependencies.txt'.
@@ -249,6 +249,54 @@ def generate_all_dependencies(repo_root: str) -> Optional[str]:
     except subprocess.CalledProcessError:
         print(yellow("Não foi possível gerar all-dependencies.txt na raiz."))
         return None
+
+
+@dataclass
+class MavenDepTreeResult:
+    ok: bool
+    out_path: Optional[str]
+    log_text: str
+    returncode: int
+
+def generate_all_dependencies(repo_root: str) -> MavenDepTreeResult:
+    out_path = os.path.join(repo_root, "all-dependencies.txt")
+    cmd = ["mvn", "dependency:tree", "-DoutputType=text"]
+
+    try:
+        p = subprocess.run(
+            cmd,
+            cwd=repo_root,
+            capture_output=True,
+            text=True,
+            check=False
+        )
+
+        stdout = p.stdout or ""
+        stderr = p.stderr or ""
+        log_text = (
+            "[DBMINING] mvn dependency:tree\n"
+            f"[DBMINING] returncode={p.returncode}\n\n"
+            "----- STDOUT -----\n"
+            + stdout +
+            "\n\n----- STDERR -----\n"
+            + stderr
+        )
+
+        if p.returncode == 0:
+            with open(out_path, "w", encoding="utf-8") as fh:
+                fh.write(stdout)
+            return MavenDepTreeResult(ok=True, out_path=out_path, log_text=log_text, returncode=p.returncode)
+
+        return MavenDepTreeResult(ok=False, out_path=None, log_text=log_text, returncode=p.returncode)
+
+    except Exception as e:
+        log_text = (
+            "[DBMINING] mvn dependency:tree\n"
+            "[DBMINING] exception\n\n"
+            + repr(e)
+        )
+        return MavenDepTreeResult(ok=False, out_path=None, log_text=log_text, returncode=999)
+
 
 def parse_consolidated_dependency_tree(all_dep_path: str):
     """
@@ -636,13 +684,22 @@ def process_projects(args, connect=True):
 
                 # ====== MODO PRINCIPAL: CONSOLIDADO ======
                 if USE_ALL_DEPS:
-                    all_deps = generate_all_dependencies(repo_root=repo_root)
-                    if not all_deps:
-                        print(yellow(f"{name}: não foi possível gerar all-dependencies.txt; pulando commit {commit_sha[:7]}."))
-                        output = "Não foi possível gerar all-dependencies.txt; pulando commit: " + commit_sha[:7]
-                        get_or_create_execution(project, labels[0], version, commit_sha, output, args)
+                    mvn_res = generate_all_dependencies(repo_root=repo_root)
+                    if not mvn_res.ok:
+                        print(yellow(f"{name}: falhou mvn dependency:tree no commit {commit_sha[:7]}. Salvando log em Execution.output"))
+                        # Cria Execution para todas as heurísticas, mas com output de falha
+                        fail_output = (
+                            "[DBMINING] BUILD FAILED: dependency:tree\n"
+                            f"[DBMINING] project={project.owner}/{project.name}\n"
+                            f"[DBMINING] sha={commit_sha}\n"
+                            f"[DBMINING] returncode={mvn_res.returncode}\n\n"
+                            + mvn_res.log_text)
+
+                        for label in labels:
+                            get_or_create_execution(project, label, version, commit_sha, fail_output, args)
                         continue
 
+                    all_deps = mvn_res.out_path
                     dep_entries = parse_consolidated_dependency_tree(all_deps)
                     all_deps_text = read_text_file(all_deps)
                     if not dep_entries:
