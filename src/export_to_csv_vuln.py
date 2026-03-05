@@ -1,7 +1,7 @@
 import os
 import pandas as pd
-import database as db  # usa o seu módulo, que já configura engine/session
-from util import VULNERABILITY_RESULTS, OUTPUT_CSV  # se você já tem um diretório padrão
+from sqlalchemy import create_engine
+from util import VULNERABILITY_RESULTS, OUTPUT_CSV
 
 SQL = """
 SELECT
@@ -25,16 +25,19 @@ JOIN label AS l ON h.label_id = l.id
 """
 
 def export_query_to_csv():
-    db.connect()
+
+    # caminho do banco
+    db_path = os.path.join(os.getcwd(), "dbmining.sqlite")
+
+    engine = create_engine(f"sqlite:///{db_path}")
 
     output_path = os.path.join(OUTPUT_CSV, VULNERABILITY_RESULTS)
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
-    df = pd.read_sql_query(SQL, db.engine)
+    df = pd.read_sql_query(SQL, engine)
     df.to_csv(output_path, index=False)
 
     print(f"Arquivo salvo em {output_path}")
-
 
 def main():
     export_query_to_csv()

@@ -5,7 +5,7 @@ from util import VULNERABILITY_RESULTS, VULNERABILITY_VERSIONS_POR_MODULO
 df = pd.read_csv(VULNERABILITY_RESULTS)
 df['date_commit'] = pd.to_datetime(df['date_commit'], errors='coerce')
 df = df.dropna(subset=['date_commit']).copy()
-for col in ['file','name','pattern','versionNumber','name.1','sha1']:
+for col in ['file','name','pattern','versionNumber','project_name','sha1']:
     if col in df.columns:
         df[col] = df[col].astype(str).str.strip()
 
@@ -18,7 +18,7 @@ def build_segments_for_group(sub: pd.DataFrame) -> pd.DataFrame:
            .agg(file=('file','first'),
                 db=('name','first'),
                 pattern=('pattern','first'),
-                project=('name.1','first'),
+                project=('project_name','first'),
                 project_id=('project_id','first'),
                 start_date=('date_commit','min'),
                 last_seen_date=('date_commit','max'),

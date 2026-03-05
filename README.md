@@ -1,6 +1,6 @@
 # About
 
-This is the companion website for the research "On the Usage of Databases in Open Source Projects". The main goal is to investigate which and how DBMS are used in Java Open Source projetcs. This research has so far been divided into two main analyses: current and historical. In the **Current Analysis**, we investigate the use of DBMS in the current version of the projects. In the **Historical Analysis**, we investigate the adoption of DBMS throughout the projects' life cycle.
+This is the companion website for the research "Analyzing the Adoption of Database Management Systems Throughout the History of Open Source Projects". The main goal is to investigate which and how DBMS are used in Java Open Source projetcs. This research has so far been divided into two main analyses: current and historical. In the **Current Analysis**, we investigate the use of DBMS in the current version of the projects. In the **Historical Analysis**, we investigate the adoption of DBMS throughout the projects' life cycle.
 
 # Team
 
@@ -298,7 +298,7 @@ The URL http://localhost:3000 is served by Node.js and has hot reload capability
 `source ~/.bashrc`
 `mvn -version`
 
-7. Run the `analise_historical_vulnerabilities.py` to populates the database with historial of vulnerabilities.
+7. Run the `extract_historical_vulnerabilities.py` to populates the database with historial of vulnerabilities.
 
 8. Run the `export_to_csv_vuln.py` scripts. This script generates a CSV file containing the processed results.
 
