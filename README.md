@@ -304,7 +304,7 @@ The URL http://localhost:3000 is served by Node.js and has hot reload capability
 
 9. Run the `analise_historical_vulnerabilities.py` script to generate an XLSX file containing the summary for the research questions.
 
-10. Run the `search_vulnerabilites.py` to populates the database with vulnerabilities, using OSS Index.
+10. Run the `search_vulnerabilites_oss.py` to populates the database with vulnerabilities, using OSS Index.
 
 # Spreadsheets description
 
