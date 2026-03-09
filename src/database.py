@@ -148,6 +148,16 @@ class Packagepurl(db.Model):
     label_id = db.Column(db.Integer, db.ForeignKey('label.id'))
     label = db.relationship('Label')
 
+
+class AnalysisEvent(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    project_id = db.Column(db.Integer, db.ForeignKey("project.id"), nullable=False)
+    version_id = db.Column(db.Integer, db.ForeignKey("version.id"), nullable=True)
+    event_type = db.Column(db.String(100), nullable=False)
+    status = db.Column(db.String(50), nullable=False)
+    commit_sha = db.Column(db.String(40), nullable=True)
+    message = db.Column(db.Text, nullable=True)
+
 ###########################################
 # DATABASE CONNECT, COMMIT, CLOSE
 ###########################################

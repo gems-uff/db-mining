@@ -4,111 +4,141 @@ import subprocess
 from datetime import datetime, date
 import re
 import xml.etree.ElementTree as ET
-from io import StringIO
+
 import database as db
 from extract import (
-    get_or_create_projects, do_commit, maybe_checkout, do_rev_parse,
-    get_or_create_labels, read_args, prepare_version
+    get_or_create_projects,
+    do_commit,
+    maybe_checkout,
+    do_rev_parse,
+    get_or_create_labels,
+    read_args,
+    prepare_version,
 )
 from util import REPOS_DIR, red, green, yellow, HEURISTICS_DIR_VULNERABILITIES
-from typing import Optional, List, Dict
+
+from typing import Optional, List, Dict, Tuple
 from sqlalchemy import func
 from dataclasses import dataclass
-from typing import Optional
+from urllib.parse import quote
 
+
+# =========================
 # Configurações
-GREP_COMMAND_LOG_COMMAND_POM = [ "git", "log", "--first-parent",  "--reverse", "--format=%H|%cI", "--", "pom.xml", "**/pom.xml" ]
-ROOT_ONLY = True          # processar apenas o pom da raiz para tarefas auxiliares (arquivos externos etc.)
-USE_ALL_DEPS = True       # usar o consolidado all-dependencies.txt para extrair versões de DBs
-_MODULE_HEADER_RE = re.compile(r'^\s*\[INFO\]\s+--- .* @ ([^ ]+) ---')
-_DEP_LINE_RE = re.compile(r'^\s*(?:\[INFO\]\s*)?(?:[\|\+\-\\ ]*)\s*([^\s:]+):([^\s:]+):([^\s:]+):([^\s:]+)(?::([^\s:]+))?')
-_POM_FROM_RE = re.compile(r'^\s*\[INFO\]\s+from\s+(.+?/pom\.xml)\s*$')
+# =========================
+GREP_COMMAND_LOG_COMMAND_POM = [
+    "git", "log", "--first-parent", "--reverse", "--format=%H|%cI", "--", "pom.xml", "**/pom.xml"
+]
+
+ROOT_ONLY = True
+USE_ALL_DEPS = True
+
+_MODULE_HEADER_RE = re.compile(r"^\s*\[INFO\]\s+--- .* @ ([^ ]+) ---")
+_DEP_LINE_RE = re.compile(
+    r"^\s*(?:\[INFO\]\s*)?(?:[\|\+\-\\ ]*)\s*([^\s:]+):([^\s:]+):([^\s:]+):([^\s:]+)(?::([^\s:]+))?"
+)
+_POM_FROM_RE = re.compile(r"^\s*\[INFO\]\s+from\s+(.+?/pom\.xml)\s*$")
 
 
-# ---------------------------------
-# Faz reset de todos os projetos
-# ---------------------------------
+# =========================
+# Reset
+# =========================
 def run_reset():
     subprocess.run(
         [sys.executable, "src/reset.py"],
         check=True
     )
 
+
+# =========================
+# Commits
+# =========================
 def filter_commits_from_2024(commits: List[Dict]) -> List[Dict]:
     cutoff = date(2024, 1, 1)
-    return [
-        c for c in commits
-        if c.get('date') and c['date'] >= cutoff
-    ]
+    return [c for c in commits if c.get("date") and c["date"] >= cutoff]
 
-# ---------------------------------
-# Geração e listagem de commits POM
-# ---------------------------------
-def list_pom_commits(latest_only: bool = False, max_commits: Optional[int] = None,) -> List[Dict]:
 
-    """ Retorna commits que alteraram algum pom.xml. Usa committer date (%cI). """
+def list_pom_commits(
+    latest_only: bool = False,
+    max_commits: Optional[int] = None,
+) -> List[Dict]:
+    """
+    Retorna commits que alteraram algum pom.xml.
+    Usa committer date (%cI).
+    """
     cmd = list(GREP_COMMAND_LOG_COMMAND_POM)
 
-    #validação de parâmetros
     if latest_only:
-        cmd[1:1] += ['-n', '1']
+        cmd[1:1] += ["-n", "1"]
     elif max_commits:
-        cmd[1:1] += ['-n', str(max_commits)]
+        cmd[1:1] += ["-n", str(max_commits)]
 
     try:
-        p = subprocess.run(cmd, capture_output=True, check=False)
-        output = p.stdout.decode(errors='replace').replace('\x00', '\uFFFD')
+        p = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            check=False
+        )
 
-        commits = []
+        output = (p.stdout or "").replace("\x00", "\uFFFD")
+        commits: List[Dict] = []
+
         for line in output.splitlines():
-            if '|' not in line:
+            if "|" not in line:
                 continue
-            sha, dt = line.split('|', 1)
+
+            sha, dt = line.split("|", 1)
             sha = sha.strip()
             dt = dt.strip()
 
             commit_date = None
             try:
-                # dt vem como 2010-06-18T12:34:56-03:00
                 commit_date = datetime.fromisoformat(dt).date()
             except ValueError:
                 commit_date = None
 
-            commits.append({'sha': sha, 'date': commit_date})
+            commits.append({"sha": sha, "date": commit_date})
 
-        #commits_2024 = filter_commits_from_2024(commits)
-        # assume “ordem cronológica crescente”
         return commits
 
     except subprocess.TimeoutExpired:
-        print(red('Git timeout during log.'))
+        print(red("Git timeout during log."))
     except subprocess.CalledProcessError:
-        print(red('Git error during log.'))
+        print(red("Git error during log."))
+
     return []
 
 
-
-def find_all_pom_files(project):
-    """Retorna todos os arquivos pom.xml presentes no projeto no estado atual (após checkout)."""
-    project_path = os.path.join(REPOS_DIR, project.owner, project.name)
+def build_full_commit_index() -> Dict[str, int]:
+    """
+    Retorna um mapa {sha: posição_no_histórico} com base no histórico
+    completo do branch atual, seguindo first parent e ordem cronológica crescente.
+    """
     try:
-        os.chdir(project_path)
-        pom_files = []
-        for root, dirs, files in os.walk('.'):
-            if 'pom.xml' in files:
-                full_path = os.path.abspath(os.path.join(root, 'pom.xml'))
-                pom_files.append(full_path)
-        return pom_files
-    except Exception as e:
-        print(f"Erro ao buscar arquivos pom.xml no diretório '{project_path}': {e}")
-        return []
+        p = subprocess.run(
+            ["git", "rev-list", "--first-parent", "--reverse", "HEAD"],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        shas = [ln.strip() for ln in (p.stdout or "").splitlines() if ln.strip()]
+        return {sha: idx for idx, sha in enumerate(shas)}
+    except subprocess.CalledProcessError as e:
+        print(yellow(f"Falha ao montar índice completo de commits: {e}"))
+        return {}
+
 
 def resume_from_first_incomplete_for_dict_commits(project, labels, commits, session=None):
     """
-    Corta a lista para reiniciar no primeiro commit ainda incompleto.
-    Um commit está completo quando count(Execution) da Version do seu SHA
+    Reinicia a partir do primeiro commit ainda incompleto.
+
+    Um commit é considerado completo quando count(Execution) da Version do seu SHA
     é maior ou igual a len(labels) deste run.
-    Retorna: commits_aparados, start_idx  .  Se todos completos, retorna [], None.
+
+    Retorna:
+        commits_aparados, start_idx
+    Se todos completos, retorna [], None.
     """
     if not commits:
         return [], None
@@ -117,17 +147,20 @@ def resume_from_first_incomplete_for_dict_commits(project, labels, commits, sess
     if total_heuristics == 0:
         return [], None
 
-    sha_list = [c['sha'] for c in commits]
-
+    sha_list = [c["sha"] for c in commits]
     sess = session or db.db.session
+
     rows = (
         sess.query(db.Version.sha1, func.count(db.Execution.id))
-            .join(db.Execution, db.Execution.version_id == db.Version.id)
-            .filter(db.Version.project_id == project.id,
-                    db.Version.sha1.in_(sha_list))
-            .group_by(db.Version.sha1)
-            .all()
+        .join(db.Execution, db.Execution.version_id == db.Version.id)
+        .filter(
+            db.Version.project_id == project.id,
+            db.Version.sha1.in_(sha_list)
+        )
+        .group_by(db.Version.sha1)
+        .all()
     )
+
     count_by_sha = {sha: cnt for sha, cnt in rows}
 
     start_idx = None
@@ -141,50 +174,50 @@ def resume_from_first_incomplete_for_dict_commits(project, labels, commits, sess
 
     return commits[start_idx:], start_idx
 
-def count_commits_between(start_sha, end_sha):
-    """Conta quantos commits existem entre start_sha (exclusivo) e end_sha (inclusivo)."""
-    try:
-        cmd = ["git", "rev-list", "--count", f"{start_sha}..{end_sha}"]
-        p = subprocess.run(cmd, capture_output=True, check=True)
-        count = int(p.stdout.decode().strip())
-        return count
-    except Exception as e:
-        print(yellow(f"Erro ao contar commits entre {start_sha} e {end_sha}: {e}"))
-        return 0
 
-# -----------------------------
-# Utils de POM (arquivos externos)
-# -----------------------------
+# =========================
+# Utils de POM e arquivos externos
+# =========================
 def _strip_ns(tag: str) -> str:
-    return tag.split('}', 1)[-1] if '}' in tag else tag
+    return tag.split("}", 1)[-1] if "}" in tag else tag
+
 
 def _resolve_basedir(path_text: str, pom_dir: str) -> str:
     if not path_text:
         return path_text
-    return (path_text
-            .replace('${project.basedir}', pom_dir)
-            .replace('${basedir}', pom_dir))
+    return (
+        path_text
+        .replace("${project.basedir}", pom_dir)
+        .replace("${basedir}", pom_dir)
+    )
 
-def find_external_files_in_pom(file_path: str) -> list[str]:
+
+def get_root_pom_path() -> Optional[str]:
+    root_pom = os.path.abspath(os.path.join(os.getcwd(), "pom.xml"))
+    return root_pom if os.path.isfile(root_pom) else None
+
+
+def find_external_files_in_pom(file_path: str) -> List[str]:
     """
     Varre <configuration> e coleta caminhos de arquivo externos.
-    Retorna caminhos ABSOLUTOS existentes no filesystem (estado do commit).
+    Retorna caminhos absolutos existentes no filesystem.
     """
-    ns = {'m': 'http://maven.apache.org/POM/4.0.0'}
+    ns = {"m": "http://maven.apache.org/POM/4.0.0"}
     pom_dir = os.path.dirname(file_path)
+
     try:
-        eff = os.path.join(pom_dir, 'effective-pom.xml')
+        eff = os.path.join(pom_dir, "effective-pom.xml")
         tree = ET.parse(eff if os.path.isfile(eff) else file_path)
     except Exception:
         return []
 
     root = tree.getroot()
-    found = []
+    found: List[str] = []
 
-    for conf in root.findall('.//m:configuration', ns):
+    for conf in root.findall(".//m:configuration", ns):
         for node in conf.iter():
             name = _strip_ns(node.tag).lower()
-            if name in ('file', 'configfile', 'include'):
+            if name in ("file", "configfile", "include"):
                 if node.text and node.text.strip():
                     raw = node.text.strip()
                     resolved = _resolve_basedir(raw, pom_dir)
@@ -192,7 +225,7 @@ def find_external_files_in_pom(file_path: str) -> list[str]:
                         resolved = os.path.normpath(os.path.join(pom_dir, resolved))
                     found.append(resolved)
 
-    for n in root.findall('.//m:configuration//m:files//m:file', ns):
+    for n in root.findall(".//m:configuration//m:files//m:file", ns):
         if n.text and n.text.strip():
             raw = n.text.strip()
             resolved = _resolve_basedir(raw, pom_dir)
@@ -200,66 +233,52 @@ def find_external_files_in_pom(file_path: str) -> list[str]:
                 resolved = os.path.normpath(os.path.join(pom_dir, resolved))
             found.append(resolved)
 
-    uniq = []
+    uniq: List[str] = []
     seen = set()
     for p in found:
         if p not in seen and os.path.isfile(p):
             uniq.append(p)
             seen.add(p)
+
     return uniq
 
-def list_commits_for_file(repo_root: str, rel_path: str) -> list[dict]:
-    """ Lista commits que alteraram 'rel_path', seguindo renomes. Usa committer date (%cI), não author date.
-    Retorna [{'sha':..., 'date':...}, ...] """
+
+def list_commits_for_file(rel_path: str) -> List[Dict]:
+    """
+    Lista commits que alteraram rel_path, seguindo renome.
+    Usa committer date (%cI), não author date.
+    """
     try:
         p = subprocess.run(
-            ['git', 'log', '--follow', '--format=%H|%cI', '--', rel_path],
-            capture_output=True, check=True
+            ["git", "log", "--follow", "--format=%H|%cI", "--", rel_path],
+            capture_output=True,
+            text=True,
+            check=True
         )
+
         commits = []
-        for ln in p.stdout.decode(errors='replace').splitlines():
-            if '|' in ln:
-                sha, dt = ln.split('|', 1)
-                commits.append({'sha': sha.strip(), 'date': dt.strip()})
+        for ln in (p.stdout or "").splitlines():
+            if "|" in ln:
+                sha, dt = ln.split("|", 1)
+                commits.append({"sha": sha.strip(), "date": dt.strip()})
         return commits
+
     except subprocess.CalledProcessError:
         return []
 
-# -----------------------------------------------
-# Geração do consolidado e parsers de dependências
-# -----------------------------------------------
-def generate_all_dependencies_semErros(repo_root: str) -> Optional[str]:
-    """
-    Executa 'mvn dependency:tree -DoutputType=text' na raiz do repositório
-    e salva a saída completa em 'all-dependencies.txt'.
-    Retorna o caminho do arquivo ou None se falhar.
-    """
-    out_path = os.path.join(repo_root, "all-dependencies.txt")
-    try:
-        with open(out_path, "w", encoding="utf-8") as fh:
-            subprocess.run(
-                ["mvn", "dependency:tree", "-DoutputType=text"],
-                cwd=repo_root,
-                check=True,
-                stdout=fh,
-                stderr=subprocess.DEVNULL
-            )
-        print(f"Dependency:tree (consolidado) gerado.")
-        return out_path if os.path.isfile(out_path) else None
-    except subprocess.CalledProcessError:
-        print(yellow("Não foi possível gerar all-dependencies.txt na raiz."))
-        return None
 
-
+# =========================
+# Maven dependency tree consolidado
+# =========================
 @dataclass
 class MavenDepTreeResult:
     ok: bool
-    out_path: Optional[str]
+    stdout_text: str
     log_text: str
     returncode: int
 
+
 def generate_all_dependencies(repo_root: str) -> MavenDepTreeResult:
-    out_path = os.path.join(repo_root, "all-dependencies.txt")
     cmd = ["mvn", "dependency:tree", "-DoutputType=text"]
 
     try:
@@ -273,6 +292,7 @@ def generate_all_dependencies(repo_root: str) -> MavenDepTreeResult:
 
         stdout = p.stdout or ""
         stderr = p.stderr or ""
+
         log_text = (
             "[DBMINING] mvn dependency:tree\n"
             f"[DBMINING] returncode={p.returncode}\n\n"
@@ -282,12 +302,12 @@ def generate_all_dependencies(repo_root: str) -> MavenDepTreeResult:
             + stderr
         )
 
-        if p.returncode == 0:
-            with open(out_path, "w", encoding="utf-8") as fh:
-                fh.write(stdout)
-            return MavenDepTreeResult(ok=True, out_path=out_path, log_text=log_text, returncode=p.returncode)
-
-        return MavenDepTreeResult(ok=False, out_path=None, log_text=log_text, returncode=p.returncode)
+        return MavenDepTreeResult(
+            ok=(p.returncode == 0),
+            stdout_text=stdout,
+            log_text=log_text,
+            returncode=p.returncode
+        )
 
     except Exception as e:
         log_text = (
@@ -295,233 +315,117 @@ def generate_all_dependencies(repo_root: str) -> MavenDepTreeResult:
             "[DBMINING] exception\n\n"
             + repr(e)
         )
-        return MavenDepTreeResult(ok=False, out_path=None, log_text=log_text, returncode=999)
+        return MavenDepTreeResult(
+            ok=False,
+            stdout_text="",
+            log_text=log_text,
+            returncode=999
+        )
 
 
-def parse_consolidated_dependency_tree(all_dep_path: str):
+def parse_consolidated_dependency_tree_text(dep_text: str) -> List[Dict]:
     """
-    Lê o all-dependencies.txt e retorna uma lista de dicts:
-    [{'group', 'artifact', 'version', 'scope', 'module', 'module_pom'}]
+    Faz parse da saída textual do dependency:tree consolidado e retorna:
+    [
+        {
+            'group', 'artifact', 'version', 'scope', 'module', 'module_pom'
+        }
+    ]
     """
-    results = []
-    if not all_dep_path or not os.path.isfile(all_dep_path):
+    results: List[Dict] = []
+    if not dep_text:
         return results
 
-    current_module = ''
-    current_module_pom = ''
-    try:
-        with open(all_dep_path, 'r', encoding='utf-8', errors='replace') as f:
-            for ln in f:
-                m_hdr = _MODULE_HEADER_RE.match(ln)
-                if m_hdr:
-                    current_module = m_hdr.group(1).strip()
-                    current_module_pom = ''  # reseta; virá numa linha "from .../pom.xml" logo abaixo (quando houver)
-                    continue
+    current_module = ""
+    current_module_pom = ""
 
-                m_from = _POM_FROM_RE.match(ln)
-                if m_from:
-                    # caminho do pom.xml daquele módulo
-                    current_module_pom = os.path.abspath(m_from.group(1).strip())
-                    continue
+    for ln in dep_text.splitlines():
+        m_hdr = _MODULE_HEADER_RE.match(ln)
+        if m_hdr:
+            current_module = m_hdr.group(1).strip()
+            current_module_pom = ""
+            continue
 
-                m = _DEP_LINE_RE.match(ln)
-                if not m:
-                    continue
+        m_from = _POM_FROM_RE.match(ln)
+        if m_from:
+            current_module_pom = os.path.abspath(m_from.group(1).strip())
+            continue
 
-                group, artifact, _type, version, scope = m.groups()
-                results.append({
-                    'group': group.strip(),
-                    'artifact': artifact.strip(),
-                    'version': (version or '').strip(),
-                    'scope': (scope or '').strip(),
-                    'module': current_module,
-                    'module_pom': current_module_pom
-                })
-    except Exception as e:
-        print(yellow(f"Falha ao parsear all-dependencies.txt: {e}"))
+        m = _DEP_LINE_RE.match(ln)
+        if not m:
+            continue
+
+        group, artifact, _type, version, scope = m.groups()
+        results.append({
+            "group": group.strip(),
+            "artifact": artifact.strip(),
+            "version": (version or "").strip(),
+            "scope": (scope or "").strip(),
+            "module": current_module,
+            "module_pom": current_module_pom,
+        })
+
     return results
 
-# Parser “por POM” (mantido como fallback opcional)
-def generate_dependency_tree(file_path: str, non_recursive: bool = False):
-    """
-    Executa 'mvn dependency:tree' no diretório do pom.xml e grava em dep-tree.txt.
-    Retorna o caminho do arquivo gerado ou None em caso de falha.
-    """
-    pom_dir = os.path.dirname(file_path)
-    output_file = os.path.join(pom_dir, 'dep-tree.txt')
-    try:
-        if os.path.isfile(output_file):
+
+# =========================
+# Heurísticas
+# =========================
+def compile_patterns_by_label(labels) -> Dict[int, List[re.Pattern]]:
+    compiled: Dict[int, List[re.Pattern]] = {}
+
+    for label in labels:
+        raw_lines = [
+            ln.strip()
+            for ln in (label.heuristic.pattern or "").splitlines()
+            if ln.strip()
+        ]
+
+        patterns = []
+        for ln in raw_lines:
             try:
-                os.remove(output_file)
-            except OSError:
-                pass
+                patterns.append(re.compile(ln))
+            except re.error as e:
+                print(yellow(f"Heurística inválida em '{label.name}': {e}"))
 
-        cmd = ["mvn", "dependency:tree", "-DoutputFile=dep-tree.txt", "-DoutputType=text"]
-        if non_recursive:
-            cmd.insert(1, "-N")  # mvn -N dependency:tree
+        compiled[label.id] = patterns
 
-        with open(os.devnull, "w") as devnull:
-            subprocess.run(cmd, cwd=pom_dir, check=True, stdout=devnull, stderr=devnull)
+    return compiled
 
-        print(f"Dependency:tree gerado em: {output_file}.")
-        return output_file if os.path.isfile(output_file) else None
-    except subprocess.CalledProcessError:
-        print(yellow(f"Não foi possível gerar dependency:tree para {file_path}."))
-        return None
 
-def parse_dependency_tree_file(dep_tree_path: str):
-    """Parser de dep-tree.txt por POM."""
-    results = []
-    if not dep_tree_path or not os.path.isfile(dep_tree_path):
+def parse_and_extract_from_consolidated(
+    dep_entries: List[Dict],
+    compiled_patterns: List[re.Pattern],
+    scopes_accept=None
+) -> List[Dict]:
+    results: List[Dict] = []
+
+    if not compiled_patterns:
         return results
 
-    try:
-        with open(dep_tree_path, 'r', encoding='utf-8', errors='replace') as f:
-            for ln in f:
-                m = _DEP_LINE_RE.match(ln)
-                if not m:
-                    continue
-                group, artifact, _type, version, scope = m.groups()
-                results.append({
-                    'group': group.strip(),
-                    'artifact': artifact.strip(),
-                    'version': (version or '').strip(),
-                    'scope': (scope or '').strip()
-                })
-    except Exception as e:
-        print(yellow(f"Falha ao parsear dependency:tree: {e}"))
-    return results
-
-# -----------------------------
-# Aplicação das heurísticas
-# -----------------------------
-def parse_and_extract_from_consolidated(dep_entries, label, scopes_accept=None, source_path: Optional[str]=None):
-    results = []
-
-    # 1) lê linhas da heurística
-    raw_lines = [ln.strip() for ln in (label.heuristic.pattern or "").splitlines() if ln.strip()]
-
-    # 2) compila padrões
-    patterns = []
-    for ln in raw_lines:
-        patterns.append(re.compile(ln))
-        
-    if not patterns:
-        return results
-
-    # 3) percorre dependências
     for d in dep_entries:
         ga_norm = f"{d['group']}:{d['artifact']}".lower().replace(" ", "")
 
         if scopes_accept is not None:
-            sc = (d.get('scope') or "").lower()
+            sc = (d.get("scope") or "").lower()
             if sc and sc not in scopes_accept:
                 continue
 
-        # 4) aplica regex
-        if any(rx.search(ga_norm) for rx in patterns):
-            version_text = d.get('version') or 'undefined'
-
-            origin_parts = []
-            if source_path:
-                origin_parts.append(os.path.abspath(source_path))
-            origin_parts.append((d.get('module') or '').strip() or '?module')
-
-            origin = (f" {origin_parts[-1]}" if origin_parts else "")
+        if any(rx.search(ga_norm) for rx in compiled_patterns):
+            version_text = d.get("version") or "undefined"
+            module_name = (d.get("module") or "").strip() or "?module"
+            origin = f" {module_name}"
 
             results.append({
-                'file': origin,
-                'group_artifact': f"{d.get('group')}:{d.get('artifact')}",
-                'version': version_text
+                "file": origin,
+                "group_artifact": f"{d.get('group')}:{d.get('artifact')}",
+                "version": version_text,
             })
 
     return results
 
-def parse_and_extract_from_tree(dep_entries, label):
-    """
-    (Fallback) Aplica a heurística na lista de dependências de um único POM (dep-tree.txt).
-    """
-    results = []
-    pattern_lines = [line.strip() for line in label.heuristic.pattern.strip().splitlines() if line.strip()]
-    try:
-        regex = re.compile(r'(' + '|'.join(map(re.escape, pattern_lines)) + r')', re.IGNORECASE)
-    except re.error as regex_err:
-        print(yellow(f"Regex inválido na heurística '{label.name}': {regex_err}"))
-        return results
-
-    for d in dep_entries:
-        ga = f"{d['group']}:{d['artifact']}"
-        if regex.search(ga):
-            version_text = d['version'] if d['version'] else 'undefined'
-            results.append({
-                'file': '(dependency:tree)',
-                'group_artifact': ga,
-                'version': version_text
-            })
-    return results
-
-# ---------------------------------
-# DB helpers (inalterados do seu projeto)
-# ---------------------------------
-
-def vuln_exists(version_id, file_path, heuristic_id, version_num):
-    q = (db.query(db.VersionVulnerability.id)
-           .join(db.Execution, db.Execution.id == db.VersionVulnerability.execution_id)
-           .filter(db.VersionVulnerability.version_id == version_id)
-           .filter(db.VersionVulnerability.file == file_path)
-           .filter(db.VersionVulnerability.versionNumber == version_num)
-           .filter(db.Execution.heuristic_id == heuristic_id))
-    return db.db.session.query(q.exists()).scalar()
-
-def get_or_create_execution(project, label, version, commit_sha, all_deps_text, args):
-    existing = (db.query(db.Execution.id)
-                  .filter_by(version_id=version.id, heuristic_id=label.heuristic.id)
-                  .first())
-    if existing:
-        return existing[0]
-
-    execution = db.create(db.Execution,
-                          output=all_deps_text,
-                          version=version,
-                          heuristic=label.heuristic,
-                          isValidated=False,
-                          isAccepted=False)
-    do_commit()
-    print("Execution criada.")
-    return execution.id
-
-def get_previous_vuln_sha(project_id, file_path, heuristic_id, current_version_id):
-    row = (db.query(db.Version.sha1)
-             .join(db.VersionVulnerability, db.Version.id == db.VersionVulnerability.version_id)
-             .join(db.Execution, db.Execution.id == db.VersionVulnerability.execution_id)
-             .filter(db.Version.project_id == project_id)
-             .filter(db.Execution.heuristic_id == heuristic_id)
-             .filter(db.VersionVulnerability.file == file_path)
-             .filter(db.Version.id < current_version_id)
-             .order_by(db.Version.id.desc())
-             .first())
-    return row[0] if row else None
-
-def commit_exists(sha: str) -> bool:
-    if not re.fullmatch(r"[0-9a-f]{40}", sha):
-        return False
-    p = subprocess.run(["git", "cat-file", "-e", f"{sha}^{{commit}}"], capture_output=True)
-    return p.returncode == 0
-
-def read_text_file(path: str, max_chars: int = 2_000_000) -> str:
-    with open(path, "r", encoding="utf-8", errors="replace") as f:
-        txt = f.read()
-    if max_chars and len(txt) > max_chars:
-        txt = txt[:max_chars] + "\n\n[TRUNCATED]"
-    return txt
-
-from urllib.parse import quote
 
 def build_maven_purl(group: str, artifact: str, version: Optional[str]) -> str:
-    """
-    pkg:maven/<groupId>/<artifactId>@<version>
-    Se version vier vazia ou 'undefined', salva sem o sufixo @version.
-    """
     g = (group or "").strip()
     a = (artifact or "").strip()
     v = (version or "").strip()
@@ -532,25 +436,133 @@ def build_maven_purl(group: str, artifact: str, version: Optional[str]) -> str:
     return base
 
 
-# ---------------------------------
+def build_db_signature_from_parsed(parsed_by_label: Dict[int, List[Dict]]) -> Tuple[str, ...]:
+    items = set()
+
+    for _label_id, parsed_items in parsed_by_label.items():
+        for item in parsed_items:
+            ga = (item.get("group_artifact") or "").strip().lower()
+            ver = (item.get("version") or "undefined").strip().lower()
+            if ga:
+                items.add(f"{ga}@{ver}")
+
+    return tuple(sorted(items))
+
+
+def build_db_change_output(prev_signature, curr_signature, commit_sha):
+    prev_set = set(prev_signature or [])
+    curr_set = set(curr_signature or [])
+
+    if prev_signature is None:
+        lines = [
+            "[DBMINING] INITIAL_DB_SIGNATURE",
+            f"[DBMINING] sha={commit_sha}",
+            "",
+            "current:"
+        ]
+        lines.extend(sorted(curr_set) if curr_set else ["<empty>"])
+        return "\n".join(lines)
+
+    added = sorted(curr_set - prev_set)
+    removed = sorted(prev_set - curr_set)
+
+    if not added and not removed:
+        return (
+            "[DBMINING] DB dependencies unchanged from previous commit\n"
+            f"[DBMINING] sha={commit_sha}"
+        )
+
+    lines = [
+        "[DBMINING] DB_SIGNATURE_CHANGED",
+        f"[DBMINING] sha={commit_sha}",
+        "",
+        "removed:"
+    ]
+    lines.extend(removed if removed else ["<none>"])
+    lines.append("")
+    lines.append("added:")
+    lines.extend(added if added else ["<none>"])
+
+    return "\n".join(lines)
+
+
+# =========================
+# Banco
+# =========================
+def preload_existing_vulns_for_version(version_id: int) -> set:
+    rows = (
+        db.query(
+            db.VersionVulnerability.file,
+            db.VersionVulnerability.versionNumber,
+            db.Execution.heuristic_id
+        )
+        .join(db.Execution, db.Execution.id == db.VersionVulnerability.execution_id)
+        .filter(db.VersionVulnerability.version_id == version_id)
+        .all()
+    )
+    return {(file_path, version_num, heuristic_id) for file_path, version_num, heuristic_id in rows}
+
+
+def get_or_create_execution(project, label, version, output_text: str):
+    """
+    Cria ou reaproveita Execution sem commitar imediatamente.
+    """
+    existing = (
+        db.query(db.Execution)
+        .filter_by(version_id=version.id, heuristic_id=label.heuristic.id)
+        .first()
+    )
+
+    if existing:
+        new_output = (output_text or "").strip()
+        old_output = (existing.output or "").strip()
+
+        if new_output and old_output != new_output:
+            existing.output = new_output
+
+        return existing.id
+
+    execution = db.create(
+        db.Execution,
+        output=output_text or "",
+        version=version,
+        heuristic=label.heuristic,
+        isValidated=False,
+        isAccepted=False
+    )
+
+    db.db.session.flush()
+    return execution.id
+
+
+def get_previous_vuln_sha(project_id, file_path, heuristic_id, current_version_id):
+    row = (
+        db.query(db.Version.sha1)
+        .join(db.VersionVulnerability, db.Version.id == db.VersionVulnerability.version_id)
+        .join(db.Execution, db.Execution.id == db.VersionVulnerability.execution_id)
+        .filter(db.Version.project_id == project_id)
+        .filter(db.Execution.heuristic_id == heuristic_id)
+        .filter(db.VersionVulnerability.file == file_path)
+        .filter(db.Version.id < current_version_id)
+        .order_by(db.Version.id.desc())
+        .first()
+    )
+    return row[0] if row else None
+
+
+# =========================
 # Pipeline principal
-# ---------------------------------
-def get_root_pom_path() -> Optional[str]:
-    """Retorna o caminho absoluto para o pom.xml da raiz do repositório atual (cwd), ou None."""
-    root_pom = os.path.abspath(os.path.join(os.getcwd(), 'pom.xml'))
-    return root_pom if os.path.isfile(root_pom) else None
-
-
+# =========================
 def process_projects(args, connect=True):
     if connect:
         db.connect()
+
     status = {
-        'Success': 0,
-        'Skipped': 0,
-        'Iguais': 0,
-        'Repository not found': 0,
-        'Git error': 0,
-        'Git timeout': 0,
+        "Success": 0,
+        "Skipped": 0,
+        "Repository not found": 0,
+        "Git error": 0,
+        "Git timeout": 0,
     }
 
     projects = get_or_create_projects(
@@ -568,61 +580,79 @@ def process_projects(args, connect=True):
         skip_remove=args.skip_remove
     )
 
+    compiled_patterns_by_label = compile_patterns_by_label(labels)
+
     print(f"\nProcessing {len(labels)} heuristics over {len(projects)} projects commits.")
-    
+
     for project in projects:
-        name = project.name
+        successful_checkouts = 0
+        project_path = os.path.join(REPOS_DIR, project.owner, project.name)
+        total_commit = 0
+        last_db_signature = None
+
         try:
-            os.chdir(REPOS_DIR + os.sep + project.owner + os.sep + project.name)
+            os.chdir(project_path)
         except NotADirectoryError:
-            print(red('Repository not found.'))
-            status['Repository not found'] += 1
+            print(red("Repository not found."))
+            status["Repository not found"] += 1
             continue
 
         try:
-            
-            # Janela de commits com a sua função atual
-            commits = list_pom_commits(
-                latest_only=getattr(args, 'latest_only', False),
-                max_commits=getattr(args, 'max_commits', None)
+            full_sha_index = build_full_commit_index()
+
+            all_commits = list_pom_commits(
+                latest_only=getattr(args, "latest_only", False),
+                max_commits=getattr(args, "max_commits", None)
             )
-            total_commit = len(commits)
+
+            total_commit = len(all_commits)
+
+            if total_commit == 0:
+                db.create(
+                    db.AnalysisEvent,
+                    project_id=project.id,
+                    version_id=None,
+                    event_type="NO_POM_COMMITS_FOUND",
+                    status="SKIPPED",
+                    commit_sha=None,
+                    message=(
+                        f"Nenhum commit com alteração em pom.xml foi retornado por list_pom_commits "
+                        f"para o projeto {project.owner}/{project.name}."
+                    )
+                )
+                do_commit()
+                print(yellow(f"{project.owner}/{project.name}: nenhum commit de pom.xml encontrado."))
+                continue
+
             print(f"\nProcessing {total_commit} commits of {project.name} project.")
 
-            # Retomada: começar no primeiro commit ainda incompleto
-            commits, _start_idx = resume_from_first_incomplete_for_dict_commits(project, labels, commits)
-            if _start_idx is None or total_commit == 0:
+            commits, start_idx = resume_from_first_incomplete_for_dict_commits(project, labels, all_commits)
+            if start_idx is None:
                 print(green(f"{project.owner}/{project.name}: janela já completa, nada a fazer."))
                 continue
 
-            for i, c in enumerate(commits, start=1):
-                if isinstance(c, dict):
-                    commit_sha = c.get('sha')
-                    commit_date = c.get('date')
-                    commit_index = i
-                elif isinstance(c, (list, tuple)):
-                    commit_sha, commit_date = c[0], (c[1] if len(c) > 1 else None)
-                else:
-                    commit_sha, commit_date = c, None
-                    
-                # checkout do commit, agora sempre
+            previous_sha_cache: Dict[Tuple[int, str, int], Optional[str]] = {}
+
+            for offset, c in enumerate(commits, start=1):
+                commit_sha = c.get("sha")
+                commit_date = c.get("date")
+                commit_index = start_idx + offset
+
                 try:
-                    #current_commit = do_checkout(commit_sha, getattr(args, "verbose", False))
                     if args.may_grep_workspace or (args.checkout and args.restore):
                         current_sha1 = do_rev_parse(args.verbose)
+                    else:
+                        current_sha1 = None
+
                     head_sha1 = current_sha1 if args.may_grep_workspace else None
-
-                    if not commit_exists(commit_sha):
-                        print(f"Pulando commit inválido ou inexistente: {commit_sha!r}")
-                        status['Git error'] += 1
-                        continue
-                    
                     current_commit = maybe_checkout(args, commit_sha, head_sha1)
-                    
-                    if current_commit != commit_sha:
-                        print(yellow(f"Checkout falhou no commit {commit_sha[:7]}, " f"HEAD ficou em {current_commit[:7] if current_commit else 'desconhecido'}, tentando reset"))
 
-                        # limpeza forçada
+                    if current_commit != commit_sha:
+                        print(yellow(
+                            f"Checkout falhou no commit {commit_sha[:7]}, "
+                            f"HEAD ficou em {current_commit[:7] if current_commit else 'desconhecido'}, tentando reset"
+                        ))
+
                         subprocess.run(
                             ["git", "reset", "--hard"],
                             stdout=subprocess.DEVNULL,
@@ -634,206 +664,247 @@ def process_projects(args, connect=True):
                             stderr=subprocess.DEVNULL
                         )
 
-                        # 2ª tentativa de checkout
                         current_commit = maybe_checkout(args, commit_sha, head_sha1)
 
                         if current_commit != commit_sha:
-                            print(red(f"Pulando commit {commit_sha[:7]}: " f"checkout falhou mesmo após reset"))
-                            status['Git error'] += 1
+                            print(red(
+                                f"Pulando commit {commit_sha[:7]}: checkout falhou mesmo após reset"
+                            ))
+                            db.create(
+                                db.AnalysisEvent,
+                                project_id=project.id,
+                                version_id=None,
+                                event_type="CHECKOUT_FAILED",
+                                status="ERROR",
+                                commit_sha=commit_sha,
+                                message=(
+                                    f"Falha ao realizar checkout do commit {commit_sha} "
+                                    f"mesmo após reset --hard e clean -ffd."
+                                )
+                            )
+                            do_commit()
+                            status["Git error"] += 1
                             continue
-                        
+
+                    successful_checkouts += 1
+
                 except subprocess.CalledProcessError as e:
                     print(red(f"Falha no checkout do commit {commit_sha[:7]}, {e}"))
-                    status['Git error'] += 1
+                    status["Git error"] += 1
                     continue
 
                 try:
-                    version, is_new = prepare_version(
-                    project, commit_sha, total_commit,
-                    commit_index,
-                    commit_date, commits[-1]['sha'] if commits else None
-                )
-                    do_commit() 
-                    print("Version criada.")
+                    version, _ = prepare_version(
+                        project,
+                        commit_sha,
+                        total_commit,
+                        commit_index,
+                        commit_date,
+                        all_commits[-1]["sha"] if all_commits else None
+                    )
+                    db.db.session.flush()
+
                 except Exception as e:
-                    print(red(f"{name}: erro ao preparar Version para {commit_sha[:7]}"))
-                    status['Git error'] += 1
+                    db.create(
+                        db.AnalysisEvent,
+                        project_id=project.id,
+                        version_id=None,
+                        event_type="CHECKOUT_FAILED",
+                        status="ERROR",
+                        commit_sha=commit_sha,
+                        message=f"Falha ao preparar Version para {commit_sha[:7]}: {e}"
+                    )
+                    do_commit()
+                    print(red(f"{project.name}: erro ao preparar Version para {commit_sha[:7]}"))
+                    status["Git error"] += 1
                     continue
 
                 repo_root = os.getcwd()
 
-                # Manter análise de arquivos externos referenciados em POM
                 if ROOT_ONLY:
                     root_pom = get_root_pom_path()
                     if not root_pom:
-                        print(yellow(f"{name}: sem pom.xml na raiz; nada a processar em ROOT_ONLY."))
+                        print(yellow(f"{project.name}: sem pom.xml na raiz; nada a processar em ROOT_ONLY."))
                         continue
-                    
-                # Apenas logs/auxiliar (não impacta a coleta de DBs do consolidado)
-                #for pom in root_pom:
-                external_files = find_external_files_in_pom(root_pom)
-                for abs_path in external_files:
-                    try:
-                        rel_path = os.path.relpath(abs_path, repo_root)
-                    except ValueError:
-                        continue
-                    file_commits = list_commits_for_file(repo_root, rel_path)
-                    if args.verbose:
-                        print(yellow(f"[ext] {rel_path} mudou em {len(file_commits)} commits "
-                                    f"(ex.: {[c['sha'][:7] for c in file_commits[:3]]})"))
 
-                # ====== MODO PRINCIPAL: CONSOLIDADO ======
+                if getattr(args, "inspect_external_files", False):
+                    external_files = find_external_files_in_pom(root_pom)
+                    for abs_path in external_files:
+                        try:
+                            rel_path = os.path.relpath(abs_path, repo_root)
+                        except ValueError:
+                            continue
+
+                        file_commits = list_commits_for_file(rel_path)
+                        if args.verbose:
+                            print(yellow(
+                                f"[ext] {rel_path} mudou em {len(file_commits)} commits "
+                                f"(ex.: {[c['sha'][:7] for c in file_commits[:3]]})"
+                            ))
+
                 if USE_ALL_DEPS:
                     mvn_res = generate_all_dependencies(repo_root=repo_root)
+
                     if not mvn_res.ok:
-                        print(yellow(f"{name}: falhou mvn dependency:tree no commit {commit_sha[:7]}. Salvando log em Execution.output"))
-                        # Cria Execution para todas as heurísticas, mas com output de falha
+                        print(yellow(
+                            f"{project.name}: falhou mvn dependency:tree no commit {commit_sha[:7]}. "
+                            f"Salvando log em Execution.output"
+                        ))
+
                         fail_output = (
                             "[DBMINING] BUILD FAILED: dependency:tree\n"
                             f"[DBMINING] project={project.owner}/{project.name}\n"
                             f"[DBMINING] sha={commit_sha}\n"
                             f"[DBMINING] returncode={mvn_res.returncode}\n\n"
-                            + mvn_res.log_text)
+                            + mvn_res.log_text
+                        )
 
+                        first_label_id = labels[0].id if labels else None
                         for label in labels:
-                            get_or_create_execution(project, label, version, commit_sha, fail_output, args)
+                            output_to_store = fail_output if label.id == first_label_id else ""
+                            get_or_create_execution(project, label, version, output_to_store)
+
+                        do_commit()
                         continue
 
-                    all_deps = mvn_res.out_path
-                    dep_entries = parse_consolidated_dependency_tree(all_deps)
-                    all_deps_text = read_text_file(all_deps)
+                    all_deps_text = mvn_res.stdout_text
+                    dep_entries = parse_consolidated_dependency_tree_text(all_deps_text)
+
                     if not dep_entries:
-                        print(yellow(f"{name}: all-dependencies.txt sem dependências reconhecidas; pulando commit {commit_sha[:7]}."))
+                        print(yellow(
+                            f"{project.name}: dependency:tree sem dependências reconhecidas; "
+                            f"pulando commit {commit_sha[:7]}."
+                        ))
+                        do_commit()
                         continue
 
-                    # cria/recupera executions por label (uma vez por commit)
+                    parsed_by_label: Dict[int, List[Dict]] = {}
+                    for label in labels:
+                        parsed_by_label[label.id] = parse_and_extract_from_consolidated(
+                            dep_entries=dep_entries,
+                            compiled_patterns=compiled_patterns_by_label.get(label.id, []),
+                            scopes_accept=None
+                        )
+
+                    current_db_signature = build_db_signature_from_parsed(parsed_by_label)
+
+                    first_label_id = labels[0].id if labels else None
+
                     exec_id_by_label = {}
                     for label in labels:
-                        eid = get_or_create_execution(project, label, version, commit_sha, all_deps_text, args)
+                        output_to_store = all_deps_text if label.id == first_label_id else ""
+                        eid = get_or_create_execution(project, label, version, output_to_store)
                         exec_id_by_label[label.id] = (eid, label.heuristic.id)
 
-                    # aplica heurísticas e persiste
+                    existing_vulns = preload_existing_vulns_for_version(version.id)
+
                     for label in labels:
-                        parsed = parse_and_extract_from_consolidated(dep_entries, label, source_path=all_deps)
+                        parsed = parsed_by_label[label.id]
+                        eid, heuristic_id = exec_id_by_label[label.id]
+
                         for result in parsed:
-                            file_path = result['file']
-                            new_version = result['version']
-                            
-                            ga = (result.get("group_artifact") or "")
-                            group, artifact = (ga.split(":", 1) + [""])[:2]
+                            file_path = result["file"]
+                            new_version = result["version"]
 
-                            purl_value = build_maven_purl(group, artifact, new_version)
-                            eid, heuristic_id = exec_id_by_label[label.id]
-
-                            if vuln_exists(version.id, file_path, heuristic_id, new_version):
-                                status['Skipped'] += 1
+                            dedup_key = (file_path, new_version, heuristic_id)
+                            if dedup_key in existing_vulns:
+                                status["Skipped"] += 1
                                 continue
 
-                            prev_sha = get_previous_vuln_sha(project.id, file_path, heuristic_id, version.id)
-                            if prev_sha:
-                                try:
-                                    commits_between = count_commits_between(prev_sha, commit_sha)
-                                except Exception:
-                                    commits_between = 0
+                            ga = (result.get("group_artifact") or "")
+                            group, artifact = (ga.split(":", 1) + [""])[:2]
+                            purl_value = build_maven_purl(group, artifact, new_version)
+
+                            cache_key = (project.id, file_path, heuristic_id)
+
+                            if cache_key not in previous_sha_cache:
+                                prev_sha = get_previous_vuln_sha(
+                                    project.id,
+                                    file_path,
+                                    heuristic_id,
+                                    version.id
+                                )
+                                previous_sha_cache[cache_key] = prev_sha
+                            else:
+                                prev_sha = previous_sha_cache[cache_key]
+
+                            if prev_sha and prev_sha in full_sha_index and commit_sha in full_sha_index:
+                                commits_between = max(0, full_sha_index[commit_sha] - full_sha_index[prev_sha])
                             else:
                                 commits_between = 0
 
-                            try:
-                                db.create(db.VersionVulnerability,
-                                          versionNumber=new_version,
-                                          file=file_path,
-                                          version_id=version.id,
-                                          commitsBetween=commits_between,
-                                          purl=purl_value,
-                                          execution_id=eid)
-                                do_commit()
-                                status['Success'] += 1
-                                print(green('VersionVulnerability ok.'))
-                            except subprocess.TimeoutExpired:
-                                print(red('Git timeout.')); status['Git timeout'] += 1
-                            except subprocess.CalledProcessError:
-                                print(red('Git error.')); status['Git error'] += 1
+                            db.create(
+                                db.VersionVulnerability,
+                                versionNumber=new_version,
+                                file=file_path,
+                                version_id=version.id,
+                                commitsBetween=commits_between,
+                                purl=purl_value,
+                                execution_id=eid
+                            )
 
-                # ====== (Opcional) Fallback por POM ======
+                            existing_vulns.add(dedup_key)
+                            previous_sha_cache[cache_key] = commit_sha
+                            status["Success"] += 1
+
+                    last_db_signature = current_db_signature
+                    do_commit()
+                    print(green(f"{project.name}: commit {commit_sha[:7]} processado com sucesso."))
+
                 else:
-                    # Se quiser manter o fluxo “por POM” em vez do consolidado
-                    exec_id_by_label = {}
-                    for label in labels:
-                        eid = get_or_create_execution(project, label, version, commit_sha, args)
-                        exec_id_by_label[label.id] = (eid, label.heuristic.id)
-
-                    poms = find_all_pom_files()
-                    for pom in poms:
-                        tree_path = generate_dependency_tree(pom, non_recursive=False)
-                        if not tree_path:
-                            print(yellow(f"Sem dependency:tree para {pom}."))
-                            continue
-
-                        dep_entries = parse_dependency_tree_file(tree_path)
-                        if not dep_entries:
-                            print(yellow(f"Nenhuma dependência resolvida em {pom}."))
-                            continue
-
-                        for label in labels:
-                            parsed = parse_and_extract_from_tree(dep_entries, label)
-                            # Anexa o caminho do pom que gerou a árvore para melhor rastreabilidade
-                            for item in parsed:
-                                file_path = f"{pom} (dependency:tree)"
-                                new_version = item['version']
-                                eid, heuristic_id = exec_id_by_label[label.id]
-
-                                if vuln_exists(version.id, file_path, heuristic_id, new_version):
-                                    status['Skipped'] += 1
-                                    continue
-
-                                prev_sha = get_previous_vuln_sha(project.id, file_path, heuristic_id, version.id)
-                                if prev_sha:
-                                    try:
-                                        commits_between = count_commits_between(prev_sha, commit_sha)
-                                    except Exception:
-                                        commits_between = 0
-                                else:
-                                    commits_between = 0
-
-                                try:
-                                    db.create(db.VersionVulnerability,
-                                              versionNumber=new_version,
-                                              file=file_path,
-                                              version_id=version.id,
-                                              commitsBetween=commits_between,
-                                              execution_id=eid)
-                                    do_commit()
-                                    status['Success'] += 1
-                                    print(green('ok.'))
-                                except subprocess.TimeoutExpired:
-                                    print(red('Git timeout.')); status['Git timeout'] += 1
-                                except subprocess.CalledProcessError:
-                                    print(red('Git error.')); status['Git error'] += 1
+                    print(yellow("Fluxo por POM individual removido nesta versão otimizada."))
+                    do_commit()
 
         except subprocess.TimeoutExpired:
-            continue
-        except Exception as e:
-            print(red(f'Unexpected error: {e}'))
-            status['Git error'] += 1
+            status["Git timeout"] += 1
             try:
                 db.db.session.rollback()
             except Exception:
                 pass
 
+        except Exception as e:
+            print(red(f"Unexpected error: {e}"))
+            status["Git error"] += 1
+            try:
+                db.db.session.rollback()
+            except Exception:
+                pass
+
+        if total_commit > 0 and successful_checkouts == 0:
+            db.create(
+                db.AnalysisEvent,
+                project_id=project.id,
+                version_id=None,
+                event_type="ALL_COMMITS_CHECKOUT_FAILED",
+                status="ERROR",
+                commit_sha=None,
+                message=(
+                    f"Todos os {total_commit} commits retornados por list_pom_commits "
+                    f"falharam no checkout."
+                )
+            )
+            do_commit()
+
+    print("\nResumo final:")
+    for k, v in status.items():
+        print(f"{k}: {v}")
+
     if connect:
         db.close()
 
+
 def main():
-    run_reset() #faço o reset de todos os projetos para garantir que estou buscando os commits no branch mais atual e que não perdi nada nos checkouts.
+    run_reset()
     args = read_args(
-        'extract_vulnerabilities',
-        'Extract vulnerabilities heuristics from repository history',
+        "extract_vulnerabilities",
+        "Extract vulnerabilities heuristics from repository history",
         default_label_type="vulnerabilities",
         default_skip_remove=True,
         default_heuristics=HEURISTICS_DIR_VULNERABILITIES
     )
     args.checkout = True
     process_projects(args)
+
 
 if __name__ == "__main__":
     main()
