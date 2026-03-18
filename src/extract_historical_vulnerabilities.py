@@ -736,11 +736,11 @@ def process_projects(args, connect=True):
                                     f"Falha ao realizar checkout do commit {commit_sha} "
                                     f"repo={project.owner}/{project.name}\n"
                                     f"mesmo após reset --hard e clean -ffd.\n\n"
-                                    f"requested_sha={diag.requested_sha}\n"
-                                    f"head_sha={diag.head_sha}\n"
-                                    f"returncode={diag.returncode}\n\n"
-                                    f"STDOUT:\n{diag.stdout}\n\n"
-                                    f"STDERR:\n{diag.stderr}"
+                                    f"requested_sha={checkout_res.requested_sha}\n"
+                                    f"head_sha={checkout_res.head_sha}\n"
+                                    f"returncode={checkout_res.returncode}\n\n"
+                                    f"STDOUT:\n{checkout_res.stdout}\n\n"
+                                    f"STDERR:\n{checkout_res.stderr}"
                                 )
                             )
                             do_commit()
