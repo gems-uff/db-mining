@@ -549,7 +549,63 @@ def get_previous_vuln_sha(project_id, file_path, heuristic_id, current_version_i
     )
     return row[0] if row else None
 
+# =========================
+# Checkout com diagnóstico detalhado
+# =========================
 
+@dataclass
+class CheckoutResult:
+    ok: bool
+    requested_sha: str
+    head_sha: Optional[str]
+    returncode: int
+    stdout: str
+    stderr: str
+
+def maybe_checkout_with_result(commit_sha: str) -> CheckoutResult:
+    """
+    Tenta realizar checkout do commit e retorna diagnóstico completo.
+    Deve ser usada apenas em cenários de falha, para descobrir o motivo real.
+    """
+    try:
+        p = subprocess.run(
+            ["git", "checkout", "-f", commit_sha],
+            capture_output=True,
+            text=True,
+            check=False
+        )
+    except Exception as e:
+        return CheckoutResult(
+            ok=False,
+            requested_sha=commit_sha,
+            head_sha=None,
+            returncode=999,
+            stdout="",
+            stderr=repr(e),
+        )
+
+    head_sha = None
+    try:
+        rev = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            capture_output=True,
+            text=True,
+            check=False
+        )
+        if rev.returncode == 0:
+            head_sha = (rev.stdout or "").strip()
+    except Exception:
+        head_sha = None
+
+    return CheckoutResult(
+        ok=(p.returncode == 0 and head_sha == commit_sha),
+        requested_sha=commit_sha,
+        head_sha=head_sha,
+        returncode=p.returncode,
+        stdout=p.stdout or "",
+        stderr=p.stderr or "",
+    )
+    
 # =========================
 # Pipeline principal
 # =========================
@@ -664,12 +720,11 @@ def process_projects(args, connect=True):
                             stderr=subprocess.DEVNULL
                         )
 
-                        current_commit = maybe_checkout(args, commit_sha, head_sha1)
+                        checkout_res = maybe_checkout_with_result(commit_sha)
 
-                        if current_commit != commit_sha:
-                            print(red(
-                                f"Pulando commit {commit_sha[:7]}: checkout falhou mesmo após reset"
-                            ))
+                        if not checkout_res.ok:
+                            print(red( f"Pulando commit {commit_sha[:7]}: checkout falhou mesmo após reset"))
+
                             db.create(
                                 db.AnalysisEvent,
                                 project_id=project.id,
@@ -679,7 +734,13 @@ def process_projects(args, connect=True):
                                 commit_sha=commit_sha,
                                 message=(
                                     f"Falha ao realizar checkout do commit {commit_sha} "
-                                    f"mesmo após reset --hard e clean -ffd."
+                                    f"repo={project.owner}/{project.name}\n"
+                                    f"mesmo após reset --hard e clean -ffd.\n\n"
+                                    f"requested_sha={diag.requested_sha}\n"
+                                    f"head_sha={diag.head_sha}\n"
+                                    f"returncode={diag.returncode}\n\n"
+                                    f"STDOUT:\n{diag.stdout}\n\n"
+                                    f"STDERR:\n{diag.stderr}"
                                 )
                             )
                             do_commit()
@@ -709,7 +770,7 @@ def process_projects(args, connect=True):
                         db.AnalysisEvent,
                         project_id=project.id,
                         version_id=None,
-                        event_type="CHECKOUT_FAILED",
+                        event_type="PREPARE_VERSION_FAILED",
                         status="ERROR",
                         commit_sha=commit_sha,
                         message=f"Falha ao preparar Version para {commit_sha[:7]}: {e}"
