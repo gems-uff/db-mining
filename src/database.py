@@ -63,6 +63,10 @@ class Project(db.Model):
 
 
 class Version(db.Model):
+    __table_args__ = (
+        db.Index('idx_version_project_id_id', 'project_id', 'id'),
+        db.Index('idx_version_sha1', 'sha1'),
+    )
     id = db.Column(db.Integer, primary_key=True)
     sha1 = db.Column(db.String)
     isLast = db.Column(db.Boolean)
@@ -103,6 +107,10 @@ class Heuristic(db.Model):
 
 
 class Execution(db.Model):
+    __table_args__ = (
+        db.UniqueConstraint('version_id', 'heuristic_id', name='uidx_execution_version_heuristic'),
+        db.Index('idx_execution_heuristic_id', 'heuristic_id'),
+    )
     id = db.Column(db.Integer, primary_key=True)
     output = db.Column(db.String)
     isValidated = db.Column(db.Boolean)
@@ -132,6 +140,10 @@ class Vulnerability(db.Model):
     label = db.relationship('Label')
     
 class VersionVulnerability(db.Model):
+    __table_args__ = (
+        db.Index('idx_versionvuln_version_id', 'version_id'),
+        db.Index('idx_versionvuln_file_version', 'file', 'version_id'),
+    )
     id = db.Column(db.Integer, primary_key=True)
     versionNumber = db.Column(db.String)
     file = db.Column(db.String)
