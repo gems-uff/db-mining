@@ -1,7 +1,7 @@
 import os
 import sys
 import subprocess
-from datetime import datetime, date
+from datetime import datetime
 import re
 import xml.etree.ElementTree as ET
 
@@ -53,10 +53,6 @@ def run_reset():
 # =========================
 # Commits
 # =========================
-def filter_commits_from_2024(commits: List[Dict]) -> List[Dict]:
-    cutoff = date(2024, 1, 1)
-    return [c for c in commits if c.get("date") and c["date"] >= cutoff]
-
 
 def list_pom_commits(
     latest_only: bool = False,
@@ -436,56 +432,6 @@ def build_maven_purl(group: str, artifact: str, version: Optional[str]) -> str:
     return base
 
 
-def build_db_signature_from_parsed(parsed_by_label: Dict[int, List[Dict]]) -> Tuple[str, ...]:
-    items = set()
-
-    for _label_id, parsed_items in parsed_by_label.items():
-        for item in parsed_items:
-            ga = (item.get("group_artifact") or "").strip().lower()
-            ver = (item.get("version") or "undefined").strip().lower()
-            if ga:
-                items.add(f"{ga}@{ver}")
-
-    return tuple(sorted(items))
-
-
-def build_db_change_output(prev_signature, curr_signature, commit_sha):
-    prev_set = set(prev_signature or [])
-    curr_set = set(curr_signature or [])
-
-    if prev_signature is None:
-        lines = [
-            "[DBMINING] INITIAL_DB_SIGNATURE",
-            f"[DBMINING] sha={commit_sha}",
-            "",
-            "current:"
-        ]
-        lines.extend(sorted(curr_set) if curr_set else ["<empty>"])
-        return "\n".join(lines)
-
-    added = sorted(curr_set - prev_set)
-    removed = sorted(prev_set - curr_set)
-
-    if not added and not removed:
-        return (
-            "[DBMINING] DB dependencies unchanged from previous commit\n"
-            f"[DBMINING] sha={commit_sha}"
-        )
-
-    lines = [
-        "[DBMINING] DB_SIGNATURE_CHANGED",
-        f"[DBMINING] sha={commit_sha}",
-        "",
-        "removed:"
-    ]
-    lines.extend(removed if removed else ["<none>"])
-    lines.append("")
-    lines.append("added:")
-    lines.extend(added if added else ["<none>"])
-
-    return "\n".join(lines)
-
-
 # =========================
 # Banco
 # =========================
@@ -503,51 +449,42 @@ def preload_existing_vulns_for_version(version_id: int) -> set:
     return {(file_path, version_num, heuristic_id) for file_path, version_num, heuristic_id in rows}
 
 
-def get_or_create_execution(project, label, version, output_text: str):
-    """
-    Cria ou reaproveita Execution sem commitar imediatamente.
-    """
-    existing = (
+def preload_executions_for_version(version_id: int) -> Dict[int, db.Execution]:
+    rows = (
         db.query(db.Execution)
-        .filter_by(version_id=version.id, heuristic_id=label.heuristic.id)
-        .first()
+        .filter(db.Execution.version_id == version_id)
+        .all()
     )
+    return {row.heuristic_id: row for row in rows}
 
-    if existing:
-        new_output = (output_text or "").strip()
-        old_output = (existing.output or "").strip()
-
-        if new_output and old_output != new_output:
-            existing.output = new_output
-
-        return existing.id
-
-    execution = db.create(
-        db.Execution,
-        output=output_text or "",
-        version=version,
-        heuristic=label.heuristic,
-        isValidated=False,
-        isAccepted=False
-    )
-
-    db.db.session.flush()
-    return execution.id
-
-
-def get_previous_vuln_sha(project_id, file_path, heuristic_id, current_version_id):
-    row = (
-        db.query(db.Version.sha1)
-        .join(db.VersionVulnerability, db.Version.id == db.VersionVulnerability.version_id)
+def preload_last_seen_vuln_sha(project_id: int) -> Dict[Tuple[str, int], str]:
+    latest = (
+        db.db.session.query(
+            db.VersionVulnerability.file.label("file"),
+            db.Execution.heuristic_id.label("heuristic_id"),
+            func.max(db.Version.id).label("max_version_id")
+        )
         .join(db.Execution, db.Execution.id == db.VersionVulnerability.execution_id)
+        .join(db.Version, db.Version.id == db.VersionVulnerability.version_id)
         .filter(db.Version.project_id == project_id)
-        .filter(db.Execution.heuristic_id == heuristic_id)
-        .filter(db.VersionVulnerability.file == file_path)
-        .filter(db.Version.id < current_version_id)
-        .order_by(db.Version.id.desc())
-        .first()
+        .group_by(
+            db.VersionVulnerability.file,
+            db.Execution.heuristic_id
+        )
+        .subquery()
     )
-    return row[0] if row else None
+
+    rows = (
+        db.db.session.query(
+            latest.c.file,
+            latest.c.heuristic_id,
+            db.Version.sha1
+        )
+        .join(db.Version, db.Version.id == latest.c.max_version_id)
+        .all()
+    )
+
+    return {(file_path, heuristic_id): sha1 for file_path, heuristic_id, sha1 in rows}
 
 # =========================
 # Checkout com diagnóstico detalhado
@@ -644,7 +581,6 @@ def process_projects(args, connect=True):
         successful_checkouts = 0
         project_path = os.path.join(REPOS_DIR, project.owner, project.name)
         total_commit = 0
-        last_db_signature = None
 
         try:
             os.chdir(project_path)
@@ -687,7 +623,7 @@ def process_projects(args, connect=True):
                 print(green(f"{project.owner}/{project.name}: janela já completa, nada a fazer."))
                 continue
 
-            previous_sha_cache: Dict[Tuple[int, str, int], Optional[str]] = {}
+            previous_sha_cache: Dict[Tuple[str, int], Optional[str]] = preload_last_seen_vuln_sha(project.id)
 
             for offset, c in enumerate(commits, start=1):
                 commit_sha = c.get("sha")
@@ -805,7 +741,7 @@ def process_projects(args, connect=True):
 
                 if USE_ALL_DEPS:
                     mvn_res = generate_all_dependencies(repo_root=repo_root)
-
+                    
                     if not mvn_res.ok:
                         print(yellow(
                             f"{project.name}: falhou mvn dependency:tree no commit {commit_sha[:7]}. "
@@ -819,11 +755,34 @@ def process_projects(args, connect=True):
                             f"[DBMINING] returncode={mvn_res.returncode}\n\n"
                             + mvn_res.log_text
                         )
-
+                        
+                        executions_by_heuristic = preload_executions_for_version(version.id)
                         first_label_id = labels[0].id if labels else None
+
                         for label in labels:
+                            heuristic_id = label.heuristic.id
                             output_to_store = fail_output if label.id == first_label_id else ""
-                            get_or_create_execution(project, label, version, output_to_store)
+
+                            existing = executions_by_heuristic.get(heuristic_id)
+
+                            if existing:
+                                new_output = (output_to_store or "").strip()
+                                old_output = (existing.output or "").strip()
+
+                                if new_output and new_output != old_output:
+                                    existing.output = new_output
+
+                            else:
+                                execution = db.create(
+                                    db.Execution,
+                                    output=output_to_store or "",
+                                    version=version,
+                                    heuristic=label.heuristic,
+                                    isValidated=False,
+                                    isAccepted=False
+                                )
+                                db.db.session.flush()
+                                executions_by_heuristic[heuristic_id] = execution
 
                         do_commit()
                         continue
@@ -847,16 +806,39 @@ def process_projects(args, connect=True):
                             scopes_accept=None
                         )
 
-                    current_db_signature = build_db_signature_from_parsed(parsed_by_label)
+                    executions_by_heuristic = preload_executions_for_version(version.id)
+                    exec_id_by_label = {}
 
                     first_label_id = labels[0].id if labels else None
 
-                    exec_id_by_label = {}
                     for label in labels:
+                        heuristic_id = label.heuristic.id
                         output_to_store = all_deps_text if label.id == first_label_id else ""
-                        eid = get_or_create_execution(project, label, version, output_to_store)
-                        exec_id_by_label[label.id] = (eid, label.heuristic.id)
 
+                        existing = executions_by_heuristic.get(heuristic_id)
+
+                        if existing:
+                            new_output = (output_to_store or "").strip()
+                            old_output = (existing.output or "").strip()
+
+                            if new_output and new_output != old_output:
+                                existing.output = new_output
+
+                            eid = existing.id
+                        else:
+                            execution = db.create(
+                                db.Execution,
+                                output=output_to_store or "",
+                                version=version,
+                                heuristic=label.heuristic,
+                                isValidated=False,
+                                isAccepted=False
+                            )
+                            db.db.session.flush()
+                            executions_by_heuristic[heuristic_id] = execution
+                            eid = execution.id
+
+                        exec_id_by_label[label.id] = (eid, heuristic_id)
                     existing_vulns = preload_existing_vulns_for_version(version.id)
 
                     for label in labels:
@@ -876,18 +858,8 @@ def process_projects(args, connect=True):
                             group, artifact = (ga.split(":", 1) + [""])[:2]
                             purl_value = build_maven_purl(group, artifact, new_version)
 
-                            cache_key = (project.id, file_path, heuristic_id)
-
-                            if cache_key not in previous_sha_cache:
-                                prev_sha = get_previous_vuln_sha(
-                                    project.id,
-                                    file_path,
-                                    heuristic_id,
-                                    version.id
-                                )
-                                previous_sha_cache[cache_key] = prev_sha
-                            else:
-                                prev_sha = previous_sha_cache[cache_key]
+                            cache_key = (file_path, heuristic_id)
+                            prev_sha = previous_sha_cache.get(cache_key)
 
                             if prev_sha and prev_sha in full_sha_index and commit_sha in full_sha_index:
                                 commits_between = max(0, full_sha_index[commit_sha] - full_sha_index[prev_sha])
@@ -908,7 +880,6 @@ def process_projects(args, connect=True):
                             previous_sha_cache[cache_key] = commit_sha
                             status["Success"] += 1
 
-                    last_db_signature = current_db_signature
                     do_commit()
                     print(green(f"{project.name}: commit {commit_sha[:7]} processado com sucesso."))
 
