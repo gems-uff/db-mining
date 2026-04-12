@@ -203,3 +203,7 @@ resources/seq_patterns/output_tam4_sid.txt
 
 #DBLP
 resources/dblp_2024.xml
+
+#ResultadosVulnerabilidades
+resources/vulnerabilities/vulnerability_results.csv
+rqs_data/base_rqs.csv
