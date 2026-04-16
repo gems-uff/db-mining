@@ -21,6 +21,8 @@ from extract_historical_vulnerabilities import (
     run_reset
 )
 
+from extract import do_commit
+
 
 def find_failed_versions(only_http_related: bool = True, limit: Optional[int] = None):
     """
