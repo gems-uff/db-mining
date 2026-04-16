@@ -269,7 +269,7 @@ def retry_failed_versions(args):
                 compiled_patterns_by_label=compiled_patterns_by_label
             )
 
-            db.do_commit()
+            do_commit()
 
             if ok:
                 recovered += 1
