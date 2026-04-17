@@ -141,17 +141,14 @@ def rebuild_vulnerabilities_for_version(version, project, labels, compiled_patte
     mvn_res = generate_all_dependencies(repo_root=repo_root)
 
     if not mvn_res.ok:
-        fail_output = (
-            "[DBMINING][RETRY] BUILD FAILED: dependency:tree\n"
-            f"[DBMINING] project={project.owner}/{project.name}\n"
-            f"[DBMINING] sha={version.sha1}\n"
-            f"[DBMINING] returncode={mvn_res.returncode}\n\n"
-            + mvn_res.log_text
-        )
-        update_execution_outputs_failure(version, labels, fail_output)
+        # Não altera nada no banco quando o retry falha.
+        # Preserva integralmente a rastreabilidade da primeira execução.
         return False, 0
 
     dep_entries = parse_consolidated_dependency_tree_text(mvn_res.stdout_text)
+
+    # Se o dependency:tree gerou com sucesso, atualiza as executions como sucesso
+    # e segue com a extração para todos os labels.
     if not dep_entries:
         update_execution_outputs_success(version, labels, mvn_res.stdout_text)
         return True, 0
