@@ -275,7 +275,7 @@ class MavenDepTreeResult:
 
 
 def generate_all_dependencies(repo_root: str) -> MavenDepTreeResult:
-    cmd = ["mvn", "dependency:tree", "-DoutputType=text"]
+    cmd = ["mvn", "dependency:tree", "-U", "-DoutputType=text"]
 
     try:
         p = subprocess.run(
