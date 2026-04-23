@@ -275,7 +275,14 @@ class MavenDepTreeResult:
 
 
 def generate_all_dependencies(repo_root: str) -> MavenDepTreeResult:
-    cmd = ["mvn", "dependency:tree", "-U", "-DoutputType=text"]
+    #cmd = ["mvn", "dependency:tree", "-U", "-DoutputType=text"]
+    cmd = [
+    "mvn",
+    "-U",
+    "-Daether.connector.http.retryHandler.count=3",
+    "-Daether.connector.http.retryHandler.interval=5000",
+    "dependency:tree",
+    "-DoutputType=text" ]
 
     try:
         p = subprocess.run(
