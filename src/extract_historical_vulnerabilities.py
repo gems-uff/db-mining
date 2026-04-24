@@ -279,9 +279,7 @@ def generate_all_dependencies(repo_root: str) -> MavenDepTreeResult:
     cmd = [
     "mvn",
     "-U",
-    "-Daether.connector.http.retryHandler.count=3",
-    "-Daether.connector.http.retryHandler.interval=5000",
-    "dependency:tree",
+    "dependency:list",
     "-DoutputType=text" ]
 
     try:

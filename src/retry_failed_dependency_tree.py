@@ -81,6 +81,34 @@ def clear_version_vulnerabilities(version_id: int):
     )
     db.db.session.flush()
 
+def create_retry_executions(version, labels, all_deps_text: str, source: str = "DEPENDENCY_LIST"):
+    first_label_id = labels[0].id if labels else None
+    exec_id_by_label = {}
+
+    for label in labels:
+        output_to_store = all_deps_text if label.id == first_label_id else ""
+
+        retry_output = (
+            f"[DBMINING] RETRY EXECUTION\n"
+            f"[DBMINING] source={source}\n"
+            f"[DBMINING] original_version_id={version.id}\n\n"
+            + output_to_store
+        )
+
+        execution = db.create(
+            db.Execution,
+            output=retry_output,
+            version=version,
+            heuristic=label.heuristic,
+            isValidated=False,
+            isAccepted=False
+        )
+
+        db.db.session.flush()
+        exec_id_by_label[label.id] = (execution.id, label.heuristic.id)
+
+    return exec_id_by_label
+
 
 def update_execution_outputs_success(version, labels, all_deps_text: str):
     executions_by_heuristic = preload_executions_for_version(version.id)
@@ -150,10 +178,7 @@ def rebuild_vulnerabilities_for_version(version, project, labels, compiled_patte
     # Se o dependency:tree gerou com sucesso, atualiza as executions como sucesso
     # e segue com a extração para todos os labels.
     if not dep_entries:
-        update_execution_outputs_success(version, labels, mvn_res.stdout_text)
-        return True, 0
-
-    clear_version_vulnerabilities(version.id)
+        return False, 0
 
     parsed_by_label: Dict[int, List[Dict]] = {}
     for label in labels:
@@ -163,8 +188,14 @@ def rebuild_vulnerabilities_for_version(version, project, labels, compiled_patte
             scopes_accept=None
         )
 
-    exec_id_by_label = update_execution_outputs_success(version, labels, mvn_res.stdout_text)
-    existing_vulns = preload_existing_vulns_for_version(version.id)
+    exec_id_by_label = create_retry_executions(
+        version=version,
+        labels=labels,
+        all_deps_text=mvn_res.stdout_text,
+        source="DEPENDENCY_LIST"
+    )
+
+    existing_vulns = set()
 
     full_sha_index = build_full_commit_index()
     previous_sha_cache = preload_last_seen_vuln_sha(project.id)
@@ -179,7 +210,7 @@ def rebuild_vulnerabilities_for_version(version, project, labels, compiled_patte
             file_path = result["file"]
             new_version = result["version"]
 
-            dedup_key = (file_path, new_version, heuristic_id)
+            dedup_key = (file_path, new_version, heuristic_id, eid)
             if dedup_key in existing_vulns:
                 continue
 
