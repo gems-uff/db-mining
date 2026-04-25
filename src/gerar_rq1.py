@@ -186,23 +186,77 @@ def build_rq1_project_summary(rq1_assoc: pd.DataFrame) -> pd.DataFrame:
     )
 
 
-def build_rq1_db_summary(rq1_assoc: pd.DataFrame) -> pd.DataFrame:
+def build_rq1_db_summary(rq1_assoc: pd.DataFrame, base_df: pd.DataFrame) -> pd.DataFrame:
     if rq1_assoc.empty:
         return pd.DataFrame()
 
-    return (
+    base = base_df.copy()
+
+    required_cols = ["project_id", "db_name", "sha1"]
+    missing = [col for col in required_cols if col not in base.columns]
+    if missing:
+        raise ValueError(f"Colunas obrigatórias ausentes em base_rqs.csv: {missing}")
+
+    base["db"] = normalize_text(base["db_name"])
+
+    db_usage = (
+        base[base["db"].ne("")]
+        .groupby("db", dropna=False)
+        .agg(
+            projects_using_db=("project_id", "nunique"),
+            commits_using_db=("sha1", "nunique")
+        )
+        .reset_index()
+    )
+
+    db_exposure = (
         rq1_assoc.groupby(["db"], dropna=False)
         .agg(
-            projects_affected=("project", "nunique"),
+            projects_affected=("project_id", "nunique"),
+            vulnerable_commits=("commits_observed", "sum"),
             vulnerable_versions=("versionNumber", "nunique"),
             vulnerability_occurrences=("vulnerability_id", "nunique"),
         )
         .reset_index()
-        .sort_values(
-            ["projects_affected", "vulnerability_occurrences", "db"],
-            ascending=[False, False, True],
-            kind="mergesort"
-        )
+    )
+
+    summary = db_exposure.merge(db_usage, on="db", how="left")
+
+    summary["projects_using_db"] = summary["projects_using_db"].fillna(0).astype(int)
+    summary["commits_using_db"] = summary["commits_using_db"].fillna(0).astype(int)
+
+    summary["exposure_project_ratio"] = (
+        summary["projects_affected"] / summary["projects_using_db"]
+    ).where(summary["projects_using_db"] > 0, 0)
+
+    summary["exposure_commit_ratio"] = (
+        summary["vulnerable_commits"] / summary["commits_using_db"]
+    ).where(summary["commits_using_db"] > 0, 0)
+
+    summary["exposure_project_percent"] = (
+        summary["exposure_project_ratio"] * 100
+    ).round(2)
+
+    summary["exposure_commit_percent"] = (
+        summary["exposure_commit_ratio"] * 100
+    ).round(2)
+
+    summary["projects_exposure_label"] = (
+        summary["projects_affected"].astype(str)
+        + "/"
+        + summary["projects_using_db"].astype(str)
+    )
+
+    summary["commits_exposure_label"] = (
+        summary["vulnerable_commits"].astype(str)
+        + "/"
+        + summary["commits_using_db"].astype(str)
+    )
+
+    return summary.sort_values(
+        ["vulnerable_commits", "exposure_commit_ratio", "projects_affected", "db"],
+        ascending=[False, False, False, True],
+        kind="mergesort"
     )
 
 
@@ -231,7 +285,7 @@ def main() -> None:
 
     rq1_assoc = build_rq1_associations(matched_vuln_df)
     rq1_projects = build_rq1_project_summary(rq1_assoc)
-    rq1_dbms = build_rq1_db_summary(rq1_assoc)
+    rq1_dbms = build_rq1_db_summary(rq1_assoc, base_df)
 
     matched_vuln_df.to_csv(input_dir / "rq1_base_vulnerabilidades_cruzadas.csv", index=False)
     rq1_assoc.to_csv(input_dir / "rq1_associacoes.csv", index=False)
