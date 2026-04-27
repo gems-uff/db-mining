@@ -6,6 +6,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from gerar_graficos_rq1 import normalize_db_display_names
 
 logging.basicConfig(
     level=logging.INFO,
@@ -71,35 +72,6 @@ def plot_boxplot_post_disclosure(rq2_exposicoes: pd.DataFrame, output_dir: Path)
     save_plot(fig, output_dir, "rq2_boxplot_pos_divulgacao_por_dbms.png")
 
 
-def plot_boxplot_total_exposure(rq2_exposicoes: pd.DataFrame, output_dir: Path) -> None:
-    if rq2_exposicoes.empty:
-        return
-
-    rq2_exposicoes = prepare_numeric(
-        rq2_exposicoes,
-        ["total_exposure_days"]
-    )
-
-    grouped = []
-    labels = []
-    for db, sub in rq2_exposicoes.groupby("db", dropna=False):
-        vals = sub["total_exposure_days"].dropna()
-        if len(vals) > 0:
-            grouped.append(vals.values)
-            labels.append(db)
-
-    if not grouped:
-        return
-
-    fig = plt.figure(figsize=(12, 6))
-    plt.boxplot(grouped, labels=labels)
-    plt.title("RQ2, distribuição do tempo total de exposição por DBMS")
-    plt.xlabel("DBMS")
-    plt.ylabel("Dias")
-    plt.xticks(rotation=45, ha="right")
-    save_plot(fig, output_dir, "rq2_boxplot_exposicao_total_por_dbms.png")
-
-
 def plot_cdf_post_disclosure(rq2_exposicoes: pd.DataFrame, output_dir: Path) -> None:
     if rq2_exposicoes.empty:
         return
@@ -125,21 +97,58 @@ def plot_cdf_total_exposure(rq2_exposicoes: pd.DataFrame, output_dir: Path) -> N
     if rq2_exposicoes.empty:
         return
 
-    rq2_exposicoes = prepare_numeric(rq2_exposicoes, ["total_exposure_days"])
-    values = rq2_exposicoes["total_exposure_days"].dropna()
-    values = values[values >= 0].sort_values()
+    rq2_exposicoes = prepare_numeric(
+        rq2_exposicoes,
+        ["total_exposure_days"]
+    )
 
-    if values.empty:
+    df = rq2_exposicoes.dropna(subset=["db", "total_exposure_days"]).copy()
+    df = df[df["total_exposure_days"] >= 0]
+
+    if df.empty:
         return
 
-    y = np.arange(1, len(values) + 1) / len(values)
+    # Ordena os BDs pela mediana, maior para menor
+    db_order = (
+        df.groupby("db")["total_exposure_days"]
+        .median()
+        .sort_values(ascending=False)
+        .index
+        .tolist()
+    )
 
-    fig = plt.figure(figsize=(10, 6))
-    plt.plot(values.values, y)
-    plt.title("RQ2, CDF do tempo total de exposição")
-    plt.xlabel("Dias")
-    plt.ylabel("Proporção acumulada")
-    save_plot(fig, output_dir, "rq2_cdf_exposicao_total.png")
+    fig = plt.figure(figsize=(12, 7))
+
+    for db in db_order:
+        values = (
+            df.loc[df["db"] == db, "total_exposure_days"]
+            .dropna()
+            .sort_values()
+        )
+
+        if values.empty:
+            continue
+
+        y = np.arange(1, len(values) + 1) / len(values)
+
+        plt.plot(
+            values.values,
+            y,
+            linewidth=1.8,
+            label=db
+        )
+
+    plt.title("RQ2, CDF of total exposure time by DBMS")
+    plt.xlabel("Total exposure time, days")
+    plt.ylabel("Cumulative proportion")
+    plt.legend(
+        title="DBMS",
+        bbox_to_anchor=(1.05, 1),
+        loc="upper left",
+        fontsize=8
+    )
+
+    save_plot(fig, output_dir, "rq2_cdf_exposicao_total_por_dbms.png")
 
 
 def plot_summary_post_disclosure(rq2_resumo: pd.DataFrame, output_dir: Path) -> None:
@@ -214,6 +223,129 @@ def plot_pre_vs_post_summary(rq2_resumo: pd.DataFrame, output_dir: Path) -> None
     save_plot(fig, output_dir, "rq2_mediana_pre_vs_pos_por_dbms.png")
 
 
+def plot_boxplot_total_exposure(rq2_exposicoes: pd.DataFrame, output_dir: Path) -> None:
+    if rq2_exposicoes.empty:
+        return
+
+    rq2_exposicoes = prepare_numeric(
+        rq2_exposicoes,
+        ["total_exposure_days"]
+    )
+
+    df = rq2_exposicoes.dropna(subset=["db", "total_exposure_days"]).copy()
+    df = df[df["total_exposure_days"] >= 0]
+
+    if df.empty:
+        return
+
+    # Ordena pela amplitude da caixa, maior distribuição primeiro
+    order_stats = (
+        df.groupby("db")["total_exposure_days"]
+        .agg(
+            q1=lambda x: x.quantile(0.25),
+            q3=lambda x: x.quantile(0.75),
+            median="median",
+            count="count"
+        )
+    )
+
+    order_stats["iqr"] = order_stats["q3"] - order_stats["q1"]
+
+    order = (
+        order_stats
+        .sort_values(
+            ["iqr", "median", "count"],
+            ascending=[False, False, False]
+        )
+        .index
+        .tolist()
+    )
+
+    grouped = []
+    labels = []
+
+    for db in order:
+        vals = df.loc[df["db"] == db, "total_exposure_days"].values
+        if len(vals) > 0:
+            grouped.append(vals)
+            labels.append(db)
+
+    if not grouped:
+        return
+
+    fig = plt.figure(figsize=(14, 7))
+
+    plt.boxplot(
+        grouped,
+        labels=labels,
+        showfliers=False,
+        patch_artist=True,
+        boxprops=dict(facecolor="lightgray", color="black"),
+        medianprops=dict(color="black", linewidth=1.5),
+        whiskerprops=dict(color="black"),
+        capprops=dict(color="black")
+    )
+
+    plt.title("RQ2, distribution of total exposure time by DBMS")
+    plt.xlabel("DBMS")
+    plt.ylabel("Days")
+    plt.xticks(rotation=45, ha="right")
+
+    save_plot(fig, output_dir, "rq2_boxplot_exposicao_total_por_dbms.png")
+
+
+def plot_cdf_three_exposure_moments(rq2_exposicoes: pd.DataFrame, output_dir: Path) -> None:
+    if rq2_exposicoes.empty:
+        return
+
+    required_cols = [
+        "total_exposure_days",
+        "pre_disclosure_days",
+        "post_disclosure_days"
+    ]
+
+    missing = [col for col in required_cols if col not in rq2_exposicoes.columns]
+    if missing:
+        raise ValueError(f"rq2_exposicoes.csv deve conter as colunas: {missing}")
+
+    df = prepare_numeric(
+        rq2_exposicoes,
+        required_cols
+    )
+
+    series_config = [
+        ("total_exposure_days", "Total exposure time"),
+        ("pre_disclosure_days", "Exposure before public disclosure"),
+        ("post_disclosure_days", "Exposure after public disclosure")
+    ]
+
+    fig = plt.figure(figsize=(10, 6))
+
+    for col, label in series_config:
+        values = df[col].dropna()
+        values = values[values > 0].sort_values()
+
+        if values.empty:
+            continue
+
+        y = np.arange(1, len(values) + 1) / len(values)
+
+        plt.plot(
+            values.values,
+            y,
+            linewidth=2,
+            label=label
+        )
+
+    plt.title("RQ2, CDF of exposure time across three moments")
+    plt.xlabel("Exposure time, days")
+    plt.ylabel("Cumulative proportion")
+    plt.legend()
+    plt.grid(True, alpha=0.3)
+
+    save_plot(fig, output_dir, "rq2_cdf_tres_momentos_exposicao.png")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Gera gráficos para a RQ2 a partir dos CSVs em rqs_data."
@@ -235,11 +367,13 @@ def main() -> None:
     ensure_output_dir(output_dir)
 
     rq2_exposicoes = read_csv_required(input_dir / "rq2_exposicoes.csv")
+    rq2_exposicoes = normalize_db_display_names(rq2_exposicoes)
     rq2_resumo = read_csv_required(input_dir / "rq2_resumo.csv")
+    rq2_resumo = normalize_db_display_names(rq2_resumo)
 
     plot_boxplot_post_disclosure(rq2_exposicoes, output_dir)
     plot_boxplot_total_exposure(rq2_exposicoes, output_dir)
-    plot_cdf_post_disclosure(rq2_exposicoes, output_dir)
+    plot_cdf_three_exposure_moments(rq2_exposicoes, output_dir)
     plot_cdf_total_exposure(rq2_exposicoes, output_dir)
     plot_summary_post_disclosure(rq2_resumo, output_dir)
     plot_summary_total_exposure(rq2_resumo, output_dir)
