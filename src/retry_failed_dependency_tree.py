@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 import os
-import subprocess
-from pathlib import Path
 from typing import Dict, List, Optional
 
 import database as db
@@ -19,27 +17,6 @@ from extract_historical_vulnerabilities import (
 )
 
 MAX_OUTPUT_CHARS = 30000
-
-HTTP_TO_HTTPS_REPLACEMENTS = {
-    "http://repo1.maven.org/maven2": "https://repo1.maven.org/maven2",
-    "http://repo2.maven.org": "https://repo1.maven.org/maven2",
-    "http://central.maven.org/maven2": "https://repo1.maven.org/maven2",
-    "http://repo.maven.apache.org/maven2": "https://repo.maven.apache.org/maven2",
-
-    "http://download.osgeo.org/webdav/geotools/": "https://repo.osgeo.org/repository/release/",
-    "http://repo.opengeo.org": "https://repo.osgeo.org/repository/release/",
-
-    "http://download.java.net/maven/2/": "https://download.java.net/maven/2/",
-    "http://download.java.net/": "https://download.java.net/",
-
-    "http://repository.jboss.org/nexus/content/groups/public/": "https://repository.jboss.org/nexus/content/groups/public/",
-    "http://repository.apache.org/snapshots": "https://repository.apache.org/snapshots",
-
-    "http://repo.spring.io/plugins-release": "https://repo.spring.io/plugins-release",
-    "http://conjars.org/repo": "https://conjars.org/repo",
-    "http://jcenter.bintray.com": "https://jcenter.bintray.com",
-    "http://download.oracle.com/maven": "https://download.oracle.com/maven",
-}
 
 
 def find_failed_versions(only_http_related: bool = True, limit: Optional[int] = None):
@@ -89,50 +66,7 @@ def get_project_by_id(project_id: int):
     )
 
 
-def patch_pom_urls(repo_root: str) -> Dict[str, int]:
-    changed_files: Dict[str, int] = {}
-
-    for pom_path in Path(repo_root).rglob("pom.xml"):
-        try:
-            original = pom_path.read_text(encoding="utf-8", errors="replace")
-        except Exception:
-            continue
-
-        patched = original
-        replacements_count = 0
-
-        for old, new in HTTP_TO_HTTPS_REPLACEMENTS.items():
-            count = patched.count(old)
-            if count > 0:
-                patched = patched.replace(old, new)
-                replacements_count += count
-
-        if patched != original:
-            pom_path.write_text(patched, encoding="utf-8")
-            changed_files[str(pom_path)] = replacements_count
-
-    return changed_files
-
-
-def restore_repository(repo_root: str):
-    subprocess.run(
-        ["git", "reset", "--hard"],
-        cwd=repo_root,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-        check=False,
-    )
-
-    subprocess.run(
-        ["git", "clean", "-ffd"],
-        cwd=repo_root,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-        check=False,
-    )
-
-
-def create_retry_executions(version, labels, output_text: str, source: str):
+def create_second_execution(version, labels, output_text: str, status: str):
     first_label_id = labels[0].id if labels else None
     exec_id_by_label = {}
 
@@ -140,8 +74,8 @@ def create_retry_executions(version, labels, output_text: str, source: str):
         output_to_store = output_text if label.id == first_label_id else ""
 
         retry_output = (
-            "[DBMINING] RETRY EXECUTION\n"
-            f"[DBMINING] source={source}\n"
+            "[DBMINING] SECOND_EXECUTION_AFTER_MIRROR\n"
+            f"[DBMINING] status={status}\n"
             f"[DBMINING] original_version_id={version.id}\n\n"
             + output_to_store
         )[:MAX_OUTPUT_CHARS]
@@ -183,7 +117,7 @@ def persist_extracted_libraries(
     compiled_patterns_by_label,
     dep_entries: List[Dict],
     output_text: str,
-    source: str,
+    status: str,
 ):
     parsed_by_label: Dict[int, List[Dict]] = {}
 
@@ -194,11 +128,11 @@ def persist_extracted_libraries(
             scopes_accept=None,
         )
 
-    exec_id_by_label = create_retry_executions(
+    exec_id_by_label = create_second_execution(
         version=version,
         labels=labels,
         output_text=output_text,
-        source=source,
+        status=status,
     )
 
     existing_keys = existing_vulnerability_keys_for_version(version.id)
@@ -218,6 +152,7 @@ def persist_extracted_libraries(
             version_number = result["version"]
 
             dedup_key = (file_path, version_number, heuristic_id)
+
             if dedup_key in existing_keys or dedup_key in new_keys:
                 continue
 
@@ -261,51 +196,54 @@ def persist_extracted_libraries(
 def rebuild_vulnerabilities_for_version(version, project, labels, compiled_patterns_by_label):
     repo_root = os.getcwd()
 
-    changed_files = patch_pom_urls(repo_root)
+    mvn_res = generate_all_dependencies(repo_root=repo_root)
 
-    if not changed_files:
-        return False, 0, "NO_PATCH_APPLIED"
+    stdout_text = getattr(mvn_res, "stdout_text", "") or ""
+    stderr_text = getattr(mvn_res, "stderr_text", "") or ""
 
-    try:
-        mvn_res = generate_all_dependencies(repo_root=repo_root)
+    output_text = (
+        "[DBMINING] MAVEN DEPENDENCY TREE AFTER MIRROR\n"
+        f"[DBMINING] project={project.owner}/{project.name}\n"
+        f"[DBMINING] sha={version.sha1}\n\n"
+        "[DBMINING] STDOUT\n"
+        + stdout_text
+        + "\n\n[DBMINING] STDERR\n"
+        + stderr_text
+    )[:MAX_OUTPUT_CHARS]
 
-        if not mvn_res.ok:
-            return False, 0, "PATCHED_DEPENDENCY_TREE_FAILED"
-
-        dep_entries = parse_consolidated_dependency_tree_text(mvn_res.stdout_text)
-
-        if not dep_entries:
-            return False, 0, "PATCHED_DEPENDENCY_TREE_EMPTY"
-
-        patch_summary = "\n".join(
-            f"{path}: {count} replacement(s)"
-            for path, count in changed_files.items()
-        )
-
-        output_text = (
-            "[DBMINING] TEMPORARY HTTP TO HTTPS PATCH\n"
-            f"[DBMINING] project={project.owner}/{project.name}\n"
-            f"[DBMINING] sha={version.sha1}\n"
-            "[DBMINING] patched_files:\n"
-            + patch_summary
-            + "\n\n"
-            + mvn_res.stdout_text
-        )[:MAX_OUTPUT_CHARS]
-
-        created = persist_extracted_libraries(
+    if not mvn_res.ok:
+        create_second_execution(
             version=version,
-            project=project,
             labels=labels,
-            compiled_patterns_by_label=compiled_patterns_by_label,
-            dep_entries=dep_entries,
             output_text=output_text,
-            source="PATCHED_HTTP_TO_HTTPS_DEPENDENCY_TREE",
+            status="SECOND_DEPENDENCY_TREE_FAILED_AFTER_MIRROR",
         )
 
-        return True, created, "PATCHED_HTTP_TO_HTTPS_DEPENDENCY_TREE"
+        return False, 0, "SECOND_DEPENDENCY_TREE_FAILED_AFTER_MIRROR"
 
-    finally:
-        restore_repository(repo_root)
+    dep_entries = parse_consolidated_dependency_tree_text(stdout_text)
+
+    if not dep_entries:
+        create_second_execution(
+            version=version,
+            labels=labels,
+            output_text=output_text,
+            status="SECOND_DEPENDENCY_TREE_EMPTY_AFTER_MIRROR",
+        )
+
+        return False, 0, "SECOND_DEPENDENCY_TREE_EMPTY_AFTER_MIRROR"
+
+    created = persist_extracted_libraries(
+        version=version,
+        project=project,
+        labels=labels,
+        compiled_patterns_by_label=compiled_patterns_by_label,
+        dep_entries=dep_entries,
+        output_text=output_text,
+        status="SECOND_DEPENDENCY_TREE_SUCCESS_AFTER_MIRROR",
+    )
+
+    return True, created, "SECOND_DEPENDENCY_TREE_SUCCESS_AFTER_MIRROR"
 
 
 def retry_failed_versions(args):
@@ -324,7 +262,7 @@ def retry_failed_versions(args):
         limit=getattr(args, "limit", None),
     )
 
-    print(yellow(f"Versões com falha selecionadas para retry com patch: {len(failed_versions)}"))
+    print(yellow(f"Versões com falha selecionadas para segunda execução: {len(failed_versions)}"))
 
     recovered = 0
     still_failed = 0
@@ -371,14 +309,14 @@ def retry_failed_versions(args):
                 total_created += created
 
                 print(green(
-                    f"{project.name} {version.sha1[:7]} recuperado via patch, "
+                    f"{project.name} {version.sha1[:7]} recuperado na segunda execução, "
                     f"{created} registros"
                 ))
             else:
                 still_failed += 1
 
                 print(yellow(
-                    f"{project.name} {version.sha1[:7]} não recuperado, "
+                    f"{project.name} {version.sha1[:7]} ainda falhou, "
                     f"status={status}"
                 ))
 
@@ -395,12 +333,14 @@ def retry_failed_versions(args):
 
         finally:
             try:
-                restore_repository(project_path)
+                os.chdir(project_path)
+                os.system("git reset --hard >/dev/null 2>&1")
+                os.system("git clean -ffd >/dev/null 2>&1")
             except Exception:
                 pass
 
     print()
-    print(green(f"Recuperados com patch: {recovered}"))
+    print(green(f"Recuperados na segunda execução: {recovered}"))
     print(yellow(f"Ainda falharam: {still_failed}"))
     print(green(f"VersionVulnerability criados: {total_created}"))
 
@@ -413,8 +353,8 @@ def retry_failed_versions(args):
 
 def build_args():
     args = read_args(
-        "retry_failed_dependency_tree_http_patch",
-        "Retry dependency:tree after temporary HTTP to HTTPS patch in pom.xml",
+        "retry_failed_dependency_tree_after_mirror",
+        "Retry dependency:tree after Maven mirror configuration and save second execution output",
         default_label_type="vulnerabilities",
         default_skip_remove=True,
         default_heuristics=HEURISTICS_DIR_VULNERABILITIES,
