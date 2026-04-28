@@ -17,6 +17,7 @@ from extract_historical_vulnerabilities import (
 )
 
 MAX_OUTPUT_CHARS = 30000
+SECOND_EXECUTION_TYPE = "AFTER_MIRROR"
 
 
 def find_failed_versions(only_http_related: bool = True, limit: Optional[int] = None):
@@ -37,6 +38,7 @@ def find_failed_versions(only_http_related: bool = True, limit: Optional[int] = 
             outputs = (
                 db.db.session.query(db.Execution.output)
                 .filter(db.Execution.version_id == version.id)
+                .filter(db.Execution.execution_type == "ORIGINAL")
                 .all()
             )
 
@@ -75,6 +77,7 @@ def create_second_execution(version, labels, output_text: str, status: str):
 
         retry_output = (
             "[DBMINING] SECOND_EXECUTION_AFTER_MIRROR\n"
+            f"[DBMINING] execution_type={SECOND_EXECUTION_TYPE}\n"
             f"[DBMINING] status={status}\n"
             f"[DBMINING] original_version_id={version.id}\n\n"
             + output_to_store
@@ -85,6 +88,7 @@ def create_second_execution(version, labels, output_text: str, status: str):
             output=retry_output,
             version=version,
             heuristic=label.heuristic,
+            execution_type=SECOND_EXECUTION_TYPE,
             isValidated=False,
             isAccepted=False,
         )
@@ -101,13 +105,17 @@ def existing_vulnerability_keys_for_version(version_id: int) -> set:
             db.VersionVulnerability.file,
             db.VersionVulnerability.versionNumber,
             db.Execution.heuristic_id,
+            db.Execution.execution_type,
         )
         .join(db.Execution, db.Execution.id == db.VersionVulnerability.execution_id)
         .filter(db.VersionVulnerability.version_id == version_id)
         .all()
     )
 
-    return {(file, version_number, heuristic_id) for file, version_number, heuristic_id in rows}
+    return {
+        (file, version_number, heuristic_id, execution_type)
+        for file, version_number, heuristic_id, execution_type in rows
+    }
 
 
 def persist_extracted_libraries(
@@ -151,7 +159,12 @@ def persist_extracted_libraries(
             file_path = result["file"]
             version_number = result["version"]
 
-            dedup_key = (file_path, version_number, heuristic_id)
+            dedup_key = (
+                file_path,
+                version_number,
+                heuristic_id,
+                SECOND_EXECUTION_TYPE,
+            )
 
             if dedup_key in existing_keys or dedup_key in new_keys:
                 continue
@@ -246,6 +259,11 @@ def rebuild_vulnerabilities_for_version(version, project, labels, compiled_patte
     return True, created, "SECOND_DEPENDENCY_TREE_SUCCESS_AFTER_MIRROR"
 
 
+def restore_repository(project_path: str):
+    os.system(f"cd {project_path} && git reset --hard >/dev/null 2>&1")
+    os.system(f"cd {project_path} && git clean -ffd >/dev/null 2>&1")
+
+
 def retry_failed_versions(args):
     db.connect()
 
@@ -333,9 +351,7 @@ def retry_failed_versions(args):
 
         finally:
             try:
-                os.chdir(project_path)
-                os.system("git reset --hard >/dev/null 2>&1")
-                os.system("git clean -ffd >/dev/null 2>&1")
+                restore_repository(project_path)
             except Exception:
                 pass
 
