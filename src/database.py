@@ -108,7 +108,12 @@ class Heuristic(db.Model):
 
 class Execution(db.Model):
     __table_args__ = (
-        db.UniqueConstraint('version_id', 'heuristic_id', name='uidx_execution_version_heuristic'),
+        db.UniqueConstraint(
+            'version_id',
+            'heuristic_id',
+            'execution_type',
+            name='uidx_execution_version_heuristic_type'
+        ),
         db.Index('idx_execution_heuristic_id', 'heuristic_id'),
     )
     id = db.Column(db.Integer, primary_key=True)
@@ -118,10 +123,15 @@ class Execution(db.Model):
     user = db.Column(db.String)
     heuristic_id = db.Column(db.Integer, db.ForeignKey('heuristic.id'))
     version_id = db.Column(db.Integer, db.ForeignKey('version.id'))
+    execution_type = db.Column(db.String, default="ORIGINAL")
     heuristic = db.relationship('Heuristic', back_populates='executions')
     version = db.relationship('Version', back_populates='executions')
-    execution_type = Column(String, default="ORIGINAL")
-    vulnerabilities = db.relationship('VersionVulnerability', back_populates='execution', cascade="all, delete-orphan")
+
+    vulnerabilities = db.relationship(
+        'VersionVulnerability',
+        back_populates='execution',
+        cascade="all, delete-orphan"
+    )
 
 
 class Vulnerability(db.Model):
