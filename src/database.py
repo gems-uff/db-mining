@@ -120,6 +120,7 @@ class Execution(db.Model):
     version_id = db.Column(db.Integer, db.ForeignKey('version.id'))
     heuristic = db.relationship('Heuristic', back_populates='executions')
     version = db.relationship('Version', back_populates='executions')
+    execution_type = Column(String, default="ORIGINAL")
     vulnerabilities = db.relationship('VersionVulnerability', back_populates='execution', cascade="all, delete-orphan")
 
 
