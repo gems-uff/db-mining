@@ -1,0 +1,16 @@
+db,1,2,3,4,5+,total
+Redis,116,0,0,0,0,116
+PostgreSQL,13,2,5,4,42,66
+MySQL,7,1,8,11,30,57
+H2,6,3,40,2,2,53
+Snowflake,10,2,0,1,27,40
+Hazelcast,3,6,5,13,9,36
+SQLite,22,0,0,0,0,22
+HyperSQL,15,0,0,0,0,15
+MSSQL/MicrosoftAzure,15,0,0,0,0,15
+Cassandra,6,2,3,2,0,13
+MongoDB,13,0,0,0,0,13
+Couchbase,2,0,0,1,0,3
+Ignite,2,0,0,1,0,3
+HBase,1,0,0,0,0,1
+Neo4j,0,1,0,0,0,1
