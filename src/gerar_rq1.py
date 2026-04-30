@@ -37,7 +37,9 @@ def read_vulnerability_catalog_from_sqlite(db_path: Path) -> pd.DataFrame:
                 TRIM(l.name) AS db,
                 TRIM(v.version) AS versionNumber,
                 v.reference,
-                v.status AS vulnerability_status
+                v.status AS vulnerability_status,
+                v.published_at,
+                v.resolved_at
             FROM vulnerability AS v
             JOIN label AS l
               ON l.id = v.label_id
@@ -57,6 +59,8 @@ def read_vulnerability_catalog_from_sqlite(db_path: Path) -> pd.DataFrame:
     vuln_df["versionNumber"] = normalize_text(vuln_df["versionNumber"])
     vuln_df["reference"] = normalize_text(vuln_df["reference"]).replace({"nan": pd.NA, "None": pd.NA})
     vuln_df["vulnerability_status"] = normalize_text(vuln_df["vulnerability_status"]).replace({"nan": pd.NA, "None": pd.NA})
+    vuln_df["published_at"] = normalize_text(vuln_df["published_at"]).replace({"nan": pd.NA, "None": pd.NA})
+    vuln_df["resolved_at"] = normalize_text(vuln_df["resolved_at"]).replace({"nan": pd.NA, "None": pd.NA})
 
     return vuln_df
 
@@ -75,7 +79,7 @@ def build_matched_vulnerability_df(base_df: pd.DataFrame, vuln_catalog_df: pd.Da
 
     base = base_df.copy()
 
-    for col in ["date_commit", "published_at", "last_modified_at"]:
+    for col in ["date_commit", "published_at", "resolved_at", "last_modified_at"]:
         if col in base.columns:
             base[col] = pd.to_datetime(base[col], errors="coerce")
 
@@ -133,16 +137,17 @@ def build_rq1_associations(matched_df: pd.DataFrame) -> pd.DataFrame:
         agg_map["rows_observed"] = ("sha1", "count")
 
     optional_first_fields = [
-        "published_at",
-        "last_modified_at",
-        "cvss_score",
-        "cvss_severity",
-        "cvss_vector",
-        "vulnerability_status",
-        "vulnerability_name",
-        "vulnerability_description",
-        "vuln_purl",
-    ]
+    "published_at",
+    "resolved_at",
+    "last_modified_at",
+    "cvss_score",
+    "cvss_severity",
+    "cvss_vector",
+    "vulnerability_status",
+    "vulnerability_name",
+    "vulnerability_description",
+    "vuln_purl",
+]
 
     for field in optional_first_fields:
         if field in matched_df.columns:
