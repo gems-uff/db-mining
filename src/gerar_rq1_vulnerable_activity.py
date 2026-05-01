@@ -158,19 +158,26 @@ def plot_vulnerable_activity_by_dbms(pivot, output_dir):
     }
 
     colors = {
-        "before_publication": "green",
-        "known_vulnerability": "yellow",
-        "after_resolution": "red"
+    "before_publication": "#aaedaa",      # verde suave
+    "known_vulnerability": "#ffef93",     # laranja suave (melhor que amarelo)
+    "after_resolution": "#ff8d8d"         # rosa/vermelho suave
     }
 
-    height = max(6, len(pivot) * 0.45)
+    pivot = pivot.copy()
+
+    absolute_total = pivot["total"].copy()
+
+    plot_df = pivot[period_order].copy()
+    plot_df = plot_df.div(plot_df.sum(axis=1), axis=0).fillna(0)
+
+    height = max(6, len(plot_df) * 0.45)
     fig, ax = plt.subplots(figsize=(12, height))
 
-    y_positions = range(len(pivot))
-    left = pd.Series([0] * len(pivot), index=pivot.index)
+    y_positions = range(len(plot_df))
+    left = pd.Series([0.0] * len(plot_df), index=plot_df.index)
 
     for period in period_order:
-        values = pivot[period]
+        values = plot_df[period]
 
         ax.barh(
             y_positions,
@@ -185,29 +192,30 @@ def plot_vulnerable_activity_by_dbms(pivot, output_dir):
         left = left + values
 
     ax.set_yticks(y_positions)
-    ax.set_yticklabels(pivot.index)
+    ax.set_yticklabels(plot_df.index)
 
-    ax.set_xlabel("Quantidade de commits entre slices")
+    ax.set_xlim(0, 1)
+    ax.set_xlabel("Proporção de commits entre slices")
     ax.set_ylabel("DBMS")
     ax.set_title("Atividade entre slices por período da vulnerabilidade")
+
     ax.legend(
-    loc="lower left",
-    bbox_to_anchor=(0, -0.25),
-    ncol=3,
-    frameon=True
-)
+        loc="lower left",
+        bbox_to_anchor=(0, -0.25),
+        ncol=3,
+        frameon=True
+    )
 
-    max_value = pivot["total"].max()
-    ax.set_xlim(0, max_value * 1.15)
-
-    for i, total in enumerate(pivot["total"]):
+    for i, db in enumerate(plot_df.index):
         ax.text(
-            total + max_value * 0.01,
+            1.01,
             i,
-            str(int(total)),
+            f"{int(absolute_total.loc[db])} commits",
             va="center",
             fontsize=8
         )
+
+    fig.tight_layout(rect=[0, 0.12, 1, 1])
 
     save_plot(
         fig,
