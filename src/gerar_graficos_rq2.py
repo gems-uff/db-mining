@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 import argparse
 import logging
+import math
 from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from gerar_graficos_rq1 import normalize_db_display_names
 
 logging.basicConfig(
     level=logging.INFO,
@@ -15,371 +15,257 @@ logging.basicConfig(
 
 DEFAULT_INPUT_DIR = "rqs_data"
 DEFAULT_OUTPUT_DIR = "graficos_rq2"
+DEFAULT_INPUT_FILE = "rq2_exposicoes.csv"
 
 
-def read_csv_required(path: Path) -> pd.DataFrame:
+def normalize_db_display_names(df):
+    df = df.copy()
+    if "db" in df.columns:
+        df["db"] = df["db"].replace({
+            "MS SQL Server_Microsoft Azure SQL Database": "MSSQL/MicrosoftAzure"
+        })
+    return df
+
+
+def read_csv_required(path):
+    path = Path(path)
     if not path.exists():
         raise FileNotFoundError(f"Arquivo não encontrado: {path}")
     return pd.read_csv(path)
 
 
-def ensure_output_dir(path: Path) -> None:
+def ensure_output_dir(path):
+    path = Path(path)
     path.mkdir(parents=True, exist_ok=True)
 
 
-def save_plot(fig: plt.Figure, output_dir: Path, filename: str) -> None:
-    filepath = output_dir / filename
-    fig.tight_layout()
+def save_plot(fig, output_dir, filename):
+    filepath = Path(output_dir) / filename
     fig.savefig(filepath, dpi=300, bbox_inches="tight")
     plt.close(fig)
     logging.info("Gráfico salvo em: %s", filepath)
 
 
-def prepare_numeric(df: pd.DataFrame, columns: list[str]) -> pd.DataFrame:
-    df = df.copy()
-    for col in columns:
-        if col in df.columns:
-            df[col] = pd.to_numeric(df[col], errors="coerce")
+def prepare_data(df):
+    required_cols = ["db", "project_id", "total_exposure_days"]
+    missing = [col for col in required_cols if col not in df.columns]
+
+    if missing:
+        raise ValueError(f"O CSV precisa conter as colunas: {missing}")
+
+    df = normalize_db_display_names(df)
+
+    df["db"] = df["db"].astype(str).str.strip()
+    df["project_id"] = df["project_id"].astype(str).str.strip()
+    df["total_exposure_days"] = pd.to_numeric(
+        df["total_exposure_days"],
+        errors="coerce"
+    )
+
+    df = df.dropna(subset=["db", "project_id", "total_exposure_days"])
+
+    df = df[
+        df["db"].ne("") &
+        df["project_id"].ne("") &
+        (df["total_exposure_days"] >= 0)
+    ].copy()
+
     return df
 
 
-def plot_boxplot_post_disclosure(rq2_exposicoes: pd.DataFrame, output_dir: Path) -> None:
-    if rq2_exposicoes.empty:
-        return
-
-    rq2_exposicoes = prepare_numeric(
-        rq2_exposicoes,
-        ["pre_disclosure_days", "post_disclosure_days", "total_exposure_days"]
+def aggregate_by_project(df):
+    return (
+        df
+        .groupby(["db", "project_id"], as_index=False)
+        .agg(total_exposure_days=("total_exposure_days", "sum"))
     )
 
-    grouped = []
-    labels = []
-    for db, sub in rq2_exposicoes.groupby("db", dropna=False):
-        vals = sub["post_disclosure_days"].dropna()
-        if len(vals) > 0:
-            grouped.append(vals.values)
-            labels.append(db)
 
-    if not grouped:
+def export_project_level_data(df_project, input_dir):
+    output_path = Path(input_dir) / "rq2_exposicao_total_por_dbms_por_projeto.csv"
+    df_project.to_csv(output_path, index=False)
+    logging.info("CSV agregado por projeto salvo em: %s", output_path)
+
+
+def plot_cdf_small_multiples_by_project(df_project, output_dir):
+    if df_project.empty:
+        logging.warning("Nenhum dado disponível para gerar o CDF.")
         return
 
-    fig = plt.figure(figsize=(12, 6))
-    plt.boxplot(grouped, labels=labels)
-    plt.title("RQ2, distribuição do tempo pós divulgação por DBMS")
-    plt.xlabel("DBMS")
-    plt.ylabel("Dias")
-    plt.xticks(rotation=45, ha="right")
-    save_plot(fig, output_dir, "rq2_boxplot_pos_divulgacao_por_dbms.png")
-
-
-def plot_cdf_post_disclosure(rq2_exposicoes: pd.DataFrame, output_dir: Path) -> None:
-    if rq2_exposicoes.empty:
-        return
-
-    rq2_exposicoes = prepare_numeric(rq2_exposicoes, ["post_disclosure_days"])
-    values = rq2_exposicoes["post_disclosure_days"].dropna()
-    values = values[values >= 0].sort_values()
-
-    if values.empty:
-        return
-
-    y = np.arange(1, len(values) + 1) / len(values)
-
-    fig = plt.figure(figsize=(10, 6))
-    plt.plot(values.values, y)
-    plt.title("RQ2, CDF do tempo pós divulgação")
-    plt.xlabel("Dias")
-    plt.ylabel("Proporção acumulada")
-    save_plot(fig, output_dir, "rq2_cdf_pos_divulgacao.png")
-
-
-def plot_cdf_total_exposure(rq2_exposicoes: pd.DataFrame, output_dir: Path) -> None:
-    if rq2_exposicoes.empty:
-        return
-
-    rq2_exposicoes = prepare_numeric(
-        rq2_exposicoes,
-        ["total_exposure_days"]
-    )
-
-    df = rq2_exposicoes.dropna(subset=["db", "total_exposure_days"]).copy()
-    df = df[df["total_exposure_days"] >= 0]
-
-    if df.empty:
-        return
-
-    # Ordena os BDs pela mediana, maior para menor
     db_order = (
-        df.groupby("db")["total_exposure_days"]
+        df_project.groupby("db")["total_exposure_days"]
         .median()
         .sort_values(ascending=False)
         .index
         .tolist()
     )
 
-    fig = plt.figure(figsize=(12, 7))
+    n_dbs = len(db_order)
+    n_cols = 4
+    n_rows = math.ceil(n_dbs / n_cols)
 
-    for db in db_order:
+    fig, axes = plt.subplots(
+        n_rows,
+        n_cols,
+        figsize=(4.2 * n_cols, 3.2 * n_rows),
+        sharey=True
+    )
+
+    axes = np.array(axes).reshape(-1)
+
+    for ax, db in zip(axes, db_order):
         values = (
-            df.loc[df["db"] == db, "total_exposure_days"]
+            df_project.loc[df_project["db"] == db, "total_exposure_days"]
             .dropna()
             .sort_values()
         )
 
         if values.empty:
+            ax.axis("off")
             continue
 
         y = np.arange(1, len(values) + 1) / len(values)
 
-        plt.plot(
-            values.values,
-            y,
-            linewidth=1.8,
-            label=db
+        ax.plot(values.values, y, linewidth=2, color="#4c78a8")
+
+        median_value = values.median()
+
+        ax.axvline(
+            median_value,
+            linestyle=":",
+            linewidth=1,
+            color="gray"
         )
 
-    plt.title("RQ2, CDF of total exposure time by DBMS")
-    plt.xlabel("Total exposure time, days")
-    plt.ylabel("Cumulative proportion")
-    plt.legend(
-        title="DBMS",
-        bbox_to_anchor=(1.05, 1),
-        loc="upper left",
-        fontsize=8
-    )
+        ax.set_title(f"{db} (n={len(values)} projetos)", fontsize=10)
+        ax.set_ylim(0, 1.02)
+        ax.grid(True, alpha=0.25)
 
-    save_plot(fig, output_dir, "rq2_cdf_exposicao_total_por_dbms.png")
-
-
-def plot_summary_post_disclosure(rq2_resumo: pd.DataFrame, output_dir: Path) -> None:
-    if rq2_resumo.empty:
-        return
-
-    rq2_resumo = prepare_numeric(
-        rq2_resumo,
-        [
-            "projects_affected",
-            "vulnerability_occurrences",
-            "median_total_exposure_days",
-            "mean_total_exposure_days",
-            "median_pre_disclosure_days",
-            "mean_pre_disclosure_days",
-            "median_post_disclosure_days",
-            "mean_post_disclosure_days",
-            "max_post_disclosure_days",
-        ]
-    ).sort_values("median_post_disclosure_days", ascending=False)
-
-    fig = plt.figure(figsize=(10, 6))
-    plt.bar(rq2_resumo["db"], rq2_resumo["median_post_disclosure_days"])
-    plt.title("RQ2, mediana do tempo pós divulgação por DBMS")
-    plt.xlabel("DBMS")
-    plt.ylabel("Dias")
-    plt.xticks(rotation=45, ha="right")
-    save_plot(fig, output_dir, "rq2_mediana_pos_divulgacao_por_dbms.png")
-
-
-def plot_summary_total_exposure(rq2_resumo: pd.DataFrame, output_dir: Path) -> None:
-    if rq2_resumo.empty:
-        return
-
-    rq2_resumo = prepare_numeric(
-        rq2_resumo,
-        ["mean_total_exposure_days"]
-    ).sort_values("mean_total_exposure_days", ascending=False)
-
-    fig = plt.figure(figsize=(10, 6))
-    plt.bar(rq2_resumo["db"], rq2_resumo["mean_total_exposure_days"])
-    plt.title("RQ2, média do tempo total de exposição por DBMS")
-    plt.xlabel("DBMS")
-    plt.ylabel("Dias")
-    plt.xticks(rotation=45, ha="right")
-    save_plot(fig, output_dir, "rq2_media_exposicao_total_por_dbms.png")
-
-
-def plot_pre_vs_post_summary(rq2_resumo: pd.DataFrame, output_dir: Path) -> None:
-    if rq2_resumo.empty:
-        return
-
-    rq2_resumo = prepare_numeric(
-        rq2_resumo,
-        [
-            "median_pre_disclosure_days",
-            "median_post_disclosure_days",
-        ]
-    ).sort_values("median_post_disclosure_days", ascending=False)
-
-    x = np.arange(len(rq2_resumo))
-    width = 0.38
-
-    fig = plt.figure(figsize=(12, 6))
-    plt.bar(x - width / 2, rq2_resumo["median_pre_disclosure_days"], width=width, label="Pré divulgação")
-    plt.bar(x + width / 2, rq2_resumo["median_post_disclosure_days"], width=width, label="Pós divulgação")
-    plt.title("RQ2, mediana do tempo pré e pós divulgação por DBMS")
-    plt.xlabel("DBMS")
-    plt.ylabel("Dias")
-    plt.xticks(x, rq2_resumo["db"], rotation=45, ha="right")
-    plt.legend()
-    save_plot(fig, output_dir, "rq2_mediana_pre_vs_pos_por_dbms.png")
-
-
-def plot_boxplot_total_exposure(rq2_exposicoes: pd.DataFrame, output_dir: Path) -> None:
-    if rq2_exposicoes.empty:
-        return
-
-    rq2_exposicoes = prepare_numeric(
-        rq2_exposicoes,
-        ["total_exposure_days"]
-    )
-
-    df = rq2_exposicoes.dropna(subset=["db", "total_exposure_days"]).copy()
-    df = df[df["total_exposure_days"] >= 0]
-
-    if df.empty:
-        return
-
-    # Ordena pela amplitude da caixa, maior distribuição primeiro
-    order_stats = (
-        df.groupby("db")["total_exposure_days"]
-        .agg(
-            q1=lambda x: x.quantile(0.25),
-            q3=lambda x: x.quantile(0.75),
-            median="median",
-            count="count"
+        ax.text(
+            0.03,
+            0.08,
+            f"mediana: {median_value:.0f} dias",
+            transform=ax.transAxes,
+            fontsize=8
         )
+
+    for ax in axes[n_dbs:]:
+        ax.axis("off")
+
+    fig.suptitle(
+        "RQ2, CDF do tempo total de exposição por DBMS, agregado por projeto",
+        fontsize=15
     )
 
-    order_stats["iqr"] = order_stats["q3"] - order_stats["q1"]
+    fig.supxlabel("Tempo total de exposição por projeto, dias")
+    fig.supylabel("Proporção acumulada de projetos")
 
-    order = (
-        order_stats
-        .sort_values(
-            ["iqr", "median", "count"],
-            ascending=[False, False, False]
-        )
-        .index
-        .tolist()
+    fig.tight_layout(rect=[0, 0.03, 1, 0.96])
+
+    save_plot(
+        fig,
+        output_dir,
+        "rq2_cdf_exposicao_total_por_dbms_por_projeto.png"
     )
 
-    grouped = []
+def compute_iqr(series):
+    return series.quantile(0.75) - series.quantile(0.25)
+
+
+def plot_boxplot_by_project(df_project, output_dir):
+    if df_project.empty:
+        logging.warning("Nenhum dado disponível para gerar o boxplot.")
+        return
+
+    
+    db_order = (
+    df_project.groupby("db")["total_exposure_days"]
+    .apply(compute_iqr)
+    .sort_values(ascending=False)
+    .index
+    .tolist()
+)
+
+    grouped_values = []
     labels = []
 
-    for db in order:
-        vals = df.loc[df["db"] == db, "total_exposure_days"].values
-        if len(vals) > 0:
-            grouped.append(vals)
+    for db in db_order:
+        values = df_project.loc[
+            df_project["db"] == db,
+            "total_exposure_days"
+        ].dropna().values
+
+        if len(values) > 0:
+            grouped_values.append(values)
             labels.append(db)
 
-    if not grouped:
+    if not grouped_values:
+        logging.warning("Nenhum grupo válido para gerar o boxplot.")
         return
 
-    fig = plt.figure(figsize=(14, 7))
+    width = max(12, len(labels) * 0.75)
+    fig, ax = plt.subplots(figsize=(width, 7))
 
-    plt.boxplot(
-        grouped,
+    box = ax.boxplot(
+        grouped_values,
         labels=labels,
-        showfliers=False,
         patch_artist=True,
-        boxprops=dict(facecolor="lightgray", color="black"),
-        medianprops=dict(color="black", linewidth=1.5),
-        whiskerprops=dict(color="black"),
-        capprops=dict(color="black")
+        showfliers=False
     )
 
-    plt.title("RQ2, distribution of total exposure time by DBMS")
-    plt.xlabel("DBMS")
-    plt.ylabel("Days")
+    for patch in box["boxes"]:
+        patch.set_facecolor("#9ecae1")
+        patch.set_alpha(0.85)
+
+    for median in box["medians"]:
+        median.set_color("black")
+        median.set_linewidth(1.5)
+
+    ax.set_xlabel("DBMS")
+    ax.set_ylabel("Tempo total de exposição por projeto, dias")
+    ax.set_title("RQ2, distribuição do tempo total de exposição por projeto e DBMS")
+    ax.grid(True, axis="y", alpha=0.3)
+
     plt.xticks(rotation=45, ha="right")
 
-    save_plot(fig, output_dir, "rq2_boxplot_exposicao_total_por_dbms.png")
+    fig.tight_layout()
 
-
-def plot_cdf_three_exposure_moments(rq2_exposicoes: pd.DataFrame, output_dir: Path) -> None:
-    if rq2_exposicoes.empty:
-        return
-
-    required_cols = [
-        "total_exposure_days",
-        "pre_disclosure_days",
-        "post_disclosure_days"
-    ]
-
-    missing = [col for col in required_cols if col not in rq2_exposicoes.columns]
-    if missing:
-        raise ValueError(f"rq2_exposicoes.csv deve conter as colunas: {missing}")
-
-    df = prepare_numeric(
-        rq2_exposicoes,
-        required_cols
+    save_plot(
+        fig,
+        output_dir,
+        "rq2_boxplot_exposicao_total_por_dbms_por_projeto.png"
     )
 
-    series_config = [
-        ("total_exposure_days", "Total exposure time"),
-        ("pre_disclosure_days", "Exposure before public disclosure"),
-        ("post_disclosure_days", "Exposure after public disclosure")
-    ]
 
-    fig = plt.figure(figsize=(10, 6))
-
-    for col, label in series_config:
-        values = df[col].dropna()
-        values = values[values > 0].sort_values()
-
-        if values.empty:
-            continue
-
-        y = np.arange(1, len(values) + 1) / len(values)
-
-        plt.plot(
-            values.values,
-            y,
-            linewidth=2,
-            label=label
-        )
-
-    plt.title("RQ2, CDF of exposure time across three moments")
-    plt.xlabel("Exposure time, days")
-    plt.ylabel("Cumulative proportion")
-    plt.legend()
-    plt.grid(True, alpha=0.3)
-
-    save_plot(fig, output_dir, "rq2_cdf_tres_momentos_exposicao.png")
-
-
-def main() -> None:
+def main():
     parser = argparse.ArgumentParser(
-        description="Gera gráficos para a RQ2 a partir dos CSVs em rqs_data."
+        description=(
+            "Gera CDF por DBMS e boxplot do tempo total de exposição, "
+            "com cada ponto representando um projeto."
+        )
     )
-    parser.add_argument(
-        "--input-dir",
-        default=DEFAULT_INPUT_DIR,
-        help="Diretório com rq2_exposicoes.csv e rq2_resumo.csv."
-    )
-    parser.add_argument(
-        "--output-dir",
-        default=DEFAULT_OUTPUT_DIR,
-        help="Diretório onde os gráficos serão salvos."
-    )
+
+    parser.add_argument("--input-dir", default=DEFAULT_INPUT_DIR)
+    parser.add_argument("--output-dir", default=DEFAULT_OUTPUT_DIR)
+    parser.add_argument("--input-file", default=DEFAULT_INPUT_FILE)
+
     args = parser.parse_args()
 
     input_dir = Path(args.input_dir)
     output_dir = Path(args.output_dir)
+    input_path = input_dir / args.input_file
+
     ensure_output_dir(output_dir)
 
-    rq2_exposicoes = read_csv_required(input_dir / "rq2_exposicoes.csv")
-    rq2_exposicoes = normalize_db_display_names(rq2_exposicoes)
-    rq2_resumo = read_csv_required(input_dir / "rq2_resumo.csv")
-    rq2_resumo = normalize_db_display_names(rq2_resumo)
+    df = read_csv_required(input_path)
+    df = prepare_data(df)
+    df_project = aggregate_by_project(df)
 
-    plot_boxplot_post_disclosure(rq2_exposicoes, output_dir)
-    plot_boxplot_total_exposure(rq2_exposicoes, output_dir)
-    plot_cdf_three_exposure_moments(rq2_exposicoes, output_dir)
-    plot_cdf_total_exposure(rq2_exposicoes, output_dir)
-    plot_summary_post_disclosure(rq2_resumo, output_dir)
-    plot_summary_total_exposure(rq2_resumo, output_dir)
-    plot_pre_vs_post_summary(rq2_resumo, output_dir)
+    export_project_level_data(df_project, input_dir)
+    plot_cdf_small_multiples_by_project(df_project, output_dir)
+    plot_boxplot_by_project(df_project, output_dir)
 
-    logging.info("Geração dos gráficos da RQ2 concluída.")
+    logging.info("Geração concluída.")
 
 
 if __name__ == "__main__":
