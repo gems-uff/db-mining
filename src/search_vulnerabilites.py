@@ -9,22 +9,20 @@ import time
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import requests
-from requests.auth import HTTPBasicAuth
 
-OSSINDEX_API_URL = "https://ossindex.sonatype.org/api/v3/component-report"
 GITHUB_API_BASE = "https://api.github.com"
 GITHUB_API_VERSION = "2022-11-28"
+OSV_API_URL = "https://api.osv.dev/v1/query"
+NVD_API_URL = "https://services.nvd.nist.gov/rest/json/cves/2.0"
 MAVEN_SEARCH_API = "https://search.maven.org/solrsearch/select"
 
-DEFAULT_BATCH_SIZE = 64
-DEFAULT_COMMIT_EVERY = 50
 DEFAULT_DB_PATH = "dbmining.sqlite"
+DEFAULT_COMMIT_EVERY = 50
 DEFAULT_MAVEN_CACHE_FILE = "maven_release_date_cache.json"
 
-VERBOSE = False
 MAVEN_CACHE: Dict[str, Optional[str]] = {}
 
 
@@ -35,47 +33,15 @@ class DependencyRow:
     purl: str
     version: str
     package_name: str
-    module_file: Optional[str]
 
 
-def log(msg: str, level: str = "INFO", force: bool = False) -> None:
-    if VERBOSE or force or level in ("WARN", "ERROR"):
-        ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        print(f"[{ts}] [{level}] {msg}")
-
-
-def short(text: Optional[str], limit: int = 180) -> str:
-    if text is None:
-        return ""
-    text = str(text).replace("\n", " ").strip()
-    return text if len(text) <= limit else text[:limit] + "..."
+def log(msg: str) -> None:
+    ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print(f"[{ts}] {msg}")
 
 
 def now_utc_iso() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
-
-
-def load_maven_cache(cache_file: str) -> None:
-    global MAVEN_CACHE
-
-    path = Path(cache_file)
-
-    if not path.exists():
-        MAVEN_CACHE = {}
-        return
-
-    try:
-        MAVEN_CACHE = json.loads(path.read_text(encoding="utf-8"))
-    except Exception:
-        MAVEN_CACHE = {}
-
-
-def save_maven_cache(cache_file: str) -> None:
-    path = Path(cache_file)
-    path.write_text(
-        json.dumps(MAVEN_CACHE, ensure_ascii=False, indent=2),
-        encoding="utf-8"
-    )
 
 
 def connect_db(db_path: str) -> sqlite3.Connection:
@@ -87,22 +53,19 @@ def connect_db(db_path: str) -> sqlite3.Connection:
 
 
 def get_columns(conn: sqlite3.Connection, table_name: str) -> List[str]:
-    rows = conn.execute(f"PRAGMA table_info({table_name})").fetchall()
-    return [row["name"] for row in rows]
+    return [row["name"] for row in conn.execute(f"PRAGMA table_info({table_name})")]
 
 
-def ensure_helpful_index(conn: sqlite3.Connection) -> None:
-    conn.execute("""
-        CREATE UNIQUE INDEX IF NOT EXISTS uidx_vulnerability_label_version_purl_reference
-        ON vulnerability(label_id, version, purl, reference)
-    """)
-    conn.commit()
+def ensure_column(conn: sqlite3.Connection, table: str, column: str, column_type: str) -> None:
+    existing = set(get_columns(conn, table))
+    if column not in existing:
+        log(f"Adicionando coluna {table}.{column}")
+        conn.execute(f"ALTER TABLE {table} ADD COLUMN {column} {column_type}")
+        conn.commit()
 
 
 def ensure_vulnerability_columns(conn: sqlite3.Connection) -> None:
-    existing = set(get_columns(conn, "vulnerability"))
-
-    desired_columns = {
+    required = {
         "name": "TEXT",
         "status": "TEXT",
         "description": "TEXT",
@@ -111,37 +74,21 @@ def ensure_vulnerability_columns(conn: sqlite3.Connection) -> None:
         "purl": "TEXT",
         "published_at": "TEXT",
         "last_modified_at": "TEXT",
-        "cvss_score": "REAL",
-        "cvss_severity": "TEXT",
-        "cvss_vector": "TEXT",
         "label_id": "INTEGER",
         "ghsa_id": "TEXT",
-        "patched_versions": "TEXT",
         "first_patched_version": "TEXT",
+        "resolved_at": "TEXT",
         "vulnerable_version_range": "TEXT",
         "package_ecosystem": "TEXT",
         "package_name": "TEXT",
         "fix_source": "TEXT",
         "fix_checked_at": "TEXT",
         "fix_lookup_status": "TEXT",
-        "next_version_maven_central": "TEXT",
-        "resolved_version": "TEXT",
-        "resolved_at": "TEXT",
-        "external_alias_used": "TEXT",
         "source_details": "TEXT",
     }
 
-    for col, col_type in desired_columns.items():
-        if col not in existing:
-            log(f"Adicionando coluna vulnerability.{col}", force=True)
-            conn.execute(f"ALTER TABLE vulnerability ADD COLUMN {col} {col_type}")
-
-    conn.commit()
-
-
-def chunked(seq: Sequence[str], size: int) -> Iterable[List[str]]:
-    for idx in range(0, len(seq), size):
-        yield list(seq[idx: idx + size])
+    for col, col_type in required.items():
+        ensure_column(conn, "vulnerability", col, col_type)
 
 
 def parse_maven_purl(purl: Optional[str]) -> Optional[Tuple[str, str, Optional[str]]]:
@@ -181,92 +128,71 @@ def parse_maven_purl(purl: Optional[str]) -> Optional[Tuple[str, str, Optional[s
 
     return group_id, artifact_id, version
 
-
 ORACLE_GROUP_ALIASES = {
-    "com.oracle": "com.oracle.database.jdbc",
-    "com.oracle.jdbc": "com.oracle.database.jdbc",
-    "com.oracle.ojdbc": "com.oracle.database.jdbc",
-    "com.oracle.database.jdbc": "com.oracle.database.jdbc",
+    "com.oracle",
+    "com.oracle.jdbc",
+    "com.oracle.ojdbc",
+    "com.oracle.database.jdbc",
 }
 
-ORACLE_ARTIFACTS = {
+ORACLE_ARTIFACT_ALIASES = {
     "ojdbc14",
+    "ojdbc5",
     "ojdbc6",
     "ojdbc7",
     "ojdbc8",
     "ojdbc10",
     "ojdbc11",
-    "ojdbc17",
-    "ucp",
-    "ons",
-    "xdb",
-    "oraclepki",
-    "osdt_core",
-    "osdt_cert",
-    "simplefan",
-    "xmlparserv2",
 }
 
 
 def is_oracle_dependency(dep: DependencyRow) -> bool:
-    parsed = parse_maven_purl(dep.purl)
+    package = (dep.package_name or "").lower().strip()
 
-    if not parsed:
+    if ":" not in package:
         return False
 
-    group_id, artifact_id, _ = parsed
-    group_id = group_id.strip().lower()
-    artifact_id = artifact_id.strip().lower()
-    label_name = (dep.label_name or "").strip().lower()
+    group_id, artifact_id = package.split(":", 1)
 
-    if group_id in ORACLE_GROUP_ALIASES:
-        return True
-
-    if artifact_id in ORACLE_ARTIFACTS and "oracle" in label_name:
-        return True
-
-    return False
+    return (
+        "oracle" in dep.label_name.lower()
+        or group_id in ORACLE_GROUP_ALIASES
+        or artifact_id in ORACLE_ARTIFACT_ALIASES
+    )
 
 
-def get_oracle_candidate_purls(dep: DependencyRow) -> List[str]:
-    candidates = [dep.purl]
+def generate_oracle_candidate_packages(dep: DependencyRow) -> List[str]:
+    candidates = []
 
-    if not is_oracle_dependency(dep):
-        return candidates
+    for group_id in ORACLE_GROUP_ALIASES:
+        for artifact_id in ORACLE_ARTIFACT_ALIASES:
+            candidates.append(f"{group_id}:{artifact_id}")
 
-    parsed = parse_maven_purl(dep.purl)
+    candidates.append(dep.package_name)
 
-    if not parsed:
-        return candidates
-
-    group_id, artifact_id, version = parsed
-    canonical_group = ORACLE_GROUP_ALIASES.get(group_id.lower(), group_id)
-
-    if canonical_group != group_id:
-        if version:
-            candidates.append(f"pkg:maven/{canonical_group}/{artifact_id}@{version}")
-        else:
-            candidates.append(f"pkg:maven/{canonical_group}/{artifact_id}")
-
-    return list(dict.fromkeys(candidates))
+    return sorted(set(candidates))
 
 
-def get_oracle_candidate_package_names(dep: DependencyRow) -> List[str]:
-    candidates = [dep.package_name]
+def load_maven_cache(cache_file: str) -> None:
+    global MAVEN_CACHE
 
-    if not is_oracle_dependency(dep):
-        return candidates
+    path = Path(cache_file)
 
-    parsed = parse_maven_purl(dep.purl)
+    if not path.exists():
+        MAVEN_CACHE = {}
+        return
 
-    if not parsed:
-        return candidates
+    try:
+        MAVEN_CACHE = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        MAVEN_CACHE = {}
 
-    group_id, artifact_id, _ = parsed
-    canonical_group = ORACLE_GROUP_ALIASES.get(group_id.lower(), group_id)
-    candidates.append(f"{canonical_group}:{artifact_id}")
 
-    return list(dict.fromkeys(candidates))
+def save_maven_cache(cache_file: str) -> None:
+    Path(cache_file).write_text(
+        json.dumps(MAVEN_CACHE, ensure_ascii=False, indent=2),
+        encoding="utf-8"
+    )
 
 
 def build_github_headers() -> Dict[str, str]:
@@ -284,14 +210,25 @@ def build_github_headers() -> Dict[str, str]:
     return headers
 
 
-def ossindex_auth() -> Optional[HTTPBasicAuth]:
-    username = os.getenv("OSSINDEX_USERNAME", "").strip()
-    token = os.getenv("OSSINDEX_TOKEN", "").strip()
+def require_github_token() -> None:
+    if not os.getenv("GITHUB_TOKEN", "").strip():
+        raise RuntimeError(
+            "GITHUB_TOKEN não configurado. Configure o token antes de rodar "
+            "para evitar rate limit e resultados incompletos."
+        )
 
-    if username and token:
-        return HTTPBasicAuth(username, token)
 
-    return None
+def build_nvd_headers() -> Dict[str, str]:
+    headers = {
+        "User-Agent": "db-mining-research/1.0",
+    }
+
+    api_key = os.getenv("NVD_API_KEY", "").strip()
+
+    if api_key:
+        headers["apiKey"] = api_key
+
+    return headers
 
 
 def request_with_retry(
@@ -302,15 +239,15 @@ def request_with_retry(
     params: Optional[Dict[str, Any]] = None,
     json_body: Optional[Dict[str, Any]] = None,
     auth: Optional[Any] = None,
-    timeout: int = 60,
+    timeout: int = 90,
     max_retries: int = 5,
 ) -> requests.Response:
-    retryable_statuses = {403, 429, 502, 503, 504}
-    last_exception = None
-    last_response = None
-
+    retryable_statuses = {429, 500, 502, 503, 504}
     headers = dict(headers or {})
     headers.setdefault("User-Agent", "db-mining-research/1.0")
+
+    last_response = None
+    last_exception = None
 
     for attempt in range(1, max_retries + 1):
         try:
@@ -331,8 +268,8 @@ def request_with_retry(
 
             if response.status_code in retryable_statuses:
                 wait_time = 2 ** (attempt - 1)
-                retry_after = response.headers.get("Retry-After")
 
+                retry_after = response.headers.get("Retry-After")
                 if retry_after:
                     try:
                         wait_time = max(wait_time, float(retry_after))
@@ -340,10 +277,8 @@ def request_with_retry(
                         pass
 
                 log(
-                    f"Tentativa {attempt}/{max_retries} falhou com HTTP {response.status_code}. "
-                    f"Nova tentativa em {wait_time}s. URL: {url}",
-                    level="WARN",
-                    force=True,
+                    f"Tentativa {attempt}/{max_retries} falhou com HTTP "
+                    f"{response.status_code}. Nova tentativa em {wait_time}s."
                 )
 
                 if attempt < max_retries:
@@ -357,10 +292,8 @@ def request_with_retry(
             wait_time = 2 ** (attempt - 1)
 
             log(
-                f"Tentativa {attempt}/{max_retries} falhou por erro de rede: {exc}. "
-                f"Nova tentativa em {wait_time}s. URL: {url}",
-                level="WARN",
-                force=True,
+                f"Tentativa {attempt}/{max_retries} falhou por erro de rede: "
+                f"{exc}. Nova tentativa em {wait_time}s."
             )
 
             if attempt < max_retries:
@@ -370,14 +303,11 @@ def request_with_retry(
     if last_response is not None:
         return last_response
 
-    raise RuntimeError(f"Falha de rede ao acessar {url}: {last_exception}")
+    raise RuntimeError(f"Falha de rede após {max_retries} tentativas: {last_exception}")
 
 
 def fetch_maven_release_date(package_name: str, version: Optional[str]) -> Optional[str]:
-    if not package_name or not version:
-        return None
-
-    if ":" not in package_name:
+    if not package_name or not version or ":" not in package_name:
         return None
 
     cache_key = f"{package_name}@{version}"
@@ -399,17 +329,12 @@ def fetch_maven_release_date(package_name: str, version: Optional[str]) -> Optio
         "GET",
         MAVEN_SEARCH_API,
         params=params,
-        timeout=60,
+        timeout=90,
         max_retries=5,
     )
 
     if response.status_code != 200:
-        log(
-            f"Maven Central retornou {response.status_code} para {package_name}@{version}: "
-            f"{short(response.text, 200)}",
-            level="WARN",
-            force=True,
-        )
+        log(f"Maven Central retornou {response.status_code} para {cache_key}")
         MAVEN_CACHE[cache_key] = None
         return None
 
@@ -441,38 +366,33 @@ def fetch_maven_release_date(package_name: str, version: Optional[str]) -> Optio
 
 
 def load_candidate_dependencies(conn: sqlite3.Connection) -> List[DependencyRow]:
-    vv_cols = set(get_columns(conn, "version_vulnerability"))
-
-    required = {"execution_id", "versionNumber", "purl"}
-    missing = required - vv_cols
-
-    if missing:
-        raise RuntimeError(f"A tabela version_vulnerability precisa conter as colunas: {sorted(missing)}")
-
     sql = """
-        SELECT
+        SELECT DISTINCT
             l.id AS label_id,
             l.name AS label_name,
             vv.purl AS purl,
-            vv.versionNumber AS version,
-            MIN(vv.file) AS module_file
+            vv.versionNumber AS version
         FROM version_vulnerability vv
         JOIN execution e ON e.id = vv.execution_id
         JOIN heuristic h ON h.id = e.heuristic_id
         JOIN label l ON l.id = h.label_id
+
+        LEFT JOIN vulnerability v
+            ON v.label_id = l.id
+           AND TRIM(v.version) = TRIM(vv.versionNumber)
+           AND TRIM(v.purl) = TRIM(vv.purl)
+
         WHERE vv.purl IS NOT NULL
           AND TRIM(vv.purl) <> ''
           AND vv.versionNumber IS NOT NULL
           AND TRIM(vv.versionNumber) <> ''
-        GROUP BY
-            l.id,
-            l.name,
-            vv.purl,
-            vv.versionNumber
-        ORDER BY
-            l.name,
-            vv.purl,
-            vv.versionNumber
+
+          -- 🔥 AQUI ESTÁ O FILTRO
+          AND (
+                v.id IS NULL
+             OR v.published_at IS NULL
+             OR v.resolved_at IS NULL
+          )
     """
 
     rows = conn.execute(sql).fetchall()
@@ -493,116 +413,13 @@ def load_candidate_dependencies(conn: sqlite3.Connection) -> List[DependencyRow]
                 purl=row["purl"],
                 version=row["version"],
                 package_name=f"{group_id}:{artifact_id}",
-                module_file=row["module_file"],
             )
         )
 
     return deps
 
 
-def fetch_existing_coverage(conn: sqlite3.Connection) -> set[Tuple[int, str, str]]:
-    rows = conn.execute("""
-        SELECT DISTINCT
-            label_id,
-            COALESCE(version, '') AS version,
-            COALESCE(purl, '') AS purl
-        FROM vulnerability
-        WHERE label_id IS NOT NULL
-          AND COALESCE(version, '') <> ''
-          AND COALESCE(purl, '') <> ''
-    """).fetchall()
-
-    return {(row["label_id"], row["version"], row["purl"]) for row in rows}
-
-
-def fetch_ossindex_batch(
-    purls: List[str],
-    auth: Optional[HTTPBasicAuth],
-) -> Dict[str, List[Dict[str, Any]]]:
-    if not purls:
-        return {}
-
-    response = request_with_retry(
-        "POST",
-        OSSINDEX_API_URL,
-        headers={"Accept": "application/json"},
-        json_body={"coordinates": purls},
-        auth=auth,
-        timeout=90,
-    )
-
-    if response.status_code != 200:
-        log(
-            f"OSS Index retornou {response.status_code}: {short(response.text, 300)}",
-            level="ERROR",
-            force=True,
-        )
-        return {}
-
-    data = response.json() or []
-    by_purl: Dict[str, List[Dict[str, Any]]] = {}
-
-    for component in data:
-        purl = component.get("coordinates") or component.get("coordinate")
-        vulns = component.get("vulnerabilities") or []
-
-        if purl:
-            by_purl[purl] = vulns
-
-    return by_purl
-
-
-def normalize_ossindex_vulnerability(
-    v: Dict[str, Any],
-    dep: DependencyRow,
-    alias_used: Optional[str],
-) -> Optional[Dict[str, Any]]:
-    reference = v.get("id")
-
-    if not reference:
-        return None
-
-    return {
-        "name": v.get("title"),
-        "status": v.get("cwe") if isinstance(v.get("cwe"), str) else None,
-        "description": v.get("description"),
-        "reference": reference,
-        "version": dep.version,
-        "purl": dep.purl,
-        "published_at": None,
-        "last_modified_at": None,
-        "cvss_score": None,
-        "cvss_severity": None,
-        "cvss_vector": None,
-        "label_id": dep.label_id,
-        "ghsa_id": None,
-        "patched_versions": None,
-        "first_patched_version": None,
-        "vulnerable_version_range": None,
-        "package_ecosystem": "maven",
-        "package_name": dep.package_name,
-        "fix_source": "OSS Index",
-        "fix_checked_at": now_utc_iso(),
-        "fix_lookup_status": "MATCHED",
-        "next_version_maven_central": None,
-        "resolved_version": None,
-        "resolved_at": None,
-        "external_alias_used": alias_used,
-        "source_details": json.dumps(
-            {
-                "source": "ossindex",
-                "queried_purl": alias_used or dep.purl,
-                "original_purl": dep.purl,
-            },
-            ensure_ascii=False,
-        ),
-    }
-
-
-def fetch_github_advisories_for_package_version(
-    package_name: str,
-    version: str,
-) -> List[Dict[str, Any]]:
+def fetch_github_advisories(package_name: str, version: str) -> List[Dict[str, Any]]:
     params = {
         "ecosystem": "maven",
         "affects": f"{package_name}@{version}",
@@ -615,32 +432,38 @@ def fetch_github_advisories_for_package_version(
         f"{GITHUB_API_BASE}/advisories",
         headers=build_github_headers(),
         params=params,
-        timeout=60,
+        timeout=90,
+        max_retries=5,
     )
 
     if response.status_code != 200:
-        log(
-            f"GitHub Advisory retornou {response.status_code}: {short(response.text, 300)}",
-            level="ERROR",
-            force=True,
-        )
+        if response.status_code == 403 and "rate limit" in response.text.lower():
+            raise RuntimeError(
+                "GitHub Advisory API rate limit excedido. Configure/valide GITHUB_TOKEN "
+                "e rode novamente."
+            )
+
+        log(f"GitHub Advisory retornou {response.status_code}: {response.text[:200]}")
         return []
 
     payload = response.json()
-
     return payload if isinstance(payload, list) else []
 
 
-def normalize_github_matches(
+def extract_github_matches(
     advisories: List[Dict[str, Any]],
     dep: DependencyRow,
-    queried_package_name: str,
 ) -> List[Dict[str, Any]]:
-    matches: List[Dict[str, Any]] = []
+    matches = []
 
     for advisory in advisories:
         ghsa_id = advisory.get("ghsa_id")
         cve_id = advisory.get("cve_id")
+        reference = cve_id or ghsa_id
+
+        if not reference:
+            continue
+
         published_at = advisory.get("published_at")
         updated_at = advisory.get("updated_at")
         summary = advisory.get("summary")
@@ -655,7 +478,7 @@ def normalize_github_matches(
 
             package_name = package.get("name") or ""
 
-            if package_name not in {dep.package_name, queried_package_name}:
+            if package_name != dep.package_name:
                 continue
 
             first_patched = item.get("first_patched_version")
@@ -663,53 +486,43 @@ def normalize_github_matches(
             if isinstance(first_patched, dict):
                 first_patched = first_patched.get("identifier")
 
-            reference = cve_id or ghsa_id
+            resolved_at = None
 
-            if not reference:
-                continue
-
-            alias_used = queried_package_name if queried_package_name != dep.package_name else None
-
-            resolved_at = fetch_maven_release_date(
-                package_name or dep.package_name,
-                first_patched,
-            )
+            if first_patched:
+                resolved_at = fetch_maven_release_date(
+                    dep.package_name,
+                    first_patched
+                )
 
             matches.append(
                 {
-                    "name": summary,
-                    "status": severity,
-                    "description": description,
-                    "reference": reference,
+                    "label_id": dep.label_id,
                     "version": dep.version,
                     "purl": dep.purl,
+                    "reference": reference,
+                    "name": summary,
+                    "description": description,
+                    "status": severity,
                     "published_at": published_at,
                     "last_modified_at": updated_at,
-                    "cvss_score": None,
-                    "cvss_severity": severity,
-                    "cvss_vector": None,
-                    "label_id": dep.label_id,
                     "ghsa_id": ghsa_id,
-                    "patched_versions": json.dumps([first_patched], ensure_ascii=False) if first_patched else None,
                     "first_patched_version": first_patched,
+                    "resolved_at": resolved_at,
                     "vulnerable_version_range": item.get("vulnerable_version_range"),
                     "package_ecosystem": "maven",
                     "package_name": package_name or dep.package_name,
                     "fix_source": "GitHub Advisory Database",
                     "fix_checked_at": now_utc_iso(),
-                    "fix_lookup_status": "MATCHED",
-                    "next_version_maven_central": None,
-                    "resolved_version": first_patched,
-                    "resolved_at": resolved_at,
-                    "external_alias_used": alias_used,
+                    "fix_lookup_status": "MATCHED_GITHUB",
                     "source_details": json.dumps(
                         {
                             "source": "github_advisory",
-                            "ghsa_id": ghsa_id,
-                            "queried_package": queried_package_name,
-                            "original_package": dep.package_name,
                             "published_at_source": "github_advisory.published_at",
-                            "resolved_at_source": "maven_central.first_patched_version.timestamp",
+                            "first_patched_version_source": "github_advisory.first_patched_version",
+                            "resolved_at_source": "maven_central.timestamp_of_first_patched_version",
+                            "original_purl": dep.purl,
+                            "queried_package": dep.package_name,
+                            "match_strategy": "oracle_alias_family" if is_oracle_dependency(dep) else "exact_package",
                         },
                         ensure_ascii=False,
                     ),
@@ -719,10 +532,270 @@ def normalize_github_matches(
     return matches
 
 
-def vulnerability_exists(
-    conn: sqlite3.Connection,
-    row_data: Dict[str, Any],
-) -> Optional[sqlite3.Row]:
+def choose_osv_reference(vuln: Dict[str, Any]) -> Tuple[Optional[str], Optional[str], Optional[str]]:
+    osv_id = vuln.get("id")
+    aliases = vuln.get("aliases") or []
+
+    cve_id = next((alias for alias in aliases if is_cve(alias)), None)
+    ghsa_id = next((alias for alias in aliases if str(alias).upper().startswith("GHSA-")), None)
+
+    reference = cve_id or ghsa_id or osv_id
+    return reference, cve_id, ghsa_id
+
+
+def extract_osv_fixed_version(vuln: Dict[str, Any], package_name: str) -> Optional[str]:
+    for affected in vuln.get("affected") or []:
+        package = affected.get("package") or {}
+
+        if package.get("name") != package_name:
+            continue
+
+        for ranges in affected.get("ranges") or []:
+            for event in ranges.get("events") or []:
+                fixed = event.get("fixed")
+                if fixed:
+                    return fixed
+
+    return None
+
+
+def fetch_osv_matches(dep: DependencyRow) -> List[Dict[str, Any]]:
+    response = request_with_retry(
+        "POST",
+        OSV_API_URL,
+        headers={"Accept": "application/json"},
+        json_body={
+            "version": dep.version,
+            "package": {
+                "name": dep.package_name,
+                "ecosystem": "Maven",
+            },
+        },
+        timeout=90,
+        max_retries=5,
+    )
+
+    if response.status_code != 200:
+        log(f"OSV retornou {response.status_code} para {dep.package_name}@{dep.version}")
+        return []
+
+    try:
+        payload = response.json()
+    except ValueError:
+        return []
+
+    matches = []
+
+    for vuln in payload.get("vulns") or []:
+        reference, _cve_id, ghsa_id = choose_osv_reference(vuln)
+
+        if not reference:
+            continue
+
+        first_patched = extract_osv_fixed_version(vuln, dep.package_name)
+        resolved_at = None
+
+        if first_patched:
+            resolved_at = fetch_maven_release_date(dep.package_name, first_patched)
+
+        severity = None
+        severities = vuln.get("severity") or []
+        if severities:
+            severity = severities[0].get("score") or severities[0].get("type")
+
+        details = {
+            "source": "osv",
+            "osv_id": vuln.get("id"),
+            "aliases": vuln.get("aliases") or [],
+            "queried_package": dep.package_name,
+            "queried_version": dep.version,
+            "original_purl": dep.purl,
+            "match_strategy": (
+                "oracle_alias_family"
+                if is_oracle_dependency(dep)
+                else "exact_package"
+            ),
+            "published_at_source": "osv.published",
+            "first_patched_version_source": "osv.affected.ranges.events.fixed",
+            "resolved_at_source": "maven_central.timestamp_of_first_patched_version",
+        }
+
+        matches.append({
+            "label_id": dep.label_id,
+            "version": dep.version,
+            "purl": dep.purl,
+            "reference": reference,
+            "name": vuln.get("summary") or reference,
+            "description": vuln.get("details"),
+            "status": severity,
+            "published_at": vuln.get("published"),
+            "last_modified_at": vuln.get("modified"),
+            "ghsa_id": ghsa_id,
+            "first_patched_version": first_patched,
+            "resolved_at": resolved_at,
+            "vulnerable_version_range": None,
+            "package_ecosystem": "maven",
+            "package_name": dep.package_name,
+            "fix_source": "OSV.dev",
+            "fix_checked_at": now_utc_iso(),
+            "fix_lookup_status": "MATCHED_OSV",
+            "source_details": json.dumps(details, ensure_ascii=False),
+        })
+
+    return matches
+
+
+def is_cve(reference: Optional[str]) -> bool:
+    return bool(reference and reference.upper().startswith("CVE-"))
+
+
+def fetch_nvd_by_cve(reference: str) -> Optional[Dict[str, Any]]:
+    params = {"cveId": reference}
+
+    response = request_with_retry(
+        "GET",
+        NVD_API_URL,
+        headers=build_nvd_headers(),
+        params=params,
+        timeout=90,
+        max_retries=5,
+    )
+
+    if response.status_code != 200:
+        log(f"NVD retornou {response.status_code} para {reference}: {response.text[:200]}")
+        return None
+
+    try:
+        payload = response.json()
+    except ValueError:
+        return None
+
+    vulnerabilities = payload.get("vulnerabilities") or []
+
+    if not vulnerabilities:
+        return None
+
+    cve = vulnerabilities[0].get("cve") or {}
+
+    return {
+        "published_at": cve.get("published"),
+        "last_modified_at": cve.get("lastModified"),
+        "source_details": {
+            "source": "nvd",
+            "nvd_id": reference,
+        }
+    }
+
+
+def enrich_with_nvd(match: Dict[str, Any]) -> Dict[str, Any]:
+    reference = match.get("reference")
+
+    if not is_cve(reference):
+        return match
+
+    nvd_data = fetch_nvd_by_cve(reference)
+
+    if not nvd_data:
+        return match
+
+    match = dict(match)
+
+    if not match.get("published_at"):
+        match["published_at"] = nvd_data.get("published_at")
+
+    if not match.get("last_modified_at"):
+        match["last_modified_at"] = nvd_data.get("last_modified_at")
+
+    match["resolved_at"] = None
+
+    details = {
+        "source": "nvd_enriched",
+        "original_source": match.get("fix_source"),
+        "nvd": nvd_data.get("source_details"),
+    }
+
+    match["source_details"] = json.dumps(details, ensure_ascii=False)
+
+    match["fix_lookup_status"] = "MATCHED_NVD_ENRICHED"
+
+    return match
+
+
+def fetch_nvd_direct_matches(dep: DependencyRow) -> List[Dict[str, Any]]:
+    results = []
+
+    params = {
+        "keywordSearch": dep.package_name,
+        "resultsPerPage": 20
+    }
+
+    response = request_with_retry(
+        "GET",
+        NVD_API_URL,
+        headers=build_nvd_headers(),
+        params=params,
+        timeout=90,
+        max_retries=5,
+    )
+
+    if response.status_code != 200:
+        log(f"NVD retornou {response.status_code} para {dep.package_name}")
+        return []
+
+    try:
+        data = response.json()
+    except ValueError:
+        return []
+
+    vulns = data.get("vulnerabilities", [])
+
+    for item in vulns:
+        cve = item.get("cve", {})
+
+        cve_id = cve.get("id")
+        published = cve.get("published")
+        last_modified = cve.get("lastModified")
+
+        descriptions = cve.get("descriptions", [])
+        description = None
+
+        for d in descriptions:
+            if d.get("lang") == "en":
+                description = d.get("value")
+                break
+
+        if not cve_id:
+            continue
+
+        results.append({
+            "label_id": dep.label_id,
+            "version": dep.version,
+            "purl": dep.purl,
+            "reference": cve_id,
+            "name": cve_id,
+            "description": description,
+            "status": None,
+            "published_at": published,
+            "last_modified_at": last_modified,
+            "ghsa_id": None,
+            "first_patched_version": None,
+            "resolved_at": None,
+            "vulnerable_version_range": None,
+            "package_ecosystem": "maven",
+            "package_name": dep.package_name,
+            "fix_source": "NVD",
+            "fix_checked_at": now_utc_iso(),
+            "fix_lookup_status": "MATCHED_NVD_DIRECT",
+            "source_details": json.dumps({
+                "source": "nvd_direct",
+                "query": dep.package_name
+            }, ensure_ascii=False),
+        })
+
+    return results
+
+
+def vulnerability_exists(conn: sqlite3.Connection, row: Dict[str, Any]) -> Optional[sqlite3.Row]:
     return conn.execute(
         """
         SELECT *
@@ -734,35 +807,44 @@ def vulnerability_exists(
         LIMIT 1
         """,
         (
-            row_data.get("label_id"),
-            row_data.get("version"),
-            row_data.get("purl"),
-            row_data.get("reference"),
+            row.get("label_id"),
+            row.get("version"),
+            row.get("purl"),
+            row.get("reference"),
         ),
     ).fetchone()
 
 
-def insert_or_update_vulnerability(
-    conn: sqlite3.Connection,
-    row_data: Dict[str, Any],
-) -> str:
-    existing = vulnerability_exists(conn, row_data)
+def insert_or_update_vulnerability(conn: sqlite3.Connection, row: Dict[str, Any]) -> str:
+    existing = vulnerability_exists(conn, row)
 
     if existing:
         updates = {}
 
-        for key, value in row_data.items():
+        for key, value in row.items():
             if key == "id" or value in (None, ""):
                 continue
 
             if key not in existing.keys():
                 continue
 
-            if existing[key] in (None, ""):
+            if existing[key] in (None, "") or key in {
+                "published_at",
+                "last_modified_at",
+                "first_patched_version",
+                "resolved_at",
+                "vulnerable_version_range",
+                "package_ecosystem",
+                "package_name",
+                "fix_source",
+                "fix_checked_at",
+                "fix_lookup_status",
+                "source_details",
+            }:
                 updates[key] = value
 
         if updates:
-            set_sql = ", ".join([f"{key} = ?" for key in updates])
+            set_sql = ", ".join(f"{key} = ?" for key in updates)
             params = list(updates.values()) + [existing["id"]]
             conn.execute(f"UPDATE vulnerability SET {set_sql} WHERE id = ?", params)
             return "updated"
@@ -770,230 +852,153 @@ def insert_or_update_vulnerability(
         return "existing"
 
     cols = get_columns(conn, "vulnerability")
-    insert_cols = [col for col in row_data.keys() if col in cols]
+    insert_cols = [col for col in row.keys() if col in cols]
 
     placeholders = ", ".join(["?"] * len(insert_cols))
     cols_sql = ", ".join(insert_cols)
 
-    sql = f"INSERT INTO vulnerability ({cols_sql}) VALUES ({placeholders})"
-    conn.execute(sql, [row_data[col] for col in insert_cols])
+    conn.execute(
+        f"INSERT INTO vulnerability ({cols_sql}) VALUES ({placeholders})",
+        [row[col] for col in insert_cols],
+    )
 
     return "created"
 
 
-def stage_1_ossindex(
-    deps: List[DependencyRow],
-    batch_size: int,
-) -> Tuple[Dict[Tuple[int, str, str], List[Dict[str, Any]]], List[DependencyRow]]:
-    auth = ossindex_auth()
-
-    dep_candidates: Dict[Tuple[int, str, str], List[str]] = {}
-    all_candidate_purls: List[str] = []
-
-    for dep in deps:
-        dep_key = (dep.label_id, dep.purl, dep.version)
-        candidates = get_oracle_candidate_purls(dep)
-        dep_candidates[dep_key] = candidates
-        all_candidate_purls.extend(candidates)
-
-    unique_purls = list(dict.fromkeys(all_candidate_purls))
-
-    log(f"Etapa 1, consultando OSS Index para {len(unique_purls)} PURLs distintas", force=True)
-
-    oss_results_by_purl: Dict[str, List[Dict[str, Any]]] = {}
-
-    for batch_number, batch in enumerate(chunked(unique_purls, batch_size), start=1):
-        log(f"Batch OSS {batch_number} com {len(batch)} PURLs", force=True)
-        results = fetch_ossindex_batch(batch, auth=auth)
-        oss_results_by_purl.update(results)
-
-    oss_vulns_by_dep: Dict[Tuple[int, str, str], List[Dict[str, Any]]] = {}
-    with_match_keys = set()
-
-    for dep in deps:
-        dep_key = (dep.label_id, dep.purl, dep.version)
-        matches: List[Dict[str, Any]] = []
-
-        for candidate_purl in dep_candidates[dep_key]:
-            alias_used = candidate_purl if candidate_purl != dep.purl else None
-            vulns = oss_results_by_purl.get(candidate_purl, [])
-
-            normalized = [
-                normalize_ossindex_vulnerability(v, dep, alias_used)
-                for v in vulns
-            ]
-            normalized = [item for item in normalized if item]
-            matches.extend(normalized)
-
-        dedup = {}
-
-        for item in matches:
-            key = (
-                item.get("reference"),
-                item.get("version"),
-                item.get("purl"),
-                item.get("external_alias_used"),
-            )
-            dedup[key] = item
-
-        final_matches = list(dedup.values())
-        oss_vulns_by_dep[dep_key] = final_matches
-
-        if final_matches:
-            with_match_keys.add(dep_key)
-
-    missing_after_oss = [
-        dep for dep in deps
-        if (dep.label_id, dep.purl, dep.version) not in with_match_keys
-    ]
-
-    log(
-        f"Etapa 1 concluída. Dependências com match no OSS: {len(with_match_keys)}. "
-        f"Dependências sem match no OSS: {len(missing_after_oss)}",
-        force=True,
-    )
-
-    return oss_vulns_by_dep, missing_after_oss
-
-
-def stage_2_github(
-    missing_after_oss: List[DependencyRow],
-) -> Dict[Tuple[int, str, str], List[Dict[str, Any]]]:
-    enriched: Dict[Tuple[int, str, str], List[Dict[str, Any]]] = {}
-    github_found = 0
-
-    for idx, dep in enumerate(missing_after_oss, start=1):
-        dep_key = (dep.label_id, dep.purl, dep.version)
-
-        log(
-            f"Etapa 2, GitHub Advisory para {idx}/{len(missing_after_oss)}: "
-            f"{dep.package_name}@{dep.version}",
-            force=True,
-        )
-
-        all_matches: List[Dict[str, Any]] = []
-        seen = set()
-
-        for candidate_package in get_oracle_candidate_package_names(dep):
-            advisories = fetch_github_advisories_for_package_version(
-                candidate_package,
-                dep.version,
-            )
-            matches = normalize_github_matches(advisories, dep, candidate_package)
-
-            for match in matches:
-                key = (
-                    match.get("reference"),
-                    match.get("ghsa_id"),
-                    match.get("version"),
-                    match.get("purl"),
-                    match.get("external_alias_used"),
-                )
-
-                if key not in seen:
-                    seen.add(key)
-                    all_matches.append(match)
-
-        enriched[dep_key] = all_matches
-
-        if all_matches:
-            github_found += 1
-
-    log(f"Etapa 2 concluída. Dependências cobertas via GitHub: {github_found}.", force=True)
-
-    return enriched
-
-
-def process_dependencies(
-    conn: sqlite3.Connection,
-    batch_size: int,
-    commit_every: int,
-    only_missing: bool,
-) -> None:
+def process(conn: sqlite3.Connection, commit_every: int) -> None:
+    require_github_token()
     ensure_vulnerability_columns(conn)
-    ensure_helpful_index(conn)
 
     deps = load_candidate_dependencies(conn)
 
-    if not deps:
-        log("Nenhuma dependência candidata encontrada.", level="WARN", force=True)
-        return
-
-    if only_missing:
-        already_covered = fetch_existing_coverage(conn)
-        deps = [
-            dep for dep in deps
-            if (dep.label_id, dep.version, dep.purl) not in already_covered
-        ]
-        log(f"Modo only-missing ativo. Dependências restantes após filtro: {len(deps)}", force=True)
-
-    if not deps:
-        log("Nenhuma dependência restante após aplicar filtro only-missing.", level="WARN", force=True)
-        return
+    log(f"Dependências candidatas: {len(deps)}")
 
     stats = {
-        "dependencies_total": len(deps),
-        "dependencies_with_github_match": 0,
-        "dependencies_without_github_match": 0,
-        "dependencies_with_oss_match": 0,
-        "dependencies_without_oss_match": 0,
-        "dependencies_without_any_match": 0,
+        "github_matches": 0,
+        "osv_matches": 0,
+        "nvd_enriched": 0,
+        "without_any_match": 0,
         "created": 0,
         "updated": 0,
         "existing": 0,
+        "without_first_patched_version": 0,
+        "without_resolved_at": 0,
+        "network_or_api_errors": 0,
     }
 
-    github_matches_map = stage_2_github(deps)
+    pending = 0
 
-    matched_in_github = {
-        (dep.label_id, dep.purl, dep.version)
-        for dep in deps
-        if github_matches_map.get((dep.label_id, dep.purl, dep.version))
-    }
+    for idx, dep in enumerate(deps, start=1):
+        log(f"Processando {idx}/{len(deps)}: {dep.package_name}@{dep.version}")
 
-    missing_after_github = [
-        dep for dep in deps
-        if (dep.label_id, dep.purl, dep.version) not in matched_in_github
-    ]
+        final_matches: List[Dict[str, Any]] = []
+        candidate_packages = (
+                generate_oracle_candidate_packages(dep)
+                if is_oracle_dependency(dep)
+                else [dep.package_name]
+            )
+        try:
+            github_matches = []
 
-    if missing_after_github:
-        oss_matches_map, missing_after_oss = stage_1_ossindex(
-            missing_after_github,
-            batch_size,
-        )
-    else:
-        oss_matches_map = {}
-        missing_after_oss = []
+            for candidate_package in candidate_packages:
+                dep_candidate = DependencyRow(
+                    label_id=dep.label_id,
+                    label_name=dep.label_name,
+                    purl=dep.purl,
+                    version=dep.version,
+                    package_name=candidate_package,
+                )
 
-    stats["dependencies_with_github_match"] = len(matched_in_github)
-    stats["dependencies_without_github_match"] = len(missing_after_github)
-    stats["dependencies_with_oss_match"] = sum(1 for v in oss_matches_map.values() if v)
-    stats["dependencies_without_oss_match"] = len(missing_after_oss)
-    stats["dependencies_without_any_match"] = len(missing_after_oss)
+                github_advisories = fetch_github_advisories(
+                    dep_candidate.package_name,
+                    dep_candidate.version
+                )
 
-    processed_since_commit = 0
+                github_matches.extend(
+                    extract_github_matches(github_advisories, dep_candidate)
+                )
+        except Exception as exc:
+            stats["network_or_api_errors"] += 1
+            log(f"Erro no GitHub para {dep.package_name}@{dep.version}: {exc}")
+            github_matches = []
 
-    for dep in deps:
-        dep_key = (dep.label_id, dep.purl, dep.version)
+        if github_matches:
+            stats["github_matches"] += 1
+            final_matches = github_matches
+        else:
+            try:
+                osv_matches = []
+                for candidate_package in candidate_packages:
+                    dep_candidate = DependencyRow(
+                        label_id=dep.label_id,
+                        label_name=dep.label_name,
+                        purl=dep.purl,
+                        version=dep.version,
+                        package_name=candidate_package,
+                    )
 
-        final_matches = github_matches_map.get(dep_key, [])
+                    osv_matches.extend(fetch_osv_matches(dep_candidate))
+            except Exception as exc:
+                stats["network_or_api_errors"] += 1
+                log(f"Erro no OSV para {dep.package_name}@{dep.version}: {exc}")
+                osv_matches = []
 
-        if not final_matches:
-            final_matches = oss_matches_map.get(dep_key, [])
+            if osv_matches:
+                stats["osv_matches"] += 1
+                final_matches = [enrich_with_nvd(match) for match in osv_matches]
+
+                if any(match.get("fix_lookup_status") == "MATCHED_NVD_ENRICHED" for match in final_matches):
+                    stats["nvd_enriched"] += 1
+            else:
+                USE_NVD_FALLBACK_LABELS = {
+                    "Oracle",
+                    "Maria DB",
+                }
+                
+                should_use_nvd = dep.label_name in USE_NVD_FALLBACK_LABELS
+
+                if not should_use_nvd:
+                    stats["without_any_match"] += 1
+                    continue
+
+                log(f"Fallback para NVD: {dep.package_name}@{dep.version}")
+                
+                final_matches = []
+                
+                for candidate_package in candidate_packages:
+                    dep_candidate = DependencyRow(
+                        label_id=dep.label_id,
+                        label_name=dep.label_name,
+                        purl=dep.purl,
+                        version=dep.version,
+                        package_name=candidate_package,
+                    )
+
+                    final_matches.extend(fetch_nvd_direct_matches(dep_candidate))
+
+                if final_matches:
+                    stats["nvd_enriched"] += 1
+                else:
+                    stats["without_any_match"] += 1
+                    continue
 
         for match in final_matches:
+            if not match.get("first_patched_version"):
+                stats["without_first_patched_version"] += 1
+
+            if not match.get("resolved_at"):
+                stats["without_resolved_at"] += 1
+
             result = insert_or_update_vulnerability(conn, match)
             stats[result] += 1
-            processed_since_commit += 1
+            pending += 1
 
-        if processed_since_commit >= commit_every:
+        if pending >= commit_every:
             conn.commit()
-            save_maven_cache(DEFAULT_MAVEN_CACHE_FILE)
-            log(f"Commit parcial realizado após {processed_since_commit} operações", force=True)
-            processed_since_commit = 0
+            pending = 0
+            log("Commit parcial realizado")
 
     conn.commit()
-    log("Commit final realizado", force=True)
 
     print("\nResumo:")
     for key, value in stats.items():
@@ -1001,37 +1006,22 @@ def process_dependencies(
 
 
 def main() -> None:
-    global VERBOSE
-
     parser = argparse.ArgumentParser(
-        description=(
-            "Enriquece a tabela vulnerability a partir das dependências detectadas em "
-            "version_vulnerability. Consulta GitHub Advisory Database primeiro e usa "
-            "OSS Index como fallback para os casos sem match."
-        )
+        description="Busca vulnerabilidades usando GitHub Advisory, OSV.dev e NVD."
     )
 
-    parser.add_argument("--db-path", default=DEFAULT_DB_PATH, help="Caminho para o banco SQLite.")
-    parser.add_argument("--batch-size", type=int, default=DEFAULT_BATCH_SIZE, help="Tamanho do batch no OSS Index.")
-    parser.add_argument("--commit-every", type=int, default=DEFAULT_COMMIT_EVERY, help="Quantidade de inserts ou updates antes de cada commit.")
-    parser.add_argument("--only-missing", action="store_true", help="Processa apenas combinações label + version + purl ainda sem registro na tabela vulnerability.")
-    parser.add_argument("--verbose", action="store_true", help="Ativa logs detalhados.")
-    parser.add_argument("--maven-cache-file", default=DEFAULT_MAVEN_CACHE_FILE, help="Arquivo JSON usado como cache das datas do Maven Central.")
+    parser.add_argument("--db-path", default="dbmining.sqlite")
+    parser.add_argument("--commit-every", type=int, default=DEFAULT_COMMIT_EVERY)
+    parser.add_argument("--maven-cache-file", default=DEFAULT_MAVEN_CACHE_FILE)
 
     args = parser.parse_args()
-    VERBOSE = args.verbose
 
     load_maven_cache(args.maven_cache_file)
 
     conn = connect_db(args.db_path)
 
     try:
-        process_dependencies(
-            conn=conn,
-            batch_size=args.batch_size,
-            commit_every=args.commit_every,
-            only_missing=args.only_missing,
-        )
+        process(conn, args.commit_every)
     finally:
         save_maven_cache(args.maven_cache_file)
         conn.close()
