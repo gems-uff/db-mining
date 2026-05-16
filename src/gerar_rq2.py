@@ -19,6 +19,8 @@ DEFAULT_INPUT_FILE = "rq2_exposicoes.csv"
 
 # Nome da coluna que identifica o commit no seu CSV.
 # Ajuste se o nome for diferente (ex: "commit_id", "sha", "revision", etc.)
+# Nome da coluna que identifica o commit no seu CSV.
+# Ajuste se o nome for diferente (ex: "commit_id", "sha", "revision", etc.)
 COMMIT_COL = "commit_hash"
 
 
@@ -51,32 +53,34 @@ def save_plot(fig, output_dir, filename):
 
 
 def prepare_data(df):
-    required_cols = ["db", "project_id", "total_exposure_days", COMMIT_COL]
+    """
+    O CSV gerado pelo pipeline já tem uma linha por (project_id × db),
+    com total_exposure_days calculado via merge de intervalos (sem dupla contagem).
+    Aqui apenas validamos, normalizamos tipos e removemos linhas inválidas.
+    """
+    required_cols = ["db", "project_id", "total_exposure_days"]
     missing = [col for col in required_cols if col not in df.columns]
 
     if missing:
         raise ValueError(
             f"O CSV precisa conter as colunas: {missing}\n"
-            f"Colunas disponíveis: {df.columns.tolist()}\n"
-            f"Se o nome da coluna de commit for diferente, ajuste a constante COMMIT_COL no topo do script."
+            f"Colunas disponíveis: {df.columns.tolist()}"
         )
 
     df = normalize_db_display_names(df)
 
     df["db"] = df["db"].astype(str).str.strip()
     df["project_id"] = df["project_id"].astype(str).str.strip()
-    df[COMMIT_COL] = df[COMMIT_COL].astype(str).str.strip()
     df["total_exposure_days"] = pd.to_numeric(
         df["total_exposure_days"],
         errors="coerce"
     )
 
-    df = df.dropna(subset=["db", "project_id", COMMIT_COL, "total_exposure_days"])
+    df = df.dropna(subset=["db", "project_id", "total_exposure_days"])
 
     df = df[
         df["db"].ne("") &
         df["project_id"].ne("") &
-        df[COMMIT_COL].ne("") &
         (df["total_exposure_days"] >= 0)
     ].copy()
 
@@ -85,40 +89,21 @@ def prepare_data(df):
 
 def aggregate_by_project(df):
     """
-    Agrega o tempo total de exposição por projeto de forma correta.
-
-    O problema da abordagem anterior era somar total_exposure_days diretamente,
-    o que inflava os valores quando um mesmo commit tinha múltiplos arquivos ou
-    vulnerabilidades — cada linha trazia os dias daquele commit, e a soma os
-    multiplicava pelo número de arquivos.
-
-    Correção:
-        1. Deduplicar por (db, project_id, commit): para cada commit, há apenas
-           um período de exposição, independentemente de quantos arquivos ou
-           vulnerabilidades foram detectados nele.
-        2. Só então somar os dias únicos por commit para obter o total por projeto.
+    O CSV de entrada já tem uma linha por (project_id × db) com
+    total_exposure_days correto (intervalos mesclados, sem dupla contagem).
+    Esta função apenas garante que não haja duplicatas residuais antes de plotar.
     """
-    # Passo 1 — um registro por commit (descarta duplicatas de arquivo/vuln)
-    df_commits = (
-        df
-        .drop_duplicates(subset=["db", "project_id", COMMIT_COL])
-        [["db", "project_id", COMMIT_COL, "total_exposure_days"]]
-        .copy()
-    )
-
-    logging.info(
-        "Linhas originais: %d | Linhas após deduplicação por commit: %d",
-        len(df),
-        len(df_commits),
-    )
-
-    # Passo 2 — soma dos períodos únicos por projeto
+    n_before = len(df)
     df_project = (
-        df_commits
+        df
         .groupby(["db", "project_id"], as_index=False)
         .agg(total_exposure_days=("total_exposure_days", "sum"))
     )
-
+    logging.info(
+        "Linhas no CSV: %d | Pares (projeto × DBMS) para plotar: %d",
+        n_before,
+        len(df_project),
+    )
     return df_project
 
 

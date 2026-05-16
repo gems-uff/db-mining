@@ -203,7 +203,10 @@ def load_base_dataframe(conn: sqlite3.Connection) -> pd.DataFrame:
     date_cols = ["date_commit", "published_at", "last_modified_at"]
     for col in date_cols:
         if col in df.columns:
-            df[col] = pd.to_datetime(df[col], errors="coerce")
+            df[col] = (
+            pd.to_datetime(df[col], errors="coerce", utc=True)
+            .dt.tz_localize(None)
+        )
 
     num_cols = [
         "project_id",
@@ -429,52 +432,139 @@ def pick_disclosure_date_column(rq1_assoc: pd.DataFrame) -> str:
     return "last_modified_at"
 
 
+def merge_intervals(intervals: list[tuple]) -> list[tuple]:
+    """
+    Recebe uma lista de (start, end) como timestamps e retorna a lista
+    de intervalos após fusão dos sobrepostos/contíguos.
+    Usado para calcular o total de dias de exposição sem dupla contagem.
+    """
+    if not intervals:
+        return []
+    sorted_ivs = sorted(intervals, key=lambda x: x[0])
+    merged = [sorted_ivs[0]]
+    for start, end in sorted_ivs[1:]:
+        prev_start, prev_end = merged[-1]
+        if start <= prev_end + pd.Timedelta(days=1):
+            merged[-1] = (prev_start, max(prev_end, end))
+        else:
+            merged.append((start, end))
+    return merged
+
+
+def compute_merged_days(intervals: list[tuple]) -> float:
+    """Soma os dias dos intervalos já mesclados (inclusivo em ambas as pontas)."""
+    return sum((end - start).days + 1 for start, end in intervals)
+
+
+def compute_merged_days_before(intervals: list[tuple], cutoff) -> float:
+    """Dias dos intervalos mesclados que ocorrem ANTES de cutoff."""
+    total = 0.0
+    for start, end in intervals:
+        clipped_end = min(end, cutoff - pd.Timedelta(days=1))
+        if clipped_end >= start:
+            total += (clipped_end - start).days + 1
+    return total
+
+
+def compute_merged_days_from(intervals: list[tuple], cutoff) -> float:
+    """Dias dos intervalos mesclados que ocorrem A PARTIR de cutoff."""
+    total = 0.0
+    for start, end in intervals:
+        clipped_start = max(start, cutoff)
+        if clipped_start <= end:
+            total += (end - clipped_start).days + 1
+    return total
+
+
 def build_rq2_exposures(rq1_assoc: pd.DataFrame) -> pd.DataFrame:
+    """
+    Calcula o tempo de exposição por (project, db) sem dupla contagem.
+
+    O problema original: rq1_assoc tem uma linha por (arquivo × CVE), e cada
+    linha carrega seu próprio intervalo [first_seen, last_seen]. Somar
+    total_exposure_days diretamente inflata o resultado porque intervalos de
+    arquivos/CVEs diferentes se sobrepõem no tempo.
+
+    Correção: para cada (project_id, db), coletamos todos os intervalos
+    [first_seen, last_seen], fundimos os sobrepostos (merge de intervalos) e
+    só então calculamos os dias totais, pré- e pós-divulgação.
+
+    A granularidade do CSV de saída continua sendo (project × db) — uma linha
+    por par — o que é o nível correto para o gráfico de CDF.
+    """
     if rq1_assoc.empty:
         return pd.DataFrame()
 
     df = rq1_assoc.copy()
     disclosure_col = pick_disclosure_date_column(df)
-    df["disclosure_date_used"] = pd.to_datetime(df[disclosure_col], errors="coerce")
+    df["disclosure_date_used"] = (
+    pd.to_datetime(df[disclosure_col], errors="coerce", utc=True)
+    .dt.tz_localize(None)
+    )
     df["disclosure_source"] = disclosure_col
 
-    df["pre_disclosure_days"] = 0.0
-    pre_mask = df["disclosure_date_used"].notna() & (df["first_seen_in_project"] < df["disclosure_date_used"])
-    if pre_mask.any():
-        pre_end = pd.Series(
-            np.minimum(
-                df.loc[pre_mask, "last_seen_in_project"].values.astype("datetime64[ns]"),
-                df.loc[pre_mask, "disclosure_date_used"].values.astype("datetime64[ns]")
-            )
-        )
-        df.loc[pre_mask, "pre_disclosure_days"] = (
-            pre_end.values.astype("datetime64[ns]") -
-            df.loc[pre_mask, "first_seen_in_project"].values.astype("datetime64[ns]")
-        ).astype("timedelta64[D]").astype(float)
+    records = []
 
-    df["post_disclosure_days"] = 0.0
-    post_mask = df["disclosure_date_used"].notna() & (df["last_seen_in_project"] >= df["disclosure_date_used"])
-    if post_mask.any():
-        post_start = pd.Series(
-            np.maximum(
-                df.loc[post_mask, "first_seen_in_project"].values.astype("datetime64[ns]"),
-                df.loc[post_mask, "disclosure_date_used"].values.astype("datetime64[ns]")
-            )
-        )
-        df.loc[post_mask, "post_disclosure_days"] = (
-            df.loc[post_mask, "last_seen_in_project"].values.astype("datetime64[ns]") -
-            post_start.values.astype("datetime64[ns]")
-        ).astype("timedelta64[D]").astype(float) + 1.0
+    for (project_id, project, db), group in df.groupby(
+        ["project_id", "project", "db"], dropna=False
+    ):
+        # Todos os intervalos de exposição deste (projeto × DBMS)
+        raw_intervals = [
+            (row.first_seen_in_project, row.last_seen_in_project)
+            for row in group.itertuples(index=False)
+            if pd.notna(row.first_seen_in_project) and pd.notna(row.last_seen_in_project)
+        ]
 
-    df["total_exposure_days"] = (
-        df["last_seen_in_project"] - df["first_seen_in_project"]
-    ).dt.days + 1
+        if not raw_intervals:
+            continue
 
-    df["was_publicly_known_during_use"] = df["post_disclosure_days"] > 0
-    df["used_before_disclosure"] = df["pre_disclosure_days"] > 0
+        merged = merge_intervals(raw_intervals)
+        total_days = compute_merged_days(merged)
 
-    return df.sort_values(
-        ["project", "db", "file", "first_seen_in_project", "cve"],
+        # Data de divulgação: mínima do grupo (conservador — primeira CVE divulgada)
+        disclosure_dates = group["disclosure_date_used"].dropna()
+        disclosure_date = disclosure_dates.min() if not disclosure_dates.empty else pd.NaT
+        disclosure_source = group["disclosure_source"].iloc[0]
+
+        if pd.notna(disclosure_date):
+            pre_days = compute_merged_days_before(merged, disclosure_date)
+            post_days = compute_merged_days_from(merged, disclosure_date)
+        else:
+            pre_days = 0.0
+            post_days = 0.0
+
+        records.append({
+            "project_id":                  project_id,
+            "project":                     project,
+            "db":                          db,
+            "first_seen_in_project":       min(s for s, _ in merged),
+            "last_seen_in_project":        max(e for _, e in merged),
+            "total_exposure_days":         total_days,
+            "pre_disclosure_days":         pre_days,
+            "post_disclosure_days":        post_days,
+            "disclosure_date_used":        disclosure_date,
+            "disclosure_source":           disclosure_source,
+            "was_publicly_known_during_use": post_days > 0,
+            "used_before_disclosure":      pre_days > 0,
+            # Métricas auxiliares para conferência
+            "n_cves":                      group["cve"].nunique(),
+            "n_files":                     group["file"].nunique(),
+            "n_raw_intervals":             len(raw_intervals),
+            "n_merged_intervals":          len(merged),
+        })
+
+    result = pd.DataFrame(records)
+
+    logging.info(
+        "RQ2: %d pares (projeto × DBMS) | intervalos brutos totais: %d | "
+        "intervalos após merge: %d",
+        len(result),
+        result["n_raw_intervals"].sum() if not result.empty else 0,
+        result["n_merged_intervals"].sum() if not result.empty else 0,
+    )
+
+    return result.sort_values(
+        ["project", "db", "first_seen_in_project"],
         kind="mergesort"
     )
 
@@ -487,7 +577,7 @@ def build_rq2_summary(rq2_df: pd.DataFrame) -> pd.DataFrame:
         rq2_df.groupby(["db"], dropna=False)
         .agg(
             projects_affected=("project", "nunique"),
-            vulnerability_occurrences=("cve", "count"),
+            total_cves=("n_cves", "sum"),
             median_total_exposure_days=("total_exposure_days", "median"),
             mean_total_exposure_days=("total_exposure_days", "mean"),
             median_post_disclosure_days=("post_disclosure_days", "median"),
