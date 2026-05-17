@@ -68,6 +68,21 @@ The table below shows the workflow for the historical analysis of the results. T
 | historical_seqpatterns_format.ipynb | Converts the historical_join dataset to the file format required by the SPMF library |historical_join.xlsx| input_sequencial_init_in_out.txt, output_tam1.txt, output_tam3.txt, output_tam4_sid.txt  |
 | historical_seqpatterns_filters.ipynb | Applies filters to search for established replacement patterns and generates some data mining measures | output_tam1.txt, output_tam3.txt, output_tam4_sid.txt | pattern_selection_measures.xlsx |
 
+## Vulnerability Analysis
+The table below shows the scripts used to generate vulnerability datasets and graphs for the research questions related to vulnerabilities in DBMS-related libraries.
+
+| Objective | File |
+| --------- | ---- |
+| Generate the data to answer the RQs | `sqlite_rq_pipeline.py` |
+| Generate the data to answer the RQs | `extrair_base_rqs.py` |
+| Generate the data to answer the RQs | `gerar_rq1.py` |
+| 1 - How are vulnerabilities distributed across versions of DBMS-related libraries? | `gerar_rq1_bds.py` |
+| 2 - Do vulnerabilities in DBMS-related libraries tend to concentrate in specific versions or propagate across multiple versions? | `gerar_rq1_bds.py` |
+| 3 - To what extent are projects using DBMS-related libraries affected by known vulnerabilities? | `gerar_rq1_projetos.py` |
+| 4 - How do projects evolve in relation to vulnerabilities over time, considering periods before disclosure, during exposure, and after resolution? | `gerar_rq1_vulnerable_activity.py` |
+| 5 - For how long did the projects remain vulnerable following the public disclosure of these issues? | `gerar_rq2_boxplot_tempo_resolucao_por_bd.py` |
+| 5 - For how long did the projects remain vulnerable following the public disclosure of these issues? | `gerar_graficos_rq2.py` |
+
 ## Related Work 
 
 | Name          | Goal                                                | Input          | Output        |
