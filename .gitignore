@@ -207,3 +207,7 @@ resources/dblp_2024.xml
 #ResultadosVulnerabilidades
 resources/vulnerabilities/vulnerability_results.csv
 rqs_data/base_rqs.csv
+*.sqlite-wal
+*.sqlite-shm
+resultado_rqs.xlsx
+rqs_data/rq1_base_vulnerabilidades_cruzadas.csv
