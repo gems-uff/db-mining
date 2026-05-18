@@ -2,11 +2,21 @@
 import argparse
 import logging
 import math
+import os
+import tempfile
 from pathlib import Path
 
+os.environ.setdefault("MPLCONFIGDIR", str(Path(tempfile.gettempdir()) / "matplotlib"))
+os.environ.setdefault("XDG_CACHE_HOME", tempfile.gettempdir())
+
+import matplotlib
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+
+from rq_pipeline_common import build_rq2_exposures, build_rq2_summary
 
 logging.basicConfig(
     level=logging.INFO,
@@ -32,6 +42,28 @@ def read_csv_required(path):
     if not path.exists():
         raise FileNotFoundError(f"Arquivo não encontrado: {path}")
     return pd.read_csv(path)
+
+
+def ensure_rq2_input_exists(input_path, input_dir):
+    if input_path.exists():
+        return
+
+    rq1_path = Path(input_dir) / "rq1_associacoes.csv"
+    logging.info(
+        "%s não encontrado. Gerando a partir de %s.",
+        input_path,
+        rq1_path,
+    )
+
+    rq1_assoc = read_csv_required(rq1_path)
+    rq2_df = build_rq2_exposures(rq1_assoc)
+    rq2_summary = build_rq2_summary(rq2_df)
+
+    rq2_df.to_csv(input_path, index=False)
+    rq2_summary.to_csv(Path(input_dir) / "rq2_resumo.csv", index=False)
+
+    logging.info("CSV gerado: %s", input_path)
+    logging.info("CSV gerado: %s", Path(input_dir) / "rq2_resumo.csv")
 
 
 def ensure_output_dir(path):
@@ -77,7 +109,7 @@ def aggregate_by_project(df):
     return (
         df
         .groupby(["db", "project_id"], as_index=False)
-        .agg(total_exposure_days=("total_exposure_days", "sum"))
+        .agg(total_exposure_days=("total_exposure_days", "max"))
     )
 
 
@@ -256,6 +288,7 @@ def main():
     input_path = input_dir / args.input_file
 
     ensure_output_dir(output_dir)
+    ensure_rq2_input_exists(input_path, input_dir)
 
     df = read_csv_required(input_path)
     df = prepare_data(df)

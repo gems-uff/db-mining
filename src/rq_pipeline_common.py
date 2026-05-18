@@ -577,10 +577,17 @@ def build_rq2_exposures(rq1_assoc: pd.DataFrame) -> pd.DataFrame:
         return pd.DataFrame()
 
     df = rq1_assoc.copy()
+    for col in ["first_seen_in_project", "last_seen_in_project", "published_at", "last_modified_at"]:
+        if col in df.columns:
+            df[col] = (
+                pd.to_datetime(df[col], errors="coerce", utc=True)
+                .dt.tz_localize(None)
+            )
+
     disclosure_col = pick_disclosure_date_column(df)
     df["disclosure_date_used"] = (
-    pd.to_datetime(df[disclosure_col], errors="coerce", utc=True)
-    .dt.tz_localize(None)
+        pd.to_datetime(df[disclosure_col], errors="coerce", utc=True)
+        .dt.tz_localize(None)
     )
     df["disclosure_source"] = disclosure_col
 

@@ -97,7 +97,7 @@ def aggregate_by_project(df):
     df_project = (
         df
         .groupby(["db", "project_id"], as_index=False)
-        .agg(total_exposure_days=("total_exposure_days", "sum"))
+        .agg(total_exposure_days=("total_exposure_days", "max"))
     )
     logging.info(
         "Linhas no CSV: %d | Pares (projeto × DBMS) para plotar: %d",
