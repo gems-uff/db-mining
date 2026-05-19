@@ -771,6 +771,11 @@ def parse_args() -> argparse.Namespace:
         default=DEFAULT_CSV_OUTPUT_DIR,
         help="Diretório para salvar CSVs derivados. Se omitido, usa rqs_data."
     )
+    parser.add_argument(
+        "--skip-excel",
+        action="store_true",
+        help="Gera os CSVs derivados sem escrever o arquivo Excel completo."
+    )
     return parser.parse_args()
 
 
@@ -807,19 +812,22 @@ def main() -> None:
             rq2_df=rq2_df,
             rq2_summary=rq2_summary,
         )
-        export_results(
-            output_path=output_path,
-            base_df=base_df,
-            history_df=history_df,
-            summary_df=summary_df,
-            segments_df=segments_df,
-            rq1_assoc=rq1_assoc,
-            rq1_project=rq1_project,
-            rq1_db=rq1_db,
-            rq2_df=rq2_df,
-            rq2_summary=rq2_summary,
-            rq3_df=rq3_df,
-        )
+        if args.skip_excel:
+            logging.info("Exportação do Excel ignorada por --skip-excel.")
+        else:
+            export_results(
+                output_path=output_path,
+                base_df=base_df,
+                history_df=history_df,
+                summary_df=summary_df,
+                segments_df=segments_df,
+                rq1_assoc=rq1_assoc,
+                rq1_project=rq1_project,
+                rq1_db=rq1_db,
+                rq2_df=rq2_df,
+                rq2_summary=rq2_summary,
+                rq3_df=rq3_df,
+            )
 
         logging.info("Resumo geral")
         logging.info("Linhas base: %s", len(base_df))
