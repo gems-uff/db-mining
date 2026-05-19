@@ -16,6 +16,7 @@ logging.basicConfig(
 DEFAULT_INPUT_DIR = "rqs_data"
 DEFAULT_OUTPUT_DIR = "graficos_rq2"
 DEFAULT_INPUT_FILE = "rq2_exposicoes.csv"
+MIN_PROJECTS_FOR_CDF = 2
 
 # Nome da coluna que identifica o commit no seu CSV.
 # Ajuste se o nome for diferente (ex: "commit_id", "sha", "revision", etc.)
@@ -113,13 +114,29 @@ def export_project_level_data(df_project, input_dir):
     logging.info("CSV agregado por projeto salvo em: %s", output_path)
 
 
-def plot_cdf_small_multiples_by_project(df_project, output_dir):
+def plot_cdf_small_multiples_by_project(df_project, output_dir, min_projects=MIN_PROJECTS_FOR_CDF):
     if df_project.empty:
         logging.warning("Nenhum dado disponível para gerar o CDF.")
         return
 
+    project_counts = df_project.groupby("db")["project_id"].nunique()
+    excluded_dbs = project_counts[project_counts < min_projects].index.tolist()
+
+    if excluded_dbs:
+        logging.info(
+            "DBMS removidos do CDF por terem menos de %d projetos: %s",
+            min_projects,
+            ", ".join(excluded_dbs),
+        )
+
+    df_plot = df_project[df_project["db"].isin(project_counts[project_counts >= min_projects].index)].copy()
+
+    if df_plot.empty:
+        logging.warning("Nenhum DBMS com pelo menos %d projetos para gerar o CDF.", min_projects)
+        return
+
     db_order = (
-        df_project.groupby("db")["total_exposure_days"]
+        df_plot.groupby("db")["total_exposure_days"]
         .median()
         .sort_values(ascending=False)
         .index
@@ -141,7 +158,7 @@ def plot_cdf_small_multiples_by_project(df_project, output_dir):
 
     for ax, db in zip(axes, db_order):
         values = (
-            df_project.loc[df_project["db"] == db, "total_exposure_days"]
+            df_plot.loc[df_plot["db"] == db, "total_exposure_days"]
             .dropna()
             .sort_values()
         )
