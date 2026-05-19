@@ -19,6 +19,7 @@ DEFAULT_DB_CANDIDATES = [
 ]
 
 DEFAULT_OUTPUT_NAME = "resultado_rqs.xlsx"
+DEFAULT_CSV_OUTPUT_DIR = "rqs_data"
 
 
 def normalize_text(series: pd.Series) -> pd.Series:
@@ -51,6 +52,10 @@ def pick_first_existing(columns: set[str], candidates: Sequence[str]) -> Optiona
 
 def ensure_output_dir(path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
+
+
+def ensure_dir(path: Path) -> None:
+    path.mkdir(parents=True, exist_ok=True)
 
 
 def read_csv_required(path: Path) -> pd.DataFrame:
@@ -733,6 +738,23 @@ def export_results(
     logging.info("Arquivo Excel gerado em: %s", output_path)
 
 
+def export_rq2_csv_results(
+    csv_output_dir: Path,
+    rq2_df: pd.DataFrame,
+    rq2_summary: pd.DataFrame,
+) -> None:
+    ensure_dir(csv_output_dir)
+
+    rq2_path = csv_output_dir / "rq2_exposicoes.csv"
+    rq2_summary_path = csv_output_dir / "rq2_resumo.csv"
+
+    rq2_df.to_csv(rq2_path, index=False)
+    rq2_summary.to_csv(rq2_summary_path, index=False)
+
+    logging.info("CSV gerado: %s", rq2_path)
+    logging.info("CSV gerado: %s", rq2_summary_path)
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Pipeline final para responder RQ1, RQ2 e RQ3 direto do SQLite."
@@ -743,6 +765,12 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help="Caminho do Excel de saída. Se omitido, usa resultado_rqs.xlsx no diretório atual."
     )
+    parser.add_argument(
+        "--csv-output-dir",
+        required=False,
+        default=DEFAULT_CSV_OUTPUT_DIR,
+        help="Diretório para salvar CSVs derivados. Se omitido, usa rqs_data."
+    )
     return parser.parse_args()
 
 
@@ -751,9 +779,11 @@ def main() -> None:
 
     db_path = resolve_default_db_path()
     output_path = resolve_output_path(args.output)
+    csv_output_dir = Path(args.csv_output_dir)
 
     logging.info("Banco localizado automaticamente em: %s", db_path)
     logging.info("Arquivo de saída será gerado em: %s", output_path)
+    logging.info("CSVs derivados serão gerados em: %s", csv_output_dir)
 
     conn = sqlite3.connect(str(db_path))
 
@@ -772,6 +802,11 @@ def main() -> None:
         rq2_df = build_rq2_exposures(rq1_assoc)
         rq2_summary = build_rq2_summary(rq2_df)
 
+        export_rq2_csv_results(
+            csv_output_dir=csv_output_dir,
+            rq2_df=rq2_df,
+            rq2_summary=rq2_summary,
+        )
         export_results(
             output_path=output_path,
             base_df=base_df,
