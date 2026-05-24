@@ -108,6 +108,8 @@ def build_base_history_query(conn: sqlite3.Connection) -> str:
 
     published_col = pick_first_existing(vuln_cols, ["published_at", "publishedAt"])
     last_modified_col = pick_first_existing(vuln_cols, ["last_modified_at", "last_modified", "lastModifiedAt"])
+    resolved_col = pick_first_existing(vuln_cols, ["resolved_at", "resolvedAt"])
+    first_patched_col = pick_first_existing(vuln_cols, ["first_patched_version", "firstPatchedVersion"])
     cvss_score_col = pick_first_existing(vuln_cols, ["cvss_score", "cvssScore"])
     cvss_severity_col = pick_first_existing(vuln_cols, ["cvss_severity", "cvssSeverity"])
     cvss_vector_col = pick_first_existing(vuln_cols, ["cvss_vector", "cvssVector"])
@@ -123,6 +125,16 @@ def build_base_history_query(conn: sqlite3.Connection) -> str:
         select_optional.append(f"vuln.{last_modified_col} AS last_modified_at")
     else:
         select_optional.append("NULL AS last_modified_at")
+
+    if resolved_col:
+        select_optional.append(f"vuln.{resolved_col} AS resolved_at")
+    else:
+        select_optional.append("NULL AS resolved_at")
+
+    if first_patched_col:
+        select_optional.append(f"vuln.{first_patched_col} AS first_patched_version")
+    else:
+        select_optional.append("NULL AS first_patched_version")
 
     if cvss_score_col:
         select_optional.append(f"vuln.{cvss_score_col} AS cvss_score")
@@ -206,12 +218,13 @@ def load_base_dataframe(conn: sqlite3.Connection) -> pd.DataFrame:
         "reference",
         "vulnerable_version",
         "vuln_purl",
+        "first_patched_version",
     ]
     for col in text_cols:
         if col in df.columns:
             df[col] = normalize_text(df[col])
 
-    date_cols = ["date_commit", "published_at", "last_modified_at"]
+    date_cols = ["date_commit", "published_at", "last_modified_at", "resolved_at"]
     for col in date_cols:
         if col in df.columns:
             df[col] = (
@@ -385,6 +398,8 @@ def build_rq1_associations(base_df: pd.DataFrame) -> pd.DataFrame:
             rows_observed=("version_vulnerability_id", "count"),
             published_at=("published_at", "first"),
             last_modified_at=("last_modified_at", "first"),
+            resolved_at=("resolved_at", "first"),
+            first_patched_version=("first_patched_version", "first"),
             cvss_score=("cvss_score", "first"),
             cvss_severity=("cvss_severity", "first"),
             cvss_vector=("cvss_vector", "first"),

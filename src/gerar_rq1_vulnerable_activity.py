@@ -171,9 +171,13 @@ def build_exposure_dedup_keys(df):
 
     project_col = first_existing_column(df, ["project_id", "project", "project_name"])
     version_col = first_existing_column(df, ["versionNumber", "version"])
+    vulnerability_col = first_existing_column(df, ["vulnerability_id", "reference", "cve"])
 
     keys.insert(0, project_col)
     keys.append(version_col)
+
+    if vulnerability_col:
+        keys.append(vulnerability_col)
 
     purl_col = first_existing_column(df, ["purl", "vuln_purl"])
     if purl_col:
@@ -187,10 +191,9 @@ def consolidate_version_exposure(df):
     work_df = df.copy()
     work_df["period_priority"] = work_df["period"].map(PERIOD_PRIORITY)
 
-    # Multiple vulnerabilities in the same version represent the same version
-    # exposure for this analysis. Keep one observation per project/version/commit.
-    # If periods differ, during-exposure wins over after-resolution because at
-    # least one vulnerability is still known while the vulnerable version is used.
+    # Keep one observation per project/version/vulnerability/commit. This preserves
+    # after-resolution activity for CVEs that already had a fix, even when the same
+    # dependency version also has another CVE that is still during exposure.
     selected_idx = (
         work_df
         .sort_values(dedup_cols + ["period_priority", "date_commit"], kind="mergesort")

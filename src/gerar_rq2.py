@@ -4,6 +4,8 @@ import logging
 import math
 from pathlib import Path
 
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -17,6 +19,7 @@ DEFAULT_INPUT_DIR = "rqs_data"
 DEFAULT_OUTPUT_DIR = "graficos_rq2"
 DEFAULT_INPUT_FILE = "rq2_exposicoes.csv"
 MIN_PROJECTS_FOR_CDF = 2
+MIN_PROJECTS_FOR_BOXPLOT = 2
 
 # Nome da coluna que identifica o commit no seu CSV.
 # Ajuste se o nome for diferente (ex: "commit_id", "sha", "revision", etc.)
@@ -180,14 +183,14 @@ def plot_cdf_small_multiples_by_project(df_project, output_dir, min_projects=MIN
             color="gray"
         )
 
-        ax.set_title(f"{db} (n={len(values)} projetos)", fontsize=10)
+        ax.set_title(f"{db} (n={len(values)} projects)", fontsize=10)
         ax.set_ylim(0, 1.02)
         ax.grid(True, alpha=0.25)
 
         ax.text(
             0.03,
             0.08,
-            f"mediana: {median_value:.0f} dias",
+            f"median: {median_value:.0f} days",
             transform=ax.transAxes,
             fontsize=8
         )
@@ -196,12 +199,12 @@ def plot_cdf_small_multiples_by_project(df_project, output_dir, min_projects=MIN
         ax.axis("off")
 
     fig.suptitle(
-        "RQ2, CDF do tempo total de exposição por DBMS, agregado por projeto",
+        "RQ2, CDF of total exposure time by DBMS, aggregated by project",
         fontsize=15
     )
 
-    fig.supxlabel("Tempo total de exposição por projeto, dias")
-    fig.supylabel("Proporção acumulada de projetos")
+    fig.supxlabel("Total exposure time per project, days")
+    fig.supylabel("Cumulative proportion of projects")
 
     fig.tight_layout(rect=[0, 0.03, 1, 0.96])
 
@@ -216,13 +219,31 @@ def compute_iqr(series):
     return series.quantile(0.75) - series.quantile(0.25)
 
 
-def plot_boxplot_by_project(df_project, output_dir):
+def plot_boxplot_by_project(df_project, output_dir, min_projects=MIN_PROJECTS_FOR_BOXPLOT):
     if df_project.empty:
         logging.warning("Nenhum dado disponível para gerar o boxplot.")
         return
 
+    project_counts = df_project.groupby("db")["project_id"].nunique()
+    excluded_dbs = project_counts[project_counts < min_projects].sort_index()
+
+    if not excluded_dbs.empty:
+        logging.info(
+            "DBMS removidos do boxplot por terem menos de %d projetos: %s",
+            min_projects,
+            ", ".join(f"{db} (n={count})" for db, count in excluded_dbs.items()),
+        )
+
+    df_plot = df_project[
+        df_project["db"].isin(project_counts[project_counts >= min_projects].index)
+    ].copy()
+
+    if df_plot.empty:
+        logging.warning("Nenhum DBMS com pelo menos %d projetos para gerar o boxplot.", min_projects)
+        return
+
     db_order = (
-        df_project.groupby("db")["total_exposure_days"]
+        df_plot.groupby("db")["total_exposure_days"]
         .apply(compute_iqr)
         .sort_values(ascending=False)
         .index
@@ -233,8 +254,8 @@ def plot_boxplot_by_project(df_project, output_dir):
     labels = []
 
     for db in db_order:
-        values = df_project.loc[
-            df_project["db"] == db,
+        values = df_plot.loc[
+            df_plot["db"] == db,
             "total_exposure_days"
         ].dropna().values
 
@@ -265,8 +286,8 @@ def plot_boxplot_by_project(df_project, output_dir):
         median.set_linewidth(1.5)
 
     ax.set_xlabel("DBMS")
-    ax.set_ylabel("Tempo total de exposição por projeto, dias")
-    ax.set_title("RQ2, distribuição do tempo total de exposição por projeto e DBMS")
+    ax.set_ylabel("Total exposure time per project, days")
+    ax.set_title("RQ2, distribution of total exposure time per project and DBMS")
     ax.grid(True, axis="y", alpha=0.3)
 
     plt.xticks(rotation=45, ha="right")
