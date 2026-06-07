@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 import argparse
 import logging
+import shutil
 import sqlite3
+import tempfile
 from pathlib import Path
 from typing import Optional, Sequence
 
@@ -738,17 +740,22 @@ def export_results(
 ) -> None:
     ensure_output_dir(output_path)
 
-    with pd.ExcelWriter(output_path, engine="openpyxl") as writer:
-        summary_df.to_excel(writer, index=False, sheet_name="Resumo")
-        base_df.to_excel(writer, index=False, sheet_name="Base_Completa")
-        history_df.to_excel(writer, index=False, sheet_name="Historico_Dedup")
-        segments_df.to_excel(writer, index=False, sheet_name="Segmentos")
-        rq1_assoc.to_excel(writer, index=False, sheet_name="RQ1_Associacoes")
-        rq1_project.to_excel(writer, index=False, sheet_name="RQ1_Projetos")
-        rq1_db.to_excel(writer, index=False, sheet_name="RQ1_DBMS")
-        rq2_df.to_excel(writer, index=False, sheet_name="RQ2_Exposicoes")
-        rq2_summary.to_excel(writer, index=False, sheet_name="RQ2_Resumo")
-        rq3_df.to_excel(writer, index=False, sheet_name="RQ3_Reintroducoes")
+    with tempfile.TemporaryDirectory(prefix="rq_pipeline_excel_") as tmp_dir:
+        temp_output_path = Path(tmp_dir) / output_path.name
+
+        with pd.ExcelWriter(temp_output_path, engine="openpyxl") as writer:
+            summary_df.to_excel(writer, index=False, sheet_name="Resumo")
+            base_df.to_excel(writer, index=False, sheet_name="Base_Completa")
+            history_df.to_excel(writer, index=False, sheet_name="Historico_Dedup")
+            segments_df.to_excel(writer, index=False, sheet_name="Segmentos")
+            rq1_assoc.to_excel(writer, index=False, sheet_name="RQ1_Associacoes")
+            rq1_project.to_excel(writer, index=False, sheet_name="RQ1_Projetos")
+            rq1_db.to_excel(writer, index=False, sheet_name="RQ1_DBMS")
+            rq2_df.to_excel(writer, index=False, sheet_name="RQ2_Exposicoes")
+            rq2_summary.to_excel(writer, index=False, sheet_name="RQ2_Resumo")
+            rq3_df.to_excel(writer, index=False, sheet_name="RQ3_Reintroducoes")
+
+        shutil.move(str(temp_output_path), str(output_path))
 
     logging.info("Arquivo Excel gerado em: %s", output_path)
 
