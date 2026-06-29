@@ -15,407 +15,334 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s | %(levelname)s | %(message)s"
+from gerar_rq1_intervalos_uso_vulnerabilidade import (
+    add_overlap_metrics,
+    build_usage_segments,
+    build_vulnerability_catalog,
+    elapsed_days,
+    prepare_base,
 )
 
-DEFAULT_INPUT_DIR = "rqs_data"
-DEFAULT_OUTPUT_DIR = "graficos_rq1"
-DEFAULT_INPUT_FILE = "rq1_base_vulnerabilidades_cruzadas.csv"
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(message)s",
+)
 
-PERIOD_ORDER = [
-    "before_publication",
-    "known_vulnerability",
-    "after_resolution"
-]
-
-PERIOD_LABELS = {
-    "before_publication": "Before disclosure",
-    "known_vulnerability": "During exposure",
-    "after_resolution": "After resolution"
-}
-
-PERIOD_COLORS = {
-    "before_publication": "#aaedaa",
-    "known_vulnerability": "#ffef93",
-    "after_resolution": "#ff8d8d"
-}
-
+PERIOD_ORDER = ["pre_disclosure", "post_disclosure", "post_resolution"]
 PERIOD_PRIORITY = {
-    "before_publication": 0,
-    "after_resolution": 1,
-    "known_vulnerability": 2
+    "pre_disclosure": 1,
+    "post_disclosure": 2,
+    "post_resolution": 3,
 }
+PERIOD_LABELS = {
+    "pre_disclosure": "Before disclosure",
+    "post_disclosure": "After disclosure, before resolution",
+    "post_resolution": "After resolution (vulnerable version still in use)",
+}
+PERIOD_COLORS = {
+    "pre_disclosure": "#aaedaa",
+    "post_disclosure": "#ffef93",
+    "post_resolution": "#ff8d8d",
+}
+VULNERABLE_ACTIVITY_LABEL = (
+    "Commits = number of commits performed while using vulnerable releases"
+)
 
 
-def normalize_db_display_names(series):
-    return series.replace({
-        "MS SQL Server_Microsoft Azure SQL Database": "MSSQL/MicrosoftAzure"
-    })
+def phase_at(timestamp, published_at, resolved_at):
+    if pd.notna(resolved_at) and timestamp >= resolved_at:
+        return "post_resolution"
+    if pd.notna(published_at) and timestamp >= published_at:
+        return "post_disclosure"
+    return "pre_disclosure"
 
 
-def ensure_output_dir(path):
-    path = Path(path)
-    path.mkdir(parents=True, exist_ok=True)
+def timestamps_inside(group, start, end):
+    points = {start, end}
+    for column in ["published_at", "resolved_at"]:
+        for value in group[column].dropna():
+            if start < value < end:
+                points.add(value)
+    return sorted(points)
 
 
-def save_plot(fig, output_dir, filename):
-    filepath = Path(output_dir) / filename
-    fig.tight_layout()
-    fig.savefig(filepath, dpi=300, bbox_inches="tight")
-    plt.close(fig)
-    logging.info("Gráfico salvo em: %s", filepath)
+def build_segment_phase_intervals(overlap_df):
+    vulnerable = overlap_df[overlap_df["has_known_vulnerability"]].copy()
+    records = []
+
+    for segment_id, group in vulnerable.groupby("usage_segment_id", sort=False):
+        first = group.iloc[0]
+        start = first["usage_start"]
+        end = first["comparison_end"]
+        if pd.isna(start) or pd.isna(end) or end <= start:
+            continue
+
+        boundaries = timestamps_inside(group, start, end)
+        for interval_start, interval_end in zip(boundaries, boundaries[1:]):
+            phases = [
+                phase_at(interval_start, row.published_at, row.resolved_at)
+                for row in group.itertuples(index=False)
+            ]
+            phase = max(phases, key=PERIOD_PRIORITY.get)
+            records.append({
+                "project_id": first["project_id"],
+                "project": first["project"],
+                "db": first["db"],
+                "usage_segment_id": segment_id,
+                "files": first["files"],
+                "n_files": first["n_files"],
+                "version": first["version"],
+                "interval_start": interval_start,
+                "interval_end": interval_end,
+                "days": elapsed_days(interval_start, interval_end),
+                "period": phase,
+                "cves": "; ".join(sorted(group["cve"].dropna().unique())),
+                "stop_reason": first["stop_reason"],
+            })
+
+    return pd.DataFrame(records)
 
 
-def read_csv_required(path):
-    path = Path(path)
-    if not path.exists():
-        raise FileNotFoundError(f"Arquivo não encontrado: {path}")
-    return pd.read_csv(path)
+def consolidate_project_db_intervals(segment_intervals):
+    records = []
+    group_cols = ["project_id", "project", "db"]
 
-
-def first_existing_column(df, candidates):
-    for col in candidates:
-        if col in df.columns:
-            return col
-    return None
-
-
-def classify_period(row):
-    date_commit = row["date_commit"]
-    published_at = row["published_at"]
-    resolved_at = row["resolved_at"]
-
-    if pd.isna(date_commit) or pd.isna(published_at):
-        return None
-
-    if date_commit < published_at:
-        return "before_publication"
-
-    if pd.notna(resolved_at) and resolved_at >= published_at and date_commit >= resolved_at:
-        return "after_resolution"
-
-    return "known_vulnerability"
-
-
-def add_period_column(df):
-    df = df.copy()
-    df["period"] = np.select(
-        [
-            df["date_commit"] < df["published_at"],
-            (
-                df["resolved_at"].notna() &
-                (df["resolved_at"] >= df["published_at"]) &
-                (df["date_commit"] >= df["resolved_at"])
-            )
-        ],
-        [
-            "before_publication",
-            "after_resolution"
-        ],
-        default="known_vulnerability"
-    )
-    return df
-
-
-def normalize_input(df):
-    required_cols = [
-        "db",
-        "sha1",
-        "date_commit",
-        "commitsBetween",
-        "published_at"
-    ]
-
-    missing = [col for col in required_cols if col not in df.columns]
-    if missing:
-        raise ValueError(f"O CSV precisa conter as colunas: {missing}")
-
-    df = df.copy()
-
-    if "project_id" not in df.columns and "project" not in df.columns and "project_name" not in df.columns:
-        raise ValueError(
-            "O CSV precisa conter project_id, project ou project_name para calcular exposição por projeto."
+    for keys, group in segment_intervals.groupby(group_cols, sort=False):
+        boundaries = sorted(
+            set(group["interval_start"]).union(set(group["interval_end"]))
         )
+        for interval_start, interval_end in zip(boundaries, boundaries[1:]):
+            active = group[
+                (group["interval_start"] < interval_end)
+                & (group["interval_end"] > interval_start)
+            ]
+            if active.empty:
+                continue
 
-    if "versionNumber" not in df.columns and "version" not in df.columns:
-        raise ValueError(
-            "O CSV precisa conter versionNumber ou version para calcular exposição por versão usada."
+            phase = max(active["period"], key=PERIOD_PRIORITY.get)
+            selected = active[active["period"] == phase]
+            records.append({
+                "project_id": keys[0],
+                "project": keys[1],
+                "db": keys[2],
+                "interval_start": interval_start,
+                "interval_end": interval_end,
+                "days": elapsed_days(interval_start, interval_end),
+                "period": phase,
+                "active_segments": active["usage_segment_id"].nunique(),
+                "active_files": active["n_files"].sum(),
+                "active_versions": active["version"].nunique(),
+                "cves": "; ".join(sorted(selected["cves"].unique())),
+            })
+
+    return pd.DataFrame(records)
+
+
+def build_commit_activity(base, project_intervals):
+    observations = (
+        base.groupby(
+            [
+                "project_id",
+                "project_name",
+                "db_name",
+                "version_id",
+                "sha1",
+                "date_commit",
+            ],
+            dropna=False,
         )
-
-    df["db"] = normalize_db_display_names(df["db"].astype(str).str.strip())
-    df["date_commit"] = pd.to_datetime(df["date_commit"], errors="coerce", utc=True)
-    df["published_at"] = pd.to_datetime(df["published_at"], errors="coerce", utc=True)
-
-    if "resolved_at" in df.columns:
-        df["resolved_at"] = pd.to_datetime(df["resolved_at"], errors="coerce", utc=True)
-    else:
-        df["resolved_at"] = pd.NaT
-
-    df["commitsBetween"] = pd.to_numeric(df["commitsBetween"], errors="coerce").fillna(0)
-    df["sha1"] = df["sha1"].astype("string").str.strip()
-
-    return df[
-        df["db"].notna() &
-        df["db"].ne("") &
-        df["sha1"].notna() &
-        df["sha1"].ne("") &
-        df["date_commit"].notna() &
-        df["published_at"].notna()
-    ].copy()
-
-
-def build_exposure_dedup_keys(df):
-    keys = ["db", "sha1"]
-
-    project_col = first_existing_column(df, ["project_id", "project", "project_name"])
-    version_col = first_existing_column(df, ["versionNumber", "version"])
-    vulnerability_col = first_existing_column(df, ["vulnerability_id", "reference", "cve"])
-
-    keys.insert(0, project_col)
-    keys.append(version_col)
-
-    if vulnerability_col:
-        keys.append(vulnerability_col)
-
-    purl_col = first_existing_column(df, ["purl", "vuln_purl"])
-    if purl_col:
-        keys.append(purl_col)
-
-    return keys
-
-
-def consolidate_version_exposure(df):
-    dedup_cols = build_exposure_dedup_keys(df)
-    work_df = df.copy()
-    work_df["period_priority"] = work_df["period"].map(PERIOD_PRIORITY)
-
-    # Keep one observation per project/version/vulnerability/commit. This preserves
-    # after-resolution activity for CVEs that already had a fix, even when the same
-    # dependency version also has another CVE that is still during exposure.
-    selected_idx = (
-        work_df
-        .sort_values(dedup_cols + ["period_priority", "date_commit"], kind="mergesort")
-        .groupby(dedup_cols, dropna=False)["period_priority"]
-        .idxmax()
+        .agg(activity_commits=("commitsBetween", "max"))
+        .reset_index()
+        .rename(columns={"project_name": "project", "db_name": "db"})
     )
 
-    exposure_df = (
-        work_df.loc[selected_idx]
-        .drop(columns=["period_priority"])
-        .sort_values(dedup_cols + ["date_commit"], kind="mergesort")
-        .reset_index(drop=True)
-    )
+    records = []
+    for keys, intervals in project_intervals.groupby(
+        ["project_id", "project", "db"], sort=False
+    ):
+        commits = observations[
+            (observations["project_id"] == keys[0])
+            & (observations["db"] == keys[2])
+        ].copy()
+        if commits.empty:
+            continue
 
-    return exposure_df
+        intervals = intervals.sort_values("interval_start").reset_index(drop=True)
+        starts = intervals["interval_start"].to_numpy(dtype="datetime64[ns]")
+        ends = intervals["interval_end"].to_numpy(dtype="datetime64[ns]")
+        dates = commits["date_commit"].to_numpy(dtype="datetime64[ns]")
+        positions = np.searchsorted(starts, dates, side="right") - 1
+        valid_position = positions >= 0
+        valid = valid_position.copy()
+        valid[valid_position] &= dates[valid_position] <= ends[positions[valid_position]]
+
+        commits = commits.loc[valid].copy()
+        positions = positions[valid]
+        commits["period"] = intervals.iloc[positions]["period"].to_numpy()
+        commits["interval_start"] = intervals.iloc[positions][
+            "interval_start"
+        ].to_numpy()
+        commits["interval_end"] = intervals.iloc[positions]["interval_end"].to_numpy()
+        commits["cves"] = intervals.iloc[positions]["cves"].to_numpy()
+        records.append(commits)
+
+    return pd.concat(records, ignore_index=True) if records else pd.DataFrame()
 
 
-def build_vulnerable_activity_summary(df):
-    df = normalize_input(df)
-
-    if df.empty:
-        return pd.DataFrame(), pd.DataFrame()
-
-    df = add_period_column(df)
-
-    if df.empty:
-        return pd.DataFrame(), pd.DataFrame()
-
-    exposure_df = consolidate_version_exposure(df)
-
+def build_summary(commit_activity):
     summary = (
-        exposure_df
-        .groupby(["db", "period"], dropna=False)
+        commit_activity.groupby(["db", "period"], dropna=False)
         .agg(
-            commits=("commitsBetween", "sum"),
-            unique_commits=("sha1", "nunique"),
-            exposure_rows=("sha1", "count")
+            commits=("activity_commits", "sum"),
+            projects=("project_id", "nunique"),
+            observed_commits=("sha1", "nunique"),
         )
         .reset_index()
     )
-
-    pivot = (
-        summary
-        .pivot(index="db", columns="period", values="commits")
-        .fillna(0)
-    )
-
+    pivot = summary.pivot(index="db", columns="period", values="commits").fillna(0)
     for period in PERIOD_ORDER:
         if period not in pivot.columns:
-            pivot[period] = 0
-
+            pivot[period] = 0.0
     pivot = pivot[PERIOD_ORDER]
     pivot["total"] = pivot.sum(axis=1)
-    pivot = pivot[pivot["total"] > 0]
-    pivot = pivot.sort_values("total", ascending=True)
-
-    return pivot, exposure_df
+    return pivot[pivot["total"] > 0].sort_values("total")
 
 
-def build_diagnostic_summary(raw_df, exposure_df):
-    raw = normalize_input(raw_df)
-    if raw.empty:
-        return pd.DataFrame()
-
-    raw = add_period_column(raw)
-
-    if raw.empty:
-        return pd.DataFrame()
-
-    group_cols = ["db", "period"]
-
-    diagnostic = (
-        raw.groupby(group_cols, dropna=False)
-        .agg(
-            raw_rows=("sha1", "count"),
-            raw_files=("file", "nunique") if "file" in raw.columns else ("sha1", "count"),
-            raw_unique_commits=("sha1", "nunique"),
-            raw_commits_between_sum=("commitsBetween", "sum")
-        )
-        .reset_index()
-    )
-
-    corrected = (
-        exposure_df.groupby(group_cols, dropna=False)
-        .agg(
-            dedup_rows=("sha1", "count"),
-            dedup_unique_commits=("sha1", "nunique"),
-            dedup_commits_between_sum=("commitsBetween", "sum")
-        )
-        .reset_index()
-    )
-
-    return diagnostic.merge(corrected, on=group_cols, how="left")
-
-
-def plot_vulnerable_activity_by_dbms(pivot, output_dir):
-    if pivot.empty:
-        logging.warning("Nenhum dado disponível para gerar o gráfico.")
-        return
-
-    pivot = pivot.copy()
-
-    absolute_total = pivot["total"].copy()
-
-    plot_df = pivot[PERIOD_ORDER].copy()
-    plot_df = plot_df.div(plot_df.sum(axis=1), axis=0).fillna(0)
-
-    height = max(6, len(plot_df) * 0.45)
-    fig, ax = plt.subplots(figsize=(12, height))
-
-    y_positions = range(len(plot_df))
-    left = pd.Series([0.0] * len(plot_df), index=plot_df.index)
+def plot_summary(pivot, output_dir):
+    plot_df = pivot[PERIOD_ORDER].div(pivot["total"], axis=0).fillna(0)
+    fig, ax = plt.subplots(figsize=(12, max(6, len(plot_df) * 0.45)))
+    left = pd.Series(0.0, index=plot_df.index)
+    display_names = {
+        "MS SQL Server_Microsoft Azure SQL Database": "MSSQL/MicrosoftAzure",
+    }
 
     for period in PERIOD_ORDER:
-        values = plot_df[period]
-
         ax.barh(
-            y_positions,
-            values,
+            plot_df.index,
+            plot_df[period],
             left=left,
             label=PERIOD_LABELS[period],
             color=PERIOD_COLORS[period],
             edgecolor="black",
-            linewidth=0.4
+            linewidth=0.4,
         )
-
-        left = left + values
-
-    ax.set_yticks(y_positions)
-    ax.set_yticklabels(plot_df.index)
+        left += plot_df[period]
 
     ax.set_xlim(0, 1)
-    ax.set_xlabel("Proportion of commits")
+    ax.set_xlabel("Proportion of commits during vulnerable-release use")
+    ax.set_yticks(range(len(plot_df.index)))
+    ax.set_yticklabels([display_names.get(db, db) for db in plot_df.index])
     ax.set_ylabel("DBMS")
-    ax.set_title("Activity by vulnerability period")
-
     ax.legend(
         loc="lower left",
         bbox_to_anchor=(0, -0.25),
         ncol=3,
-        frameon=True
+        frameon=True,
+        title=VULNERABLE_ACTIVITY_LABEL,
     )
 
-    for i, db in enumerate(plot_df.index):
+    for index, db in enumerate(plot_df.index):
         ax.text(
             1.01,
-            i,
-            f"{int(absolute_total.loc[db])} commits",
+            index,
+            f"Commits: {pivot.loc[db, 'total']:,.0f}",
             va="center",
-            fontsize=8
+            fontsize=8,
         )
 
-    fig.tight_layout(rect=[0, 0.12, 1, 1])
+    fig.tight_layout(rect=[0, 0.14, 1, 1])
+    output = Path(output_dir) / "rq1_vulnerable_activity_by_dbms.png"
+    output.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(output, dpi=300, bbox_inches="tight")
+    plt.close(fig)
+    logging.info("Gráfico salvo em: %s", output)
 
-    save_plot(
-        fig,
-        output_dir,
-        "rq1_vulnerable_activity_by_dbms.png"
+
+def export_data(
+    overlap,
+    segment_intervals,
+    project_intervals,
+    commit_activity,
+    pivot,
+    input_dir,
+):
+    input_dir = Path(input_dir)
+    overlap.to_csv(input_dir / "rq1_intervalos_uso_vulnerabilidade.csv", index=False)
+    segment_intervals.to_csv(
+        input_dir / "rq1_vulnerable_activity_segment_intervals.csv", index=False
+    )
+    project_intervals.to_csv(
+        input_dir / "rq1_vulnerable_activity_project_db_intervals.csv", index=False
+    )
+    commit_activity.to_csv(
+        input_dir / "rq1_vulnerable_activity_commit_activity.csv", index=False
+    )
+    pivot.reset_index().to_csv(
+        input_dir / "rq1_vulnerable_activity_by_dbms_periodos.csv", index=False
+    )
+
+    project_summary = (
+        commit_activity.pivot_table(
+            index=["project_id", "project", "db"],
+            columns="period",
+            values="activity_commits",
+            aggfunc="sum",
+            fill_value=0,
+        )
+        .reset_index()
+    )
+    for period in PERIOD_ORDER:
+        if period not in project_summary.columns:
+            project_summary[period] = 0.0
+    project_summary["total_activity_commits"] = project_summary[
+        PERIOD_ORDER
+    ].sum(axis=1)
+    project_summary.to_csv(
+        input_dir / "rq1_vulnerable_activity_by_project_dbms.csv", index=False
     )
 
 
-def export_summary(pivot, exposure_df, diagnostic_df, input_dir, export_dedup=False):
-    output_path = Path(input_dir) / "rq1_vulnerable_activity_by_dbms_periodos.csv"
-    diagnostic_path = Path(input_dir) / "rq1_vulnerable_activity_diagnostico.csv"
-
-    pivot.reset_index().to_csv(output_path, index=False)
-    diagnostic_df.to_csv(diagnostic_path, index=False)
-
-    logging.info("CSV gerado: %s", output_path)
-    logging.info("CSV gerado: %s", diagnostic_path)
-
-    if export_dedup:
-        exposure_path = Path(input_dir) / "rq1_vulnerable_activity_exposure_dedup.csv"
-        exposure_df.to_csv(exposure_path, index=False)
-        logging.info("CSV gerado: %s", exposure_path)
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description=(
+            "Gera rq1_vulnerable_activity_by_dbms usando intervalos reais de "
+            "uso das versões e sua sobreposição com divulgação/correção."
+        )
+    )
+    parser.add_argument("--input-dir", default="rqs_data")
+    parser.add_argument("--output-dir", default="graficos_rq1")
+    parser.add_argument("--input-file", default="base_rqs.csv")
+    return parser.parse_args()
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Gera o gráfico rq1_vulnerable_activity_by_dbms segmentado por período da vulnerabilidade."
-    )
-
-    parser.add_argument(
-        "--input-dir",
-        default=DEFAULT_INPUT_DIR,
-        help="Diretório onde está o CSV de entrada."
-    )
-
-    parser.add_argument(
-        "--output-dir",
-        default=DEFAULT_OUTPUT_DIR,
-        help="Diretório onde o gráfico será salvo."
-    )
-
-    parser.add_argument(
-        "--input-file",
-        default=DEFAULT_INPUT_FILE,
-        help="Nome do CSV de entrada."
-    )
-
-    parser.add_argument(
-        "--export-dedup",
-        action="store_true",
-        help="Exporta a base deduplicada completa usada no cálculo."
-    )
-
-    args = parser.parse_args()
-
+    args = parse_args()
     input_dir = Path(args.input_dir)
-    output_dir = Path(args.output_dir)
-    input_path = input_dir / args.input_file
+    base = prepare_base(input_dir / args.input_file)
+    segments = build_usage_segments(base)
+    catalog = build_vulnerability_catalog(base)
+    overlap = add_overlap_metrics(segments, catalog)
+    segment_intervals = build_segment_phase_intervals(overlap)
+    project_intervals = consolidate_project_db_intervals(segment_intervals)
+    commit_activity = build_commit_activity(base, project_intervals)
+    pivot = build_summary(commit_activity)
 
-    ensure_output_dir(output_dir)
+    export_data(
+        overlap,
+        segment_intervals,
+        project_intervals,
+        commit_activity,
+        pivot,
+        input_dir,
+    )
+    plot_summary(pivot, args.output_dir)
 
-    df = read_csv_required(input_path)
-    pivot, exposure_df = build_vulnerable_activity_summary(df)
-    diagnostic_df = build_diagnostic_summary(df, exposure_df)
-
-    export_summary(pivot, exposure_df, diagnostic_df, input_dir, args.export_dedup)
-    plot_vulnerable_activity_by_dbms(pivot, output_dir)
-
-    logging.info("Geração concluída.")
+    logging.info(
+        "Segmentos vulneráveis: %d | commits observados classificados: %d | DBMS: %d",
+        overlap.loc[overlap["has_known_vulnerability"], "usage_segment_id"].nunique(),
+        len(commit_activity),
+        len(pivot),
+    )
 
 
 if __name__ == "__main__":

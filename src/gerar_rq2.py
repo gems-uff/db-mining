@@ -198,15 +198,10 @@ def plot_cdf_small_multiples_by_project(df_project, output_dir, min_projects=MIN
     for ax in axes[n_dbs:]:
         ax.axis("off")
 
-    fig.suptitle(
-        "RQ2, CDF of total exposure time by DBMS, aggregated by project",
-        fontsize=15
-    )
-
     fig.supxlabel("Total exposure time per project, days")
     fig.supylabel("Cumulative proportion of projects")
 
-    fig.tight_layout(rect=[0, 0.03, 1, 0.96])
+    fig.tight_layout(rect=[0, 0.03, 1, 1])
 
     save_plot(
         fig,

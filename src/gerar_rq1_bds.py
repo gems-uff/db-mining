@@ -36,7 +36,8 @@ VULN_BUCKET_COLORS = {
 
 def normalize_db_display_names(series):
     return series.replace({
-        "MS SQL Server_Microsoft Azure SQL Database": "MSSQL/MicrosoftAzure"
+        "MS SQL Server_Microsoft Azure SQL Database": "MSSQL/MicrosoftAzure",
+        "MS SQL Server/Microsoft Azure SQL Database": "MSSQL/MicrosoftAzure",
     })
 
 
@@ -50,6 +51,42 @@ def read_csv_required(path):
 def ensure_output_dir(path):
     path = Path(path)
     path.mkdir(parents=True, exist_ok=True)
+
+
+def read_maven_release_denominators(input_dir):
+    path = Path(input_dir) / "maven_family_version_counts_by_dbms.csv"
+    if not path.exists():
+        logging.warning(
+            "Arquivo não encontrado para proporções de releases Maven: %s",
+            path,
+        )
+        return {}
+
+    df = pd.read_csv(path)
+    required_cols = ["db", "maven_central_distinct_versions_family"]
+    missing = [col for col in required_cols if col not in df.columns]
+    if missing:
+        logging.warning(
+            "Arquivo %s sem colunas necessárias para proporções: %s",
+            path,
+            missing,
+        )
+        return {}
+
+    df = df.copy()
+    df["db"] = normalize_db_display_names(df["db"].astype(str).str.strip())
+    df["maven_central_distinct_versions_family"] = pd.to_numeric(
+        df["maven_central_distinct_versions_family"],
+        errors="coerce",
+    )
+    df = df.dropna(subset=["db", "maven_central_distinct_versions_family"])
+
+    return dict(
+        zip(
+            df["db"],
+            df["maven_central_distinct_versions_family"].astype(int),
+        )
+    )
 
 
 def save_plot(fig, output_dir, filename):
@@ -190,18 +227,22 @@ def build_vulnerabilities_by_affected_versions_count(rq1_assoc):
 
 
 def label_for_bucket(bucket, legend_title):
-    if "vulnerabilidades por versão" in legend_title.lower():
+    if (
+        "vulnerabilidades por versão" in legend_title.lower()
+        or "vulnerabilities per version" in legend_title.lower()
+        or "vulnerabilities per release" in legend_title.lower()
+    ):
         if bucket == "1":
-            return "1 vulnerabilidade"
+            return "1 vulnerability"
         if bucket == "5+":
-            return "5 ou mais vulnerabilidades"
-        return f"{bucket} vulnerabilidades"
+            return "5 or more vulnerabilities"
+        return f"{bucket} vulnerabilities"
 
     if bucket == "1":
-        return "Afeta 1 versão"
+        return "Affects 1 release"
     if bucket == "20+":
-        return "Afeta 20 ou mais versões"
-    return f"Afeta {bucket} versões"
+        return "Affects 20 or more releases"
+    return f"Affects {bucket} releases"
 
 
 def plot_stacked_bar(
@@ -212,7 +253,8 @@ def plot_stacked_bar(
     title,
     ylabel,
     legend_title,
-    colors
+    colors,
+    release_denominators=None,
 ):
     if pivot.empty:
         logging.warning("Base vazia para o gráfico: %s", filename)
@@ -240,7 +282,8 @@ def plot_stacked_bar(
 
         bottom = bottom + values
 
-    ax.set_title(title)
+    if title:
+        ax.set_title(title)
     ax.set_xlabel("DBMS")
     ax.set_ylabel(ylabel)
     ax.set_xticks(range(len(plot_df.index)))
@@ -248,16 +291,91 @@ def plot_stacked_bar(
     ax.legend(title=legend_title)
 
     ymax = int(plot_df.sum(axis=1).max())
-    ax.set_ylim(0, ymax * 1.15 if ymax > 0 else 1)
+    label_headroom = 1.15
+    ax.set_ylim(0, ymax * label_headroom if ymax > 0 else 1)
 
     for i, total in enumerate(plot_df.sum(axis=1)):
+        label = str(int(total))
+
         ax.text(
             i,
             total + max(0.1, ymax * 0.02),
-            str(int(total)),
+            label,
             ha="center",
             va="bottom",
             fontsize=9
+        )
+
+    save_plot(fig, output_dir, filename)
+
+
+def plot_normalized_vulnerable_releases(
+    pivot,
+    bucket_order,
+    output_dir,
+    filename,
+    ylabel,
+    legend_title,
+    colors,
+    release_denominators,
+):
+    if pivot.empty:
+        logging.warning("Base vazia para o gráfico normalizado: %s", filename)
+        return
+
+    rows = []
+    for db, row in pivot.iterrows():
+        denominator = release_denominators.get(db)
+        if not denominator or denominator <= 0:
+            logging.warning("Sem denominador Maven para normalizar: %s", db)
+            continue
+
+        normalized = {bucket: row[bucket] / denominator for bucket in bucket_order}
+        normalized["db"] = db
+        normalized["total"] = row[bucket_order].sum() / denominator
+        normalized["vulnerable_releases"] = int(row[bucket_order].sum())
+        normalized["maven_releases"] = int(denominator)
+        rows.append(normalized)
+
+    if not rows:
+        logging.warning("Nenhum dado com denominador para o gráfico normalizado.")
+        return
+
+    plot_df = pd.DataFrame(rows).set_index("db")
+    plot_df = plot_df.sort_values("total", ascending=False)
+
+    width = max(11, len(plot_df) * 0.85)
+    fig, ax = plt.subplots(figsize=(width, 7))
+    bottom = pd.Series(0.0, index=plot_df.index)
+
+    for bucket in bucket_order:
+        values = plot_df[bucket]
+        ax.bar(
+            plot_df.index,
+            values,
+            bottom=bottom,
+            label=label_for_bucket(bucket, legend_title),
+            color=colors[bucket],
+            edgecolor="black",
+            linewidth=0.4,
+        )
+        bottom = bottom + values
+
+    ax.set_xlabel("DBMS")
+    ax.set_ylabel(ylabel)
+    ax.set_xticks(range(len(plot_df.index)))
+    ax.set_xticklabels(plot_df.index, rotation=45, ha="right")
+    ax.legend(title=legend_title)
+    ax.set_ylim(0, max(1.0, float(plot_df["total"].max()) * 1.18))
+
+    for i, row in enumerate(plot_df.itertuples()):
+        ax.text(
+            i,
+            row.total + max(0.01, float(plot_df["total"].max()) * 0.02),
+            f"{row.total * 100:.1f}%",
+            ha="center",
+            va="bottom",
+            fontsize=8,
         )
 
     save_plot(fig, output_dir, filename)
@@ -305,6 +423,7 @@ def main():
 
     versions_pivot = build_versions_by_vulnerability_count(rq1_assoc)
     vulnerabilities_pivot = build_vulnerabilities_by_affected_versions_count(rq1_assoc)
+    maven_release_denominators = read_maven_release_denominators(input_dir)
 
     export_intermediate_tables(
         versions_pivot,
@@ -317,10 +436,22 @@ def main():
         bucket_order=VERSION_BUCKET_ORDER,
         output_dir=output_dir,
         filename="rq1_bd_versoes_por_qtd_vulnerabilidades_empilhado.png",
-        title="Distribuição de versões vulneráveis por quantidade de vulnerabilidades",
-        ylabel="Quantidade de versões vulneráveis",
-        legend_title="Vulnerabilidades por versão",
-        colors=VERSION_BUCKET_COLORS
+        title="",
+        ylabel="Number of vulnerable releases",
+        legend_title="Vulnerabilities per release",
+        colors=VERSION_BUCKET_COLORS,
+        release_denominators=maven_release_denominators,
+    )
+
+    plot_normalized_vulnerable_releases(
+        pivot=versions_pivot,
+        bucket_order=VERSION_BUCKET_ORDER,
+        output_dir=output_dir,
+        filename="rq1_bd_versoes_por_qtd_vulnerabilidades_empilhado_normalizado.png",
+        ylabel="Share of Maven releases with known vulnerabilities",
+        legend_title="Vulnerabilities per release",
+        colors=VERSION_BUCKET_COLORS,
+        release_denominators=maven_release_denominators,
     )
 
     plot_stacked_bar(
@@ -328,9 +459,9 @@ def main():
         bucket_order=VULN_BUCKET_ORDER,
         output_dir=output_dir,
         filename="rq1_bd_vulnerabilidades_por_qtd_versoes_afetadas_empilhado.png",
-        title="Distribuição de vulnerabilidades por quantidade de versões afetadas",
-        ylabel="Quantidade de vulnerabilidades",
-        legend_title="Versões afetadas por vulnerabilidade",
+        title="",
+        ylabel="Number of vulnerabilities",
+        legend_title="Affected releases per vulnerability",
         colors=VULN_BUCKET_COLORS
     )
 

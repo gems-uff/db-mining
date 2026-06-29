@@ -184,15 +184,10 @@ def plot_cdf_small_multiples_by_project(df_project, output_dir):
     for ax in axes[n_dbs:]:
         ax.axis("off")
 
-    fig.suptitle(
-        "RQ2, CDF do tempo total de exposição por DBMS, agregado por projeto",
-        fontsize=15
-    )
-
     fig.supxlabel("Tempo total de exposição por projeto, dias")
     fig.supylabel("Proporção acumulada de projetos")
 
-    fig.tight_layout(rect=[0, 0.03, 1, 0.96])
+    fig.tight_layout(rect=[0, 0.03, 1, 1])
 
     save_plot(
         fig,

@@ -86,6 +86,9 @@ def plot_dbms_usage_vs_exposure(rq1_dbms, output_dir):
         ["projects_affected", "projects_using_db", "db"],
         ascending=[True, True, False]
     )
+    filtered["projects_not_affected"] = (
+        filtered["projects_using_db"] - filtered["projects_affected"]
+    ).clip(lower=0)
 
     height = max(6, len(filtered) * 0.45)
 
@@ -94,33 +97,31 @@ def plot_dbms_usage_vs_exposure(rq1_dbms, output_dir):
     y_positions = range(len(filtered))
 
     PROJECT_COLORS = {
-        "projects_using_db": "#7fbf7f",
+        "projects_not_affected": "#7fbf7f",
         "projects_affected": "#ff8d8d"
     }
 
     plt.barh(
         y_positions,
-        filtered["projects_using_db"],
-        label="Projects using DBMS",
-        color=PROJECT_COLORS["projects_using_db"],
+        filtered["projects_not_affected"],
+        label="Projects not affected",
+        color=PROJECT_COLORS["projects_not_affected"],
         edgecolor="black"
     )
 
     plt.barh(
         y_positions,
         filtered["projects_affected"],
+        left=filtered["projects_not_affected"],
         label="Affected projects",
-        color=PROJECT_COLORS["projects_affected"]
+        color=PROJECT_COLORS["projects_affected"],
+        edgecolor="black"
     )
 
     plt.yticks(y_positions, filtered["db"])
 
     plt.xlabel("Number of projects")
     plt.ylabel("DBMS")
-
-    plt.title(
-        "RQ1 - Projects using each DBMS and affected projects"
-    )
 
     plt.legend()
 
