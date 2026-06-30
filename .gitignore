@@ -211,3 +211,7 @@ rqs_data/base_rqs.csv
 *.sqlite-shm
 resultado_rqs.xlsx
 rqs_data/rq1_base_vulnerabilidades_cruzadas.csv
+dbmining_backup_before_resolved_at_propagation_20260618.sqlite
+dbmining_backup_before_resolution_update_20260613.sqlite.gz
+dbmining.sqlite.zip
+

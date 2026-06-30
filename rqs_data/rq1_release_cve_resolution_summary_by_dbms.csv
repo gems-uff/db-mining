@@ -1,0 +1,16 @@
+db,release_cve_records,unique_cves,vulnerable_releases,records_with_resolution_date,records_with_first_patched_release,resolved_before_publication,median_signed_resolution_days,p75_signed_resolution_days,median_nonnegative_resolution_days,max_nonnegative_resolution_days,resolution_date_coverage_pct,first_patched_release_coverage_pct
+H2,150,5,53,150,136,89,-2.1,213.1,213.1,223.7,100.0,90.7
+Ignite,7,6,3,7,7,6,-14.4,-4.7,29.0,29.0,100.0,100.0
+HyperSQL,16,1,16,16,16,0,15.8,15.8,15.8,15.8,100.0,100.0
+PostgreSQL,231,11,73,231,231,223,-6.8,-0.8,8.8,8.8,100.0,100.0
+MySQL,330,10,57,330,328,234,-468.9,7.3,7.3,89.4,100.0,99.4
+Hazelcast,86,7,34,86,79,49,-21.4,6.6,6.6,6.6,100.0,91.9
+Snowflake,166,6,40,166,166,139,-0.0,-0.0,0.2,0.2,100.0,100.0
+Cassandra,13,4,6,13,13,11,-2.7,-2.7,0.0,0.0,100.0,100.0
+Redis,312,2,312,312,312,312,-427.5,-121.5,,,100.0,100.0
+SQLite,22,1,22,22,22,22,-4.5,-4.5,,,100.0,100.0
+MSSQL/MicrosoftAzure,16,1,16,16,16,16,-1.8,-1.7,,,100.0,100.0
+MongoDB,7,1,7,7,7,7,-7.7,-7.7,,,100.0,100.0
+Couchbase,5,4,3,5,3,5,-67.8,-0.9,,,100.0,60.0
+Neo4j,3,3,1,3,3,3,-1010.2,-505.4,,,100.0,100.0
+HBase,1,1,1,1,1,1,-213.8,-213.8,,,100.0,100.0

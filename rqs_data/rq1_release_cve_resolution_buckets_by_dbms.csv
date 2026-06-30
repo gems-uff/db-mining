@@ -1,0 +1,16 @@
+db,Before disclosure,0–1 day,2–30 days,31–180 days,181–365 days,>365 days,Missing resolution date,Missing publication date,total
+MySQL,234,0,57,39,0,0,0,0,330
+Redis,312,0,0,0,0,0,0,0,312
+PostgreSQL,223,0,8,0,0,0,0,0,231
+Snowflake,139,27,0,0,0,0,0,0,166
+H2,89,0,0,0,61,0,0,0,150
+Hazelcast,49,7,30,0,0,0,0,0,86
+SQLite,22,0,0,0,0,0,0,0,22
+HyperSQL,0,0,16,0,0,0,0,0,16
+MSSQL/MicrosoftAzure,16,0,0,0,0,0,0,0,16
+Cassandra,11,2,0,0,0,0,0,0,13
+Ignite,6,0,1,0,0,0,0,0,7
+MongoDB,7,0,0,0,0,0,0,0,7
+Couchbase,5,0,0,0,0,0,0,0,5
+Neo4j,3,0,0,0,0,0,0,0,3
+HBase,1,0,0,0,0,0,0,0,1

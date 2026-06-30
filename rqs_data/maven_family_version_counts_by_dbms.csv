@@ -1,0 +1,16 @@
+db,artifacts_searched,artifact_count,maven_central_versions_sum_by_artifact,maven_central_distinct_versions_family,observed_releases_in_research,coverage_observed_over_family_pct
+Cassandra,org.apache.cassandra:cassandra-all,1,291,291,6,2.1
+Couchbase,com.couchbase.client:core-io,1,156,156,3,1.9
+H2,com.h2database:h2,1,140,140,53,37.9
+HBase,org.apache.hbase:hbase-client,1,243,243,1,0.4
+Hazelcast,com.hazelcast:hazelcast,1,270,270,34,12.6
+HyperSQL,org.hsqldb:hsqldb,1,20,20,16,80.0
+Ignite,org.apache.ignite:ignite-core,1,44,44,3,6.8
+MS SQL Server/Microsoft Azure SQL Database,com.microsoft.sqlserver:mssql-jdbc,1,265,265,16,6.0
+MongoDB,org.mongodb:mongodb-driver; org.mongodb:mongodb-driver-legacy; org.mongodb:mongodb-driver-sync,3,329,167,7,4.2
+MySQL,com.mysql:mysql-connector-j; mysql:mysql-connector-java,2,107,104,57,54.8
+Neo4j,org.neo4j:neo4j,1,501,501,1,0.2
+PostgreSQL,org.postgresql:postgresql; postgresql:postgresql,2,210,210,73,34.8
+Redis,io.lettuce:lettuce-core; org.redisson:redisson,2,380,380,312,82.1
+SQLite,org.xerial:sqlite-jdbc,1,109,109,22,20.2
+Snowflake,net.snowflake:snowflake-jdbc,1,194,194,40,20.6

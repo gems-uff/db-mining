@@ -18,7 +18,7 @@ logging.basicConfig(
 DEFAULT_INPUT_DIR = "rqs_data"
 DEFAULT_OUTPUT_DIR = "graficos_rq2"
 DEFAULT_INPUT_FILE = "rq2_exposicoes.csv"
-MIN_PROJECTS_FOR_CDF = 2
+MIN_PROJECTS_FOR_CDF = 4
 MIN_PROJECTS_FOR_BOXPLOT = 2
 
 # Nome da coluna que identifica o commit no seu CSV.

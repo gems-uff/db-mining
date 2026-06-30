@@ -16,25 +16,33 @@ DEFAULT_DATA_DIR = "rqs_data"
 DEFAULT_OUTPUT_DIR = "graficos_rq1"
 
 BUCKET_ORDER = [
-    "Resolved before publication",
-    "Same day / next day",
-    "2-30 days",
-    "31-180 days",
-    "181-365 days",
+    "Before disclosure",
+    "0–1 day",
+    "2–30 days",
+    "31–180 days",
+    "181–365 days",
     ">365 days",
     "Missing resolution date",
     "Missing publication date",
 ]
 
 BUCKET_COLORS = {
-    "Resolved before publication": "#6baed6",
-    "Same day / next day": "#74c476",
-    "2-30 days": "#a1d99b",
-    "31-180 days": "#fed976",
-    "181-365 days": "#fd8d3c",
-    ">365 days": "#e31a1c",
-    "Missing resolution date": "#bdbdbd",
-    "Missing publication date": "#737373",
+    "Before disclosure": "#dbe9f6",
+    "0–1 day": "#a9cce3",
+    "2–30 days": "#6fa8dc",
+    "31–180 days": "#3d85c6",
+    "181–365 days": "#1c4587",
+    ">365 days": "#0b2f5b",
+    "Missing resolution date": "#08213f",
+    "Missing publication date": "#041426",
+}
+
+LIGHT_TEXT_BUCKETS = {
+    "31–180 days",
+    "181–365 days",
+    ">365 days",
+    "Missing resolution date",
+    "Missing publication date",
 }
 
 
@@ -65,15 +73,15 @@ def classify_resolution_bucket(row):
 
     days = row["resolution_days"]
     if days < 0:
-        return "Resolved before publication"
+        return "Before disclosure"
     if days <= 1:
-        return "Same day / next day"
+        return "0–1 day"
     if days <= 30:
-        return "2-30 days"
+        return "2–30 days"
     if days <= 180:
-        return "31-180 days"
+        return "31–180 days"
     if days <= 365:
-        return "181-365 days"
+        return "181–365 days"
     return ">365 days"
 
 
@@ -206,6 +214,7 @@ def build_bucket_table(release_cve):
 def plot_bucket_distribution(bucket_table, output_dir):
     plot_df = bucket_table.set_index("db")[BUCKET_ORDER]
     plot_df = plot_df.loc[plot_df.sum(axis=1).sort_values().index]
+    db_totals = plot_df.sum(axis=1)
 
     fig, ax = plt.subplots(figsize=(13, max(6, len(plot_df) * 0.45)))
     left = pd.Series(0, index=plot_df.index, dtype=float)
@@ -222,10 +231,23 @@ def plot_bucket_distribution(bucket_table, output_dir):
             edgecolor="black",
             linewidth=0.4,
         )
+        for db, value in values.items():
+            if value <= 0:
+                continue
+            ax.text(
+                left[db] + value / 2,
+                db,
+                str(int(value)),
+                va="center",
+                ha="center",
+                fontsize=8,
+                color="white" if bucket in LIGHT_TEXT_BUCKETS else "black",
+            )
         left += values
 
-    ax.set_xlabel("Unique DBMS-release-CVE records")
+    ax.set_xlabel("Number of vulnerable release–CVE records")
     ax.set_ylabel("DBMS")
+    ax.set_xlim(0, db_totals.max() * 1.04)
     ax.legend(loc="lower left", bbox_to_anchor=(0, -0.32), ncol=3, frameon=True)
     fig.tight_layout(rect=[0, 0.16, 1, 1])
 
