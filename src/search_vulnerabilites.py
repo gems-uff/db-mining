@@ -1370,7 +1370,10 @@ def enrich_with_nvd(match: Dict[str, Any]) -> Dict[str, Any]:
 
     match = dict(match)
 
-    if not match.get("published_at"):
+    # For CVEs, use the CVE/NVD publication date as the temporal disclosure
+    # reference. GitHub/OSV publication dates may represent when an advisory was
+    # imported into that ecosystem, not the first public CVE disclosure.
+    if nvd_data.get("published_at"):
         match["published_at"] = nvd_data.get("published_at")
 
     if not match.get("last_modified_at"):

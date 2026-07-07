@@ -35,9 +35,9 @@ PERIOD_PRIORITY = {
     "post_resolution": 3,
 }
 PERIOD_LABELS = {
-    "pre_disclosure": "Before disclosure",
-    "post_disclosure": "After disclosure, before resolution",
-    "post_resolution": "After resolution (vulnerable version still in use)",
+    "pre_disclosure": "Pre-disclosure",
+    "post_disclosure": "Post-disclosure (pre-resolution)",
+    "post_resolution": "Post-resolution",
 }
 PERIOD_COLORS = {
     "pre_disclosure": "#aaedaa",
@@ -234,8 +234,8 @@ def plot_summary(pivot, output_dir):
     ax.set_yticklabels([display_names.get(db, db) for db in plot_df.index])
     ax.set_ylabel("DBMS")
     ax.legend(
-        loc="lower left",
-        bbox_to_anchor=(0, -0.25),
+        loc="lower center",
+        bbox_to_anchor=(0.5, -0.25),
         ncol=3,
         frameon=True,
         title=VULNERABLE_ACTIVITY_LABEL,
@@ -251,10 +251,13 @@ def plot_summary(pivot, output_dir):
         )
 
     fig.tight_layout(rect=[0, 0.14, 1, 1])
-    output = Path(output_dir) / "rq1_vulnerable_activity_by_dbms.png"
+    output = Path(output_dir) / "rq4_vulnerable_activity_by_dbms.png"
     output.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(output, dpi=300, bbox_inches="tight")
+    pdf_output = output.with_suffix(".pdf")
+    fig.savefig(pdf_output, bbox_inches="tight")
     plt.close(fig)
+    logging.info("Gráfico salvo em: %s", pdf_output)
     logging.info("Gráfico salvo em: %s", output)
 
 
@@ -305,12 +308,12 @@ def export_data(
 def parse_args():
     parser = argparse.ArgumentParser(
         description=(
-            "Gera rq1_vulnerable_activity_by_dbms usando intervalos reais de "
+            "Gera rq4_vulnerable_activity_by_dbms usando intervalos reais de "
             "uso das versões e sua sobreposição com divulgação/correção."
         )
     )
     parser.add_argument("--input-dir", default="rqs_data")
-    parser.add_argument("--output-dir", default="graficos_rq1")
+    parser.add_argument("--output-dir", default="graficos_rq4")
     parser.add_argument("--input-file", default="base_rqs.csv")
     return parser.parse_args()
 

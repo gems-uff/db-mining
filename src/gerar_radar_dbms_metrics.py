@@ -8,6 +8,11 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from matplotlib.path import Path as MplPath
+from matplotlib.projections import register_projection
+from matplotlib.projections.polar import PolarAxes
+from matplotlib.spines import Spine
+from matplotlib.transforms import Affine2D
 import numpy as np
 import pandas as pd
 
@@ -17,27 +22,18 @@ METRIC_COLUMNS = [
     "propagation_pct",
     "project_exposure_pct",
     "post_resolution_persistence_pct",
-    "project_lifetime_exposure_pct",
+    "post_resolution_lifetime_exposure_pct",
 ]
 
-RADAR_LABELS = [
-    "Vulnerable releases",
-    "Propagation",
-    "Project exposure",
-    "Post-resolution",
-    "Lifetime exposure",
-]
+RADAR_LABELS = ["RQ1a", "RQ1b", "RQ3", "RQ4", "RQ5"]
 
-MAIN_DBMS = [
-    "H2",
-    "MySQL",
-    "PostgreSQL",
-    "Redis",
-    "SQLite",
-    "HyperSQL",
-    "Hazelcast",
-    "MongoDB",
-]
+RADAR_LEGEND_TEXT = (
+    "RQ1a: vulnerable library releases | "
+    "RQ1b: long-propagation vulnerabilities | "
+    "RQ3: project exposure | "
+    "RQ4: post-resolution persistence | "
+    "RQ5: post-resolution exposure"
+)
 
 DEFAULT_TARGET_DBMS = [
     "MySQL",
@@ -379,23 +375,34 @@ def interval_days(intervals):
     return sum(max((end - start).days, 0) for start, end in intervals)
 
 
-def calculate_project_lifetime_exposure(vulnerable_usage, project_lifetimes):
+def calculate_post_resolution_lifetime_exposure(vulnerable_usage, project_lifetimes):
     """
-    Project Lifetime Exposure:
+    Post-resolution Project Lifetime Exposure:
     Para cada par (projeto, DBMS):
-      vulnerable_exposure_days / project_lifetime_days * 100
+      post_resolution_exposure_days / project_lifetime_days * 100
 
     Depois agrega por DBMS usando a mediana.
     Intervalos sobrepostos no mesmo par (projeto, DBMS) são mesclados antes
     da soma para evitar dupla contagem.
     """
-    df = vulnerable_usage.dropna(subset=["db", "project_id", "date_commit"]).copy()
+    df = vulnerable_usage.dropna(
+        subset=["db", "project_id", "date_commit", "resolved_at"]
+    ).copy()
 
     raw_intervals = (
-        df.groupby(["db", "project_id", "file", "version_number", "purl"], dropna=False)
-        .agg(start=("date_commit", "min"), end=("date_commit", "max"))
+        df.groupby(
+            ["db", "project_id", "file", "version_number", "purl", "cve", "resolved_at"],
+            dropna=False,
+        )
+        .agg(usage_start=("date_commit", "min"), usage_end=("date_commit", "max"))
         .reset_index()
     )
+    raw_intervals["post_resolution_start"] = raw_intervals[
+        ["usage_start", "resolved_at"]
+    ].max(axis=1)
+    raw_intervals = raw_intervals[
+        raw_intervals["usage_end"] > raw_intervals["post_resolution_start"]
+    ].copy()
 
     project_lifetimes = project_lifetimes.copy()
     project_lifetimes["project_lifetime_days"] = (
@@ -406,9 +413,9 @@ def calculate_project_lifetime_exposure(vulnerable_usage, project_lifetimes):
     records = []
     for (db, project_id), group in raw_intervals.groupby(["db", "project_id"]):
         intervals = [
-            (row.start, row.end)
+            (row.post_resolution_start, row.usage_end)
             for row in group.itertuples(index=False)
-            if pd.notna(row.start) and pd.notna(row.end)
+            if pd.notna(row.post_resolution_start) and pd.notna(row.usage_end)
         ]
         merged = merge_intervals(intervals)
         exposure_days = interval_days(merged)
@@ -416,13 +423,13 @@ def calculate_project_lifetime_exposure(vulnerable_usage, project_lifetimes):
             {
                 "db": db,
                 "project_id": project_id,
-                "vulnerable_exposure_days": exposure_days,
+                "post_resolution_exposure_days": exposure_days,
             }
         )
 
     exposure = pd.DataFrame(records)
     if exposure.empty:
-        return pd.DataFrame(columns=["db", "project_lifetime_exposure_pct"])
+        return pd.DataFrame(columns=["db", "post_resolution_lifetime_exposure_pct"])
 
     exposure = exposure.merge(
         project_lifetimes[["project_id", "project_lifetime_days"]],
@@ -430,15 +437,19 @@ def calculate_project_lifetime_exposure(vulnerable_usage, project_lifetimes):
         how="left",
     )
     exposure = exposure[exposure["project_lifetime_days"] > 0].copy()
-    exposure["exposure_lifetime_pct"] = (
-        exposure["vulnerable_exposure_days"] / exposure["project_lifetime_days"] * 100
+    exposure["post_resolution_lifetime_exposure_pct"] = (
+        exposure["post_resolution_exposure_days"]
+        / exposure["project_lifetime_days"]
+        * 100
     )
-    exposure["exposure_lifetime_pct"] = exposure["exposure_lifetime_pct"].clip(0, 100)
+    exposure["post_resolution_lifetime_exposure_pct"] = exposure[
+        "post_resolution_lifetime_exposure_pct"
+    ].clip(0, 100)
 
     result = (
-        exposure.groupby("db")["exposure_lifetime_pct"]
+        exposure.groupby("db")["post_resolution_lifetime_exposure_pct"]
         .median()
-        .reset_index(name="project_lifetime_exposure_pct")
+        .reset_index(name="post_resolution_lifetime_exposure_pct")
     )
     return result
 
@@ -456,7 +467,7 @@ def build_final_table(
         calculate_propagation(vulnerability_versions),
         calculate_project_exposure(all_usage, vulnerable_usage),
         calculate_post_resolution_persistence(vulnerable_usage),
-        calculate_project_lifetime_exposure(vulnerable_usage, project_lifetimes),
+        calculate_post_resolution_lifetime_exposure(vulnerable_usage, project_lifetimes),
     ]
 
     dbs = pd.DataFrame({"db": target_dbms, "target_order": range(len(target_dbms))})
@@ -473,6 +484,70 @@ def radar_angles():
     return np.concatenate([angles, angles[:1]])
 
 
+def register_pentagonal_radar_projection():
+    theta = np.linspace(0, 2 * np.pi, len(METRIC_COLUMNS), endpoint=False)
+
+    class RadarTransform(PolarAxes.PolarTransform):
+        def transform_path_non_affine(self, path):
+            if path._interpolation_steps > 1:
+                path = path.interpolated(len(METRIC_COLUMNS))
+            return MplPath(self.transform(path.vertices), path.codes)
+
+    class RadarAxes(PolarAxes):
+        name = "radar_pentagonal"
+        PolarTransform = RadarTransform
+
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.set_theta_zero_location("N")
+
+        def fill(self, *args, closed=True, **kwargs):
+            return super().fill(closed=closed, *args, **kwargs)
+
+        def plot(self, *args, **kwargs):
+            lines = super().plot(*args, **kwargs)
+            for line in lines:
+                x, y = line.get_data()
+                if x[0] != x[-1]:
+                    line.set_data(np.append(x, x[0]), np.append(y, y[0]))
+            return lines
+
+        def set_varlabels(self, labels, fontsize=9):
+            self.set_thetagrids(np.degrees(theta), labels, fontsize=fontsize)
+
+        def _gen_axes_patch(self):
+            return plt.Polygon(
+                self._unit_poly_verts(theta),
+                closed=True,
+                edgecolor="black",
+            )
+
+        def _gen_axes_spines(self):
+            spine = Spine(
+                axes=self,
+                spine_type="circle",
+                path=MplPath.unit_regular_polygon(len(METRIC_COLUMNS)),
+            )
+            spine.set_transform(
+                Affine2D().scale(0.5).translate(0.5, 0.5) + self.transAxes
+            )
+            return {"polar": spine}
+
+        @staticmethod
+        def _unit_poly_verts(theta_values):
+            x0, y0, r = [0.5] * 3
+            return [
+                (r * np.cos(t) + x0, r * np.sin(t) + y0)
+                for t in theta_values
+            ]
+
+    register_projection(RadarAxes)
+    return theta
+
+
+PENTAGONAL_ANGLES = register_pentagonal_radar_projection()
+
+
 def setup_radar_axis(ax):
     angles = radar_angles()
     ax.set_xticks(angles[:-1])
@@ -480,6 +555,13 @@ def setup_radar_axis(ax):
     ax.set_ylim(0, 100)
     ax.set_yticks([20, 40, 60, 80, 100])
     ax.set_yticklabels(["20", "40", "60", "80", "100"], fontsize=8)
+    ax.grid(True, alpha=0.35)
+
+
+def setup_pentagonal_radar_axis(ax, label_fontsize=9, radial_fontsize=8):
+    ax.set_varlabels(RADAR_LABELS, fontsize=label_fontsize)
+    ax.set_ylim(0, 100)
+    ax.set_rgrids([20, 40, 60, 80, 100], angle=90, fontsize=radial_fontsize)
     ax.grid(True, alpha=0.35)
 
 
@@ -500,29 +582,158 @@ def generate_individual_radar(row, output_dir):
     plt.close(fig)
 
 
-def generate_comparative_radar(df, output_dir, dbms=MAIN_DBMS):
-    plot_df = df[df["db"].isin(dbms)].copy()
+def generate_small_multiples_radar(df, output_dir):
+    plot_df = df.copy()
+    if plot_df.empty:
+        return
+
+    n_cols = 5
+    n_rows = int(np.ceil(len(plot_df) / n_cols))
+    angles = radar_angles()
+
+    fig, axes = plt.subplots(
+        n_rows,
+        n_cols,
+        figsize=(n_cols * 2.45, n_rows * 2.65),
+        subplot_kw={"projection": "polar"},
+    )
+    axes = np.asarray(axes).reshape(-1)
+
+    for ax, (_, row) in zip(axes, plot_df.iterrows()):
+        values = row[METRIC_COLUMNS].astype(float).to_numpy()
+        values = np.concatenate([values, values[:1]])
+
+        setup_radar_axis(ax)
+        ax.set_xticklabels(RADAR_LABELS, fontsize=8)
+        ax.set_yticks([50, 100])
+        ax.set_yticklabels(["50", "100"], fontsize=6)
+        ax.plot(angles, values, linewidth=1.4, color="#1c4587")
+        ax.fill(angles, values, alpha=0.22, color="#6fa8dc")
+        ax.set_title(row["db"], fontsize=10, pad=10)
+
+    for ax in axes[len(plot_df):]:
+        ax.set_visible(False)
+
+    fig.suptitle("Post-resolution vulnerability profiles by DBMS", fontsize=16, y=0.99)
+    fig.text(
+        0.5,
+        0.015,
+        RADAR_LEGEND_TEXT,
+        ha="center",
+        va="bottom",
+        fontsize=9,
+    )
+    fig.tight_layout(rect=[0, 0.05, 1, 0.96])
+
+    for ext in ("png", "pdf"):
+        fig.savefig(
+            Path(output_dir) / f"radar_mini_radares_dbms_pos_resolucao.{ext}",
+            dpi=300,
+            bbox_inches="tight",
+        )
+    plt.close(fig)
+
+
+def generate_small_multiples_pentagonal_radar(df, output_dir):
+    plot_df = df.copy()
+    if plot_df.empty:
+        return
+
+    n_cols = 5
+    n_rows = int(np.ceil(len(plot_df) / n_cols))
+
+    fig, axes = plt.subplots(
+        n_rows,
+        n_cols,
+        figsize=(n_cols * 2.45, n_rows * 2.65),
+        subplot_kw={"projection": "radar_pentagonal"},
+    )
+    axes = np.asarray(axes).reshape(-1)
+
+    for ax, (_, row) in zip(axes, plot_df.iterrows()):
+        values = row[METRIC_COLUMNS].astype(float).to_numpy()
+
+        setup_pentagonal_radar_axis(ax, label_fontsize=8, radial_fontsize=6)
+        ax.set_rgrids([50, 100], angle=90, fontsize=6)
+        ax.plot(PENTAGONAL_ANGLES, values, linewidth=1.4, color="#1c4587")
+        ax.fill(PENTAGONAL_ANGLES, values, alpha=0.22, color="#6fa8dc")
+        ax.set_title(row["db"], fontsize=10, pad=10)
+
+    for ax in axes[len(plot_df):]:
+        ax.set_visible(False)
+
+    fig.suptitle("Post-resolution vulnerability profiles by DBMS", fontsize=16, y=0.99)
+    fig.text(
+        0.5,
+        0.015,
+        RADAR_LEGEND_TEXT,
+        ha="center",
+        va="bottom",
+        fontsize=9,
+    )
+    fig.tight_layout(rect=[0, 0.05, 1, 0.96])
+
+    for ext in ("png", "pdf"):
+        fig.savefig(
+            Path(output_dir)
+            / f"radar_mini_radares_dbms_pos_resolucao_pentagonal.{ext}",
+            dpi=300,
+            bbox_inches="tight",
+        )
+    plt.close(fig)
+
+
+def generate_comparative_radar(df, output_dir):
+    plot_df = df.copy()
     if plot_df.empty:
         return
 
     angles = radar_angles()
-    fig, ax = plt.subplots(figsize=(8, 8), subplot_kw={"projection": "polar"})
+    fig, ax = plt.subplots(figsize=(9, 9), subplot_kw={"projection": "polar"})
     setup_radar_axis(ax)
 
-    cmap = plt.get_cmap("tab10")
-    for idx, row in plot_df.set_index("db").loc[[db for db in dbms if db in set(plot_df["db"])]].reset_index().iterrows():
+    cmap = plt.get_cmap("tab20")
+    for idx, row in plot_df.reset_index(drop=True).iterrows():
         values = row[METRIC_COLUMNS].astype(float).to_numpy()
         values = np.concatenate([values, values[:1]])
-        color = cmap(idx % 10)
-        ax.plot(angles, values, linewidth=1.8, label=row["db"], color=color)
-        ax.fill(angles, values, alpha=0.08, color=color)
+        color = cmap(idx % 20)
+        ax.plot(angles, values, linewidth=1.5, label=row["db"], color=color)
+        ax.fill(angles, values, alpha=0.04, color=color)
 
-    ax.set_title("Comparative vulnerability profile for main DBMSs", pad=24)
-    ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.08), ncol=3, frameon=True)
+    ax.set_title("Comparative post-resolution vulnerability profile for DBMSs", pad=24)
+    ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.08), ncol=5, frameon=True)
 
     for ext in ("png", "pdf"):
         fig.savefig(
-            Path(output_dir) / f"radar_comparativo_principais_dbms.{ext}",
+            Path(output_dir) / f"radar_comparativo_principais_dbms_pos_resolucao.{ext}",
+            dpi=300,
+            bbox_inches="tight",
+        )
+    plt.close(fig)
+
+
+def generate_comparative_pentagonal_radar(df, output_dir):
+    plot_df = df.copy()
+    if plot_df.empty:
+        return
+
+    fig, ax = plt.subplots(figsize=(9, 9), subplot_kw={"projection": "radar_pentagonal"})
+    setup_pentagonal_radar_axis(ax)
+
+    cmap = plt.get_cmap("tab20")
+    for idx, row in plot_df.reset_index(drop=True).iterrows():
+        values = row[METRIC_COLUMNS].astype(float).to_numpy()
+        color = cmap(idx % 20)
+        ax.plot(PENTAGONAL_ANGLES, values, linewidth=1.5, label=row["db"], color=color)
+        ax.fill(PENTAGONAL_ANGLES, values, alpha=0.04, color=color)
+
+    ax.set_title("Comparative post-resolution vulnerability profile for DBMSs", pad=24)
+    ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.08), ncol=5, frameon=True)
+
+    for ext in ("png", "pdf"):
+        fig.savefig(
+            Path(output_dir)
+            / f"radar_comparativo_principais_dbms_pos_resolucao_pentagonal.{ext}",
             dpi=300,
             bbox_inches="tight",
         )
@@ -533,10 +744,7 @@ def generate_all_radars(df, output_dir):
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
 
-    for _, row in df.iterrows():
-        generate_individual_radar(row, output_path)
-
-    generate_comparative_radar(df, output_path)
+    generate_small_multiples_radar(df, output_path)
 
 
 def cleanup_previous_radars(output_dir):
@@ -547,8 +755,22 @@ def cleanup_previous_radars(output_dir):
     patterns = [
         "radar_individual_*.png",
         "radar_individual_*.pdf",
+        "radar_mini_radares_dbms.png",
+        "radar_mini_radares_dbms.pdf",
+        "radar_mini_radares_dbms_pos_resolucao.png",
+        "radar_mini_radares_dbms_pos_resolucao.pdf",
+        "radar_mini_radares_dbms_pentagonal.png",
+        "radar_mini_radares_dbms_pentagonal.pdf",
+        "radar_mini_radares_dbms_pos_resolucao_pentagonal.png",
+        "radar_mini_radares_dbms_pos_resolucao_pentagonal.pdf",
         "radar_comparativo_principais_dbms.png",
         "radar_comparativo_principais_dbms.pdf",
+        "radar_comparativo_principais_dbms_pos_resolucao.png",
+        "radar_comparativo_principais_dbms_pos_resolucao.pdf",
+        "radar_comparativo_principais_dbms_pentagonal.png",
+        "radar_comparativo_principais_dbms_pentagonal.pdf",
+        "radar_comparativo_principais_dbms_pos_resolucao_pentagonal.png",
+        "radar_comparativo_principais_dbms_pos_resolucao_pentagonal.pdf",
     ]
     for pattern in patterns:
         for path in output_path.glob(pattern):
@@ -570,7 +792,7 @@ def parse_args():
         default="rqs_data/rq1_release_cve_resolution_buckets_by_dbms.csv",
         help="CSV com coluna db indicando os DBMSs que devem entrar nos radares.",
     )
-    parser.add_argument("--output-dir", default="output")
+    parser.add_argument("--output-dir", default="graficos_discussão")
     return parser.parse_args()
 
 

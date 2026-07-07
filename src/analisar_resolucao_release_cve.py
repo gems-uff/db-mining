@@ -3,6 +3,9 @@ import argparse
 import logging
 from pathlib import Path
 
+import matplotlib
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import pandas as pd
 
@@ -13,7 +16,7 @@ logging.basicConfig(
 
 DEFAULT_INPUT_FILE = "rqs_data/rq1_associacoes.csv"
 DEFAULT_DATA_DIR = "rqs_data"
-DEFAULT_OUTPUT_DIR = "graficos_rq1"
+DEFAULT_OUTPUT_DIR = "graficos_rq4"
 
 BUCKET_ORDER = [
     "Before disclosure",
@@ -248,12 +251,15 @@ def plot_bucket_distribution(bucket_table, output_dir):
     ax.set_xlabel("Number of vulnerable release–CVE records")
     ax.set_ylabel("DBMS")
     ax.set_xlim(0, db_totals.max() * 1.04)
-    ax.legend(loc="lower left", bbox_to_anchor=(0, -0.32), ncol=3, frameon=True)
+    ax.legend(loc="lower center", bbox_to_anchor=(0.5, -0.32), ncol=3, frameon=True)
     fig.tight_layout(rect=[0, 0.16, 1, 1])
 
-    output = Path(output_dir) / "rq1_release_cve_resolution_distribution_by_dbms.png"
+    output = Path(output_dir) / "rq4_release_cve_resolution_distribution_by_dbms.png"
     fig.savefig(output, dpi=300, bbox_inches="tight")
+    pdf_output = output.with_suffix(".pdf")
+    fig.savefig(pdf_output, bbox_inches="tight")
     plt.close(fig)
+    logging.info("Graph saved: %s", pdf_output)
     logging.info("Graph saved: %s", output)
 
 

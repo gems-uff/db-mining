@@ -3,6 +3,9 @@ import argparse
 import logging
 from pathlib import Path
 
+import matplotlib
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import pandas as pd
 
@@ -13,6 +16,7 @@ logging.basicConfig(
 
 DEFAULT_INPUT_DIR = "rqs_data"
 DEFAULT_OUTPUT_DIR = "graficos_rq1"
+DEFAULT_RQ2_OUTPUT_DIR = "graficos_rq2"
 
 VERSION_BUCKET_ORDER = ["1", "2", "3", "4", "5+"]
 VULN_BUCKET_ORDER = ["1", "2-3", "4-9", "10-19", "20+"]
@@ -93,6 +97,10 @@ def save_plot(fig, output_dir, filename):
     filepath = Path(output_dir) / filename
     fig.tight_layout()
     fig.savefig(filepath, dpi=300, bbox_inches="tight")
+    if filepath.suffix.lower() == ".png":
+        pdf_path = filepath.with_suffix(".pdf")
+        fig.savefig(pdf_path, bbox_inches="tight")
+        logging.info("Gráfico salvo em: %s", pdf_path)
     plt.close(fig)
     logging.info("Gráfico salvo em: %s", filepath)
 
@@ -129,6 +137,11 @@ def prepare_rq1_assoc(rq1_assoc):
     df["db"] = df["db"].astype(str).str.strip()
     df["versionNumber"] = df["versionNumber"].astype(str).str.strip()
     df["cve"] = df["cve"].astype(str).str.strip()
+    if "vuln_purl" in df.columns:
+        df["vuln_purl"] = df["vuln_purl"].astype(str).str.strip()
+        df.loc[df["vuln_purl"].str.lower().isin(["", "nan", "none"]), "vuln_purl"] = pd.NA
+    else:
+        df["vuln_purl"] = pd.NA
 
     df = df[
         df["db"].ne("") &
@@ -138,6 +151,9 @@ def prepare_rq1_assoc(rq1_assoc):
     ].copy()
 
     df["db"] = normalize_db_display_names(df["db"])
+    df["package_release_id"] = (
+        df["vuln_purl"].fillna(df["db"] + "@" + df["versionNumber"])
+    )
 
     return df
 
@@ -145,8 +161,9 @@ def prepare_rq1_assoc(rq1_assoc):
 def build_versions_by_vulnerability_count(rq1_assoc):
     version_level = (
         rq1_assoc
-        .groupby(["db", "versionNumber"], dropna=False)
+        .groupby(["db", "package_release_id"], dropna=False)
         .agg(
+            versionNumber=("versionNumber", "first"),
             vulnerabilities_in_version=("cve", "nunique")
         )
         .reset_index()
@@ -160,7 +177,7 @@ def build_versions_by_vulnerability_count(rq1_assoc):
         version_level
         .groupby(["db", "bucket"], dropna=False)
         .agg(
-            vulnerable_versions=("versionNumber", "nunique")
+            vulnerable_versions=("package_release_id", "nunique")
         )
         .reset_index()
     )
@@ -410,13 +427,20 @@ def main():
         default=DEFAULT_OUTPUT_DIR,
         help="Diretório onde os gráficos serão salvos."
     )
+    parser.add_argument(
+        "--rq2-output-dir",
+        default=DEFAULT_RQ2_OUTPUT_DIR,
+        help="Diretório onde o gráfico de vulnerabilidades por quantidade de versões afetadas será salvo."
+    )
 
     args = parser.parse_args()
 
     input_dir = Path(args.input_dir)
     output_dir = Path(args.output_dir)
+    rq2_output_dir = Path(args.rq2_output_dir)
 
     ensure_output_dir(output_dir)
+    ensure_output_dir(rq2_output_dir)
 
     rq1_assoc = read_csv_required(input_dir / "rq1_associacoes.csv")
     rq1_assoc = prepare_rq1_assoc(rq1_assoc)
@@ -448,7 +472,7 @@ def main():
         bucket_order=VERSION_BUCKET_ORDER,
         output_dir=output_dir,
         filename="rq1_bd_versoes_por_qtd_vulnerabilidades_empilhado_normalizado.png",
-        ylabel="Share of Maven releases with known vulnerabilities",
+        ylabel="Proportion of vulnerable library releases",
         legend_title="Vulnerabilities per release",
         colors=VERSION_BUCKET_COLORS,
         release_denominators=maven_release_denominators,
@@ -457,8 +481,8 @@ def main():
     plot_stacked_bar(
         pivot=vulnerabilities_pivot,
         bucket_order=VULN_BUCKET_ORDER,
-        output_dir=output_dir,
-        filename="rq1_bd_vulnerabilidades_por_qtd_versoes_afetadas_empilhado.png",
+        output_dir=rq2_output_dir,
+        filename="rq2_bd_vulnerabilidades_por_qtd_versoes_afetadas_empilhado.png",
         title="",
         ylabel="Number of vulnerabilities",
         legend_title="Affected releases per vulnerability",

@@ -4,6 +4,9 @@ import argparse
 import logging
 from pathlib import Path
 
+import matplotlib
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import pandas as pd
 
@@ -13,7 +16,7 @@ logging.basicConfig(
 )
 
 DEFAULT_INPUT_FILE = "rqs_data/rq1_dbms.csv"
-DEFAULT_OUTPUT_DIR = "graficos_rq1"
+DEFAULT_OUTPUT_DIR = "graficos_rq3"
 
 
 def normalize_db_display_names(series):
@@ -42,6 +45,10 @@ def save_plot(fig, output_dir, filename):
 
     fig.tight_layout()
     fig.savefig(filepath, dpi=300, bbox_inches="tight")
+    if filepath.suffix.lower() == ".png":
+        pdf_path = filepath.with_suffix(".pdf")
+        fig.savefig(pdf_path, bbox_inches="tight")
+        logging.info("Gráfico salvo em: %s", pdf_path)
 
     plt.close(fig)
 
@@ -104,7 +111,7 @@ def plot_dbms_usage_vs_exposure(rq1_dbms, output_dir):
     plt.barh(
         y_positions,
         filtered["projects_not_affected"],
-        label="Projects not affected",
+        label="Not affected projects",
         color=PROJECT_COLORS["projects_not_affected"],
         edgecolor="black"
     )
@@ -143,13 +150,13 @@ def plot_dbms_usage_vs_exposure(rq1_dbms, output_dir):
     save_plot(
         fig,
         output_dir,
-        "rq1_bd_uso_vs_exposicao.png"
+        "rq3_bd_uso_vs_exposicao.png"
     )
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Gera apenas o gráfico rq1_bd_uso_vs_exposicao."
+        description="Gera apenas o gráfico rq3_bd_uso_vs_exposicao."
     )
 
     parser.add_argument(

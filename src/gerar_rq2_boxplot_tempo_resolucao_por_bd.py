@@ -4,6 +4,9 @@ import logging
 import sqlite3
 from pathlib import Path
 
+import matplotlib
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import pandas as pd
 
@@ -31,6 +34,10 @@ def ensure_dir(path):
 def save_plot(fig, output_dir, filename):
     filepath = Path(output_dir) / filename
     fig.savefig(filepath, dpi=300, bbox_inches="tight")
+    if filepath.suffix.lower() == ".png":
+        pdf_path = filepath.with_suffix(".pdf")
+        fig.savefig(pdf_path, bbox_inches="tight")
+        logging.info("Gráfico salvo em: %s", pdf_path)
     plt.close(fig)
     logging.info("Gráfico salvo em: %s", filepath)
 

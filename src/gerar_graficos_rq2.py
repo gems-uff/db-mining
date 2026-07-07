@@ -27,6 +27,7 @@ DEFAULT_INPUT_DIR = "rqs_data"
 DEFAULT_OUTPUT_DIR = "graficos_rq2"
 DEFAULT_INPUT_FILE = "rq2_exposicoes.csv"
 MIN_PROJECTS_FOR_CDF = 4
+CDF_XLIM_DAYS = (0, 3800)
 
 
 def normalize_db_display_names(df):
@@ -75,12 +76,22 @@ def ensure_output_dir(path):
 def save_plot(fig, output_dir, filename):
     filepath = Path(output_dir) / filename
     fig.savefig(filepath, dpi=300, bbox_inches="tight")
+    if filepath.suffix.lower() == ".png":
+        pdf_path = filepath.with_suffix(".pdf")
+        fig.savefig(pdf_path, bbox_inches="tight")
+        logging.info("Gráfico salvo em: %s", pdf_path)
     plt.close(fig)
     logging.info("Gráfico salvo em: %s", filepath)
 
 
 def prepare_data(df):
-    required_cols = ["db", "project_id", "total_exposure_days"]
+    required_cols = [
+        "db",
+        "project_id",
+        "total_exposure_days",
+        "post_disclosure_days",
+        "post_resolution_days",
+    ]
     missing = [col for col in required_cols if col not in df.columns]
 
     if missing:
@@ -94,13 +105,23 @@ def prepare_data(df):
         df["total_exposure_days"],
         errors="coerce"
     )
+    df["post_disclosure_days"] = pd.to_numeric(
+        df["post_disclosure_days"],
+        errors="coerce"
+    ).fillna(0)
+    df["post_resolution_days"] = pd.to_numeric(
+        df["post_resolution_days"],
+        errors="coerce"
+    ).fillna(0)
 
     df = df.dropna(subset=["db", "project_id", "total_exposure_days"])
 
     df = df[
         df["db"].ne("") &
         df["project_id"].ne("") &
-        (df["total_exposure_days"] >= 0)
+        (df["total_exposure_days"] >= 0) &
+        (df["post_disclosure_days"] >= 0) &
+        (df["post_resolution_days"] >= 0)
     ].copy()
 
     return df
@@ -110,7 +131,11 @@ def aggregate_by_project(df):
     return (
         df
         .groupby(["db", "project_id"], as_index=False)
-        .agg(total_exposure_days=("total_exposure_days", "max"))
+        .agg(
+            total_exposure_days=("total_exposure_days", "max"),
+            post_disclosure_days=("post_disclosure_days", "max"),
+            post_resolution_days=("post_resolution_days", "max"),
+        )
     )
 
 
@@ -119,8 +144,36 @@ def export_project_level_data(df_project, input_dir):
     df_project.to_csv(output_path, index=False)
     logging.info("CSV agregado por projeto salvo em: %s", output_path)
 
+    post_output_path = Path(input_dir) / "rq2_exposicao_pos_divulgacao_por_dbms_por_projeto.csv"
+    df_project[["db", "project_id", "post_disclosure_days"]].to_csv(
+        post_output_path,
+        index=False,
+    )
+    logging.info("CSV pós-divulgação agregado por projeto salvo em: %s", post_output_path)
 
-def plot_cdf_small_multiples_by_project(df_project, output_dir, min_projects=MIN_PROJECTS_FOR_CDF):
+    post_resolution_output_path = (
+        Path(input_dir) / "rq2_exposicao_pos_resolucao_por_dbms_por_projeto.csv"
+    )
+    df_project[["db", "project_id", "post_resolution_days"]].to_csv(
+        post_resolution_output_path,
+        index=False,
+    )
+    logging.info(
+        "CSV pós-resolução agregado por projeto salvo em: %s",
+        post_resolution_output_path,
+    )
+
+
+def plot_cdf_small_multiples_by_project(
+    df_project,
+    output_dir,
+    min_projects=MIN_PROJECTS_FOR_CDF,
+    value_col="total_exposure_days",
+    xlabel="Tempo total de exposição por projeto, dias",
+    filename="rq2_cdf_exposicao_total_por_dbms_por_projeto.png",
+    n_cols=4,
+    xlim=None,
+):
     if df_project.empty:
         logging.warning("Nenhum dado disponível para gerar o CDF.")
         return
@@ -144,7 +197,7 @@ def plot_cdf_small_multiples_by_project(df_project, output_dir, min_projects=MIN
         return
 
     db_order = (
-        df_plot.groupby("db")["total_exposure_days"]
+        df_plot.groupby("db")[value_col]
         .median()
         .sort_values(ascending=False)
         .index
@@ -152,7 +205,6 @@ def plot_cdf_small_multiples_by_project(df_project, output_dir, min_projects=MIN
     )
 
     n_dbs = len(db_order)
-    n_cols = 4
     n_rows = math.ceil(n_dbs / n_cols)
 
     fig, axes = plt.subplots(
@@ -166,7 +218,7 @@ def plot_cdf_small_multiples_by_project(df_project, output_dir, min_projects=MIN
 
     for ax, db in zip(axes, db_order):
         values = (
-            df_plot.loc[df_plot["db"] == db, "total_exposure_days"]
+            df_plot.loc[df_plot["db"] == db, value_col]
             .dropna()
             .sort_values()
         )
@@ -190,6 +242,8 @@ def plot_cdf_small_multiples_by_project(df_project, output_dir, min_projects=MIN
 
         ax.set_title(f"{db} (n={len(values)} projetos)", fontsize=10)
         ax.set_ylim(0, 1.02)
+        if xlim is not None:
+            ax.set_xlim(*xlim)
         ax.grid(True, alpha=0.25)
 
         ax.text(
@@ -203,7 +257,7 @@ def plot_cdf_small_multiples_by_project(df_project, output_dir, min_projects=MIN
     for ax in axes[n_dbs:]:
         ax.axis("off")
 
-    fig.supxlabel("Tempo total de exposição por projeto, dias")
+    fig.supxlabel(xlabel)
     fig.supylabel("Proporção acumulada de projetos")
 
     fig.tight_layout(rect=[0, 0.03, 1, 1])
@@ -211,7 +265,7 @@ def plot_cdf_small_multiples_by_project(df_project, output_dir, min_projects=MIN
     save_plot(
         fig,
         output_dir,
-        "rq2_cdf_exposicao_total_por_dbms_por_projeto.png"
+        filename
     )
 
 def compute_iqr(series):
@@ -309,8 +363,24 @@ def main():
     df_project = aggregate_by_project(df)
 
     export_project_level_data(df_project, input_dir)
-    plot_cdf_small_multiples_by_project(df_project, output_dir)
-    plot_boxplot_by_project(df_project, output_dir)
+    plot_cdf_small_multiples_by_project(
+        df_project,
+        output_dir,
+        value_col="post_disclosure_days",
+        xlabel="Tempo de exposição pós-divulgação por projeto, dias",
+        filename="rq5_cdf_exposicao_pos_divulgacao_por_dbms_por_projeto.png",
+        n_cols=3,
+        xlim=CDF_XLIM_DAYS,
+    )
+    plot_cdf_small_multiples_by_project(
+        df_project,
+        output_dir,
+        value_col="post_resolution_days",
+        xlabel="Tempo de exposição pós-resolução por projeto, dias",
+        filename="rq5_cdf_exposicao_pos_resolucao_por_dbms_por_projeto.png",
+        n_cols=3,
+        xlim=CDF_XLIM_DAYS,
+    )
 
     logging.info("Geração concluída.")
 
