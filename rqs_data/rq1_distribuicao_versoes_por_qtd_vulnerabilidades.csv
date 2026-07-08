@@ -1,6 +1,6 @@
 db,1,2,3,4,5+,total
 Redis,312,0,0,0,0,312
-PostgreSQL,17,6,21,15,14,73
+PostgreSQL,17,9,28,9,10,73
 MySQL,7,1,7,5,37,57
 H2,6,3,40,2,2,53
 Snowflake,10,2,0,1,27,40
@@ -8,7 +8,7 @@ Hazelcast,5,9,17,3,0,34
 SQLite,22,0,0,0,0,22
 HyperSQL,16,0,0,0,0,16
 MSSQL/MicrosoftAzure,16,0,0,0,0,16
-MongoDB,7,0,0,0,0,7
+MongoDB,8,0,0,0,0,8
 Cassandra,1,3,2,0,0,6
 Couchbase,2,0,1,0,0,3
 Ignite,2,0,0,0,1,3

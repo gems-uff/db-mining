@@ -599,7 +599,13 @@ def build_rq2_exposures(rq1_assoc: pd.DataFrame) -> pd.DataFrame:
         return pd.DataFrame()
 
     df = rq1_assoc.copy()
-    for col in ["first_seen_in_project", "last_seen_in_project", "published_at", "last_modified_at"]:
+    for col in [
+        "first_seen_in_project",
+        "last_seen_in_project",
+        "published_at",
+        "last_modified_at",
+        "resolved_at",
+    ]:
         if col in df.columns:
             df[col] = (
                 pd.to_datetime(df[col], errors="coerce", utc=True)
@@ -635,6 +641,8 @@ def build_rq2_exposures(rq1_assoc: pd.DataFrame) -> pd.DataFrame:
         disclosure_dates = group["disclosure_date_used"].dropna()
         disclosure_date = disclosure_dates.min() if not disclosure_dates.empty else pd.NaT
         disclosure_source = group["disclosure_source"].iloc[0]
+        resolution_dates = group["resolved_at"].dropna() if "resolved_at" in group else pd.Series(dtype="datetime64[ns]")
+        resolution_date = resolution_dates.min() if not resolution_dates.empty else pd.NaT
 
         if pd.notna(disclosure_date):
             pre_days = compute_merged_days_before(merged, disclosure_date)
@@ -642,6 +650,11 @@ def build_rq2_exposures(rq1_assoc: pd.DataFrame) -> pd.DataFrame:
         else:
             pre_days = 0.0
             post_days = 0.0
+
+        if pd.notna(resolution_date):
+            post_resolution_days = compute_merged_days_from(merged, resolution_date)
+        else:
+            post_resolution_days = 0.0
 
         records.append({
             "project_id":                  project_id,
@@ -652,9 +665,12 @@ def build_rq2_exposures(rq1_assoc: pd.DataFrame) -> pd.DataFrame:
             "total_exposure_days":         total_days,
             "pre_disclosure_days":         pre_days,
             "post_disclosure_days":        post_days,
+            "post_resolution_days":        post_resolution_days,
             "disclosure_date_used":        disclosure_date,
             "disclosure_source":           disclosure_source,
+            "resolution_date_used":        resolution_date,
             "was_publicly_known_during_use": post_days > 0,
+            "used_after_resolution":       post_resolution_days > 0,
             "used_before_disclosure":      pre_days > 0,
             # Métricas auxiliares para conferência
             "n_cves":                      group["cve"].nunique(),

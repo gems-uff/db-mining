@@ -22,18 +22,58 @@ METRIC_COLUMNS = [
     "propagation_pct",
     "project_exposure_pct",
     "post_resolution_persistence_pct",
-    "post_resolution_lifetime_exposure_pct",
+    "post_resolution_exposure_days_norm",
 ]
 
-RADAR_LABELS = ["RQ1a", "RQ1b", "RQ3", "RQ4", "RQ5"]
+RADAR_LABELS = ["RQ1", "RQ2", "RQ3", "RQ4", "RQ5"]
+
+GROUP_RADAR_LABELS = [
+    "RQ1 = Affected releases",
+    "RQ2 - Long spread CVEs",
+    "RQ3 - Exposed projects",
+    "RQ4 - Vulnerable commits after fix",
+    "RQ5 - Exposure days after fix",
+]
 
 RADAR_LEGEND_TEXT = (
-    "RQ1a: vulnerable library releases | "
-    "RQ1b: long-propagation vulnerabilities | "
+    "RQ1: vulnerable library releases | "
+    "RQ2: long-propagation vulnerabilities | "
     "RQ3: project exposure | "
     "RQ4: post-resolution persistence | "
     "RQ5: post-resolution exposure"
 )
+
+GROUP_RADAR_LEGEND_TEXT = " | ".join(GROUP_RADAR_LABELS)
+
+RADAR_GROUPS = [
+    {
+        "id": "grupo_1_exposicao_multidimensional_ampla",
+        "label": "Group 1: broad multidimensional exposure",
+        "dbms": ["MySQL", "H2"],
+    },
+    {
+        "id": "grupo_2_exposicao_orientada_por_propagacao",
+        "label": "Group 2: propagation-oriented exposure",
+        "dbms": ["PostgreSQL", "Redis", "Snowflake", "SQLite"],
+    },
+    {
+        "id": "grupo_3_exposicao_alta_evidencia_temporal_limitada",
+        "label": "Group 3: high project exposure with limited temporal evidence",
+        "dbms": [
+            "Hazelcast",
+            "HyperSQL",
+            "Cassandra",
+            "MSSQL/MicrosoftAzure",
+            "MongoDB",
+            "Neo4j",
+        ],
+    },
+    {
+        "id": "grupo_4_perfis_influenciados_por_poucos_casos",
+        "label": "Group 4: profiles strongly influenced by few cases",
+        "dbms": ["Ignite", "Couchbase", "HBase"],
+    },
+]
 
 DEFAULT_TARGET_DBMS = [
     "MySQL",
@@ -55,6 +95,12 @@ DEFAULT_TARGET_DBMS = [
 
 DB_DISPLAY_REPLACEMENTS = {
     "MS SQL Server_Microsoft Azure SQL Database": "MSSQL/MicrosoftAzure",
+}
+
+GROUP_LABEL_BY_DBMS = {
+    db: group["label"]
+    for group in RADAR_GROUPS
+    for db in group["dbms"]
 }
 
 
@@ -319,38 +365,34 @@ def calculate_project_exposure(all_usage, vulnerable_usage):
     return result[["db", "project_exposure_pct"]]
 
 
-def calculate_post_resolution_persistence(vulnerable_usage):
+def calculate_post_resolution_persistence_from_activity(path):
     """
     Post Resolution Persistence:
-    vulnerable_commits_after_resolution / total_vulnerable_commits * 100
+    post_resolution_activity_commits / total_activity_commits * 100
 
-    A unidade de commit vulnerável é deduplicada por (db, project_id, version_id).
-    Um commit entra no numerador se ao menos uma CVE associada já possuía
-    resolved_at <= date_commit.
+    Usa a mesma base do gráfico rq4_vulnerable_activity_by_dbms para manter
+    consistência visual entre o gráfico de barras e os radares.
     """
-    df = vulnerable_usage.dropna(subset=["db", "project_id", "version_id", "date_commit"]).copy()
-    df["after_resolution"] = (
-        df["resolved_at"].notna() & (df["date_commit"] >= df["resolved_at"])
-    )
+    activity_path = Path(path)
+    if not activity_path.exists():
+        return pd.DataFrame(columns=["db", "post_resolution_persistence_pct"])
 
-    per_commit = (
-        df.groupby(["db", "project_id", "version_id"], as_index=False)
-        .agg(after_resolution=("after_resolution", "max"))
-    )
+    activity = pd.read_csv(activity_path)
+    required = ["db", "post_resolution", "total"]
+    missing = [column for column in required if column not in activity.columns]
+    if missing:
+        raise ValueError(f"CSV de RQ4 precisa conter as colunas: {missing}")
 
-    result = (
-        per_commit.groupby("db")
-        .agg(
-            total_vulnerable_commits=("version_id", "size"),
-            vulnerable_commits_after_resolution=("after_resolution", "sum"),
-        )
-        .reset_index()
-    )
+    result = activity[required].copy()
+    result["db"] = normalize_db_name(result["db"].astype(str).str.strip())
+    result["post_resolution"] = pd.to_numeric(
+        result["post_resolution"], errors="coerce"
+    ).fillna(0)
+    result["total"] = pd.to_numeric(result["total"], errors="coerce").fillna(0)
+    result = result[result["db"].ne("")].copy()
     result["post_resolution_persistence_pct"] = np.where(
-        result["total_vulnerable_commits"] > 0,
-        result["vulnerable_commits_after_resolution"]
-        / result["total_vulnerable_commits"]
-        * 100,
+        result["total"] > 0,
+        result["post_resolution"] / result["total"] * 100,
         0,
     )
     return result[["db", "post_resolution_persistence_pct"]]
@@ -375,81 +417,55 @@ def interval_days(intervals):
     return sum(max((end - start).days, 0) for start, end in intervals)
 
 
-def calculate_post_resolution_lifetime_exposure(vulnerable_usage, project_lifetimes):
+def calculate_post_resolution_exposure_from_cdf_data(path):
     """
-    Post-resolution Project Lifetime Exposure:
-    Para cada par (projeto, DBMS):
-      post_resolution_exposure_days / project_lifetime_days * 100
+    RQ5 - Post-resolution exposure duration:
+    Usa o mesmo dado do gráfico CDF
+    rq5_cdf_exposicao_pos_resolucao_por_dbms_por_projeto.
 
-    Depois agrega por DBMS usando a mediana.
-    Intervalos sobrepostos no mesmo par (projeto, DBMS) são mesclados antes
-    da soma para evitar dupla contagem.
+    Para cada DBMS, calcula a mediana de post_resolution_days entre pares
+    (projeto, DBMS), incluindo pares com 0 dias. Como radar exige escala
+    comum de 0 a 100, a mediana em dias é normalizada pelo maior valor
+    mediano observado entre os DBMSs.
     """
-    df = vulnerable_usage.dropna(
-        subset=["db", "project_id", "date_commit", "resolved_at"]
-    ).copy()
-
-    raw_intervals = (
-        df.groupby(
-            ["db", "project_id", "file", "version_number", "purl", "cve", "resolved_at"],
-            dropna=False,
+    exposure_path = Path(path)
+    if not exposure_path.exists():
+        return pd.DataFrame(
+            columns=[
+                "db",
+                "post_resolution_exposure_days_median",
+                "post_resolution_exposure_days_norm",
+            ]
         )
-        .agg(usage_start=("date_commit", "min"), usage_end=("date_commit", "max"))
-        .reset_index()
-    )
-    raw_intervals["post_resolution_start"] = raw_intervals[
-        ["usage_start", "resolved_at"]
-    ].max(axis=1)
-    raw_intervals = raw_intervals[
-        raw_intervals["usage_end"] > raw_intervals["post_resolution_start"]
+
+    exposure = pd.read_csv(exposure_path)
+    required = ["db", "project_id", "post_resolution_days"]
+    missing = [column for column in required if column not in exposure.columns]
+    if missing:
+        raise ValueError(f"CSV de RQ5 precisa conter as colunas: {missing}")
+
+    exposure = exposure[required].copy()
+    exposure["db"] = normalize_db_name(exposure["db"].astype(str).str.strip())
+    exposure["post_resolution_days"] = pd.to_numeric(
+        exposure["post_resolution_days"], errors="coerce"
+    ).fillna(0)
+    exposure = exposure[
+        exposure["db"].ne("")
+        & exposure["project_id"].notna()
+        & (exposure["post_resolution_days"] >= 0)
     ].copy()
 
-    project_lifetimes = project_lifetimes.copy()
-    project_lifetimes["project_lifetime_days"] = (
-        project_lifetimes["last_observed_commit_date"]
-        - project_lifetimes["first_observed_commit_date"]
-    ).dt.days
-
-    records = []
-    for (db, project_id), group in raw_intervals.groupby(["db", "project_id"]):
-        intervals = [
-            (row.post_resolution_start, row.usage_end)
-            for row in group.itertuples(index=False)
-            if pd.notna(row.post_resolution_start) and pd.notna(row.usage_end)
-        ]
-        merged = merge_intervals(intervals)
-        exposure_days = interval_days(merged)
-        records.append(
-            {
-                "db": db,
-                "project_id": project_id,
-                "post_resolution_exposure_days": exposure_days,
-            }
-        )
-
-    exposure = pd.DataFrame(records)
-    if exposure.empty:
-        return pd.DataFrame(columns=["db", "post_resolution_lifetime_exposure_pct"])
-
-    exposure = exposure.merge(
-        project_lifetimes[["project_id", "project_lifetime_days"]],
-        on="project_id",
-        how="left",
-    )
-    exposure = exposure[exposure["project_lifetime_days"] > 0].copy()
-    exposure["post_resolution_lifetime_exposure_pct"] = (
-        exposure["post_resolution_exposure_days"]
-        / exposure["project_lifetime_days"]
-        * 100
-    )
-    exposure["post_resolution_lifetime_exposure_pct"] = exposure[
-        "post_resolution_lifetime_exposure_pct"
-    ].clip(0, 100)
-
     result = (
-        exposure.groupby("db")["post_resolution_lifetime_exposure_pct"]
+        exposure.groupby("db")["post_resolution_days"]
         .median()
-        .reset_index(name="post_resolution_lifetime_exposure_pct")
+        .reset_index(name="post_resolution_exposure_days_median")
+    )
+
+    max_median = result["post_resolution_exposure_days_median"].max()
+    result["post_resolution_exposure_days_norm"] = np.where(
+        max_median > 0,
+        result["post_resolution_exposure_days_median"] / max_median * 100,
+        0,
     )
     return result
 
@@ -461,13 +477,15 @@ def build_final_table(
     project_lifetimes,
     maven_counts,
     target_dbms,
+    rq4_activity_path,
+    rq5_exposure_path,
 ):
     metrics = [
         calculate_vulnerable_releases(vulnerable_usage, maven_counts),
         calculate_propagation(vulnerability_versions),
         calculate_project_exposure(all_usage, vulnerable_usage),
-        calculate_post_resolution_persistence(vulnerable_usage),
-        calculate_post_resolution_lifetime_exposure(vulnerable_usage, project_lifetimes),
+        calculate_post_resolution_persistence_from_activity(rq4_activity_path),
+        calculate_post_resolution_exposure_from_cdf_data(rq5_exposure_path),
     ]
 
     dbs = pd.DataFrame({"db": target_dbms, "target_order": range(len(target_dbms))})
@@ -476,7 +494,9 @@ def build_final_table(
         final = final.merge(metric, on="db", how="left")
 
     final[METRIC_COLUMNS] = final[METRIC_COLUMNS].fillna(0).clip(lower=0, upper=100)
-    return final.sort_values("target_order").drop(columns=["target_order"])
+    final["profile_group"] = final["db"].map(GROUP_LABEL_BY_DBMS).fillna("")
+    cols = ["db", "profile_group"] + METRIC_COLUMNS + ["target_order"]
+    return final[cols].sort_values("target_order").drop(columns=["target_order"])
 
 
 def radar_angles():
@@ -548,10 +568,13 @@ def register_pentagonal_radar_projection():
 PENTAGONAL_ANGLES = register_pentagonal_radar_projection()
 
 
-def setup_radar_axis(ax):
+def setup_radar_axis(ax, labels=None, label_fontsize=9):
+    if labels is None:
+        labels = RADAR_LABELS
+
     angles = radar_angles()
     ax.set_xticks(angles[:-1])
-    ax.set_xticklabels(RADAR_LABELS, fontsize=9)
+    ax.set_xticklabels(labels, fontsize=label_fontsize)
     ax.set_ylim(0, 100)
     ax.set_yticks([20, 40, 60, 80, 100])
     ax.set_yticklabels(["20", "40", "60", "80", "100"], fontsize=8)
@@ -628,6 +651,62 @@ def generate_small_multiples_radar(df, output_dir):
     for ext in ("png", "pdf"):
         fig.savefig(
             Path(output_dir) / f"radar_mini_radares_dbms_pos_resolucao.{ext}",
+            dpi=300,
+            bbox_inches="tight",
+        )
+    plt.close(fig)
+
+
+def generate_group_radar(df, output_dir, group):
+    db_order = group["dbms"]
+    plot_df = (
+        df[df["db"].isin(db_order)]
+        .assign(_order=lambda data: data["db"].map({db: i for i, db in enumerate(db_order)}))
+        .sort_values("_order")
+        .drop(columns=["_order"])
+    )
+    if plot_df.empty:
+        return
+
+    n_cols = min(len(plot_df), 3)
+    n_rows = int(np.ceil(len(plot_df) / n_cols))
+    angles = radar_angles()
+
+    fig, axes = plt.subplots(
+        n_rows,
+        n_cols,
+        figsize=(n_cols * 2.9, n_rows * 3.05),
+        subplot_kw={"projection": "polar"},
+    )
+    axes = np.asarray(axes).reshape(-1)
+
+    for ax, (_, row) in zip(axes, plot_df.iterrows()):
+        values = row[METRIC_COLUMNS].astype(float).to_numpy()
+        values = np.concatenate([values, values[:1]])
+
+        setup_radar_axis(ax)
+        ax.set_yticks([50, 100])
+        ax.set_yticklabels(["50", "100"], fontsize=7)
+        ax.plot(angles, values, linewidth=1.5, color="#1c4587")
+        ax.fill(angles, values, alpha=0.22, color="#6fa8dc")
+        ax.set_title(row["db"], fontsize=11, pad=11)
+
+    for ax in axes[len(plot_df):]:
+        ax.set_visible(False)
+
+    fig.text(
+        0.5,
+        0.015,
+        GROUP_RADAR_LEGEND_TEXT,
+        ha="center",
+        va="bottom",
+        fontsize=8,
+    )
+    fig.tight_layout(rect=[0, 0.08, 1, 1])
+
+    for ext in ("png", "pdf"):
+        fig.savefig(
+            Path(output_dir) / f"radar_{group['id']}.{ext}",
             dpi=300,
             bbox_inches="tight",
         )
@@ -745,6 +824,8 @@ def generate_all_radars(df, output_dir):
     output_path.mkdir(parents=True, exist_ok=True)
 
     generate_small_multiples_radar(df, output_path)
+    for group in RADAR_GROUPS:
+        generate_group_radar(df, output_path, group)
 
 
 def cleanup_previous_radars(output_dir):
@@ -771,6 +852,8 @@ def cleanup_previous_radars(output_dir):
         "radar_comparativo_principais_dbms_pentagonal.pdf",
         "radar_comparativo_principais_dbms_pos_resolucao_pentagonal.png",
         "radar_comparativo_principais_dbms_pos_resolucao_pentagonal.pdf",
+        "radar_grupo_*.png",
+        "radar_grupo_*.pdf",
     ]
     for pattern in patterns:
         for path in output_path.glob(pattern):
@@ -791,6 +874,22 @@ def parse_args():
         "--dbms-filter",
         default="rqs_data/rq1_release_cve_resolution_buckets_by_dbms.csv",
         help="CSV com coluna db indicando os DBMSs que devem entrar nos radares.",
+    )
+    parser.add_argument(
+        "--rq4-vulnerable-activity",
+        default="rqs_data/rq1_vulnerable_activity_by_dbms_periodos.csv",
+        help=(
+            "CSV usado no gráfico rq4_vulnerable_activity_by_dbms, "
+            "com post_resolution e total por DBMS."
+        ),
+    )
+    parser.add_argument(
+        "--rq5-post-resolution-exposure",
+        default="rqs_data/rq2_exposicao_pos_resolucao_por_dbms_por_projeto.csv",
+        help=(
+            "CSV usado no gráfico rq5_cdf_exposicao_pos_resolucao_por_dbms_por_projeto, "
+            "com post_resolution_days por par projeto-DBMS."
+        ),
     )
     parser.add_argument("--output-dir", default="graficos_discussão")
     return parser.parse_args()
@@ -814,6 +913,8 @@ def main():
         project_lifetimes,
         maven_counts,
         target_dbms,
+        args.rq4_vulnerable_activity,
+        args.rq5_post_resolution_exposure,
     )
 
     cleanup_previous_radars(output_dir)

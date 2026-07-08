@@ -1,6 +1,6 @@
 db,1,2-3,4-9,10-19,20+,total
-PostgreSQL,0,3,1,0,7,11
 MySQL,0,0,0,2,8,10
+PostgreSQL,0,3,1,0,6,10
 Hazelcast,0,1,3,1,2,7
 Ignite,5,1,0,0,0,6
 Snowflake,0,0,0,1,5,6

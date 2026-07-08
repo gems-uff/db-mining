@@ -20,7 +20,7 @@ project_id,project,db,post_disclosure,post_resolution,pre_disclosure,total_activ
 11,nifi,Hazelcast,0,27,846,873
 11,nifi,Ignite,0,311,0,311
 11,nifi,MySQL,40,54,811,905
-11,nifi,PostgreSQL,0,0,3166,3166
+11,nifi,PostgreSQL,17,0,3149,3166
 11,nifi,Redis,0,2727,374,3101
 11,nifi,Snowflake,0,2,2734,2736
 14,tinkerpop,H2,0,2711,1169,3880
@@ -41,7 +41,7 @@ project_id,project,db,post_disclosure,post_resolution,pre_disclosure,total_activ
 27,ebean,H2,590,1830,3479,5899
 27,ebean,HyperSQL,0,0,4348,4348
 27,ebean,MS SQL Server_Microsoft Azure SQL Database,0,18,1456,1474
-27,ebean,MySQL,102,2090,3676,5868
+27,ebean,MySQL,109,2090,3669,5868
 27,ebean,PostgreSQL,11,1580,4277,5868
 27,ebean,Redis,0,0,651,651
 27,ebean,SQLite,0,12,5158,5170
@@ -51,7 +51,7 @@ project_id,project,db,post_disclosure,post_resolution,pre_disclosure,total_activ
 31,flyway,Ignite,0,0,399,399
 31,flyway,MS SQL Server_Microsoft Azure SQL Database,0,0,510,510
 31,flyway,MySQL,49,203,498,750
-31,flyway,PostgreSQL,5,108,1006,1119
+31,flyway,PostgreSQL,5,91,1023,1119
 31,flyway,SQLite,0,2,1104,1106
 31,flyway,Snowflake,0,2,750,752
 32,geotools,H2,0,1570,0,1570
@@ -59,7 +59,7 @@ project_id,project,db,post_disclosure,post_resolution,pre_disclosure,total_activ
 32,geotools,MS SQL Server_Microsoft Azure SQL Database,0,5,1325,1330
 32,geotools,MongoDB,0,213,256,469
 32,geotools,MySQL,6,597,699,1302
-32,geotools,PostgreSQL,0,59,1511,1570
+32,geotools,PostgreSQL,0,21,1549,1570
 32,geotools,SQLite,0,318,674,992
 33,guice,HyperSQL,0,129,821,950
 37,pitest,Hazelcast,0,0,71,71
@@ -74,7 +74,7 @@ project_id,project,db,post_disclosure,post_resolution,pre_disclosure,total_activ
 44,DependencyCheck,Hazelcast,0,2492,2658,5150
 46,jooby,H2,1568,109,776,2453
 46,jooby,Hazelcast,0,0,385,385
-46,jooby,MySQL,0,450,2631,3081
+46,jooby,MySQL,13,450,2618,3081
 46,jooby,Redis,0,10,1324,1334
 47,JSqlParser,H2,36,314,205,555
 48,tablesaw,H2,351,276,1028,1655
@@ -82,7 +82,7 @@ project_id,project,db,post_disclosure,post_resolution,pre_disclosure,total_activ
 49,jbpm,MySQL,0,578,71,649
 49,jbpm,PostgreSQL,0,215,434,649
 50,killbill,H2,32,468,1790,2290
-50,killbill,MySQL,0,1222,1683,2905
+50,killbill,MySQL,78,1222,1605,2905
 50,killbill,PostgreSQL,0,429,871,1300
 50,killbill,Redis,0,128,315,443
 51,liquibase,H2,518,354,802,1674
@@ -154,5 +154,5 @@ project_id,project,db,post_disclosure,post_resolution,pre_disclosure,total_activ
 80,Saturn,H2,508,146,718,1372
 80,Saturn,MySQL,0,1512,0,1512
 82,xxl-job,MySQL,0,1190,324,1514
-83,maxwell,MySQL,50,893,460,1403
+83,maxwell,MySQL,55,893,455,1403
 83,maxwell,Redis,0,111,379,490
