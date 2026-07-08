@@ -49,9 +49,9 @@ def main() -> None:
     history_df = deduplicate_history_for_segments(base_df)
     summary_df = build_summary(history_df)
 
-    base_path = output_dir / "base_rqs.csv"
-    history_path = output_dir / "historico_dedup.csv"
-    summary_path = output_dir / "resumo_base.csv"
+    base_path = output_dir / "vulnerability_analysis_base.csv"
+    history_path = output_dir / "vulnerability_history_deduplicated.csv"
+    summary_path = output_dir / "vulnerability_analysis_base_summary.csv"
 
     base_df.to_csv(base_path, index=False)
     history_df.to_csv(history_path, index=False)

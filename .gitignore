@@ -115,6 +115,7 @@ venv.bak/
 
 # Generated files
 .idea/**/contentModel.xml
+rqs_data/vulnerability_analysis_base.csv
 
 # Sensitive or high-churn files
 .idea/**/dataSources/
@@ -214,4 +215,3 @@ rqs_data/rq1_base_vulnerabilidades_cruzadas.csv
 dbmining_backup_before_resolved_at_propagation_20260618.sqlite
 dbmining_backup_before_resolution_update_20260613.sqlite.gz
 dbmining.sqlite.zip
-

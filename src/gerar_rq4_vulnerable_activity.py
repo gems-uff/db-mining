@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from gerar_rq1_intervalos_uso_vulnerabilidade import (
+from gerar_rq4_vulnerable_usage_intervals import (
     add_overlap_metrics,
     build_usage_segments,
     build_vulnerability_catalog,
@@ -251,7 +251,7 @@ def plot_summary(pivot, output_dir):
         )
 
     fig.tight_layout(rect=[0, 0.14, 1, 1])
-    output = Path(output_dir) / "rq4_vulnerable_activity_by_dbms.png"
+    output = Path(output_dir) / "rq4_vulnerable_activity_periods_by_dbms.png"
     output.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(output, dpi=300, bbox_inches="tight")
     pdf_output = output.with_suffix(".pdf")
@@ -270,18 +270,18 @@ def export_data(
     input_dir,
 ):
     input_dir = Path(input_dir)
-    overlap.to_csv(input_dir / "rq1_intervalos_uso_vulnerabilidade.csv", index=False)
+    overlap.to_csv(input_dir / "rq4_vulnerable_usage_intervals.csv", index=False)
     segment_intervals.to_csv(
-        input_dir / "rq1_vulnerable_activity_segment_intervals.csv", index=False
+        input_dir / "rq4_vulnerable_activity_segment_intervals.csv", index=False
     )
     project_intervals.to_csv(
-        input_dir / "rq1_vulnerable_activity_project_db_intervals.csv", index=False
+        input_dir / "rq4_vulnerable_activity_project_db_intervals.csv", index=False
     )
     commit_activity.to_csv(
-        input_dir / "rq1_vulnerable_activity_commit_activity.csv", index=False
+        input_dir / "rq4_vulnerable_activity_by_commit.csv", index=False
     )
     pivot.reset_index().to_csv(
-        input_dir / "rq1_vulnerable_activity_by_dbms_periodos.csv", index=False
+        input_dir / "rq4_vulnerable_activity_periods_by_dbms.csv", index=False
     )
 
     project_summary = (
@@ -301,20 +301,20 @@ def export_data(
         PERIOD_ORDER
     ].sum(axis=1)
     project_summary.to_csv(
-        input_dir / "rq1_vulnerable_activity_by_project_dbms.csv", index=False
+        input_dir / "rq4_vulnerable_activity_periods_by_project_dbms.csv", index=False
     )
 
 
 def parse_args():
     parser = argparse.ArgumentParser(
         description=(
-            "Gera rq4_vulnerable_activity_by_dbms usando intervalos reais de "
+            "Gera rq4_vulnerable_activity_periods_by_dbms usando intervalos reais de "
             "uso das versões e sua sobreposição com divulgação/correção."
         )
     )
     parser.add_argument("--input-dir", default="rqs_data")
     parser.add_argument("--output-dir", default="graficos_rq4")
-    parser.add_argument("--input-file", default="base_rqs.csv")
+    parser.add_argument("--input-file", default="vulnerability_analysis_base.csv")
     return parser.parse_args()
 
 

@@ -783,8 +783,8 @@ def export_rq2_csv_results(
 ) -> None:
     ensure_dir(csv_output_dir)
 
-    rq2_path = csv_output_dir / "rq2_exposicoes.csv"
-    rq2_summary_path = csv_output_dir / "rq2_resumo.csv"
+    rq2_path = csv_output_dir / "rq5_exposure_intervals_by_project_dbms.csv"
+    rq2_summary_path = csv_output_dir / "rq5_exposure_summary_by_dbms.csv"
 
     rq2_df.to_csv(rq2_path, index=False)
     rq2_summary.to_csv(rq2_summary_path, index=False)

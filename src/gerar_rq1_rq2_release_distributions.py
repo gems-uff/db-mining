@@ -130,7 +130,7 @@ def prepare_rq1_assoc(rq1_assoc):
 
     missing = [col for col in required_cols if col not in rq1_assoc.columns]
     if missing:
-        raise ValueError(f"rq1_associacoes.csv deve conter as colunas: {missing}")
+        raise ValueError(f"vulnerability_release_project_associations.csv deve conter as colunas: {missing}")
 
     df = rq1_assoc.copy()
 
@@ -403,8 +403,8 @@ def export_intermediate_tables(
     vulnerabilities_pivot,
     input_dir
 ):
-    versions_out = Path(input_dir) / "rq1_distribuicao_versoes_por_qtd_vulnerabilidades.csv"
-    vulnerabilities_out = Path(input_dir) / "rq1_distribuicao_vulnerabilidades_por_qtd_versoes.csv"
+    versions_out = Path(input_dir) / "rq1_affected_releases_by_vulnerability_count.csv"
+    vulnerabilities_out = Path(input_dir) / "rq2_vulnerabilities_by_affected_release_count.csv"
 
     versions_pivot.reset_index().to_csv(versions_out, index=False)
     vulnerabilities_pivot.reset_index().to_csv(vulnerabilities_out, index=False)
@@ -420,7 +420,7 @@ def main():
     parser.add_argument(
         "--input-dir",
         default=DEFAULT_INPUT_DIR,
-        help="Diretório com rq1_associacoes.csv."
+        help="Diretório com vulnerability_release_project_associations.csv."
     )
     parser.add_argument(
         "--output-dir",
@@ -442,7 +442,7 @@ def main():
     ensure_output_dir(output_dir)
     ensure_output_dir(rq2_output_dir)
 
-    rq1_assoc = read_csv_required(input_dir / "rq1_associacoes.csv")
+    rq1_assoc = read_csv_required(input_dir / "vulnerability_release_project_associations.csv")
     rq1_assoc = prepare_rq1_assoc(rq1_assoc)
 
     versions_pivot = build_versions_by_vulnerability_count(rq1_assoc)
@@ -459,7 +459,7 @@ def main():
         pivot=versions_pivot,
         bucket_order=VERSION_BUCKET_ORDER,
         output_dir=output_dir,
-        filename="rq1_bd_versoes_por_qtd_vulnerabilidades_empilhado.png",
+        filename="rq1_affected_releases_by_vulnerability_count.png",
         title="",
         ylabel="Number of vulnerable releases",
         legend_title="Vulnerabilities per release",
@@ -471,7 +471,7 @@ def main():
         pivot=versions_pivot,
         bucket_order=VERSION_BUCKET_ORDER,
         output_dir=output_dir,
-        filename="rq1_bd_versoes_por_qtd_vulnerabilidades_empilhado_normalizado.png",
+        filename="rq1_affected_releases_share_by_vulnerability_count.png",
         ylabel="Proportion of vulnerable library releases",
         legend_title="Vulnerabilities per release",
         colors=VERSION_BUCKET_COLORS,
@@ -482,7 +482,7 @@ def main():
         pivot=vulnerabilities_pivot,
         bucket_order=VULN_BUCKET_ORDER,
         output_dir=rq2_output_dir,
-        filename="rq2_bd_vulnerabilidades_por_qtd_versoes_afetadas_empilhado.png",
+        filename="rq2_vulnerabilities_by_affected_release_count.png",
         title="",
         ylabel="Number of vulnerabilities",
         legend_title="Affected releases per vulnerability",

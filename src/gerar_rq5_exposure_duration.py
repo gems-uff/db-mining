@@ -2,13 +2,21 @@
 import argparse
 import logging
 import math
+import os
+import tempfile
 from pathlib import Path
 
+os.environ.setdefault("MPLCONFIGDIR", str(Path(tempfile.gettempdir()) / "matplotlib"))
+os.environ.setdefault("XDG_CACHE_HOME", tempfile.gettempdir())
+
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+
+from rq_pipeline_common import build_rq2_exposures, build_rq2_summary
 
 logging.basicConfig(
     level=logging.INFO,
@@ -16,17 +24,10 @@ logging.basicConfig(
 )
 
 DEFAULT_INPUT_DIR = "rqs_data"
-DEFAULT_OUTPUT_DIR = "graficos_rq2"
-DEFAULT_INPUT_FILE = "rq2_exposicoes.csv"
+DEFAULT_OUTPUT_DIR = "graficos_rq5"
+DEFAULT_INPUT_FILE = "rq5_exposure_intervals_by_project_dbms.csv"
 MIN_PROJECTS_FOR_CDF = 4
 CDF_XLIM_DAYS = (0, 3800)
-MIN_PROJECTS_FOR_BOXPLOT = 2
-
-# Nome da coluna que identifica o commit no seu CSV.
-# Ajuste se o nome for diferente (ex: "commit_id", "sha", "revision", etc.)
-# Nome da coluna que identifica o commit no seu CSV.
-# Ajuste se o nome for diferente (ex: "commit_id", "sha", "revision", etc.)
-COMMIT_COL = "commit_hash"
 
 
 def normalize_db_display_names(df):
@@ -43,6 +44,28 @@ def read_csv_required(path):
     if not path.exists():
         raise FileNotFoundError(f"Arquivo não encontrado: {path}")
     return pd.read_csv(path)
+
+
+def ensure_rq5_input_exists(input_path, input_dir):
+    if input_path.exists():
+        return
+
+    rq1_path = Path(input_dir) / "vulnerability_release_project_associations.csv"
+    logging.info(
+        "%s não encontrado. Gerando a partir de %s.",
+        input_path,
+        rq1_path,
+    )
+
+    rq1_assoc = read_csv_required(rq1_path)
+    rq2_df = build_rq2_exposures(rq1_assoc)
+    rq2_summary = build_rq2_summary(rq2_df)
+
+    rq2_df.to_csv(input_path, index=False)
+    rq2_summary.to_csv(Path(input_dir) / "rq5_exposure_summary_by_dbms.csv", index=False)
+
+    logging.info("CSV gerado: %s", input_path)
+    logging.info("CSV gerado: %s", Path(input_dir) / "rq5_exposure_summary_by_dbms.csv")
 
 
 def ensure_output_dir(path):
@@ -62,11 +85,6 @@ def save_plot(fig, output_dir, filename):
 
 
 def prepare_data(df):
-    """
-    O CSV gerado pelo pipeline já tem uma linha por (project_id × db),
-    com total_exposure_days calculado via merge de intervalos (sem dupla contagem).
-    Aqui apenas validamos, normalizamos tipos e removemos linhas inválidas.
-    """
     required_cols = [
         "db",
         "project_id",
@@ -77,10 +95,7 @@ def prepare_data(df):
     missing = [col for col in required_cols if col not in df.columns]
 
     if missing:
-        raise ValueError(
-            f"O CSV precisa conter as colunas: {missing}\n"
-            f"Colunas disponíveis: {df.columns.tolist()}"
-        )
+        raise ValueError(f"O CSV precisa conter as colunas: {missing}")
 
     df = normalize_db_display_names(df)
 
@@ -113,13 +128,7 @@ def prepare_data(df):
 
 
 def aggregate_by_project(df):
-    """
-    O CSV de entrada já tem uma linha por (project_id × db) com
-    total_exposure_days correto (intervalos mesclados, sem dupla contagem).
-    Esta função apenas garante que não haja duplicatas residuais antes de plotar.
-    """
-    n_before = len(df)
-    df_project = (
+    return (
         df
         .groupby(["db", "project_id"], as_index=False)
         .agg(
@@ -128,20 +137,14 @@ def aggregate_by_project(df):
             post_resolution_days=("post_resolution_days", "max"),
         )
     )
-    logging.info(
-        "Linhas no CSV: %d | Pares (projeto × DBMS) para plotar: %d",
-        n_before,
-        len(df_project),
-    )
-    return df_project
 
 
 def export_project_level_data(df_project, input_dir):
-    output_path = Path(input_dir) / "rq2_exposicao_total_por_dbms_por_projeto.csv"
+    output_path = Path(input_dir) / "rq5_total_exposure_days_by_project_dbms.csv"
     df_project.to_csv(output_path, index=False)
     logging.info("CSV agregado por projeto salvo em: %s", output_path)
 
-    post_output_path = Path(input_dir) / "rq2_exposicao_pos_divulgacao_por_dbms_por_projeto.csv"
+    post_output_path = Path(input_dir) / "rq5_post_disclosure_exposure_days_by_project_dbms.csv"
     df_project[["db", "project_id", "post_disclosure_days"]].to_csv(
         post_output_path,
         index=False,
@@ -149,7 +152,7 @@ def export_project_level_data(df_project, input_dir):
     logging.info("CSV pós-divulgação agregado por projeto salvo em: %s", post_output_path)
 
     post_resolution_output_path = (
-        Path(input_dir) / "rq2_exposicao_pos_resolucao_por_dbms_por_projeto.csv"
+        Path(input_dir) / "rq5_post_fix_exposure_days_by_project_dbms.csv"
     )
     df_project[["db", "project_id", "post_resolution_days"]].to_csv(
         post_resolution_output_path,
@@ -166,8 +169,8 @@ def plot_cdf_small_multiples_by_project(
     output_dir,
     min_projects=MIN_PROJECTS_FOR_CDF,
     value_col="total_exposure_days",
-    xlabel="Total exposure time per project, days",
-    filename="rq2_cdf_exposicao_total_por_dbms_por_projeto.png",
+    xlabel="Tempo total de exposição por projeto, dias",
+    filename="rq5_total_exposure_days_cdf_by_dbms.png",
     n_cols=4,
     xlim=None,
 ):
@@ -185,7 +188,9 @@ def plot_cdf_small_multiples_by_project(
             ", ".join(excluded_dbs),
         )
 
-    df_plot = df_project[df_project["db"].isin(project_counts[project_counts >= min_projects].index)].copy()
+    df_plot = df_project[
+        df_project["db"].isin(project_counts[project_counts >= min_projects].index)
+    ].copy()
 
     if df_plot.empty:
         logging.warning("Nenhum DBMS com pelo menos %d projetos para gerar o CDF.", min_projects)
@@ -235,7 +240,7 @@ def plot_cdf_small_multiples_by_project(
             color="gray"
         )
 
-        ax.set_title(f"{db} (n={len(values)} projects)", fontsize=10)
+        ax.set_title(f"{db} (n={len(values)} projetos)", fontsize=10)
         ax.set_ylim(0, 1.02)
         if xlim is not None:
             ax.set_xlim(*xlim)
@@ -244,7 +249,7 @@ def plot_cdf_small_multiples_by_project(
         ax.text(
             0.03,
             0.08,
-            f"median: {median_value:.0f} days",
+            f"mediana: {median_value:.0f} dias",
             transform=ax.transAxes,
             fontsize=8
         )
@@ -253,7 +258,7 @@ def plot_cdf_small_multiples_by_project(
         ax.axis("off")
 
     fig.supxlabel(xlabel)
-    fig.supylabel("Cumulative proportion of projects")
+    fig.supylabel("Proporção acumulada de projetos")
 
     fig.tight_layout(rect=[0, 0.03, 1, 1])
 
@@ -263,48 +268,30 @@ def plot_cdf_small_multiples_by_project(
         filename
     )
 
-
 def compute_iqr(series):
     return series.quantile(0.75) - series.quantile(0.25)
 
 
-def plot_boxplot_by_project(df_project, output_dir, min_projects=MIN_PROJECTS_FOR_BOXPLOT):
+def plot_boxplot_by_project(df_project, output_dir):
     if df_project.empty:
         logging.warning("Nenhum dado disponível para gerar o boxplot.")
         return
 
-    project_counts = df_project.groupby("db")["project_id"].nunique()
-    excluded_dbs = project_counts[project_counts < min_projects].sort_index()
-
-    if not excluded_dbs.empty:
-        logging.info(
-            "DBMS removidos do boxplot por terem menos de %d projetos: %s",
-            min_projects,
-            ", ".join(f"{db} (n={count})" for db, count in excluded_dbs.items()),
-        )
-
-    df_plot = df_project[
-        df_project["db"].isin(project_counts[project_counts >= min_projects].index)
-    ].copy()
-
-    if df_plot.empty:
-        logging.warning("Nenhum DBMS com pelo menos %d projetos para gerar o boxplot.", min_projects)
-        return
-
+    
     db_order = (
-        df_plot.groupby("db")["total_exposure_days"]
-        .apply(compute_iqr)
-        .sort_values(ascending=False)
-        .index
-        .tolist()
-    )
+    df_project.groupby("db")["total_exposure_days"]
+    .apply(compute_iqr)
+    .sort_values(ascending=False)
+    .index
+    .tolist()
+)
 
     grouped_values = []
     labels = []
 
     for db in db_order:
-        values = df_plot.loc[
-            df_plot["db"] == db,
+        values = df_project.loc[
+            df_project["db"] == db,
             "total_exposure_days"
         ].dropna().values
 
@@ -335,8 +322,8 @@ def plot_boxplot_by_project(df_project, output_dir, min_projects=MIN_PROJECTS_FO
         median.set_linewidth(1.5)
 
     ax.set_xlabel("DBMS")
-    ax.set_ylabel("Total exposure time per project, days")
-    ax.set_title("RQ2, distribution of total exposure time per project and DBMS")
+    ax.set_ylabel("Tempo total de exposição por projeto, dias")
+    ax.set_title("RQ5, distribuição do tempo total de exposição por projeto e DBMS")
     ax.grid(True, axis="y", alpha=0.3)
 
     plt.xticks(rotation=45, ha="right")
@@ -346,7 +333,7 @@ def plot_boxplot_by_project(df_project, output_dir, min_projects=MIN_PROJECTS_FO
     save_plot(
         fig,
         output_dir,
-        "rq2_boxplot_exposicao_total_por_dbms_por_projeto.png"
+        "rq5_total_exposure_days_boxplot_by_dbms.png"
     )
 
 
@@ -354,9 +341,7 @@ def main():
     parser = argparse.ArgumentParser(
         description=(
             "Gera CDF por DBMS e boxplot do tempo total de exposição, "
-            "com cada ponto representando um projeto. "
-            "A exposição é calculada somando dias únicos por commit, "
-            "evitando inflação por múltiplos arquivos/vulnerabilidades no mesmo commit."
+            "com cada ponto representando um projeto."
         )
     )
 
@@ -371,6 +356,7 @@ def main():
     input_path = input_dir / args.input_file
 
     ensure_output_dir(output_dir)
+    ensure_rq5_input_exists(input_path, input_dir)
 
     df = read_csv_required(input_path)
     df = prepare_data(df)
@@ -381,8 +367,8 @@ def main():
         df_project,
         output_dir,
         value_col="post_disclosure_days",
-        xlabel="Post-disclosure exposure time per project, days",
-        filename="rq5_cdf_exposicao_pos_divulgacao_por_dbms_por_projeto.png",
+        xlabel="Tempo de exposição pós-divulgação por projeto, dias",
+        filename="rq5_post_disclosure_exposure_days_cdf_by_dbms.png",
         n_cols=3,
         xlim=CDF_XLIM_DAYS,
     )
@@ -390,8 +376,8 @@ def main():
         df_project,
         output_dir,
         value_col="post_resolution_days",
-        xlabel="Post-resolution exposure time per project, days",
-        filename="rq5_cdf_exposicao_pos_resolucao_por_dbms_por_projeto.png",
+        xlabel="Tempo de exposição pós-resolução por projeto, dias",
+        filename="rq5_post_fix_exposure_days_cdf_by_dbms.png",
         n_cols=3,
         xlim=CDF_XLIM_DAYS,
     )

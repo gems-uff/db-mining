@@ -14,7 +14,7 @@ logging.basicConfig(
     format="%(asctime)s | %(levelname)s | %(message)s",
 )
 
-DEFAULT_INPUT_FILE = "rqs_data/rq1_associacoes.csv"
+DEFAULT_INPUT_FILE = "rqs_data/vulnerability_release_project_associations.csv"
 DEFAULT_DATA_DIR = "rqs_data"
 DEFAULT_OUTPUT_DIR = "graficos_rq4"
 
@@ -254,7 +254,7 @@ def plot_bucket_distribution(bucket_table, output_dir):
     ax.legend(loc="lower center", bbox_to_anchor=(0.5, -0.32), ncol=3, frameon=True)
     fig.tight_layout(rect=[0, 0.16, 1, 1])
 
-    output = Path(output_dir) / "rq4_release_cve_resolution_distribution_by_dbms.png"
+    output = Path(output_dir) / "rq4_release_cve_resolution_timing_by_dbms.png"
     fig.savefig(output, dpi=300, bbox_inches="tight")
     pdf_output = output.with_suffix(".pdf")
     fig.savefig(pdf_output, bbox_inches="tight")
@@ -266,15 +266,15 @@ def plot_bucket_distribution(bucket_table, output_dir):
 def export_outputs(release_cve, summary, bucket_table, data_dir):
     data_dir = Path(data_dir)
     release_cve.to_csv(
-        data_dir / "rq1_release_cve_resolution_dates.csv",
+        data_dir / "rq4_release_cve_resolution_dates.csv",
         index=False,
     )
     summary.to_csv(
-        data_dir / "rq1_release_cve_resolution_summary_by_dbms.csv",
+        data_dir / "rq4_release_cve_resolution_summary_by_dbms.csv",
         index=False,
     )
     bucket_table.to_csv(
-        data_dir / "rq1_release_cve_resolution_buckets_by_dbms.csv",
+        data_dir / "rq4_release_cve_resolution_buckets_by_dbms.csv",
         index=False,
     )
 

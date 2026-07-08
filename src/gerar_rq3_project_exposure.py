@@ -15,7 +15,7 @@ logging.basicConfig(
     format="%(asctime)s | %(levelname)s | %(message)s"
 )
 
-DEFAULT_INPUT_FILE = "rqs_data/rq1_dbms.csv"
+DEFAULT_INPUT_FILE = "rqs_data/rq3_dbms_project_exposure_summary.csv"
 DEFAULT_OUTPUT_DIR = "graficos_rq3"
 
 
@@ -57,7 +57,7 @@ def save_plot(fig, output_dir, filename):
 
 def plot_dbms_usage_vs_exposure(rq1_dbms, output_dir):
     if rq1_dbms.empty:
-        logging.warning("rq1_dbms.csv está vazio.")
+        logging.warning("rq3_dbms_project_exposure_summary.csv está vazio.")
         return
 
     rq1_dbms = prepare_numeric(
@@ -80,7 +80,7 @@ def plot_dbms_usage_vs_exposure(rq1_dbms, output_dir):
 
     if missing:
         raise ValueError(
-            f"rq1_dbms.csv deve conter as colunas: {missing}"
+            f"rq3_dbms_project_exposure_summary.csv deve conter as colunas: {missing}"
         )
 
     filtered = rq1_dbms[
@@ -150,19 +150,19 @@ def plot_dbms_usage_vs_exposure(rq1_dbms, output_dir):
     save_plot(
         fig,
         output_dir,
-        "rq3_bd_uso_vs_exposicao.png"
+        "rq3_project_exposure_vs_dbms_usage.png"
     )
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Gera apenas o gráfico rq3_bd_uso_vs_exposicao."
+        description="Gera apenas o gráfico rq3_project_exposure_vs_dbms_usage."
     )
 
     parser.add_argument(
         "--input-file",
         default=DEFAULT_INPUT_FILE,
-        help="Arquivo rq1_dbms.csv"
+        help="Arquivo rq3_dbms_project_exposure_summary.csv"
     )
 
     parser.add_argument(

@@ -47,17 +47,17 @@ GROUP_RADAR_LEGEND_TEXT = " | ".join(GROUP_RADAR_LABELS)
 
 RADAR_GROUPS = [
     {
-        "id": "grupo_1_exposicao_multidimensional_ampla",
+        "id": "group_1_broad_multidimensional_exposure",
         "label": "Group 1: broad multidimensional exposure",
         "dbms": ["MySQL", "H2"],
     },
     {
-        "id": "grupo_2_exposicao_orientada_por_propagacao",
+        "id": "group_2_propagation_oriented_exposure",
         "label": "Group 2: propagation-oriented exposure",
         "dbms": ["PostgreSQL", "Redis", "Snowflake", "SQLite"],
     },
     {
-        "id": "grupo_3_exposicao_alta_evidencia_temporal_limitada",
+        "id": "group_3_high_project_exposure_limited_temporal_evidence",
         "label": "Group 3: high project exposure with limited temporal evidence",
         "dbms": [
             "Hazelcast",
@@ -69,7 +69,7 @@ RADAR_GROUPS = [
         ],
     },
     {
-        "id": "grupo_4_perfis_influenciados_por_poucos_casos",
+        "id": "group_4_few_case_influenced_profiles",
         "label": "Group 4: profiles strongly influenced by few cases",
         "dbms": ["Ignite", "Couchbase", "HBase"],
     },
@@ -268,7 +268,7 @@ def load_target_dbms(path):
     Define quais DBMSs entram nos radares.
 
     Por padrão, reutiliza a lista do gráfico
-    rq1_release_cve_resolution_distribution_by_dbms, isto é, apenas os DBMSs
+    rq4_release_cve_resolution_timing_by_dbms, isto é, apenas os DBMSs
     com registros DBMS-release-CVE no recorte de resolução.
     """
     filter_path = Path(path)
@@ -370,7 +370,7 @@ def calculate_post_resolution_persistence_from_activity(path):
     Post Resolution Persistence:
     post_resolution_activity_commits / total_activity_commits * 100
 
-    Usa a mesma base do gráfico rq4_vulnerable_activity_by_dbms para manter
+    Usa a mesma base do gráfico rq4_vulnerable_activity_periods_by_dbms para manter
     consistência visual entre o gráfico de barras e os radares.
     """
     activity_path = Path(path)
@@ -421,7 +421,7 @@ def calculate_post_resolution_exposure_from_cdf_data(path):
     """
     RQ5 - Post-resolution exposure duration:
     Usa o mesmo dado do gráfico CDF
-    rq5_cdf_exposicao_pos_resolucao_por_dbms_por_projeto.
+    rq5_post_fix_exposure_days_cdf_by_dbms.
 
     Para cada DBMS, calcula a mediana de post_resolution_days entre pares
     (projeto, DBMS), incluindo pares com 0 dias. Como radar exige escala
@@ -650,7 +650,7 @@ def generate_small_multiples_radar(df, output_dir):
 
     for ext in ("png", "pdf"):
         fig.savefig(
-            Path(output_dir) / f"radar_mini_radares_dbms_pos_resolucao.{ext}",
+            Path(output_dir) / f"vulnerability_profile_radar_all_dbms.{ext}",
             dpi=300,
             bbox_inches="tight",
         )
@@ -706,113 +706,7 @@ def generate_group_radar(df, output_dir, group):
 
     for ext in ("png", "pdf"):
         fig.savefig(
-            Path(output_dir) / f"radar_{group['id']}.{ext}",
-            dpi=300,
-            bbox_inches="tight",
-        )
-    plt.close(fig)
-
-
-def generate_small_multiples_pentagonal_radar(df, output_dir):
-    plot_df = df.copy()
-    if plot_df.empty:
-        return
-
-    n_cols = 5
-    n_rows = int(np.ceil(len(plot_df) / n_cols))
-
-    fig, axes = plt.subplots(
-        n_rows,
-        n_cols,
-        figsize=(n_cols * 2.45, n_rows * 2.65),
-        subplot_kw={"projection": "radar_pentagonal"},
-    )
-    axes = np.asarray(axes).reshape(-1)
-
-    for ax, (_, row) in zip(axes, plot_df.iterrows()):
-        values = row[METRIC_COLUMNS].astype(float).to_numpy()
-
-        setup_pentagonal_radar_axis(ax, label_fontsize=8, radial_fontsize=6)
-        ax.set_rgrids([50, 100], angle=90, fontsize=6)
-        ax.plot(PENTAGONAL_ANGLES, values, linewidth=1.4, color="#1c4587")
-        ax.fill(PENTAGONAL_ANGLES, values, alpha=0.22, color="#6fa8dc")
-        ax.set_title(row["db"], fontsize=10, pad=10)
-
-    for ax in axes[len(plot_df):]:
-        ax.set_visible(False)
-
-    fig.suptitle("Post-resolution vulnerability profiles by DBMS", fontsize=16, y=0.99)
-    fig.text(
-        0.5,
-        0.015,
-        RADAR_LEGEND_TEXT,
-        ha="center",
-        va="bottom",
-        fontsize=9,
-    )
-    fig.tight_layout(rect=[0, 0.05, 1, 0.96])
-
-    for ext in ("png", "pdf"):
-        fig.savefig(
-            Path(output_dir)
-            / f"radar_mini_radares_dbms_pos_resolucao_pentagonal.{ext}",
-            dpi=300,
-            bbox_inches="tight",
-        )
-    plt.close(fig)
-
-
-def generate_comparative_radar(df, output_dir):
-    plot_df = df.copy()
-    if plot_df.empty:
-        return
-
-    angles = radar_angles()
-    fig, ax = plt.subplots(figsize=(9, 9), subplot_kw={"projection": "polar"})
-    setup_radar_axis(ax)
-
-    cmap = plt.get_cmap("tab20")
-    for idx, row in plot_df.reset_index(drop=True).iterrows():
-        values = row[METRIC_COLUMNS].astype(float).to_numpy()
-        values = np.concatenate([values, values[:1]])
-        color = cmap(idx % 20)
-        ax.plot(angles, values, linewidth=1.5, label=row["db"], color=color)
-        ax.fill(angles, values, alpha=0.04, color=color)
-
-    ax.set_title("Comparative post-resolution vulnerability profile for DBMSs", pad=24)
-    ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.08), ncol=5, frameon=True)
-
-    for ext in ("png", "pdf"):
-        fig.savefig(
-            Path(output_dir) / f"radar_comparativo_principais_dbms_pos_resolucao.{ext}",
-            dpi=300,
-            bbox_inches="tight",
-        )
-    plt.close(fig)
-
-
-def generate_comparative_pentagonal_radar(df, output_dir):
-    plot_df = df.copy()
-    if plot_df.empty:
-        return
-
-    fig, ax = plt.subplots(figsize=(9, 9), subplot_kw={"projection": "radar_pentagonal"})
-    setup_pentagonal_radar_axis(ax)
-
-    cmap = plt.get_cmap("tab20")
-    for idx, row in plot_df.reset_index(drop=True).iterrows():
-        values = row[METRIC_COLUMNS].astype(float).to_numpy()
-        color = cmap(idx % 20)
-        ax.plot(PENTAGONAL_ANGLES, values, linewidth=1.5, label=row["db"], color=color)
-        ax.fill(PENTAGONAL_ANGLES, values, alpha=0.04, color=color)
-
-    ax.set_title("Comparative post-resolution vulnerability profile for DBMSs", pad=24)
-    ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.08), ncol=5, frameon=True)
-
-    for ext in ("png", "pdf"):
-        fig.savefig(
-            Path(output_dir)
-            / f"radar_comparativo_principais_dbms_pos_resolucao_pentagonal.{ext}",
+            Path(output_dir) / f"vulnerability_profile_radar_{group['id']}.{ext}",
             dpi=300,
             bbox_inches="tight",
         )
@@ -834,6 +728,7 @@ def cleanup_previous_radars(output_dir):
         return
 
     patterns = [
+        "radar_dbms_metrics.csv",
         "radar_individual_*.png",
         "radar_individual_*.pdf",
         "radar_mini_radares_dbms.png",
@@ -854,6 +749,8 @@ def cleanup_previous_radars(output_dir):
         "radar_comparativo_principais_dbms_pos_resolucao_pentagonal.pdf",
         "radar_grupo_*.png",
         "radar_grupo_*.pdf",
+        "vulnerability_profile_radar_*.png",
+        "vulnerability_profile_radar_*.pdf",
     ]
     for pattern in patterns:
         for path in output_path.glob(pattern):
@@ -872,22 +769,22 @@ def parse_args():
     )
     parser.add_argument(
         "--dbms-filter",
-        default="rqs_data/rq1_release_cve_resolution_buckets_by_dbms.csv",
+        default="rqs_data/rq4_release_cve_resolution_buckets_by_dbms.csv",
         help="CSV com coluna db indicando os DBMSs que devem entrar nos radares.",
     )
     parser.add_argument(
         "--rq4-vulnerable-activity",
-        default="rqs_data/rq1_vulnerable_activity_by_dbms_periodos.csv",
+        default="rqs_data/rq4_vulnerable_activity_periods_by_dbms.csv",
         help=(
-            "CSV usado no gráfico rq4_vulnerable_activity_by_dbms, "
+            "CSV usado no gráfico rq4_vulnerable_activity_periods_by_dbms, "
             "com post_resolution e total por DBMS."
         ),
     )
     parser.add_argument(
         "--rq5-post-resolution-exposure",
-        default="rqs_data/rq2_exposicao_pos_resolucao_por_dbms_por_projeto.csv",
+        default="rqs_data/rq5_post_fix_exposure_days_by_project_dbms.csv",
         help=(
-            "CSV usado no gráfico rq5_cdf_exposicao_pos_resolucao_por_dbms_por_projeto, "
+            "CSV usado no gráfico rq5_post_fix_exposure_days_cdf_by_dbms, "
             "com post_resolution_days por par projeto-DBMS."
         ),
     )
@@ -918,7 +815,7 @@ def main():
     )
 
     cleanup_previous_radars(output_dir)
-    final.to_csv(output_dir / "radar_dbms_metrics.csv", index=False)
+    final.to_csv(output_dir / "vulnerability_profile_radar_metrics.csv", index=False)
     generate_all_radars(final, output_dir)
 
     print(f"Saved metrics and radar charts to {output_dir}")

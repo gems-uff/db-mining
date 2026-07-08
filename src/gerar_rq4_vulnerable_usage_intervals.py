@@ -12,8 +12,8 @@ logging.basicConfig(
     format="%(asctime)s | %(levelname)s | %(message)s",
 )
 
-DEFAULT_INPUT = "rqs_data/base_rqs.csv"
-DEFAULT_OUTPUT = "rqs_data/rq1_intervalos_uso_vulnerabilidade.csv"
+DEFAULT_INPUT = "rqs_data/vulnerability_analysis_base.csv"
+DEFAULT_OUTPUT = "rqs_data/rq4_vulnerable_usage_intervals.csv"
 
 SEGMENT_KEYS = ["project_id", "project_name", "db_name"]
 OBSERVATION_KEYS = SEGMENT_KEYS + [
