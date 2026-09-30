@@ -271,17 +271,6 @@ absent.
 workflow are legacy implementations and are not part of the maintained
 pipeline documented above.
 
-# Citation
-
-This replication package accompanies the following manuscript:
-
-> Camila A. Paiva, Caio Lopes, João Felipe Pimentel, Leonardo Murta, and
-> Vanessa Braganholo. *Analyzing Vulnerabilities of Database Management System
-> Libraries in the History of Open Source Java Projects*. Manuscript submitted
-> to Empirical Software Engineering.
-
-Citation metadata will be updated after publication.
-
 # Acknowledgements
 
 The authors acknowledge Universidade Federal Fluminense and the funding
