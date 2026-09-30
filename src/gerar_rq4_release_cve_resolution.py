@@ -248,7 +248,7 @@ def plot_bucket_distribution(bucket_table, output_dir):
             )
         left += values
 
-    ax.set_xlabel("Number of vulnerable release–CVE records")
+    ax.set_xlabel("Number of vulnerable library releases records")
     ax.set_ylabel("DBMS")
     ax.set_xlim(0, db_totals.max() * 1.04)
     ax.legend(loc="lower center", bbox_to_anchor=(0.5, -0.32), ncol=3, frameon=True)

@@ -26,6 +26,7 @@ METRIC_COLUMNS = [
 ]
 
 RADAR_LABELS = ["RQ1", "RQ2", "RQ3", "RQ4", "RQ5"]
+OUTPUT_SUFFIX = ""
 
 GROUP_RADAR_LABELS = [
     "RQ1 = Affected releases",
@@ -123,15 +124,15 @@ def parse_datetime_utc_naive(series):
 
 def load_data(db_path):
     """
-    Carrega os dados primários do SQLite.
+    Load the primary data from SQLite.
 
-    O schema real do banco possui:
-    - label: nomes dos DBMSs;
-    - heuristic: ligação entre label/DBMS e execução;
-    - execution: execução de heurística em um commit;
-    - version: commits observados por projeto;
-    - version_vulnerability: ocorrências de dependências DBMS-related;
-    - vulnerability: CVEs por pacote/versão vulnerável.
+    The database schema contains:
+    - label: DBMS names;
+    - heuristic: association between a label/DBMS and an execution;
+    - execution: heuristic execution at a commit;
+    - version: commits observed for each project;
+    - version_vulnerability: occurrences of DBMS-related dependencies;
+    - vulnerability: CVEs for each vulnerable package/release.
     """
     conn = sqlite3.connect(sqlite_uri(db_path), uri=True)
 
@@ -233,11 +234,11 @@ def load_data(db_path):
 
 def load_maven_release_counts(path):
     """
-    Carrega o denominador de releases Maven.
+    Load the Maven release denominator.
 
-    O SQLite inspecionado não possui uma tabela de metadados Maven Central.
-    Por isso, esta métrica usa o CSV derivado do projeto como fonte do
-    denominador total_releases_maven.
+    The inspected SQLite database does not contain a Maven Central metadata
+    table. Therefore, this metric uses the project-derived CSV as the source
+    for the total_releases_maven denominator.
     """
     maven_path = Path(path)
     if not maven_path.exists():
@@ -250,8 +251,8 @@ def load_maven_release_counts(path):
         total_col = "maven_central_metadata_releases_total"
     else:
         raise ValueError(
-            "CSV Maven precisa conter 'maven_central_distinct_versions_family' "
-            "ou 'maven_central_metadata_releases_total'."
+            "The Maven CSV must contain 'maven_central_distinct_versions_family' "
+            "or 'maven_central_metadata_releases_total'."
         )
 
     result = df[["db", total_col]].copy()
@@ -265,11 +266,11 @@ def load_maven_release_counts(path):
 
 def load_target_dbms(path):
     """
-    Define quais DBMSs entram nos radares.
+    Define which DBMSs are included in the radar charts.
 
-    Por padrão, reutiliza a lista do gráfico
-    rq4_release_cve_resolution_timing_by_dbms, isto é, apenas os DBMSs
-    com registros DBMS-release-CVE no recorte de resolução.
+    By default, reuse the DBMS list from
+    rq4_release_cve_resolution_timing_by_dbms, that is, only DBMSs with
+    DBMS-release-CVE records in the resolution subset.
     """
     filter_path = Path(path)
     if not filter_path.exists():
@@ -311,7 +312,7 @@ def calculate_propagation(vulnerability_versions):
     Propagation:
     long_propagation_cves / total_distinct_cves * 100
 
-    Uma CVE é considerada de longa propagação quando afeta 20 ou mais releases.
+    A CVE is considered long-spread when it affects 20 or more releases.
     """
     per_cve = (
         vulnerability_versions.dropna(subset=["db", "cve"])
@@ -370,8 +371,8 @@ def calculate_post_resolution_persistence_from_activity(path):
     Post Resolution Persistence:
     post_resolution_activity_commits / total_activity_commits * 100
 
-    Usa a mesma base do gráfico rq4_vulnerable_activity_periods_by_dbms para manter
-    consistência visual entre o gráfico de barras e os radares.
+    Use the same data as rq4_vulnerable_activity_periods_by_dbms to maintain
+    consistency between the bar chart and radar charts.
     """
     activity_path = Path(path)
     if not activity_path.exists():
@@ -381,7 +382,7 @@ def calculate_post_resolution_persistence_from_activity(path):
     required = ["db", "post_resolution", "total"]
     missing = [column for column in required if column not in activity.columns]
     if missing:
-        raise ValueError(f"CSV de RQ4 precisa conter as colunas: {missing}")
+        raise ValueError(f"The RQ4 CSV must contain the columns: {missing}")
 
     result = activity[required].copy()
     result["db"] = normalize_db_name(result["db"].astype(str).str.strip())
@@ -420,13 +421,13 @@ def interval_days(intervals):
 def calculate_post_resolution_exposure_from_cdf_data(path):
     """
     RQ5 - Post-resolution exposure duration:
-    Usa o mesmo dado do gráfico CDF
+    Use the same data as the CDF chart
     rq5_post_fix_exposure_days_cdf_by_dbms.
 
-    Para cada DBMS, calcula a mediana de post_resolution_days entre pares
-    (projeto, DBMS), incluindo pares com 0 dias. Como radar exige escala
-    comum de 0 a 100, a mediana em dias é normalizada pelo maior valor
-    mediano observado entre os DBMSs.
+    For each DBMS, calculate the median post_resolution_days across
+    (project, DBMS) pairs, including pairs with 0 days. Because radar charts
+    require a common 0-to-100 scale, normalize the median in days by the
+    largest median observed among the DBMSs.
     """
     exposure_path = Path(path)
     if not exposure_path.exists():
@@ -442,7 +443,7 @@ def calculate_post_resolution_exposure_from_cdf_data(path):
     required = ["db", "project_id", "post_resolution_days"]
     missing = [column for column in required if column not in exposure.columns]
     if missing:
-        raise ValueError(f"CSV de RQ5 precisa conter as colunas: {missing}")
+        raise ValueError(f"The RQ5 CSV must contain the columns: {missing}")
 
     exposure = exposure[required].copy()
     exposure["db"] = normalize_db_name(exposure["db"].astype(str).str.strip())
@@ -599,7 +600,7 @@ def generate_individual_radar(row, output_dir):
     ax.fill(angles, values, alpha=0.25, color="#6fa8dc")
     ax.set_title(f"Vulnerability profile for {row['db']}", pad=20)
 
-    stem = f"radar_individual_{sanitize_filename(row['db'])}"
+    stem = f"radar_individual_{sanitize_filename(row['db'])}{OUTPUT_SUFFIX}"
     for ext in ("png", "pdf"):
         fig.savefig(Path(output_dir) / f"{stem}.{ext}", dpi=300, bbox_inches="tight")
     plt.close(fig)
@@ -650,7 +651,7 @@ def generate_small_multiples_radar(df, output_dir):
 
     for ext in ("png", "pdf"):
         fig.savefig(
-            Path(output_dir) / f"vulnerability_profile_radar_all_dbms.{ext}",
+            Path(output_dir) / f"vulnerability_profile_radar_all_dbms{OUTPUT_SUFFIX}.{ext}",
             dpi=300,
             bbox_inches="tight",
         )
@@ -706,7 +707,7 @@ def generate_group_radar(df, output_dir, group):
 
     for ext in ("png", "pdf"):
         fig.savefig(
-            Path(output_dir) / f"vulnerability_profile_radar_{group['id']}.{ext}",
+            Path(output_dir) / f"vulnerability_profile_radar_{group['id']}{OUTPUT_SUFFIX}.{ext}",
             dpi=300,
             bbox_inches="tight",
         )
@@ -759,41 +760,68 @@ def cleanup_previous_radars(output_dir):
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="Gera gráficos de radar com métricas percentuais de vulnerabilidade por DBMS."
+        description="Generate radar charts with percentage-based vulnerability metrics by DBMS."
     )
     parser.add_argument("--db-path", default="dbmining.sqlite")
     parser.add_argument(
         "--maven-counts",
         default="rqs_data/maven_family_version_counts_by_dbms.csv",
-        help="CSV com total de releases Maven por DBMS.",
+        help="CSV with total Maven releases by DBMS.",
     )
     parser.add_argument(
         "--dbms-filter",
         default="rqs_data/rq4_release_cve_resolution_buckets_by_dbms.csv",
-        help="CSV com coluna db indicando os DBMSs que devem entrar nos radares.",
+        help="CSV whose db column identifies the DBMSs to include in the radar charts.",
     )
     parser.add_argument(
         "--rq4-vulnerable-activity",
         default="rqs_data/rq4_vulnerable_activity_periods_by_dbms.csv",
         help=(
-            "CSV usado no gráfico rq4_vulnerable_activity_periods_by_dbms, "
-            "com post_resolution e total por DBMS."
+            "CSV used by rq4_vulnerable_activity_periods_by_dbms, with "
+            "post_resolution and total values by DBMS."
         ),
     )
     parser.add_argument(
         "--rq5-post-resolution-exposure",
         default="rqs_data/rq5_post_fix_exposure_days_by_project_dbms.csv",
         help=(
-            "CSV usado no gráfico rq5_post_fix_exposure_days_cdf_by_dbms, "
-            "com post_resolution_days por par projeto-DBMS."
+            "CSV used by rq5_post_fix_exposure_days_cdf_by_dbms, with "
+            "post_resolution_days for each project-DBMS pair."
         ),
     )
     parser.add_argument("--output-dir", default="graficos_discussão")
+    parser.add_argument(
+        "--rq-offset",
+        type=int,
+        default=0,
+        help="Value added to RQ label numbers (for example, 5 changes RQ1 to RQ6).",
+    )
+    parser.add_argument(
+        "--output-suffix",
+        default="",
+        help="Suffix added to filenames before the extension (for example, _V2).",
+    )
     return parser.parse_args()
 
 
 def main():
+    global RADAR_LABELS, GROUP_RADAR_LABELS, RADAR_LEGEND_TEXT
+    global GROUP_RADAR_LEGEND_TEXT, OUTPUT_SUFFIX
+
     args = parse_args()
+    if args.rq_offset:
+        RADAR_LABELS = [f"RQ{i + args.rq_offset}" for i in range(1, 6)]
+        GROUP_RADAR_LABELS = [
+            re.sub(r"^RQ(\d+)", lambda match: f"RQ{int(match.group(1)) + args.rq_offset}", label)
+            for label in GROUP_RADAR_LABELS
+        ]
+        RADAR_LEGEND_TEXT = re.sub(
+            r"RQ(\d+)",
+            lambda match: f"RQ{int(match.group(1)) + args.rq_offset}",
+            RADAR_LEGEND_TEXT,
+        )
+        GROUP_RADAR_LEGEND_TEXT = " | ".join(GROUP_RADAR_LABELS)
+    OUTPUT_SUFFIX = args.output_suffix
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -814,8 +842,12 @@ def main():
         args.rq5_post_resolution_exposure,
     )
 
-    cleanup_previous_radars(output_dir)
-    final.to_csv(output_dir / "vulnerability_profile_radar_metrics.csv", index=False)
+    if not OUTPUT_SUFFIX:
+        cleanup_previous_radars(output_dir)
+    final.to_csv(
+        output_dir / f"vulnerability_profile_radar_metrics{OUTPUT_SUFFIX}.csv",
+        index=False,
+    )
     generate_all_radars(final, output_dir)
 
     print(f"Saved metrics and radar charts to {output_dir}")

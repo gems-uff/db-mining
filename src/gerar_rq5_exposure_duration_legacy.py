@@ -167,6 +167,7 @@ def plot_cdf_small_multiples_by_project(
     min_projects=MIN_PROJECTS_FOR_CDF,
     value_col="total_exposure_days",
     xlabel="Total exposure time per project, days",
+    ylabel="Cumulative proportion of projects",
     filename="rq5_total_exposure_days_cdf_by_dbms.png",
     n_cols=4,
     xlim=None,
@@ -253,7 +254,7 @@ def plot_cdf_small_multiples_by_project(
         ax.axis("off")
 
     fig.supxlabel(xlabel)
-    fig.supylabel("Cumulative proportion of projects")
+    fig.supylabel(ylabel)
 
     fig.tight_layout(rect=[0, 0.03, 1, 1])
 
@@ -381,7 +382,8 @@ def main():
         df_project,
         output_dir,
         value_col="post_disclosure_days",
-        xlabel="Post-disclosure exposure time per project, days",
+        xlabel="Post-disclosure exposure time per project, in days",
+        ylabel="Cumulative proportion of exposed projects",
         filename="rq5_post_disclosure_exposure_days_cdf_by_dbms.png",
         n_cols=3,
         xlim=CDF_XLIM_DAYS,

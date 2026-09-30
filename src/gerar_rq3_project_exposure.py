@@ -48,16 +48,16 @@ def save_plot(fig, output_dir, filename):
     if filepath.suffix.lower() == ".png":
         pdf_path = filepath.with_suffix(".pdf")
         fig.savefig(pdf_path, bbox_inches="tight")
-        logging.info("Gráfico salvo em: %s", pdf_path)
+        logging.info("Chart saved to: %s", pdf_path)
 
     plt.close(fig)
 
-    logging.info("Gráfico salvo em: %s", filepath)
+    logging.info("Chart saved to: %s", filepath)
 
 
 def plot_dbms_usage_vs_exposure(rq1_dbms, output_dir):
     if rq1_dbms.empty:
-        logging.warning("rq3_dbms_project_exposure_summary.csv está vazio.")
+        logging.warning("rq3_dbms_project_exposure_summary.csv is empty.")
         return
 
     rq1_dbms = prepare_numeric(
@@ -80,7 +80,7 @@ def plot_dbms_usage_vs_exposure(rq1_dbms, output_dir):
 
     if missing:
         raise ValueError(
-            f"rq3_dbms_project_exposure_summary.csv deve conter as colunas: {missing}"
+            f"rq3_dbms_project_exposure_summary.csv must contain the columns: {missing}"
         )
 
     filtered = rq1_dbms[
@@ -132,18 +132,22 @@ def plot_dbms_usage_vs_exposure(rq1_dbms, output_dir):
 
     plt.legend()
 
+    max_projects = filtered["projects_using_db"].max()
+
     for i, row in enumerate(filtered.itertuples()):
         label = (
             f"{int(row.projects_affected)}/"
             f"{int(row.projects_using_db)} projects, "
             f"{row.exposure_project_percent:.1f}%"
         )
+        is_longest_bar = row.projects_using_db == max_projects
 
         plt.text(
-            row.projects_using_db + 0.2,
+            row.projects_using_db - 0.2 if is_longest_bar else row.projects_using_db + 0.2,
             i,
             label,
             va="center",
+            ha="right" if is_longest_bar else "left",
             fontsize=8
         )
 
@@ -156,19 +160,19 @@ def plot_dbms_usage_vs_exposure(rq1_dbms, output_dir):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Gera apenas o gráfico rq3_project_exposure_vs_dbms_usage."
+        description="Generate only the rq3_project_exposure_vs_dbms_usage chart."
     )
 
     parser.add_argument(
         "--input-file",
         default=DEFAULT_INPUT_FILE,
-        help="Arquivo rq3_dbms_project_exposure_summary.csv"
+        help="rq3_dbms_project_exposure_summary.csv file"
     )
 
     parser.add_argument(
         "--output-dir",
         default=DEFAULT_OUTPUT_DIR,
-        help="Diretório de saída"
+        help="Output directory"
     )
 
     args = parser.parse_args()
@@ -177,7 +181,7 @@ def main():
 
     if not input_file.exists():
         raise FileNotFoundError(
-            f"Arquivo não encontrado: {input_file}"
+            f"File not found: {input_file}"
         )
 
     ensure_output_dir(args.output_dir)
@@ -189,7 +193,7 @@ def main():
         args.output_dir
     )
 
-    logging.info("Gráfico gerado com sucesso.")
+    logging.info("Chart generated successfully.")
 
 
 if __name__ == "__main__":

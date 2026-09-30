@@ -1,0 +1,129 @@
+{
+  "question_a": {
+    "counts": {
+      "distinct_vulnerabilities": 62,
+      "complete_for_ordinal_timing": 62,
+      "missing_numeric_cvss": 6,
+      "missing_severity_category": 0,
+      "missing_published_at": 0,
+      "missing_resolved_at": 0,
+      "before_publication": 49,
+      "after_publication": 13,
+      "exactly_zero": 0
+    },
+    "within_reference_conflicts": {
+      "severity": 0,
+      "cvss_score": 0,
+      "published_at": 0,
+      "resolved_at": 0
+    },
+    "all_62_spearman": {
+      "n": 62,
+      "rho": -0.20388394052798972,
+      "p": 0.11195702533671127
+    },
+    "all_62_kruskal": {
+      "n": 62,
+      "H": 3.4208802278378414,
+      "p": 0.33116959459221007
+    },
+    "positive_delay_spearman": {
+      "n": 13,
+      "rho": -0.0617707763884251,
+      "p": 0.8411161366056914
+    },
+    "positive_delay_kruskal": {
+      "n": 13,
+      "H": 1.3036106750392449,
+      "p": 0.5211041581587119
+    },
+    "prepublication_distance_spearman": {
+      "n": 49,
+      "rho": 0.1583620286751758,
+      "p": 0.2771283620952459
+    },
+    "prepublication_distance_kruskal": {
+      "n": 49,
+      "H": 2.9145772594751804,
+      "p": 0.4049840629598067
+    }
+  },
+  "question_b": {
+    "counts": {
+      "source_segment_cve_rows": 2564,
+      "project_library_vulnerability_pairs": 620,
+      "distinct_projects": 61,
+      "distinct_vulnerabilities": 62,
+      "missing_severity": 0,
+      "missing_resolution_date": 0,
+      "positive_post_resolution_exposure": 463,
+      "active_at_resolution": 413,
+      "right_censored_in_risk_cohort": 65,
+      "observed_cessations_in_risk_cohort": 348,
+      "projects_repeated": 52,
+      "vulnerabilities_repeated": 44,
+      "max_pairs_per_project": 28,
+      "max_pairs_per_vulnerability": 35
+    },
+    "all_pairs_observed_lower_bound_tests": {
+      "spearman": {
+        "n": 620,
+        "rho": -0.1488560389601948,
+        "p": 0.00019942084758747407
+      },
+      "kruskal": {
+        "n": 620,
+        "H": 20.429807578833213,
+        "p": 0.00013825334538777756
+      }
+    },
+    "positive_exposure_tests_selection_biased": {
+      "spearman": {
+        "n": 463,
+        "rho": -0.21891521412810083,
+        "p": 1.9789225007887343e-06
+      },
+      "kruskal": {
+        "n": 463,
+        "H": 23.291575857900142,
+        "p": 3.510824059479026e-05
+      }
+    },
+    "at_risk_observed_lower_bound_tests": {
+      "spearman": {
+        "n": 413,
+        "rho": -0.20059371877022136,
+        "p": 4.025717029212491e-05
+      },
+      "kruskal": {
+        "n": 413,
+        "H": 17.50189667303542,
+        "p": 0.0005571401269654021
+      }
+    },
+    "at_risk_complete_case_tests_censoring_biased": {
+      "spearman": {
+        "n": 348,
+        "rho": -0.25566536112002647,
+        "p": 1.3464700263148754e-06
+      },
+      "kruskal": {
+        "n": 348,
+        "H": 24.5552498311629,
+        "p": 1.9125892689179698e-05
+      }
+    },
+    "vulnerability_level_median_sensitivity": {
+      "spearman": {
+        "n": 43,
+        "rho": -0.09846307797034058,
+        "p": 0.529893204774063
+      },
+      "kruskal": {
+        "n": 43,
+        "H": 0.5967798156076739,
+        "p": 0.8971691637753587
+      }
+    }
+  }
+}
