@@ -1,0 +1,4 @@
+org\.ektorp(\.[^:]+)?\s*:\s*org\.ektorp
+org\.lightcouch(\.[^:]+)?\s*:\s*lightcouch
+com\.google\.code\.jcouchdb(\.[^:]+)?\s*:\s*jcouchdb
+com\.cloudant(\.[^:]+)?\s*:\s*cloudant-client

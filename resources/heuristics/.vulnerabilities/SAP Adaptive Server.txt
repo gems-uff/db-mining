@@ -1,2 +1,0 @@
-com\.sybase\.jdbc4\.jdbc\.SybDriver
-jdbc:sybase

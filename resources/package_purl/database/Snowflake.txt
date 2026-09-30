@@ -1,0 +1,1 @@
+pkg:maven/net.snowflake/snowflake-jdbc@

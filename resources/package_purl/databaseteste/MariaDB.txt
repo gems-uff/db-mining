@@ -1,0 +1,1 @@
+pkg:maven/org.mariadb.jdbc/mariadb-java-client@

@@ -1,0 +1,4 @@
+com\.embarcadero\s*:\s*interclient
+com\.embarcadero\s*:\s*interbase-jdbc
+jdbc\.interbase\s*:\s*interclient
+org\.apache\.hop\s*:\s*hop-databases-interbase

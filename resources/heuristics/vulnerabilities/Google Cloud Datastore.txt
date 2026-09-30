@@ -1,0 +1,2 @@
+com\.google\.apis\s*:\s*.*datastore.*
+com\.google\.cloud\s*:\s*.*datastore.* 

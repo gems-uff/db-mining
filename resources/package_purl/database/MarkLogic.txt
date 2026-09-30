@@ -1,0 +1,1 @@
+pkg:maven/com.marklogic/marklogic-client-api@

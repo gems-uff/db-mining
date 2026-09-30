@@ -1,0 +1,2 @@
+org\.postgresql(\.[^:]+)?\s*:\s*postgresql
+postgresql(\.[^:]+)?\s*:\s*postgresql

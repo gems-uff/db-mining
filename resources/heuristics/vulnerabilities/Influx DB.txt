@@ -1,0 +1,2 @@
+com\.influxdb\s*:\s*influxdb.*
+org\.influxdb\s*:\s*influxdb-java

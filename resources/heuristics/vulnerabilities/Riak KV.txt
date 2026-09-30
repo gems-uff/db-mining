@@ -1,0 +1,1 @@
+com\.basho\.riak\s*:\s*riak.*

@@ -1,0 +1,1 @@
+pkg:maven/io.ebean/ebean-platform-sqlanywhere@

@@ -1,0 +1,2 @@
+com\.teradata\.jdbc\s*:\s*tdgssconfig
+com\.teradata\.jdbc\s*:\s*tera.*

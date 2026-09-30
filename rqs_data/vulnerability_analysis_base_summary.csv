@@ -1,0 +1,1985 @@
+project_id,project,file,db,distinct_versions,first_commit,last_commit,total_commits_observed,total_rows
+1,Activiti,activiti-api-basic-connector-example,H2,4,2020-01-20,2026-01-08,351,351
+1,Activiti,activiti-api-basic-connector-examples,H2,1,2019-12-04,2020-01-19,14,14
+1,Activiti,activiti-api-basic-full-example,H2,1,2019-12-04,2020-01-19,14,14
+1,Activiti,activiti-api-basic-full-example-bean,H2,4,2020-01-20,2026-01-08,351,351
+1,Activiti,activiti-api-basic-full-example-custombean,H2,1,2019-12-04,2020-01-19,14,14
+1,Activiti,activiti-api-basic-full-example-nobean,H2,4,2020-01-20,2026-01-08,351,351
+1,Activiti,activiti-api-basic-process-example,H2,4,2020-01-20,2026-01-08,351,351
+1,Activiti,activiti-api-basic-process-examples,H2,1,2019-12-04,2020-01-19,14,14
+1,Activiti,activiti-api-basic-task-example,H2,4,2020-01-20,2026-01-08,351,351
+1,Activiti,activiti-api-basic-task-examples,H2,1,2019-12-04,2020-01-19,14,14
+1,Activiti,activiti-api-spring-integration-example,H2,4,2019-12-04,2026-01-08,365,365
+1,Activiti,activiti-api-web-example,H2,4,2020-01-20,2026-01-08,351,351
+1,Activiti,activiti-api-web-examples,H2,1,2019-12-04,2020-01-19,14,14
+1,Activiti,activiti-bpmn-converter,H2,11,2012-12-21,2026-01-08,643,643
+1,Activiti,activiti-coverage,H2,2,2025-01-15,2025-07-31,61,61
+1,Activiti,activiti-engine,H2,12,2010-10-04,2026-01-08,918,918
+1,Activiti,activiti-image-generator,H2,7,2017-11-02,2026-01-08,371,371
+1,Activiti,activiti-spring,H2,7,2017-11-02,2026-01-08,371,371
+1,Activiti,activiti-spring-boot-starter,H2,5,2018-08-09,2026-01-08,366,366
+1,Activiti,activiti-spring-conformance-set0,H2,4,2019-12-04,2026-01-08,365,365
+1,Activiti,activiti-spring-conformance-set1,H2,4,2019-12-04,2026-01-08,365,365
+1,Activiti,activiti-spring-conformance-set2,H2,4,2019-12-04,2026-01-08,365,365
+1,Activiti,activiti-spring-conformance-set3,H2,4,2019-12-04,2026-01-08,365,365
+1,Activiti,activiti-spring-conformance-set4,H2,4,2019-12-04,2026-01-08,365,365
+1,Activiti,activiti-spring-conformance-set5,H2,4,2019-12-04,2026-01-08,365,365
+1,Activiti,activiti-spring-conformance-signals,H2,4,2019-12-04,2026-01-08,365,365
+1,Activiti,activiti-spring-conformance-util,H2,4,2019-12-04,2026-01-08,365,365
+1,Activiti,activiti-spring-conformance-variables,H2,4,2019-12-04,2026-01-08,365,365
+1,Activiti,activiti-engine,MySQL,4,2010-11-29,2017-05-30,486,486
+1,Activiti,activiti-engine,PostgreSQL,10,2010-11-29,2026-01-08,666,666
+19,AxonFramework,axon-configuration,HyperSQL,4,2018-10-16,2025-09-28,497,497
+19,AxonFramework,axon-configuration-jakarta,HyperSQL,1,2022-08-15,2022-09-19,27,27
+19,AxonFramework,axon-core,HyperSQL,5,2010-03-19,2018-07-03,238,238
+19,AxonFramework,axon-eventsourcing,HyperSQL,4,2018-10-16,2026-01-07,564,564
+19,AxonFramework,axon-eventsourcing-jakarta,HyperSQL,1,2022-08-15,2022-09-19,27,27
+19,AxonFramework,axon-hibernate-6-integrationtests,HyperSQL,2,2023-01-27,2023-11-03,4,4
+19,AxonFramework,axon-integrationtests,HyperSQL,6,2010-07-19,2026-01-07,774,774
+19,AxonFramework,axon-integrationtests-jakarta,HyperSQL,1,2022-08-15,2022-09-19,27,27
+19,AxonFramework,axon-jpa,HyperSQL,1,2010-03-09,2010-03-17,2,2
+19,AxonFramework,axon-legacy-aggregate,HyperSQL,1,2025-09-28,2026-01-07,71,71
+19,AxonFramework,axon-legacy-saga,HyperSQL,1,2025-09-28,2026-01-07,68,68
+19,AxonFramework,axon-messaging,HyperSQL,4,2018-10-16,2026-01-07,564,564
+19,AxonFramework,axon-messaging-jakarta,HyperSQL,1,2022-08-15,2022-09-19,27,27
+19,AxonFramework,axon-modelling,HyperSQL,4,2018-10-16,2026-01-07,564,564
+19,AxonFramework,axon-modelling-jakarta,HyperSQL,1,2022-08-15,2022-09-19,27,27
+19,AxonFramework,axon-quickstart,HyperSQL,2,2016-05-30,2016-11-11,31,31
+19,AxonFramework,axon-spring,HyperSQL,5,2016-01-08,2026-01-07,604,604
+19,AxonFramework,axon-spring-boot-3-integrationtests,HyperSQL,2,2023-01-27,2023-11-03,4,4
+19,AxonFramework,axon-spring-boot-autoconfigure,HyperSQL,5,2017-12-01,2026-01-07,567,567
+19,AxonFramework,axon-todo,HyperSQL,1,2025-09-28,2026-01-07,68,68
+19,AxonFramework,axon-legacy,MongoDB,3,2020-10-15,2023-11-13,330,330
+19,AxonFramework,axon-core,MySQL,5,2010-03-19,2018-07-03,238,238
+19,AxonFramework,axon-eventsourcing,MySQL,20,2018-10-16,2026-01-07,564,564
+19,AxonFramework,axon-eventsourcing-jakarta,MySQL,1,2022-08-15,2022-09-19,27,27
+19,AxonFramework,axon-integrationtests,MySQL,22,2010-07-19,2026-01-07,774,774
+19,AxonFramework,axon-integrationtests-jakarta,MySQL,1,2022-08-15,2022-09-19,27,27
+19,AxonFramework,axon-jpa,MySQL,1,2010-03-09,2010-03-17,2,2
+19,AxonFramework,axon-legacy-aggregate,MySQL,2,2025-09-28,2026-01-07,71,71
+19,AxonFramework,axon-legacy-saga,MySQL,2,2025-09-28,2026-01-07,68,68
+19,AxonFramework,axon-modelling,MySQL,20,2018-10-16,2026-01-07,564,564
+19,AxonFramework,axon-modelling-jakarta,MySQL,1,2022-08-15,2022-09-19,27,27
+19,AxonFramework,axon-spring,MySQL,9,2023-01-27,2026-01-07,145,145
+19,AxonFramework,axon-spring-boot-3-integrationtests,MySQL,2,2023-01-27,2023-11-03,4,4
+19,AxonFramework,axon-todo,MySQL,2,2025-09-28,2026-01-07,68,68
+19,AxonFramework,axon-integrationtests,Oracle,13,2017-12-01,2026-01-07,567,567
+19,AxonFramework,axon-integrationtests-jakarta,Oracle,2,2022-08-15,2022-09-19,27,27
+19,AxonFramework,axon-todo,Oracle,2,2025-09-28,2026-01-07,66,66
+19,AxonFramework,axon-core,PostgreSQL,1,2014-11-07,2018-07-03,47,47
+19,AxonFramework,axon-legacy-aggregate,PostgreSQL,1,2025-09-28,2026-01-07,71,71
+19,AxonFramework,axon-legacy-saga,PostgreSQL,1,2025-09-28,2026-01-07,68,68
+19,AxonFramework,axon-modelling,PostgreSQL,26,2018-10-16,2026-01-07,564,564
+19,AxonFramework,axon-modelling-jakarta,PostgreSQL,2,2022-08-15,2022-09-19,27,27
+60,BIMserver,bimserver,SQLite,2,2019-08-29,2025-12-30,77,77
+60,BIMserver,bimserverjar,SQLite,2,2019-08-29,2025-12-30,77,77
+60,BIMserver,bimserverwar,SQLite,2,2019-08-29,2025-12-30,77,77
+22,BroadleafCommerce,broadleaf-common,HyperSQL,5,2022-07-12,2026-01-02,92,92
+22,BroadleafCommerce,broadleaf-open-admin-platform,HyperSQL,2,2013-08-14,2023-01-04,10,10
+22,BroadleafCommerce,integration,HyperSQL,6,2013-08-14,2026-01-02,94,100
+70,BungeeCord,bungeecord-bootstrap,MySQL,23,2013-09-25,2025-12-10,260,260
+70,BungeeCord,bungeecord-proxy,MySQL,25,2013-01-22,2025-12-10,338,338
+70,BungeeCord,bungeecord-proxy,SQLite,1,2013-05-03,2013-07-08,32,32
+59,Chronicle-Queue,chronicle-queue,HyperSQL,6,2016-04-10,2025-11-14,981,981
+44,DependencyCheck,DependencyCheck,H2,1,2013-01-06,2013-01-13,6,6
+44,DependencyCheck,build-reporting,H2,1,2018-03-29,2019-01-01,117,117
+44,DependencyCheck,dependency-check,H2,3,2013-02-02,2013-06-17,35,35
+44,DependencyCheck,dependency-check-ant,H2,8,2013-07-31,2025-01-23,1167,1167
+44,DependencyCheck,dependency-check-build-reporting,H2,1,2019-01-01,2019-06-29,65,65
+44,DependencyCheck,dependency-check-cli,H2,8,2013-07-31,2025-01-23,1167,1167
+44,DependencyCheck,dependency-check-core,H2,8,2013-07-31,2025-01-23,1167,1167
+44,DependencyCheck,dependency-check-maven,H2,8,2013-07-31,2025-01-23,1167,1167
+44,DependencyCheck,dependency-check-core,Hazelcast,1,2013-08-14,2025-01-23,1162,1162
+21,HikariCP,HikariCP,H2,9,2016-04-14,2025-09-13,198,198
+21,HikariCP,HikariCP,HyperSQL,1,2013-10-17,2014-02-18,76,76
+21,HikariCP,HikariCP,PostgreSQL,7,2017-09-02,2025-09-13,153,153
+47,JSqlParser,jsqlparser,H2,4,2020-11-06,2025-10-24,107,107
+54,OpenID-Connect-Java-Spring-Server,openid-connect-server,HyperSQL,1,2018-05-03,2022-04-19,11,11
+54,OpenID-Connect-Java-Spring-Server,openid-connect-server-webapp,HyperSQL,2,2014-08-06,2022-04-19,104,104
+61,OpenTripPlanner,application,HyperSQL,1,2024-12-04,2026-01-08,224,224
+61,OpenTripPlanner,integration-test,HyperSQL,1,2025-09-10,2026-01-08,100,100
+61,OpenTripPlanner,otp,HyperSQL,4,2020-04-23,2024-12-02,525,525
+61,OpenTripPlanner,otp-shaded,HyperSQL,1,2024-12-13,2026-01-08,218,218
+61,OpenTripPlanner,shaded-jar,HyperSQL,1,2024-12-04,2024-12-10,6,6
+80,Saturn,saturn-console,H2,1,2017-07-19,2020-07-28,72,72
+80,Saturn,saturn-console-api,H2,1,2018-10-23,2020-07-28,21,21
+80,Saturn,saturn-console-old,H2,1,2017-12-21,2018-11-06,31,31
+80,Saturn,saturn-it,H2,1,2017-07-18,2020-07-28,73,73
+80,Saturn,saturn-console,MySQL,1,2017-04-10,2020-07-28,83,83
+80,Saturn,saturn-console-api,MySQL,1,2018-10-23,2020-07-28,21,21
+80,Saturn,saturn-console-old,MySQL,1,2017-12-21,2018-11-06,31,31
+80,Saturn,saturn-it,MySQL,1,2017-07-18,2020-07-28,73,73
+78,UniversalMediaServer,ums,H2,6,2022-05-24,2026-01-08,645,645
+4,alluxio,alluxio-integration-tools-hms,HBase,1,2022-10-26,2022-10-26,1,1
+4,alluxio,alluxio-integration-tools-hms,MS SQL Server_Microsoft Azure SQL Database,1,2022-10-26,2022-10-26,1,1
+4,alluxio,alluxio-microbench,MS SQL Server_Microsoft Azure SQL Database,1,2022-10-26,2022-10-26,1,1
+4,alluxio,alluxio-tests,MS SQL Server_Microsoft Azure SQL Database,1,2022-10-26,2022-10-26,1,1
+4,alluxio,alluxio-underfs-abfs,Microsoft Azure Table Storage,1,2022-10-26,2022-10-26,1,1
+4,alluxio,alluxio-underfs-wasb,Microsoft Azure Table Storage,1,2022-10-26,2022-10-26,1,1
+18,aws-sdk-java,aws-java-sdk,DynamoDB,3600,2014-10-08,2025-12-29,3788,3788
+18,aws-sdk-java,aws-java-sdk-bundle,DynamoDB,3355,2017-01-25,2025-12-29,3368,3368
+18,aws-sdk-java,aws-java-sdk-cloudwatchmetrics,DynamoDB,3600,2014-10-08,2025-12-29,3788,3788
+18,aws-sdk-java,aws-java-sdk-dynamodb,DynamoDB,3721,2014-10-08,2025-12-29,3788,3788
+18,aws-sdk-java,aws-java-sdk-osgi,DynamoDB,3590,2014-12-12,2025-12-29,3768,3768
+67,byte-buddy,byte-buddy,HyperSQL,1,2016-08-19,2016-08-19,1,1
+67,byte-buddy,byte-buddy-android,HyperSQL,1,2016-08-19,2016-08-19,1,1
+67,byte-buddy,byte-buddy-benchmark,HyperSQL,1,2016-08-19,2016-08-19,1,1
+67,byte-buddy,byte-buddy-dep,HyperSQL,1,2016-08-19,2016-08-19,1,1
+67,byte-buddy,byte-buddy-dep,MySQL,1,2015-11-09,2015-11-09,1,1
+17,commafeed,commafeed,H2,14,2014-08-11,2022-09-29,151,151
+17,commafeed,commafeed-server,H2,5,2023-04-25,2026-01-07,472,472
+17,commafeed,commafeed-server,Maria DB,6,2023-07-12,2024-09-13,176,176
+17,commafeed,commafeed,MySQL,10,2014-08-11,2022-09-29,151,151
+17,commafeed,commafeed-server,MySQL,6,2023-04-25,2024-09-13,199,199
+17,commafeed,commafeed,PostgreSQL,11,2014-08-11,2022-09-29,151,151
+17,commafeed,commafeed-server,PostgreSQL,6,2023-04-25,2024-09-13,199,199
+17,commafeed,commafeed,Redis,9,2013-06-29,2022-09-29,210,210
+17,commafeed,commafeed-server,Redis,8,2023-04-25,2024-08-13,164,164
+25,cucumber-jvm,spring-java-junit5,H2,4,2021-09-09,2026-01-01,783,783
+25,cucumber-jvm,cucumber-jakarta-openejb,HyperSQL,3,2022-07-09,2026-01-06,649,649
+25,cucumber-jvm,cucumber-openejb,HyperSQL,3,2021-09-09,2026-01-06,856,856
+8,drill,drill-jdbc-storage,ClickHouse,1,2023-10-21,2025-11-06,66,66
+8,drill,distribution,DynamoDB,2,2023-10-21,2025-11-06,66,66
+8,drill,distribution,H2,1,2023-10-21,2024-05-06,21,21
+8,drill,drill-format-excel,H2,1,2023-10-21,2024-05-06,21,21
+8,drill,drill-jdbc-storage,H2,1,2023-10-21,2025-11-06,66,66
+8,drill,distribution,HBase,5,2023-10-21,2025-11-06,66,203
+8,drill,drill-storage-hbase,HBase,3,2023-10-21,2025-11-06,66,132
+8,drill,drill-storage-hive-core,HBase,4,2023-10-21,2025-11-06,66,198
+8,drill,drill-storage-phoenix,HBase,5,2023-10-21,2025-11-06,66,198
+8,drill,drill-jdbc-storage,MS SQL Server_Microsoft Azure SQL Database,2,2023-10-21,2025-11-06,66,66
+8,drill,drill-storage-hbase,MS SQL Server_Microsoft Azure SQL Database,1,2023-10-21,2025-11-06,66,66
+8,drill,drill-storage-hive-core,MS SQL Server_Microsoft Azure SQL Database,1,2023-10-21,2025-11-06,66,66
+8,drill,drill-storage-phoenix,MS SQL Server_Microsoft Azure SQL Database,1,2023-10-21,2025-09-11,61,61
+8,drill,distribution,MongoDB,3,2023-10-21,2025-11-06,66,66
+8,drill,drill-mongo-metastore,MongoDB,3,2023-10-21,2025-11-06,66,66
+8,drill,drill-mongo-storage,MongoDB,3,2023-10-21,2025-11-06,66,66
+8,drill,drill-jdbc-storage,MySQL,2,2023-10-21,2025-11-06,66,66
+8,drill,drill-jdbc-storage,PostgreSQL,2,2023-10-21,2025-11-06,66,66
+8,drill,distribution,SQLite,1,2023-10-21,2025-11-06,66,66
+8,drill,drill-rdbms-metastore,SQLite,1,2023-10-21,2025-11-06,66,66
+27,ebean,ebean-test,ClickHouse,2,2021-12-01,2025-11-23,455,455
+27,ebean,avaje-ebeanorm,H2,4,2013-04-15,2016-08-03,346,346
+27,ebean,avaje-ebeanorm-server,H2,1,2012-09-14,2013-04-11,14,14
+27,ebean,composites,H2,4,2022-03-30,2025-11-23,406,406
+27,ebean,ebean,H2,9,2016-08-03,2025-11-23,1281,1281
+27,ebean,ebean-api,H2,5,2020-10-09,2025-11-23,671,671
+27,ebean,ebean-autotune,H2,5,2020-10-08,2023-06-01,502,502
+27,ebean,ebean-bom,H2,6,2020-10-12,2025-11-23,668,668
+27,ebean,ebean-clickhouse,H2,4,2022-03-30,2025-11-23,406,406
+27,ebean,ebean-cockroach,H2,4,2022-03-30,2025-11-23,406,406
+27,ebean,ebean-core,H2,5,2020-10-09,2025-11-23,678,678
+27,ebean,ebean-core-json,H2,1,2025-07-11,2025-11-23,21,21
+27,ebean,ebean-core-type,H2,6,2020-11-19,2025-11-23,591,591
+27,ebean,ebean-csv-reader,H2,2,2022-08-25,2023-06-01,125,125
+27,ebean,ebean-db2,H2,4,2022-03-30,2025-11-23,406,406
+27,ebean,ebean-ddl-generator,H2,6,2020-11-18,2025-11-23,599,599
+27,ebean,ebean-ddlgen,H2,1,2020-10-10,2020-11-18,71,71
+27,ebean,ebean-externalmapping-api,H2,5,2020-10-12,2023-06-01,488,488
+27,ebean,ebean-externalmapping-xml,H2,5,2020-10-12,2023-06-01,489,489
+27,ebean,ebean-h2,H2,4,2022-03-30,2025-11-23,406,406
+27,ebean,ebean-hana,H2,4,2022-03-30,2025-11-23,406,406
+27,ebean,ebean-jackson-jsonnode,H2,1,2022-10-14,2023-06-01,105,105
+27,ebean,ebean-jackson-mapper,H2,2,2022-10-14,2025-11-23,285,285
+27,ebean,ebean-joda-time,H2,2,2022-08-26,2023-06-01,123,123
+27,ebean,ebean-kotlin,H2,4,2021-12-07,2023-06-01,272,272
+27,ebean,ebean-mariadb,H2,4,2022-03-30,2025-11-23,406,406
+27,ebean,ebean-mysql,H2,4,2022-03-30,2025-11-23,406,406
+27,ebean,ebean-net-postgis,H2,1,2024-07-22,2025-11-23,75,75
+27,ebean,ebean-net-postgis-types,H2,1,2024-07-22,2025-11-23,75,75
+27,ebean,ebean-nuodb,H2,4,2022-03-30,2025-11-23,406,406
+27,ebean,ebean-oracle,H2,4,2022-03-30,2025-11-23,406,406
+27,ebean,ebean-parent,H2,6,2020-10-12,2025-11-23,668,668
+27,ebean,ebean-pgvector,H2,1,2025-11-09,2025-11-23,6,6
+27,ebean,ebean-pgvector-types,H2,1,2025-11-09,2025-11-23,6,6
+27,ebean,ebean-platform-all,H2,4,2022-03-30,2025-11-23,406,406
+27,ebean,ebean-platform-clickhouse,H2,4,2022-03-30,2025-11-23,406,406
+27,ebean,ebean-platform-db2,H2,4,2022-03-30,2025-11-23,406,406
+27,ebean,ebean-platform-h2,H2,4,2022-03-30,2025-11-23,406,406
+27,ebean,ebean-platform-hana,H2,4,2022-03-30,2025-11-23,406,406
+27,ebean,ebean-platform-hsqldb,H2,4,2022-03-30,2025-11-23,406,406
+27,ebean,ebean-platform-mariadb,H2,4,2022-03-30,2025-11-23,406,406
+27,ebean,ebean-platform-mysql,H2,4,2022-03-30,2025-11-23,406,406
+27,ebean,ebean-platform-nuodb,H2,4,2022-03-30,2025-11-23,406,406
+27,ebean,ebean-platform-oracle,H2,4,2022-03-30,2025-11-23,406,406
+27,ebean,ebean-platform-postgres,H2,4,2022-03-30,2025-11-23,406,406
+27,ebean,ebean-platform-sqlanywhere,H2,4,2022-03-30,2025-11-23,406,406
+27,ebean,ebean-platform-sqlite,H2,4,2022-03-30,2025-11-23,406,406
+27,ebean,ebean-platform-sqlserver,H2,4,2022-03-30,2025-11-23,406,406
+27,ebean,ebean-postgis,H2,6,2020-10-22,2025-11-23,612,612
+27,ebean,ebean-postgis-types,H2,1,2023-10-06,2025-11-23,155,155
+27,ebean,ebean-postgres,H2,4,2022-03-30,2025-11-23,406,406
+27,ebean,ebean-querybean,H2,7,2020-10-09,2025-11-23,679,679
+27,ebean,ebean-redis,H2,6,2020-12-18,2025-11-23,578,578
+27,ebean,ebean-spring-txn,H2,2,2023-03-07,2025-11-23,227,227
+27,ebean,ebean-sqlite,H2,4,2022-03-30,2025-11-23,406,406
+27,ebean,ebean-sqlserver,H2,4,2022-03-30,2025-11-23,406,406
+27,ebean,ebean-test,H2,6,2020-10-08,2025-11-23,680,680
+27,ebean,ebean-yugabyte,H2,4,2022-03-30,2025-11-23,406,406
+27,ebean,kotlin-querybean-generator,H2,6,2020-10-09,2025-11-23,556,556
+27,ebean,platforms,H2,4,2022-03-30,2025-11-23,406,406
+27,ebean,querybean-generator,H2,6,2020-10-09,2025-11-23,679,679
+27,ebean,test-java16,H2,1,2023-10-16,2023-10-16,1,1
+27,ebean,test-kotlin,H2,1,2021-09-22,2021-09-22,1,1
+27,ebean,tests,H2,2,2023-02-20,2025-11-23,242,242
+27,ebean,avaje-ebeanorm,HyperSQL,1,2013-04-15,2016-08-03,346,346
+27,ebean,avaje-ebeanorm-server,HyperSQL,1,2012-09-14,2013-04-11,14,14
+27,ebean,ebean,HyperSQL,2,2016-08-03,2020-10-09,613,613
+27,ebean,ebean-core,HyperSQL,1,2020-10-09,2021-09-09,179,179
+27,ebean,ebean-test,IBM DB2,2,2021-12-01,2025-11-23,455,455
+27,ebean,ebean,MS SQL Server_Microsoft Azure SQL Database,4,2017-07-03,2020-10-09,502,502
+27,ebean,ebean-core,MS SQL Server_Microsoft Azure SQL Database,1,2020-10-09,2021-09-09,179,179
+27,ebean,ebean-test,MS SQL Server_Microsoft Azure SQL Database,4,2020-10-08,2025-11-23,680,680
+27,ebean,ebean,Maria DB,1,2020-06-19,2020-10-09,31,31
+27,ebean,ebean-core,Maria DB,1,2020-10-09,2021-09-09,179,179
+27,ebean,ebean-test,Maria DB,3,2020-10-08,2025-11-23,680,680
+27,ebean,avaje-ebeanorm,MySQL,3,2013-04-15,2016-08-03,346,346
+27,ebean,avaje-ebeanorm-server,MySQL,1,2012-09-14,2013-04-11,14,14
+27,ebean,ebean,MySQL,4,2016-08-03,2020-10-09,613,613
+27,ebean,ebean-core,MySQL,1,2020-10-09,2021-09-09,179,179
+27,ebean,ebean-test,MySQL,3,2020-10-08,2025-11-23,680,680
+27,ebean,ebean,Oracle,1,2020-02-20,2020-10-09,79,79
+27,ebean,ebean-core,Oracle,1,2020-10-09,2021-09-09,179,179
+27,ebean,ebean-test,Oracle,1,2021-09-23,2025-11-23,479,479
+27,ebean,ebean-net-postgis,PostGIS,1,2024-07-22,2025-11-23,75,75
+27,ebean,ebean-net-postgis-types,PostGIS,1,2024-07-22,2025-11-23,75,75
+27,ebean,ebean-postgis,PostGIS,2,2020-10-22,2025-11-23,612,612
+27,ebean,ebean-postgis-types,PostGIS,1,2023-10-06,2025-11-23,155,155
+27,ebean,avaje-ebeanorm,PostgreSQL,3,2013-04-15,2016-08-03,346,346
+27,ebean,avaje-ebeanorm-server,PostgreSQL,1,2012-09-14,2013-04-11,14,14
+27,ebean,ebean,PostgreSQL,7,2016-08-03,2020-10-09,613,613
+27,ebean,ebean-core,PostgreSQL,10,2020-10-09,2025-11-23,678,678
+27,ebean,ebean-core-type,PostgreSQL,4,2022-10-14,2025-11-23,285,285
+27,ebean,ebean-net-postgis,PostgreSQL,1,2024-07-22,2025-11-23,75,75
+27,ebean,ebean-net-postgis-types,PostgreSQL,1,2024-07-22,2025-11-23,75,75
+27,ebean,ebean-pgvector,PostgreSQL,1,2025-11-09,2025-11-23,6,6
+27,ebean,ebean-pgvector-types,PostgreSQL,1,2025-11-09,2025-11-23,6,6
+27,ebean,ebean-platform-postgres,PostgreSQL,4,2022-11-02,2025-11-23,282,282
+27,ebean,ebean-postgis,PostgreSQL,9,2020-10-22,2025-11-23,612,612
+27,ebean,ebean-postgis-types,PostgreSQL,2,2023-10-06,2025-11-23,155,155
+27,ebean,ebean-test,PostgreSQL,11,2020-10-08,2025-11-23,680,680
+27,ebean,ebean-redis,Redis,13,2020-12-18,2025-11-23,578,578
+27,ebean,avaje-ebeanorm,SQLite,2,2013-05-01,2016-08-03,339,339
+27,ebean,ebean,SQLite,2,2016-08-03,2020-10-09,613,613
+27,ebean,ebean-core,SQLite,1,2020-10-09,2021-09-09,179,179
+27,ebean,ebean-test,SQLite,2,2021-12-01,2025-11-23,455,455
+27,ebean,ebean,SapHana,1,2018-10-24,2020-10-09,288,288
+27,ebean,ebean-core,SapHana,1,2020-10-09,2021-09-09,179,179
+27,ebean,ebean-test,SapHana,2,2020-10-08,2025-11-23,680,680
+3,fastjson,fastjson,H2,1,2017-05-22,2017-05-22,1,1
+3,fastjson,fastjson,Redis,1,2017-07-30,2022-06-27,105,105
+31,flyway,flyway-commandline,Firebird,4,2019-08-15,2023-11-13,235,235
+31,flyway,flyway-commandline,H2,9,2017-11-13,2023-11-13,287,287
+31,flyway,flyway-commandline,HyperSQL,7,2017-11-13,2023-11-13,287,287
+31,flyway,flyway-community-db-support,Ignite,2,2021-04-26,2023-10-12,162,162
+31,flyway,flyway-database-ignite,Ignite,1,2023-10-31,2023-11-13,2,2
+31,flyway,flyway-commandline,MS SQL Server_Microsoft Azure SQL Database,8,2017-11-13,2023-11-13,287,287
+31,flyway,flyway-commandline,Maria DB,10,2017-11-13,2023-11-13,287,287
+31,flyway,flyway-commandline,MySQL,5,2018-09-18,2021-11-30,149,149
+31,flyway,flyway-commandline,Oracle,2,2020-02-12,2023-11-13,133,133
+31,flyway,flyway-core,Oracle,1,2021-04-08,2023-11-13,166,166
+31,flyway,flyway-database-oracle,Oracle,1,2023-05-23,2023-11-13,15,15
+31,flyway,flyway-commandline,PostgreSQL,13,2017-11-13,2023-11-13,287,287
+31,flyway,flyway-core,PostgreSQL,13,2017-11-13,2023-10-12,285,285
+31,flyway,flyway-commandline,SQLite,6,2017-11-13,2023-11-13,287,287
+31,flyway,flyway-commandline,Singlestore,1,2022-11-11,2023-11-13,34,34
+31,flyway,flyway-singlestore,Singlestore,1,2023-10-31,2023-11-13,2,2
+31,flyway,flyway-commandline,Snowflake,7,2019-11-15,2023-11-13,226,226
+32,geotools,gt-coverage-api,H2,1,2020-05-06,2025-12-30,384,384
+32,geotools,gt-grib,H2,1,2020-05-06,2025-12-30,384,384
+32,geotools,gt-imagemosaic,H2,1,2020-05-06,2025-12-09,380,380
+32,geotools,gt-imagemosaic-jdbc,H2,1,2020-05-06,2021-09-04,126,126
+32,geotools,gt-imagepyramid,H2,1,2020-05-06,2025-12-30,384,384
+32,geotools,gt-jdbc,H2,1,2020-05-06,2025-12-30,384,384
+32,geotools,gt-jdbc-h2,H2,1,2020-05-06,2025-12-30,384,384
+32,geotools,gt-jdbc-h2gis,H2,2,2023-09-17,2025-12-30,193,193
+32,geotools,gt-netcdf,H2,1,2020-05-06,2025-12-30,384,384
+32,geotools,gt-release,H2,1,2021-07-07,2025-10-08,249,249
+32,geotools,gt-app-schema,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-arcgrid,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-charts,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-coverage,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-coverage-api,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-cql-json,HyperSQL,2,2022-03-24,2024-09-23,89,89
+32,geotools,gt-cql2-json,HyperSQL,1,2024-10-02,2025-12-30,124,124
+32,geotools,gt-cql2-text,HyperSQL,2,2022-02-04,2025-12-30,220,220
+32,geotools,gt-csv,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-epsg-extension,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-epsg-hsql,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-feature-pregeneralized,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-geojson,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-geojson-core,HyperSQL,2,2022-01-29,2025-12-30,225,225
+32,geotools,gt-geojson-store,HyperSQL,2,2022-01-29,2025-12-30,225,225
+32,geotools,gt-geojsondatastore,HyperSQL,1,2020-05-06,2022-01-26,159,159
+32,geotools,gt-geoparquet,HyperSQL,1,2025-03-25,2025-12-30,80,80
+32,geotools,gt-geopkg,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-geotiff,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-grassraster,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-graticule,HyperSQL,1,2024-07-13,2025-12-30,142,142
+32,geotools,gt-grib,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-iau-wkt,HyperSQL,1,2023-09-17,2025-12-30,193,193
+32,geotools,gt-imageio-ext-gdal,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-imagemosaic,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-imagemosaic-jdbc,HyperSQL,1,2020-05-06,2021-09-04,126,126
+32,geotools,gt-imagepyramid,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-jdbc,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-jdbc-db2,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-jdbc-h2,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-jdbc-h2gis,HyperSQL,1,2023-09-17,2025-12-30,193,193
+32,geotools,gt-jdbc-hana,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-jdbc-informix,HyperSQL,2,2022-05-02,2025-12-30,196,196
+32,geotools,gt-jdbc-mysql,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-jdbc-oracle,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-jdbc-postgis,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-jdbc-singlestore,HyperSQL,1,2025-06-27,2025-12-30,45,45
+32,geotools,gt-jdbc-sqlserver,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-jdbc-teradata,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-jp2k,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-main,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-mbstyle,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-mbtiles,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-mongodb,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-netcdf,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-ogcapi-client,HyperSQL,1,2020-05-06,2022-05-04,191,191
+32,geotools,gt-ogr,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-ogr-bridj,HyperSQL,1,2020-05-06,2020-06-01,14,14
+32,geotools,gt-ogr-core,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-ogr-jni,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-pmtiles,HyperSQL,1,2025-10-06,2025-12-30,28,28
+32,geotools,gt-postgis-raster,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-process-feature,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-process-raster,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-property,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-release,HyperSQL,2,2021-07-07,2025-10-08,249,249
+32,geotools,gt-render,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-shapefile,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-stac-store,HyperSQL,1,2023-09-17,2025-12-30,193,193
+32,geotools,gt-svg,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-swing,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-tile-client,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-tpk,HyperSQL,2,2020-05-06,2025-12-30,382,382
+32,geotools,gt-transform,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-vector-mosaic,HyperSQL,1,2023-09-17,2025-12-30,193,193
+32,geotools,gt-vsi,HyperSQL,2,2022-02-01,2025-12-30,223,223
+32,geotools,gt-wfs-ng,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-wms,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-wmts,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-xml,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-xsd-csw,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-xsd-fes,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-xsd-filter,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-xsd-gml2,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-xsd-gml3,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-xsd-wcs,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-xsd-wfs,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-xsd-wps,HyperSQL,2,2020-05-06,2025-12-30,384,384
+32,geotools,gt-jdbc-db2,IBM DB2,4,2021-02-19,2025-12-30,303,303
+32,geotools,gt-release,IBM DB2,4,2021-07-07,2025-10-08,249,249
+32,geotools,gt-jdbc-informix,Informix,1,2022-05-02,2025-12-30,196,196
+32,geotools,gt-imagemosaic,MS SQL Server_Microsoft Azure SQL Database,5,2020-06-04,2025-12-30,367,367
+32,geotools,gt-jdbc-sqlserver,MS SQL Server_Microsoft Azure SQL Database,5,2020-05-06,2025-12-30,384,384
+32,geotools,gt-release,MS SQL Server_Microsoft Azure SQL Database,2,2021-07-07,2025-10-08,249,249
+32,geotools,gt-mongodb,MongoDB,2,2020-05-19,2025-12-30,378,378
+32,geotools,gt-release,MongoDB,2,2021-07-07,2025-10-08,249,249
+32,geotools,gt-imagemosaic-jdbc,MySQL,5,2020-05-06,2021-09-04,126,126
+32,geotools,gt-jdbc-mysql,MySQL,8,2020-05-06,2025-12-30,384,384
+32,geotools,gt-release,MySQL,4,2021-07-07,2025-10-08,249,249
+32,geotools,gt-app-schema,Oracle,2,2023-09-17,2025-12-30,193,193
+32,geotools,gt-imagemosaic,Oracle,10,2020-05-06,2025-12-30,384,768
+32,geotools,gt-jdbc-oracle,Oracle,9,2020-05-06,2025-12-30,384,384
+32,geotools,gt-release,Oracle,5,2021-07-07,2025-10-08,249,249
+32,geotools,gt-app-schema,PostgreSQL,14,2020-05-06,2025-12-30,384,384
+32,geotools,gt-epsg-postgresql,PostgreSQL,14,2020-05-06,2025-12-30,384,384
+32,geotools,gt-imagemosaic,PostgreSQL,14,2020-05-06,2025-12-30,384,384
+32,geotools,gt-imagemosaic-jdbc,PostgreSQL,5,2020-05-06,2021-09-04,126,126
+32,geotools,gt-jdbc-postgis,PostgreSQL,14,2020-05-06,2025-12-30,384,384
+32,geotools,gt-netcdf,PostgreSQL,14,2020-05-06,2025-12-30,384,384
+32,geotools,gt-postgis-raster,PostgreSQL,14,2020-05-06,2025-12-30,384,384
+32,geotools,gt-release,PostgreSQL,10,2021-07-07,2025-10-08,249,249
+32,geotools,gt-cql2-json,SQLite,1,2024-11-14,2025-12-30,119,119
+32,geotools,gt-cql2-text,SQLite,1,2024-11-14,2025-12-30,119,119
+32,geotools,gt-geopkg,SQLite,4,2020-05-06,2025-12-30,384,384
+32,geotools,gt-imagemosaic,SQLite,1,2025-11-20,2025-12-30,13,13
+32,geotools,gt-mbtiles,SQLite,4,2020-05-06,2025-12-30,384,384
+32,geotools,gt-ogcapi-client,SQLite,3,2020-05-06,2022-05-04,191,191
+32,geotools,gt-release,SQLite,2,2021-07-07,2025-10-08,249,249
+32,geotools,gt-jdbc-hana,SapHana,1,2023-09-17,2025-12-30,193,193
+32,geotools,gt-jdbc-singlestore,Singlestore,1,2025-06-27,2025-12-30,45,45
+43,gitlab-plugin,gitlab-plugin,PostgreSQL,22,2019-09-20,2026-01-02,502,502
+33,guice,guice-persist,HyperSQL,1,2010-10-21,2025-03-07,172,172
+41,heritrix3,heritrix-contrib,HBase,1,2024-10-17,2024-10-18,8,8
+39,immutables,value-fixture,H2,1,2014-10-30,2015-02-11,40,40
+39,immutables,criteria-mongo,MongoDB,5,2020-11-21,2026-01-06,100,102
+39,immutables,mongo,MongoDB,3,2020-11-23,2026-01-06,103,103
+39,immutables,value-fixture,MongoDB,3,2020-11-23,2026-01-06,104,104
+9,iotdb,cross-tests,H2,1,2021-06-05,2022-12-20,264,264
+9,iotdb,customize-mqtt-example,H2,5,2021-07-29,2026-01-05,622,622
+9,iotdb,influxdb-protocol,H2,1,2022-04-12,2023-05-21,197,197
+9,iotdb,influxdb-protocol-example,H2,1,2022-09-10,2023-05-30,111,111
+9,iotdb,integration,H2,1,2021-11-30,2023-05-21,267,267
+9,iotdb,integration-test,H2,4,2022-06-01,2025-08-05,198,198
+9,iotdb,iotdb-cli,H2,5,2021-06-05,2026-01-05,629,629
+9,iotdb,iotdb-cluster,H2,1,2021-06-05,2022-06-24,174,174
+9,iotdb,iotdb-confignode,H2,5,2022-04-09,2026-01-05,516,516
+9,iotdb,iotdb-distribution,H2,5,2021-06-05,2026-01-05,629,629
+9,iotdb,iotdb-server,H2,5,2021-06-05,2026-01-05,629,629
+9,iotdb,iotdb-session,H2,1,2021-06-05,2022-03-23,99,99
+9,iotdb,library-udf,H2,1,2022-01-01,2023-04-12,181,181
+9,iotdb,load-tsfile-tool,H2,1,2022-07-08,2022-07-19,2,2
+9,iotdb,pipe-count-point-processor-example,H2,3,2023-11-03,2026-01-05,268,268
+9,iotdb,rewrite-tsfile-tool,H2,1,2022-07-19,2023-05-21,129,129
+9,iotdb,schema-engine-rocksdb,H2,1,2022-05-03,2023-05-21,183,183
+9,iotdb,schema-engine-tag,H2,1,2022-10-27,2023-05-21,87,87
+9,iotdb,spark-iotdb-connector,H2,1,2021-06-05,2023-05-14,314,314
+9,iotdb,testcontainer,H2,1,2021-07-14,2023-06-17,317,317
+9,iotdb,trigger-example,H2,5,2021-06-05,2026-01-05,629,629
+9,iotdb,udf-example,H2,4,2021-06-05,2024-12-31,528,528
+9,iotdb,zeppelin-iotdb,H2,1,2021-06-05,2022-12-20,263,263
+9,iotdb,cross-tests,Influx DB,1,2021-12-07,2022-12-20,213,213
+9,iotdb,customize-mqtt-example,Influx DB,1,2021-12-07,2023-06-25,273,273
+9,iotdb,influxdb-protocol,Influx DB,1,2022-04-12,2023-05-21,197,197
+9,iotdb,influxdb-protocol-example,Influx DB,1,2022-09-10,2023-05-30,111,111
+9,iotdb,integration,Influx DB,1,2021-12-07,2023-05-21,264,264
+9,iotdb,integration-test,Influx DB,1,2022-06-01,2023-06-25,166,166
+9,iotdb,iotdb-cli,Influx DB,1,2021-12-07,2023-06-25,273,273
+9,iotdb,iotdb-cluster,Influx DB,1,2021-12-07,2022-06-24,123,123
+9,iotdb,iotdb-confignode,Influx DB,1,2022-04-09,2023-06-25,211,211
+9,iotdb,iotdb-distribution,Influx DB,1,2021-12-07,2023-06-25,273,273
+9,iotdb,iotdb-server,Influx DB,1,2021-12-07,2023-06-25,273,273
+9,iotdb,iotdb-session,Influx DB,1,2021-12-07,2022-03-23,48,48
+9,iotdb,library-udf,Influx DB,1,2022-01-01,2023-04-12,181,181
+9,iotdb,load-tsfile-tool,Influx DB,1,2022-07-08,2022-07-19,2,2
+9,iotdb,rewrite-tsfile-tool,Influx DB,1,2022-07-19,2023-05-21,129,129
+9,iotdb,schema-engine-rocksdb,Influx DB,1,2022-05-03,2023-05-21,183,183
+9,iotdb,schema-engine-tag,Influx DB,1,2022-10-27,2023-05-21,87,87
+9,iotdb,spark-iotdb-connector,Influx DB,1,2021-12-07,2023-05-14,263,263
+9,iotdb,testcontainer,Influx DB,1,2021-12-07,2023-06-17,272,272
+9,iotdb,trigger-example,Influx DB,1,2021-12-07,2023-06-25,273,273
+9,iotdb,udf-example,Influx DB,1,2021-12-07,2023-06-25,273,273
+9,iotdb,zeppelin-iotdb,Influx DB,1,2021-12-07,2022-12-20,212,212
+9,iotdb,flink-example,MS SQL Server_Microsoft Azure SQL Database,1,2021-09-19,2023-10-06,360,360
+9,iotdb,flink-tsfile-connector,MS SQL Server_Microsoft Azure SQL Database,1,2021-09-19,2023-10-06,360,360
+9,iotdb,hadoop-example,MS SQL Server_Microsoft Azure SQL Database,1,2021-09-19,2023-10-06,360,360
+9,iotdb,hadoop-tsfile,MS SQL Server_Microsoft Azure SQL Database,1,2021-09-19,2023-10-06,360,360
+9,iotdb,hive-connector,MS SQL Server_Microsoft Azure SQL Database,1,2021-09-19,2024-04-29,424,424
+9,iotdb,spark-iotdb-connector,MS SQL Server_Microsoft Azure SQL Database,1,2021-09-19,2023-05-14,302,302
+9,iotdb,spark-iotdb-connector_2.11,MS SQL Server_Microsoft Azure SQL Database,1,2023-05-21,2023-10-06,58,58
+9,iotdb,spark-tsfile,MS SQL Server_Microsoft Azure SQL Database,1,2021-09-19,2023-10-06,360,360
+42,janusgraph,example-cql,Cassandra,2,2021-08-16,2025-11-14,121,121
+42,janusgraph,janusgraph-all,Cassandra,2,2021-08-16,2025-11-14,121,121
+42,janusgraph,janusgraph-benchmark,Cassandra,2,2022-07-25,2025-11-14,27,27
+42,janusgraph,janusgraph-cql,Cassandra,4,2020-08-02,2025-11-14,257,257
+42,janusgraph,janusgraph-dist,Cassandra,2,2021-08-16,2025-11-14,121,121
+42,janusgraph,janusgraph-doc,Cassandra,2,2021-08-16,2025-11-14,121,121
+42,janusgraph,janusgraph-es,Cassandra,2,2021-08-16,2025-11-14,121,121
+42,janusgraph,janusgraph-solr,Cassandra,2,2021-08-16,2025-11-14,121,121
+42,janusgraph,titan,Cassandra,4,2012-04-30,2012-08-21,43,86
+42,janusgraph,titan-all,Cassandra,2,2013-03-26,2013-03-29,4,8
+42,janusgraph,titan-cassandra,Cassandra,2,2013-03-26,2013-03-29,4,8
+42,janusgraph,example-hbase,HBase,9,2020-08-02,2025-11-14,652,652
+42,janusgraph,janusgraph-all,HBase,8,2020-08-02,2025-11-14,652,652
+42,janusgraph,janusgraph-dist,HBase,8,2020-08-02,2025-11-14,652,652
+42,janusgraph,janusgraph-doc,HBase,8,2020-08-02,2025-11-14,652,652
+42,janusgraph,janusgraph-hbase,HBase,7,2021-04-24,2025-11-14,542,542
+42,janusgraph,janusgraph-hbase-10,HBase,1,2020-08-02,2021-04-20,110,110
+42,janusgraph,janusgraph-hbase-core,HBase,1,2020-08-02,2021-04-20,110,110
+42,janusgraph,janusgraph-hbase-server,HBase,1,2020-08-02,2021-04-20,110,110
+42,janusgraph,titan,HBase,2,2012-04-30,2012-08-21,42,42
+42,janusgraph,titan-all,HBase,1,2013-03-26,2013-03-29,4,4
+42,janusgraph,titan-hbase,HBase,1,2013-03-26,2013-03-29,4,4
+42,janusgraph,janusgraph-all,MS SQL Server_Microsoft Azure SQL Database,1,2022-10-01,2022-10-05,2,2
+42,janusgraph,janusgraph-cql,MS SQL Server_Microsoft Azure SQL Database,1,2022-10-01,2022-10-05,2,2
+42,janusgraph,janusgraph-dist,MS SQL Server_Microsoft Azure SQL Database,1,2022-10-01,2022-10-05,2,2
+42,janusgraph,janusgraph-doc,MS SQL Server_Microsoft Azure SQL Database,1,2022-10-01,2022-10-05,2,2
+42,janusgraph,janusgraph-hadoop,MS SQL Server_Microsoft Azure SQL Database,1,2022-10-01,2022-10-05,2,2
+42,janusgraph,janusgraph-hbase,MS SQL Server_Microsoft Azure SQL Database,1,2022-10-01,2022-10-05,2,2
+38,java-design-patterns,serverless,DynamoDB,2,2018-04-08,2022-11-21,180,180
+38,java-design-patterns,command-query-responsibility-segregation,H2,2,2024-05-23,2025-05-15,99,99
+38,java-design-patterns,cqrs,H2,2,2017-07-29,2024-05-22,314,314
+38,java-design-patterns,dao,H2,3,2015-04-12,2024-05-22,360,360
+38,java-design-patterns,data-access-object,H2,2,2024-05-23,2025-05-15,99,99
+38,java-design-patterns,domain-model,H2,3,2021-07-22,2025-05-15,244,244
+38,java-design-patterns,embedded-value,H2,1,2022-12-04,2024-05-24,96,96
+38,java-design-patterns,health-check,H2,3,2023-12-02,2025-05-15,154,154
+38,java-design-patterns,layered-architecture,H2,2,2024-05-26,2025-05-15,95,95
+38,java-design-patterns,layers,H2,4,2015-09-11,2024-05-26,406,406
+38,java-design-patterns,metadata-mapping,H2,3,2022-01-01,2025-05-15,230,230
+38,java-design-patterns,microservices-idempotent-consumer,H2,2,2024-11-11,2025-05-15,55,55
+38,java-design-patterns,monolithic-architecture,H2,2,2025-02-15,2025-05-15,42,42
+38,java-design-patterns,repository,H2,5,2015-09-11,2025-05-15,501,501
+38,java-design-patterns,serialized-entity,H2,3,2022-11-13,2025-05-15,209,209
+38,java-design-patterns,serialized-lob,H2,3,2024-05-20,2025-05-15,103,103
+38,java-design-patterns,service-layer,H2,5,2015-04-15,2025-05-15,520,520
+38,java-design-patterns,single-table-inheritance,H2,3,2024-02-25,2025-05-15,152,152
+38,java-design-patterns,slob,H2,2,2024-03-26,2024-05-16,39,39
+38,java-design-patterns,table-module,H2,3,2021-05-17,2025-05-15,248,248
+38,java-design-patterns,transaction-script,H2,3,2020-08-11,2025-05-15,287,287
+38,java-design-patterns,naked-objects-integtests,HyperSQL,1,2015-09-11,2022-11-20,299,299
+38,java-design-patterns,naked-objects-webapp,HyperSQL,1,2015-09-11,2022-11-20,299,299
+38,java-design-patterns,caching,MongoDB,5,2015-11-01,2025-05-15,455,530
+38,java-design-patterns,hexagonal,MongoDB,1,2022-12-04,2024-06-07,111,111
+38,java-design-patterns,hexagonal-architecture,MongoDB,2,2024-06-08,2025-05-15,86,86
+49,jbpm,jbpm-audit,H2,4,2014-11-19,2023-11-21,274,274
+49,jbpm,jbpm-bam,H2,1,2010-12-01,2010-12-03,2,2
+49,jbpm,jbpm-bpmn2,H2,5,2010-12-01,2023-11-21,276,276
+49,jbpm,jbpm-case-mgmt,H2,1,2015-07-31,2015-12-17,24,24
+49,jbpm,jbpm-case-mgmt-cmmn,H2,3,2018-06-11,2023-11-21,169,169
+49,jbpm,jbpm-case-mgmt-impl,H2,3,2017-11-28,2023-11-21,203,203
+49,jbpm,jbpm-container-test-suite,H2,3,2017-11-28,2023-11-21,203,203
+49,jbpm,jbpm-db-scripts,H2,3,2020-03-23,2023-11-21,93,93
+49,jbpm,jbpm-distribution,H2,1,2020-04-08,2020-05-08,4,4
+49,jbpm,jbpm-event-emitters-elasticsearch,H2,3,2018-10-31,2023-11-21,154,154
+49,jbpm,jbpm-examples,H2,4,2014-11-19,2023-11-21,274,274
+49,jbpm,jbpm-executor,H2,4,2014-11-19,2023-11-21,274,274
+49,jbpm,jbpm-executor-cdi,H2,4,2015-03-25,2023-11-21,252,252
+49,jbpm,jbpm-executor-ejb,H2,4,2015-03-25,2023-11-21,252,252
+49,jbpm,jbpm-human-task,H2,1,2010-12-01,2010-12-03,2,2
+49,jbpm,jbpm-human-task-audit,H2,4,2014-11-19,2023-11-21,274,274
+49,jbpm,jbpm-human-task-core,H2,4,2014-11-19,2023-11-21,274,274
+49,jbpm,jbpm-human-task-jpa,H2,1,2015-08-02,2015-12-17,23,23
+49,jbpm,jbpm-human-task-workitems,H2,4,2014-11-19,2023-11-21,274,274
+49,jbpm,jbpm-installer,H2,2,2015-09-29,2020-03-02,119,119
+49,jbpm,jbpm-kie-services,H2,4,2014-11-19,2023-11-21,274,274
+49,jbpm,jbpm-persistence-jpa,H2,5,2010-12-01,2023-11-21,276,276
+49,jbpm,jbpm-query-jpa,H2,3,2020-03-23,2023-11-21,93,93
+49,jbpm,jbpm-remote-ejb-test-app,H2,3,2017-11-28,2023-11-21,203,203
+49,jbpm,jbpm-remote-ejb-test-suite,H2,3,2017-11-28,2023-11-21,203,203
+49,jbpm,jbpm-runtime-manager,H2,4,2014-11-19,2023-11-21,274,274
+49,jbpm,jbpm-services-cdi,H2,4,2014-11-19,2023-11-21,274,274
+49,jbpm,jbpm-services-ejb-client,H2,3,2018-09-19,2023-11-21,160,160
+49,jbpm,jbpm-services-ejb-impl,H2,4,2014-11-19,2023-11-21,274,274
+49,jbpm,jbpm-test,H2,4,2014-11-19,2023-11-21,274,274
+49,jbpm,jbpm-test-coverage,H2,4,2015-07-10,2023-11-21,235,235
+49,jbpm,jbpm-test-util,H2,3,2020-03-23,2023-11-21,93,93
+49,jbpm,jbpm-workitems,H2,4,2014-11-19,2023-11-21,228,228
+49,jbpm,jbpm-workitems-archetype,H2,3,2017-11-28,2023-11-21,157,157
+49,jbpm,jbpm-workitems-bpmn2,H2,3,2017-11-28,2023-11-21,157,157
+49,jbpm,jbpm-workitems-core,H2,3,2017-11-28,2023-11-21,157,157
+49,jbpm,jbpm-workitems-email,H2,3,2017-11-28,2023-11-21,157,157
+49,jbpm,jbpm-workitems-jms,H2,3,2017-11-28,2023-11-21,157,157
+49,jbpm,jbpm-workitems-repository-archetype,H2,3,2020-06-09,2023-11-21,74,74
+49,jbpm,jbpm-workitems-rest,H2,3,2017-11-28,2023-11-21,203,203
+49,jbpm,jbpm-workitems-template-resources,H2,3,2020-03-23,2023-11-21,93,93
+49,jbpm,jbpm-workitems-webservice,H2,3,2017-11-28,2023-11-21,157,157
+49,jbpm,jbpm-xes,H2,3,2019-02-25,2023-11-21,130,130
+49,jbpm,jbpm-xes,Maria DB,1,2019-02-25,2023-11-21,130,130
+49,jbpm,jbpm-xes,MySQL,4,2019-02-25,2023-11-21,130,130
+49,jbpm,jbpm-xes,PostgreSQL,6,2019-02-25,2023-11-21,130,130
+46,jooby,coverage-report,H2,2,2015-02-13,2016-07-01,253,253
+46,jooby,examples,H2,3,2014-06-27,2019-05-05,74,74
+46,jooby,jooby-hbm,H2,1,2014-10-26,2015-03-08,41,41
+46,jooby,jooby-hibernate,H2,2,2014-06-27,2014-10-26,14,14
+46,jooby,jooby-jdbc,H2,2,2014-06-27,2014-11-10,27,27
+46,jooby,jooby-querydsl,H2,1,2016-03-29,2016-07-01,56,56
+46,jooby,coverage-report,Hazelcast,2,2015-07-19,2016-07-01,162,162
+46,jooby,jooby-hazelcast,Hazelcast,2,2015-07-19,2016-07-01,162,162
+46,jooby,coverage-report,MongoDB,2,2016-05-29,2016-07-01,10,20
+46,jooby,jooby-mongodb-rx,MongoDB,2,2016-05-29,2016-07-01,10,20
+46,jooby,coverage-report,MySQL,2,2015-04-23,2016-07-01,218,218
+46,jooby,examples,MySQL,2,2019-01-24,2019-05-05,60,60
+46,jooby,jooby-ebean,MySQL,7,2021-07-18,2023-10-16,26,26
+46,jooby,jooby-flyway,MySQL,7,2021-07-18,2023-10-16,26,26
+46,jooby,jooby-hibernate,MySQL,7,2021-07-18,2023-10-16,26,26
+46,jooby,jooby-hikari,MySQL,9,2019-01-24,2023-10-16,86,86
+46,jooby,jooby-jdbc,MySQL,2,2014-06-27,2014-11-10,27,27
+46,jooby,jooby-jdbi,MySQL,7,2021-07-18,2023-10-16,26,26
+46,jooby,coverage-report,Redis,4,2015-03-25,2016-07-01,235,235
+46,jooby,jooby-jedis,Redis,4,2015-03-25,2016-07-01,235,235
+46,jooby,jooby-redis,Redis,24,2021-07-18,2025-12-23,88,88
+50,killbill,killbill-account,H2,7,2012-12-10,2025-11-25,239,239
+50,killbill,killbill-analytics,H2,1,2012-12-10,2013-06-12,24,24
+50,killbill,killbill-beatrix,H2,7,2012-12-10,2025-11-25,239,239
+50,killbill,killbill-catalog,H2,7,2013-07-12,2025-11-25,214,214
+50,killbill,killbill-currency,H2,5,2013-11-20,2022-12-10,123,123
+50,killbill,killbill-entitlement,H2,7,2012-12-10,2025-11-25,239,239
+50,killbill,killbill-internal-api,H2,4,2013-09-24,2020-08-05,47,47
+50,killbill,killbill-invoice,H2,7,2012-12-10,2025-11-25,239,239
+50,killbill,killbill-jaxrs,H2,7,2013-07-12,2025-11-25,214,214
+50,killbill,killbill-junction,H2,7,2012-12-10,2025-11-25,239,239
+50,killbill,killbill-meter,H2,1,2012-12-10,2013-01-30,5,5
+50,killbill,killbill-osgi,H2,2,2013-07-12,2014-03-14,23,23
+50,killbill,killbill-osgi-bundles-analytics,H2,1,2013-04-15,2013-06-21,16,16
+50,killbill,killbill-osgi-bundles-defaultbundles,H2,1,2013-04-15,2013-06-21,16,16
+50,killbill,killbill-osgi-bundles-meter,H2,1,2013-02-11,2013-06-21,20,20
+50,killbill,killbill-osgi-bundles-test-payment,H2,2,2013-07-12,2014-03-14,23,23
+50,killbill,killbill-overdue,H2,7,2012-12-10,2025-11-25,239,239
+50,killbill,killbill-payment,H2,7,2012-12-10,2025-11-25,239,239
+50,killbill,killbill-profiles-killbill,H2,6,2014-09-27,2025-11-25,191,191
+50,killbill,killbill-profiles-killpay,H2,6,2014-09-27,2025-11-25,191,191
+50,killbill,killbill-server,H2,2,2012-12-10,2014-03-14,48,48
+50,killbill,killbill-subscription,H2,7,2013-07-18,2025-11-25,213,213
+50,killbill,killbill-tenant,H2,7,2012-12-10,2025-11-25,239,239
+50,killbill,killbill-usage,H2,7,2012-12-10,2025-11-25,239,239
+50,killbill,killbill-util,H2,7,2012-12-10,2025-11-25,239,239
+50,killbill,killbill-account,Maria DB,13,2014-10-24,2025-11-25,190,190
+50,killbill,killbill-beatrix,Maria DB,13,2014-10-24,2025-11-25,190,190
+50,killbill,killbill-catalog,Maria DB,13,2014-10-24,2025-11-25,190,190
+50,killbill,killbill-entitlement,Maria DB,13,2014-10-24,2025-11-25,190,190
+50,killbill,killbill-invoice,Maria DB,13,2014-10-24,2025-11-25,190,190
+50,killbill,killbill-jaxrs,Maria DB,13,2014-10-24,2025-11-25,190,190
+50,killbill,killbill-junction,Maria DB,13,2014-10-24,2025-11-25,190,190
+50,killbill,killbill-overdue,Maria DB,13,2014-10-24,2025-11-25,190,190
+50,killbill,killbill-payment,Maria DB,13,2014-10-24,2025-11-25,190,190
+50,killbill,killbill-profiles-killbill,Maria DB,13,2014-10-24,2025-11-25,190,190
+50,killbill,killbill-profiles-killpay,Maria DB,13,2014-10-24,2025-11-25,190,190
+50,killbill,killbill-subscription,Maria DB,13,2014-10-24,2025-11-25,190,190
+50,killbill,killbill-tenant,Maria DB,13,2014-10-24,2025-11-25,190,190
+50,killbill,killbill-usage,Maria DB,13,2014-10-24,2025-11-25,190,190
+50,killbill,killbill-util,Maria DB,13,2014-10-24,2025-11-25,190,190
+50,killbill,killbill-account,MySQL,13,2012-06-14,2025-11-25,256,352
+50,killbill,killbill-analytics,MySQL,2,2012-06-14,2013-06-12,41,82
+50,killbill,killbill-beatrix,MySQL,13,2012-06-14,2025-11-25,256,352
+50,killbill,killbill-catalog,MySQL,12,2014-03-14,2025-11-25,192,224
+50,killbill,killbill-entitlement,MySQL,13,2012-06-14,2025-11-25,256,352
+50,killbill,killbill-invoice,MySQL,13,2012-06-14,2025-11-25,256,352
+50,killbill,killbill-jaxrs,MySQL,12,2014-03-14,2025-11-25,192,207
+50,killbill,killbill-junction,MySQL,13,2012-06-14,2025-11-25,256,352
+50,killbill,killbill-meter,MySQL,2,2012-12-10,2013-01-30,5,10
+50,killbill,killbill-osgi,MySQL,2,2014-03-14,2014-03-14,1,2
+50,killbill,killbill-osgi-bundles-analytics,MySQL,2,2013-04-15,2013-06-21,16,32
+50,killbill,killbill-osgi-bundles-meter,MySQL,2,2013-02-11,2013-06-21,20,40
+50,killbill,killbill-overdue,MySQL,13,2012-06-14,2025-11-25,256,352
+50,killbill,killbill-payment,MySQL,13,2012-06-14,2025-11-25,256,352
+50,killbill,killbill-profiles-killbill,MySQL,11,2014-09-27,2025-11-25,191,222
+50,killbill,killbill-profiles-killpay,MySQL,11,2014-09-27,2025-11-25,191,222
+50,killbill,killbill-server,MySQL,3,2012-06-14,2014-03-14,65,130
+50,killbill,killbill-subscription,MySQL,12,2013-07-18,2025-11-25,213,266
+50,killbill,killbill-tenant,MySQL,13,2012-10-03,2025-11-25,243,326
+50,killbill,killbill-usage,MySQL,13,2012-08-07,2025-11-25,250,340
+50,killbill,killbill-util,MySQL,13,2012-06-14,2025-11-25,256,352
+50,killbill,killbill-account,PostgreSQL,11,2015-09-14,2025-11-25,182,182
+50,killbill,killbill-beatrix,PostgreSQL,11,2015-09-14,2025-11-25,182,182
+50,killbill,killbill-catalog,PostgreSQL,11,2015-09-14,2025-11-25,182,182
+50,killbill,killbill-entitlement,PostgreSQL,11,2015-09-14,2025-11-25,182,182
+50,killbill,killbill-invoice,PostgreSQL,11,2015-09-14,2025-11-25,182,182
+50,killbill,killbill-jaxrs,PostgreSQL,11,2015-09-14,2025-11-25,182,182
+50,killbill,killbill-junction,PostgreSQL,11,2015-09-14,2025-11-25,182,182
+50,killbill,killbill-overdue,PostgreSQL,11,2015-09-14,2025-11-25,182,182
+50,killbill,killbill-payment,PostgreSQL,11,2015-09-14,2025-11-25,182,182
+50,killbill,killbill-profiles-killbill,PostgreSQL,11,2015-09-14,2025-11-25,182,182
+50,killbill,killbill-profiles-killpay,PostgreSQL,11,2015-09-14,2025-11-25,182,182
+50,killbill,killbill-subscription,PostgreSQL,11,2015-09-14,2025-11-25,182,182
+50,killbill,killbill-tenant,PostgreSQL,11,2015-09-14,2025-11-25,182,182
+50,killbill,killbill-usage,PostgreSQL,11,2015-09-14,2025-11-25,182,182
+50,killbill,killbill-util,PostgreSQL,11,2015-09-14,2025-11-25,182,182
+50,killbill,killbill-account,Redis,11,2020-01-23,2025-11-25,167,167
+50,killbill,killbill-beatrix,Redis,11,2020-01-23,2025-11-25,167,167
+50,killbill,killbill-catalog,Redis,11,2020-01-23,2025-11-25,167,167
+50,killbill,killbill-currency,Redis,11,2020-01-23,2025-11-25,167,167
+50,killbill,killbill-entitlement,Redis,11,2020-01-23,2025-11-25,167,167
+50,killbill,killbill-invoice,Redis,11,2020-01-23,2025-11-25,167,167
+50,killbill,killbill-jaxrs,Redis,11,2020-01-23,2025-11-25,167,167
+50,killbill,killbill-junction,Redis,11,2020-01-23,2025-11-25,167,167
+50,killbill,killbill-overdue,Redis,11,2020-01-23,2025-11-25,167,167
+50,killbill,killbill-payment,Redis,11,2020-01-23,2025-11-25,167,167
+50,killbill,killbill-profiles-killbill,Redis,11,2020-01-23,2025-11-25,167,167
+50,killbill,killbill-profiles-killpay,Redis,11,2020-01-23,2025-11-25,167,167
+50,killbill,killbill-subscription,Redis,11,2020-01-23,2025-11-25,167,167
+50,killbill,killbill-tenant,Redis,11,2020-01-23,2025-11-25,167,167
+50,killbill,killbill-usage,Redis,11,2020-01-23,2025-11-25,167,167
+50,killbill,killbill-util,Redis,11,2020-01-23,2025-11-25,167,167
+57,light-4j,data-source,H2,6,2018-09-22,2025-12-23,413,413
+57,light-4j,datasource,H2,1,2018-06-17,2018-08-14,10,10
+57,light-4j,db-provider,H2,1,2023-04-05,2023-04-05,9,9
+57,light-4j,data-source,MySQL,5,2018-09-22,2025-12-23,413,413
+57,light-4j,datasource,MySQL,1,2018-06-17,2018-08-14,10,10
+57,light-4j,data-source,PostgreSQL,10,2018-09-22,2025-12-23,413,413
+57,light-4j,datasource,PostgreSQL,1,2018-06-17,2018-08-14,10,10
+57,light-4j,db-provider,PostgreSQL,4,2023-04-05,2025-12-23,159,159
+51,liquibase,liquibase,Firebird,13,2022-12-20,2026-01-05,485,485
+51,liquibase,liquibase-cdi,Firebird,11,2021-10-20,2025-05-13,407,407
+51,liquibase,liquibase-cdi-jakarta,Firebird,7,2023-03-02,2025-05-13,374,374
+51,liquibase,liquibase-cli,Firebird,14,2021-10-20,2026-01-05,486,486
+51,liquibase,liquibase-core,Firebird,14,2021-10-20,2026-01-05,486,486
+51,liquibase,liquibase-dist,Firebird,15,2021-10-20,2026-01-05,653,653
+51,liquibase,liquibase-extension-examples,Firebird,6,2021-10-20,2023-11-06,154,154
+51,liquibase,liquibase-extension-testing,Firebird,14,2021-10-20,2026-01-05,486,486
+51,liquibase,liquibase-integration-tests,Firebird,14,2021-10-20,2026-01-05,486,486
+51,liquibase,liquibase-maven-plugin,Firebird,14,2021-10-20,2026-01-05,486,486
+51,liquibase,liquibase-root,Firebird,1,2021-10-20,2021-10-20,1,1
+51,liquibase,liquibase-snowflake,Firebird,13,2022-12-20,2026-01-05,485,485
+51,liquibase,liquibase-standard,Firebird,10,2023-04-19,2026-01-05,433,433
+51,liquibase,liquibase,H2,11,2021-11-15,2026-01-05,652,652
+51,liquibase,liquibase-cdi,H2,10,2020-02-06,2025-05-13,596,596
+51,liquibase,liquibase-cdi-jakarta,H2,4,2023-03-02,2025-05-13,374,374
+51,liquibase,liquibase-cli,H2,11,2021-04-22,2026-01-05,660,660
+51,liquibase,liquibase-core,H2,12,2020-02-06,2026-01-05,675,675
+51,liquibase,liquibase-dist,H2,12,2020-02-06,2026-01-05,675,675
+51,liquibase,liquibase-extension-examples,H2,10,2020-06-19,2023-11-06,337,337
+51,liquibase,liquibase-extension-testing,H2,11,2021-05-06,2026-01-05,659,659
+51,liquibase,liquibase-integration-tests,H2,12,2020-02-06,2026-01-05,675,675
+51,liquibase,liquibase-maven-plugin,H2,12,2020-02-06,2026-01-05,675,675
+51,liquibase,liquibase-root,H2,2,2020-02-06,2021-10-20,23,23
+51,liquibase,liquibase-snowflake,H2,7,2022-06-07,2026-01-05,576,576
+51,liquibase,liquibase-standard,H2,6,2023-04-19,2026-01-05,433,433
+51,liquibase,liquibase,HyperSQL,6,2021-11-15,2026-01-05,652,652
+51,liquibase,liquibase-cdi,HyperSQL,7,2014-01-09,2025-05-13,598,598
+51,liquibase,liquibase-cdi-jakarta,HyperSQL,4,2023-03-02,2025-05-13,374,374
+51,liquibase,liquibase-cli,HyperSQL,6,2021-04-22,2026-01-05,660,660
+51,liquibase,liquibase-core,HyperSQL,7,2013-02-01,2026-01-05,720,720
+51,liquibase,liquibase-dist,HyperSQL,6,2020-02-06,2026-01-05,675,675
+51,liquibase,liquibase-extension-examples,HyperSQL,4,2020-06-19,2023-11-06,337,337
+51,liquibase,liquibase-extension-testing,HyperSQL,6,2021-05-06,2026-01-05,659,659
+51,liquibase,liquibase-integration-tests,HyperSQL,7,2013-02-01,2026-01-05,706,706
+51,liquibase,liquibase-maven-plugin,HyperSQL,6,2020-02-06,2026-01-05,675,675
+51,liquibase,liquibase-root,HyperSQL,2,2020-02-06,2021-10-20,23,23
+51,liquibase,liquibase-snowflake,HyperSQL,5,2022-06-07,2026-01-05,576,576
+51,liquibase,liquibase-standard,HyperSQL,4,2023-04-19,2026-01-05,433,433
+51,liquibase,liquibase,IBM DB2,4,2022-01-22,2026-01-05,641,641
+51,liquibase,liquibase-cdi,IBM DB2,4,2021-10-20,2025-05-13,563,563
+51,liquibase,liquibase-cdi-jakarta,IBM DB2,2,2023-03-02,2025-05-13,374,374
+51,liquibase,liquibase-cli,IBM DB2,4,2021-10-20,2026-01-05,642,642
+51,liquibase,liquibase-core,IBM DB2,4,2021-10-20,2026-01-05,642,642
+51,liquibase,liquibase-dist,IBM DB2,4,2021-10-20,2026-01-05,653,653
+51,liquibase,liquibase-extension-examples,IBM DB2,3,2021-10-20,2023-11-06,310,310
+51,liquibase,liquibase-extension-testing,IBM DB2,4,2021-10-20,2026-01-05,642,642
+51,liquibase,liquibase-integration-tests,IBM DB2,4,2021-10-20,2026-01-05,642,642
+51,liquibase,liquibase-maven-plugin,IBM DB2,4,2021-10-20,2026-01-05,642,642
+51,liquibase,liquibase-root,IBM DB2,1,2021-10-20,2021-10-20,1,1
+51,liquibase,liquibase-snowflake,IBM DB2,3,2022-06-07,2026-01-05,576,576
+51,liquibase,liquibase-standard,IBM DB2,2,2023-04-19,2026-01-05,433,433
+51,liquibase,liquibase,MS SQL Server_Microsoft Azure SQL Database,13,2021-11-15,2026-01-05,652,652
+51,liquibase,liquibase-cdi,MS SQL Server_Microsoft Azure SQL Database,12,2020-09-30,2025-05-13,588,588
+51,liquibase,liquibase-cdi-jakarta,MS SQL Server_Microsoft Azure SQL Database,6,2023-03-02,2025-05-13,374,374
+51,liquibase,liquibase-cli,MS SQL Server_Microsoft Azure SQL Database,14,2021-04-22,2026-01-05,660,660
+51,liquibase,liquibase-core,MS SQL Server_Microsoft Azure SQL Database,14,2020-09-30,2026-01-05,667,667
+51,liquibase,liquibase-dist,MS SQL Server_Microsoft Azure SQL Database,14,2020-09-30,2026-01-05,667,667
+51,liquibase,liquibase-extension-examples,MS SQL Server_Microsoft Azure SQL Database,8,2020-09-30,2023-11-06,335,335
+51,liquibase,liquibase-extension-testing,MS SQL Server_Microsoft Azure SQL Database,14,2021-05-06,2026-01-05,659,659
+51,liquibase,liquibase-integration-tests,MS SQL Server_Microsoft Azure SQL Database,14,2020-09-30,2026-01-05,667,667
+51,liquibase,liquibase-maven-plugin,MS SQL Server_Microsoft Azure SQL Database,14,2020-09-30,2026-01-05,667,667
+51,liquibase,liquibase-root,MS SQL Server_Microsoft Azure SQL Database,2,2020-09-30,2021-10-20,15,15
+51,liquibase,liquibase-snowflake,MS SQL Server_Microsoft Azure SQL Database,12,2022-06-07,2026-01-05,576,576
+51,liquibase,liquibase-standard,MS SQL Server_Microsoft Azure SQL Database,8,2023-04-19,2026-01-05,433,433
+51,liquibase,liquibase,Maria DB,19,2021-11-15,2026-01-05,652,652
+51,liquibase,liquibase-cdi,Maria DB,15,2021-07-29,2025-05-13,577,577
+51,liquibase,liquibase-cdi-jakarta,Maria DB,8,2023-03-02,2025-05-13,374,374
+51,liquibase,liquibase-cli,Maria DB,19,2021-07-29,2026-01-05,656,656
+51,liquibase,liquibase-core,Maria DB,19,2021-07-29,2026-01-05,656,656
+51,liquibase,liquibase-dist,Maria DB,19,2021-07-29,2026-01-05,656,656
+51,liquibase,liquibase-extension-examples,Maria DB,11,2021-07-29,2023-11-06,324,324
+51,liquibase,liquibase-extension-testing,Maria DB,19,2021-07-29,2026-01-05,656,656
+51,liquibase,liquibase-integration-tests,Maria DB,19,2021-07-29,2026-01-05,656,656
+51,liquibase,liquibase-maven-plugin,Maria DB,19,2021-07-29,2026-01-05,656,656
+51,liquibase,liquibase-root,Maria DB,1,2021-07-29,2021-10-20,4,4
+51,liquibase,liquibase-snowflake,Maria DB,18,2022-06-07,2026-01-05,576,576
+51,liquibase,liquibase-standard,Maria DB,11,2023-04-19,2026-01-05,433,433
+51,liquibase,liquibase,MySQL,8,2021-11-15,2026-01-05,652,652
+51,liquibase,liquibase-cdi,MySQL,7,2020-02-06,2025-05-13,596,596
+51,liquibase,liquibase-cdi-jakarta,MySQL,3,2023-03-02,2025-05-13,374,374
+51,liquibase,liquibase-cli,MySQL,9,2021-04-22,2026-01-05,660,660
+51,liquibase,liquibase-core,MySQL,9,2020-02-06,2026-01-05,675,675
+51,liquibase,liquibase-dist,MySQL,9,2020-02-06,2026-01-05,675,675
+51,liquibase,liquibase-extension-examples,MySQL,5,2020-06-19,2023-11-06,337,337
+51,liquibase,liquibase-extension-testing,MySQL,9,2021-05-06,2026-01-05,659,659
+51,liquibase,liquibase-integration-tests,MySQL,9,2020-02-06,2026-01-05,675,675
+51,liquibase,liquibase-maven-plugin,MySQL,9,2020-02-06,2026-01-05,675,675
+51,liquibase,liquibase-root,MySQL,2,2020-02-06,2021-10-20,23,23
+51,liquibase,liquibase-snowflake,MySQL,6,2022-06-07,2026-01-05,576,576
+51,liquibase,liquibase-standard,MySQL,5,2023-04-19,2026-01-05,433,433
+51,liquibase,liquibase,Oracle,16,2022-01-22,2026-01-05,641,641
+51,liquibase,liquibase-cdi,Oracle,14,2021-10-20,2025-05-13,563,563
+51,liquibase,liquibase-cdi-jakarta,Oracle,9,2023-03-02,2025-05-13,374,374
+51,liquibase,liquibase-cli,Oracle,16,2021-10-20,2026-01-05,642,642
+51,liquibase,liquibase-core,Oracle,16,2021-10-20,2026-01-05,642,642
+51,liquibase,liquibase-dist,Oracle,16,2021-10-20,2026-01-05,653,653
+51,liquibase,liquibase-extension-examples,Oracle,8,2021-10-20,2023-11-06,310,310
+51,liquibase,liquibase-extension-testing,Oracle,16,2021-10-20,2026-01-05,642,642
+51,liquibase,liquibase-integration-tests,Oracle,16,2021-10-20,2026-01-05,642,642
+51,liquibase,liquibase-maven-plugin,Oracle,16,2021-10-20,2026-01-05,642,642
+51,liquibase,liquibase-root,Oracle,1,2021-10-20,2021-10-20,1,1
+51,liquibase,liquibase-snowflake,Oracle,15,2022-06-07,2026-01-05,576,576
+51,liquibase,liquibase-standard,Oracle,11,2023-04-19,2026-01-05,433,433
+51,liquibase,liquibase,PostgreSQL,18,2021-11-15,2026-01-05,652,652
+51,liquibase,liquibase-cdi,PostgreSQL,17,2020-06-19,2025-05-13,590,590
+51,liquibase,liquibase-cdi-jakarta,PostgreSQL,8,2023-03-02,2025-05-13,374,374
+51,liquibase,liquibase-cli,PostgreSQL,19,2021-04-22,2026-01-05,660,660
+51,liquibase,liquibase-core,PostgreSQL,19,2020-06-19,2026-01-05,669,669
+51,liquibase,liquibase-dist,PostgreSQL,19,2020-06-19,2026-01-05,669,669
+51,liquibase,liquibase-extension-examples,PostgreSQL,11,2020-06-19,2023-11-06,337,337
+51,liquibase,liquibase-extension-testing,PostgreSQL,19,2021-05-06,2026-01-05,659,659
+51,liquibase,liquibase-integration-tests,PostgreSQL,19,2020-06-19,2026-01-05,669,669
+51,liquibase,liquibase-maven-plugin,PostgreSQL,19,2020-06-19,2026-01-05,669,669
+51,liquibase,liquibase-root,PostgreSQL,2,2020-06-19,2021-10-20,17,17
+51,liquibase,liquibase-snowflake,PostgreSQL,16,2022-06-07,2026-01-05,576,576
+51,liquibase,liquibase-standard,PostgreSQL,9,2023-04-19,2026-01-05,433,433
+51,liquibase,liquibase,SQLite,29,2022-01-22,2026-01-05,641,641
+51,liquibase,liquibase-cdi,SQLite,24,2021-10-20,2025-05-13,563,563
+51,liquibase,liquibase-cdi-jakarta,SQLite,17,2023-03-02,2025-05-13,374,374
+51,liquibase,liquibase-cli,SQLite,29,2021-10-20,2026-01-05,642,642
+51,liquibase,liquibase-core,SQLite,29,2021-10-20,2026-01-05,642,642
+51,liquibase,liquibase-dist,SQLite,29,2021-10-20,2026-01-05,653,653
+51,liquibase,liquibase-extension-examples,SQLite,14,2021-10-20,2023-11-06,310,310
+51,liquibase,liquibase-extension-testing,SQLite,29,2021-10-20,2026-01-05,642,642
+51,liquibase,liquibase-integration-tests,SQLite,29,2021-10-20,2026-01-05,642,642
+51,liquibase,liquibase-maven-plugin,SQLite,29,2021-10-20,2026-01-05,642,642
+51,liquibase,liquibase-root,SQLite,1,2021-10-20,2021-10-20,1,1
+51,liquibase,liquibase-snowflake,SQLite,28,2022-06-07,2026-01-05,576,576
+51,liquibase,liquibase-standard,SQLite,20,2023-04-19,2026-01-05,433,433
+51,liquibase,liquibase,Snowflake,31,2022-06-09,2026-01-05,571,571
+51,liquibase,liquibase-cdi,Snowflake,23,2022-06-09,2025-05-13,492,492
+51,liquibase,liquibase-cdi-jakarta,Snowflake,17,2023-03-02,2025-05-13,374,374
+51,liquibase,liquibase-cli,Snowflake,31,2022-06-09,2026-01-05,571,571
+51,liquibase,liquibase-core,Snowflake,31,2022-06-09,2026-01-05,571,571
+51,liquibase,liquibase-dist,Snowflake,31,2022-06-09,2026-01-05,571,571
+51,liquibase,liquibase-extension-examples,Snowflake,13,2022-06-09,2023-11-06,239,239
+51,liquibase,liquibase-extension-testing,Snowflake,31,2022-06-09,2026-01-05,571,571
+51,liquibase,liquibase-integration-tests,Snowflake,31,2022-06-09,2026-01-05,571,571
+51,liquibase,liquibase-maven-plugin,Snowflake,31,2022-06-09,2026-01-05,571,571
+51,liquibase,liquibase-snowflake,Snowflake,31,2022-06-09,2026-01-05,571,571
+51,liquibase,liquibase-standard,Snowflake,23,2023-04-19,2026-01-05,433,433
+66,logback,logback-classic,H2,1,2010-03-23,2022-03-18,199,199
+66,logback,logback-access,HyperSQL,1,2017-03-16,2022-03-18,56,56
+66,logback,logback-classic,HyperSQL,1,2017-03-16,2022-03-18,56,56
+66,logback,logback-classic,MySQL,1,2010-03-23,2022-03-18,198,198
+66,logback,logback-classic,PostgreSQL,1,2010-03-22,2022-03-18,201,201
+52,mage,mage,H2,5,2014-05-24,2025-10-06,223,223
+52,mage,mage-client,H2,5,2014-05-24,2025-10-06,223,223
+52,mage,mage-common,H2,5,2014-05-24,2025-10-06,223,223
+52,mage,mage-counter-plugin,H2,5,2014-05-24,2025-10-06,223,223
+52,mage,mage-deck-constructed,H2,5,2014-05-24,2025-10-06,223,223
+52,mage,mage-deck-limited,H2,5,2014-05-24,2025-10-06,223,223
+52,mage,mage-game-brawlduel,H2,3,2018-04-25,2025-10-06,143,143
+52,mage,mage-game-brawlfreeforall,H2,3,2018-04-25,2025-10-06,143,143
+52,mage,mage-game-canadianhighlanderduel,H2,3,2017-02-05,2025-10-06,167,167
+52,mage,mage-game-commanderduel,H2,5,2014-05-24,2025-10-06,223,223
+52,mage,mage-game-commanderfreeforall,H2,5,2014-05-24,2025-10-06,223,223
+52,mage,mage-game-custompillaroftheparunsduel,H2,1,2023-07-18,2025-10-06,28,28
+52,mage,mage-game-freeforall,H2,5,2014-05-24,2025-10-06,223,223
+52,mage,mage-game-freeformcommanderduel,H2,2,2019-04-30,2025-10-06,120,120
+52,mage,mage-game-freeformcommanderfreeforall,H2,3,2017-11-26,2025-10-06,156,156
+52,mage,mage-game-freeformunlimitedcommander,H2,2,2020-01-22,2025-10-06,104,104
+52,mage,mage-game-momirduel,H2,3,2015-11-12,2025-10-06,199,199
+52,mage,mage-game-momirfreeforall,H2,3,2017-11-02,2025-10-06,157,157
+52,mage,mage-game-oathbreakerduel,H2,2,2019-05-27,2025-10-06,117,117
+52,mage,mage-game-oathbreakerfreeforall,H2,2,2019-05-27,2025-10-06,118,118
+52,mage,mage-game-pennydreadfulcommanderfreeforall,H2,3,2017-08-04,2025-10-06,159,159
+52,mage,mage-game-tinyleadersduel,H2,4,2015-03-01,2025-10-06,210,210
+52,mage,mage-game-twoplayerduel,H2,5,2014-05-24,2025-10-06,223,223
+52,mage,mage-player-ai,H2,5,2014-05-24,2025-10-06,222,222
+52,mage,mage-player-ai-draftbot,H2,5,2014-05-24,2025-10-06,222,222
+52,mage,mage-player-ai-ma,H2,5,2014-05-24,2025-10-06,222,222
+52,mage,mage-player-ai-mcts,H2,5,2014-05-24,2025-10-06,222,222
+52,mage,mage-player-aiminimax,H2,5,2014-05-24,2024-01-10,206,206
+52,mage,mage-player-human,H2,5,2014-05-24,2025-10-06,223,223
+52,mage,mage-plugins,H2,1,2021-10-03,2025-10-06,43,43
+52,mage,mage-reports,H2,1,2023-10-30,2025-10-06,19,19
+52,mage,mage-root,H2,1,2021-10-03,2025-10-06,43,43
+52,mage,mage-server,H2,5,2014-05-24,2025-10-06,223,223
+52,mage,mage-server-console,H2,1,2024-08-03,2025-10-06,13,13
+52,mage,mage-server-plugins,H2,1,2021-10-03,2025-10-06,43,43
+52,mage,mage-sets,H2,5,2014-05-24,2025-10-06,223,223
+52,mage,mage-stats,H2,4,2014-08-27,2019-02-23,90,90
+52,mage,mage-tests,H2,5,2014-05-24,2025-10-06,223,223
+52,mage,mage-theme-plugin,H2,3,2014-05-24,2015-09-05,24,24
+52,mage,mage-tournament-boosterdraft,H2,5,2014-05-24,2025-10-06,222,222
+52,mage,mage-tournament-constructed,H2,5,2014-05-24,2025-10-06,222,222
+52,mage,mage-tournament-sealed,H2,5,2014-05-24,2025-10-06,222,222
+52,mage,mage-verify,H2,3,2016-10-22,2025-10-06,174,174
+52,mage,mage.server.console,H2,5,2014-05-24,2024-06-13,210,210
+52,mage,mage,SQLite,1,2012-11-05,2014-04-22,29,29
+52,mage,mage-client,SQLite,1,2012-07-24,2014-04-22,38,38
+52,mage,mage-common,SQLite,1,2012-07-24,2014-04-22,38,38
+52,mage,mage-counter-plugin,SQLite,1,2012-07-24,2014-04-22,38,38
+52,mage,mage-deck-constructed,SQLite,1,2012-11-05,2014-04-22,29,29
+52,mage,mage-deck-limited,SQLite,1,2012-11-05,2014-04-22,29,29
+52,mage,mage-game-commanderduel,SQLite,1,2013-01-15,2014-04-22,24,24
+52,mage,mage-game-commanderfreeforall,SQLite,1,2013-12-23,2014-04-22,8,8
+52,mage,mage-game-freeforall,SQLite,1,2012-11-05,2014-04-22,29,29
+52,mage,mage-game-twoplayerduel,SQLite,1,2012-11-05,2014-04-22,29,29
+52,mage,mage-player-ai,SQLite,1,2012-11-05,2014-04-22,29,29
+52,mage,mage-player-ai-draftbot,SQLite,1,2012-11-05,2014-04-22,29,29
+52,mage,mage-player-ai-ma,SQLite,1,2012-11-05,2014-04-22,29,29
+52,mage,mage-player-ai-mcts,SQLite,1,2012-11-05,2014-04-22,29,29
+52,mage,mage-player-aiminimax,SQLite,1,2012-11-05,2014-04-22,29,29
+52,mage,mage-player-human,SQLite,1,2012-11-05,2014-04-22,29,29
+52,mage,mage-rating-plugin,SQLite,1,2012-07-24,2012-11-05,10,10
+52,mage,mage-server,SQLite,4,2012-07-24,2025-10-06,227,227
+52,mage,mage-sets,SQLite,1,2012-11-05,2014-04-22,29,29
+52,mage,mage-stats,SQLite,2,2016-01-20,2019-02-23,64,64
+52,mage,mage-tests,SQLite,4,2012-07-24,2025-10-06,227,227
+52,mage,mage-theme-plugin,SQLite,1,2012-07-24,2014-04-22,38,38
+52,mage,mage-tournament-boosterdraft,SQLite,1,2012-11-05,2014-04-22,29,29
+52,mage,mage-tournament-constructed,SQLite,1,2013-10-10,2014-04-22,11,11
+52,mage,mage-tournament-sealed,SQLite,1,2012-11-05,2014-04-22,29,29
+52,mage,mage-verify,SQLite,1,2021-01-23,2025-10-06,60,60
+52,mage,mage.server.console,SQLite,1,2012-07-24,2014-04-22,38,38
+53,manifold,manifold-sql-inproc-test,H2,2,2023-10-17,2024-11-11,62,62
+53,manifold,manifold-sql-test,H2,1,2023-06-26,2023-10-17,31,31
+53,manifold,manifold-sql-test-res,H2,1,2023-07-25,2023-07-25,1,1
+53,manifold,manifold-sql-outproc-test,MS SQL Server_Microsoft Azure SQL Database,2,2023-11-04,2023-11-04,1,2
+53,manifold,manifold-sql-test,MS SQL Server_Microsoft Azure SQL Database,2,2023-10-09,2023-10-17,3,6
+53,manifold,manifold-sql-outproc-test,MySQL,1,2023-11-04,2023-11-04,1,1
+53,manifold,manifold-sql-test,MySQL,1,2023-09-26,2023-10-17,6,6
+53,manifold,manifold-sql-outproc-test,Oracle,1,2023-11-04,2023-11-04,1,1
+53,manifold,manifold-sql-test,Oracle,1,2023-10-17,2023-10-17,2,2
+53,manifold,manifold-sql-outproc-test,PostgreSQL,1,2023-11-04,2023-11-04,1,1
+53,manifold,manifold-sql-test,PostgreSQL,1,2023-09-26,2023-10-17,6,6
+53,manifold,manifold-sql-inproc-test,SQLite,1,2023-10-17,2024-11-11,62,62
+53,manifold,manifold-sql-test,SQLite,3,2023-06-23,2023-10-17,18,18
+83,maxwell,exodus-open-replicator,MySQL,1,2015-02-09,2015-02-09,1,1
+83,maxwell,maxwell,MySQL,6,2015-02-18,2025-08-28,403,403
+83,maxwell,maxwell,Redis,3,2017-10-31,2025-08-28,260,260
+79,modeldb,common,H2,4,2022-08-25,2024-04-25,317,317
+79,modeldb,modeldb,H2,5,2022-08-25,2024-04-25,317,317
+79,modeldb,common,MS SQL Server_Microsoft Azure SQL Database,5,2022-03-10,2024-04-25,354,354
+79,modeldb,modeldb,MS SQL Server_Microsoft Azure SQL Database,5,2022-03-10,2024-04-25,354,354
+79,modeldb,common,Maria DB,6,2022-03-10,2024-04-25,354,354
+79,modeldb,modeldb,Maria DB,6,2022-03-10,2024-04-25,354,354
+79,modeldb,common,PostgreSQL,4,2022-03-10,2022-12-15,111,111
+79,modeldb,modeldb,PostgreSQL,4,2022-03-10,2022-12-15,111,111
+55,moquette,distribution,H2,4,2017-06-18,2025-08-11,47,47
+55,moquette,embedded_test,H2,3,2020-11-02,2025-08-11,38,38
+55,moquette,moquette-broker,H2,4,2016-05-16,2025-08-11,71,71
+55,moquette,moquette-h2-storage,H2,1,2017-06-02,2017-08-24,11,11
+55,moquette,moquette-metrics-prometheus,H2,1,2025-08-11,2025-08-11,1,1
+55,moquette,moquette-osgi-test,H2,1,2017-08-24,2017-08-24,1,1
+55,moquette,distribution,Hazelcast,2,2016-07-22,2017-08-24,32,32
+55,moquette,moquette-broker,Hazelcast,2,2016-07-22,2017-08-24,32,32
+55,moquette,moquette-embedded-test,Hazelcast,2,2016-07-22,2017-08-24,32,32
+55,moquette,moquette-h2-storage,Hazelcast,1,2017-06-02,2017-08-24,11,11
+55,moquette,moquette-mapdb-storage,Hazelcast,1,2017-04-01,2017-08-24,14,14
+55,moquette,moquette-osgi-test,Hazelcast,1,2016-12-12,2017-08-24,30,30
+55,moquette,moquette-performance,Hazelcast,1,2017-01-28,2017-08-24,20,20
+56,morphia,critter,MongoDB,1,2023-11-25,2023-12-27,23,23
+56,morphia,critter-core,MongoDB,2,2025-11-23,2025-12-31,6,6
+56,morphia,examples,MongoDB,31,2020-01-20,2025-12-31,900,900
+56,morphia,kotlin,MongoDB,1,2021-04-16,2021-04-16,1,1
+56,morphia,legacy-tests,MongoDB,5,2020-07-30,2021-05-07,50,50
+56,morphia,morphia-core,MongoDB,31,2020-01-20,2025-12-31,900,900
+56,morphia,morphia-kotlin,MongoDB,24,2021-04-17,2025-12-31,814,814
+56,morphia,morphia-rewrite,MongoDB,6,2025-03-04,2025-12-31,172,172
+56,morphia,morphia-validation,MongoDB,22,2021-11-24,2025-12-31,750,750
+56,morphia,rewrite,MongoDB,5,2024-02-22,2025-02-19,125,125
+2,nacos,config-test,MySQL,4,2021-05-14,2025-12-29,183,183
+2,nacos,core-test,MySQL,4,2021-05-14,2025-12-29,183,183
+2,nacos,default-auth-plugin,MySQL,3,2023-09-22,2025-12-29,93,93
+2,nacos,nacos-address,MySQL,7,2019-07-05,2025-12-29,271,271
+2,nacos,nacos-ai,MySQL,1,2025-04-29,2025-12-29,30,30
+2,nacos,nacos-bootstrap,MySQL,1,2025-04-29,2025-12-29,30,30
+2,nacos,nacos-cmdb,MySQL,3,2023-05-09,2025-12-29,103,103
+2,nacos,nacos-common,MySQL,3,2023-11-23,2025-12-29,86,86
+2,nacos,nacos-config,MySQL,7,2018-07-21,2025-12-29,342,342
+2,nacos,nacos-console,MySQL,7,2018-07-21,2025-12-29,342,342
+2,nacos,nacos-core,MySQL,3,2023-05-09,2025-12-29,103,103
+2,nacos,nacos-distribution,MySQL,7,2018-07-21,2025-12-29,342,342
+2,nacos,nacos-example,MySQL,3,2023-05-09,2025-12-29,103,103
+2,nacos,nacos-istio,MySQL,7,2019-10-22,2025-12-29,259,259
+2,nacos,nacos-k8s-sync,MySQL,1,2025-04-29,2025-12-29,30,30
+2,nacos,nacos-lock,MySQL,1,2025-04-29,2025-12-29,30,30
+2,nacos,nacos-mcp-registry-adaptor,MySQL,1,2025-08-06,2025-12-29,19,19
+2,nacos,nacos-mcp-regsitry-adaptor,MySQL,1,2025-05-21,2025-07-25,8,8
+2,nacos,nacos-naming,MySQL,7,2018-07-21,2025-12-29,342,342
+2,nacos,nacos-persistence,MySQL,3,2023-05-09,2025-12-29,103,103
+2,nacos,nacos-plugin-default-impl,MySQL,2,2022-01-28,2023-09-21,67,67
+2,nacos,nacos-prometheus,MySQL,3,2022-11-17,2025-12-29,127,127
+2,nacos,nacos-server,MySQL,1,2025-04-29,2025-12-29,30,30
+2,nacos,nacos-test,MySQL,7,2018-07-21,2025-12-29,342,342
+2,nacos,naming-test,MySQL,4,2021-05-14,2025-12-29,183,183
+2,nacos,default-datasource-plugin,PostgreSQL,1,2025-12-29,2025-12-29,1,1
+2,nacos,nacos-config,PostgreSQL,1,2025-12-29,2025-12-29,1,1
+2,nacos,nacos-default-plugin-all,PostgreSQL,1,2025-12-29,2025-12-29,1,1
+2,nacos,nacos-distribution,PostgreSQL,1,2025-12-29,2025-12-29,1,1
+11,nifi,nifi-code-coverage,Couchbase,3,2023-11-08,2024-05-06,238,476
+11,nifi,nifi-couchbase-processors,Couchbase,5,2023-02-03,2025-12-09,737,1473
+11,nifi,nifi-couchbase-services-api,Couchbase,4,2023-02-03,2024-05-06,736,1472
+11,nifi,nifi-couchbase-services-api-nar,Couchbase,4,2023-02-03,2024-05-06,736,1472
+11,nifi,nifi-couchbase-standard-services,Couchbase,1,2025-12-09,2025-12-09,1,1
+11,nifi,nifi-couchbase-standard-services-nar,Couchbase,1,2025-12-09,2025-12-09,1,1
+11,nifi,nifi-aws-abstract-processors,DynamoDB,40,2023-02-03,2025-12-09,927,1012
+11,nifi,nifi-aws-kinesis,DynamoDB,1,2025-12-09,2025-12-09,1,1
+11,nifi,nifi-aws-kinesis-nar,DynamoDB,1,2025-12-09,2025-12-09,1,1
+11,nifi,nifi-aws-nar,DynamoDB,40,2023-02-03,2025-12-09,927,1012
+11,nifi,nifi-aws-processors,DynamoDB,40,2023-02-03,2025-12-09,927,1012
+11,nifi,nifi-aws-service-api-nar,DynamoDB,1,2025-12-09,2025-12-09,1,1
+11,nifi,nifi-code-coverage,DynamoDB,34,2023-11-08,2025-12-09,429,438
+11,nifi,minifi-c2-assembly,H2,4,2023-02-03,2023-10-12,451,451
+11,nifi,minifi-c2-provider-nifi-rest,H2,2,2023-02-03,2023-08-16,340,340
+11,nifi,minifi-framework-core,H2,4,2023-02-03,2023-10-12,451,451
+11,nifi,minifi-framework-nar,H2,4,2023-02-03,2023-10-12,451,451
+11,nifi,minifi-integration-tests,H2,4,2023-02-03,2023-10-12,451,451
+11,nifi,minifi-server,H2,4,2023-02-03,2023-10-12,451,451
+11,nifi,minifi-toolkit-assembly,H2,4,2023-02-03,2023-10-12,451,451
+11,nifi,minifi-toolkit-configuration,H2,4,2023-02-03,2023-10-12,451,451
+11,nifi,nifi-administration,H2,4,2023-02-03,2023-10-12,451,451
+11,nifi,nifi-code-coverage,H2,4,2023-11-08,2025-12-09,429,429
+11,nifi,nifi-database-utils,H2,6,2023-02-03,2025-07-22,925,925
+11,nifi,nifi-dbcp-service,H2,6,2023-02-03,2025-07-22,925,925
+11,nifi,nifi-file-authorizer,H2,4,2023-02-03,2023-10-12,451,451
+11,nifi,nifi-framework-cluster,H2,4,2023-02-03,2023-10-12,451,451
+11,nifi,nifi-framework-core,H2,4,2023-02-03,2023-10-12,451,451
+11,nifi,nifi-framework-nar,H2,4,2023-02-03,2023-10-12,451,451
+11,nifi,nifi-h2-database,H2,1,2023-02-03,2023-03-06,42,42
+11,nifi,nifi-h2-database-migrator,H2,1,2023-02-03,2023-03-06,42,42
+11,nifi,nifi-headless-server,H2,4,2023-02-03,2023-10-12,451,451
+11,nifi,nifi-headless-server-nar,H2,4,2023-02-03,2023-10-12,451,451
+11,nifi,nifi-iotdb-processors,H2,1,2023-02-03,2024-01-05,577,577
+11,nifi,nifi-jetty,H2,4,2023-02-03,2023-10-12,451,451
+11,nifi,nifi-poi-nar,H2,3,2023-03-15,2024-08-06,790,790
+11,nifi,nifi-poi-processors,H2,2,2023-03-15,2023-09-28,363,363
+11,nifi,nifi-poi-services,H2,3,2023-06-16,2024-08-06,614,614
+11,nifi,nifi-registry-framework,H2,7,2023-02-03,2025-12-09,927,927
+11,nifi,nifi-registry-revision-spring-jdbc,H2,7,2023-02-03,2025-12-09,927,927
+11,nifi,nifi-registry-toolkit-assembly,H2,7,2023-02-03,2025-12-09,927,927
+11,nifi,nifi-registry-toolkit-persistence,H2,7,2023-02-03,2025-12-09,927,927
+11,nifi,nifi-registry-web-api,H2,7,2023-02-03,2025-12-09,927,927
+11,nifi,nifi-rocksdb-repository,H2,1,2023-02-03,2023-02-27,38,38
+11,nifi,nifi-server-nar,H2,4,2023-02-03,2023-10-12,451,451
+11,nifi,nifi-standard-processors,H2,6,2023-02-03,2025-07-22,925,925
+11,nifi,nifi-system-test-suite,H2,4,2023-02-03,2023-10-12,451,451
+11,nifi,nifi-toolkit-admin,H2,1,2023-02-03,2023-03-29,83,83
+11,nifi,nifi-toolkit-assembly,H2,4,2023-02-03,2023-10-12,451,451
+11,nifi,nifi-toolkit-cli,H2,4,2023-02-03,2023-10-12,451,451
+11,nifi,nifi-toolkit-encrypt-config,H2,4,2023-02-03,2023-10-12,451,451
+11,nifi,nifi-web-api,H2,4,2023-02-03,2023-10-12,451,451
+11,nifi,nifi-web-optimistic-locking,H2,4,2023-02-03,2023-10-12,451,451
+11,nifi,nifi-web-security,H2,4,2023-02-03,2023-10-12,451,451
+11,nifi,nifi-code-coverage,HBase,3,2023-11-08,2024-10-26,393,393
+11,nifi,nifi-hbase_1_1_2-client-service,HBase,1,2023-02-03,2023-02-21,31,31
+11,nifi,nifi-hbase_1_1_2-client-service-nar,HBase,1,2023-02-03,2023-02-21,31,31
+11,nifi,nifi-hbase_2-client-service,HBase,5,2023-02-03,2024-10-26,891,891
+11,nifi,nifi-hbase_2-client-service-nar,HBase,5,2023-02-03,2024-10-26,891,891
+11,nifi,nifi-hive-test-utils,HBase,2,2023-02-03,2023-03-28,79,158
+11,nifi,nifi-hive3-nar,HBase,2,2023-02-03,2023-10-27,481,962
+11,nifi,nifi-hive3-processors,HBase,2,2023-02-03,2023-10-27,481,962
+11,nifi,nifi-iceberg-processors,HBase,2,2023-02-03,2023-03-28,79,158
+11,nifi,nifi-code-coverage,Hazelcast,5,2023-11-08,2025-12-09,429,429
+11,nifi,nifi-hazelcast-services,Hazelcast,10,2023-02-03,2025-12-09,927,927
+11,nifi,nifi-hazelcast-services-nar,Hazelcast,10,2023-02-03,2025-12-09,927,927
+11,nifi,nifi-ignite-nar,Ignite,1,2023-02-03,2023-05-23,180,180
+11,nifi,nifi-ignite-processors,Ignite,1,2023-02-03,2023-05-23,180,180
+11,nifi,nifi-code-coverage,Influx DB,1,2023-11-08,2023-12-01,46,46
+11,nifi,nifi-influxdb-nar,Influx DB,1,2023-02-03,2023-12-01,544,544
+11,nifi,nifi-influxdb-processors,Influx DB,1,2023-02-03,2023-12-01,544,544
+11,nifi,nifi-iotdb-processors,Influx DB,1,2023-02-03,2023-11-28,534,534
+11,nifi,nifi-code-coverage,MS SQL Server_Microsoft Azure SQL Database,1,2023-11-08,2024-03-30,201,201
+11,nifi,nifi-hive-test-utils,MS SQL Server_Microsoft Azure SQL Database,1,2023-02-03,2023-03-28,79,79
+11,nifi,nifi-hive3-nar,MS SQL Server_Microsoft Azure SQL Database,1,2023-02-03,2024-03-30,699,699
+11,nifi,nifi-hive3-processors,MS SQL Server_Microsoft Azure SQL Database,1,2023-02-03,2024-03-30,699,699
+11,nifi,nifi-iceberg-processors,MS SQL Server_Microsoft Azure SQL Database,1,2023-02-03,2023-03-28,79,79
+11,nifi,nifi-iceberg-processors-nar,MS SQL Server_Microsoft Azure SQL Database,1,2023-02-03,2023-03-28,79,79
+11,nifi,nifi-iceberg-services,MS SQL Server_Microsoft Azure SQL Database,1,2023-02-03,2023-06-30,265,265
+11,nifi,nifi-iceberg-services-api,MS SQL Server_Microsoft Azure SQL Database,1,2023-02-03,2023-06-30,265,265
+11,nifi,nifi-iceberg-services-api-nar,MS SQL Server_Microsoft Azure SQL Database,1,2023-02-03,2023-06-30,265,265
+11,nifi,nifi-registry-framework,Maria DB,14,2023-02-03,2025-12-09,927,927
+11,nifi,nifi-registry-revision-spring-jdbc,Maria DB,14,2023-02-03,2025-12-09,927,927
+11,nifi,nifi-registry-test,Maria DB,14,2023-02-03,2025-12-09,927,927
+11,nifi,nifi-registry-web-api,Maria DB,14,2023-02-03,2025-12-09,927,927
+11,nifi,nifi-azure-nar,Microsoft Azure CosmosDB,20,2023-02-03,2025-12-09,927,927
+11,nifi,nifi-azure-parameter-providers,Microsoft Azure CosmosDB,20,2023-02-03,2025-12-09,927,927
+11,nifi,nifi-azure-processors,Microsoft Azure CosmosDB,20,2023-02-03,2025-12-09,927,927
+11,nifi,nifi-azure-services-api,Microsoft Azure CosmosDB,20,2023-02-03,2025-12-09,927,927
+11,nifi,nifi-azure-services-api-nar,Microsoft Azure CosmosDB,20,2023-02-03,2025-12-09,927,927
+11,nifi,nifi-code-coverage,Microsoft Azure CosmosDB,16,2023-11-08,2025-12-09,429,429
+11,nifi,nifi-azure-nar,Microsoft Azure Table Storage,15,2023-02-03,2025-12-09,548,548
+11,nifi,nifi-azure-parameter-providers,Microsoft Azure Table Storage,1,2023-02-03,2023-06-07,211,211
+11,nifi,nifi-azure-processors,Microsoft Azure Table Storage,15,2023-02-03,2025-12-09,548,548
+11,nifi,nifi-azure-services-api,Microsoft Azure Table Storage,1,2023-02-03,2023-06-07,211,211
+11,nifi,nifi-azure-services-api-nar,Microsoft Azure Table Storage,1,2023-02-03,2023-06-07,211,211
+11,nifi,nifi-code-coverage,Microsoft Azure Table Storage,6,2024-01-16,2025-12-09,337,338
+11,nifi,nifi-snowflake-processors,Microsoft Azure Table Storage,1,2025-12-09,2025-12-09,1,1
+11,nifi,nifi-snowflake-services,Microsoft Azure Table Storage,1,2025-12-09,2025-12-09,1,1
+11,nifi,nifi-snowflake-services-api,Microsoft Azure Table Storage,1,2025-12-09,2025-12-09,1,1
+11,nifi,nifi-snowflake-services-api-nar,Microsoft Azure Table Storage,1,2025-12-09,2025-12-09,1,1
+11,nifi,nifi-code-coverage,MongoDB,8,2023-11-08,2025-12-09,429,429
+11,nifi,nifi-mongodb-client-service-api,MongoDB,11,2023-02-03,2025-12-09,927,927
+11,nifi,nifi-mongodb-client-service-api-nar,MongoDB,11,2023-02-03,2025-12-09,927,927
+11,nifi,nifi-mongodb-nar,MongoDB,5,2023-02-03,2024-04-25,726,726
+11,nifi,nifi-mongodb-processors,MongoDB,11,2023-02-03,2025-12-09,927,927
+11,nifi,nifi-mongodb-services,MongoDB,11,2023-02-03,2025-12-09,927,927
+11,nifi,nifi-registry-framework,MySQL,12,2023-02-03,2025-12-09,927,927
+11,nifi,nifi-registry-revision-spring-jdbc,MySQL,12,2023-02-03,2025-12-09,927,927
+11,nifi,nifi-registry-test,MySQL,12,2023-02-03,2025-12-09,927,927
+11,nifi,nifi-registry-web-api,MySQL,12,2023-02-03,2025-12-09,927,927
+11,nifi,nifi-code-coverage,Neo4j,15,2023-11-08,2025-12-09,429,429
+11,nifi,nifi-neo4j-3-cypher-service,Neo4j,1,2023-02-03,2023-03-29,82,82
+11,nifi,nifi-neo4j-3-cypher-service-nar,Neo4j,1,2023-02-03,2023-03-29,82,82
+11,nifi,nifi-neo4j-cypher-service,Neo4j,17,2023-02-03,2025-12-09,927,927
+11,nifi,nifi-neo4j-cypher-service-nar,Neo4j,17,2023-02-03,2025-12-09,927,927
+11,nifi,nifi-other-graph-services,Neo4j,1,2023-02-03,2023-04-18,128,128
+11,nifi,nifi-other-graph-services-nar,Neo4j,1,2023-02-03,2023-04-18,128,128
+11,nifi,nifi-registry-framework,PostgreSQL,9,2023-02-03,2025-12-09,927,927
+11,nifi,nifi-registry-revision-spring-jdbc,PostgreSQL,9,2023-02-03,2025-12-09,927,927
+11,nifi,nifi-registry-test,PostgreSQL,9,2023-02-03,2025-12-09,927,927
+11,nifi,nifi-registry-web-api,PostgreSQL,9,2023-02-03,2025-12-09,927,927
+11,nifi,nifi-standard-processors,PostgreSQL,7,2024-02-09,2025-12-09,288,288
+11,nifi,nifi-code-coverage,Redis,13,2023-11-08,2025-12-09,429,858
+11,nifi,nifi-redis-extensions,Redis,19,2023-02-03,2025-12-09,927,1854
+11,nifi,nifi-redis-service-api,Redis,19,2023-02-03,2025-12-09,927,1854
+11,nifi,nifi-redis-service-api-nar,Redis,19,2023-02-03,2025-12-09,927,1854
+11,nifi,nifi-redis-utils,Redis,13,2023-10-06,2025-12-09,499,998
+11,nifi,nifi-code-coverage,Snowflake,9,2023-11-08,2025-12-09,429,429
+11,nifi,nifi-snowflake-processors,Snowflake,11,2023-06-20,2025-12-09,690,690
+11,nifi,nifi-snowflake-services,Snowflake,11,2023-06-20,2025-12-09,690,690
+11,nifi,nifi-snowflake-services-api,Snowflake,11,2023-06-20,2025-12-09,690,690
+11,nifi,nifi-snowflake-services-api-nar,Snowflake,11,2023-06-20,2025-12-09,690,690
+58,nutz,nutz,H2,9,2011-01-30,2025-08-14,118,118
+58,nutz,nutz,MS SQL Server_Microsoft Azure SQL Database,1,2019-01-09,2025-08-14,33,33
+58,nutz,nutz,Maria DB,1,2024-09-10,2025-08-14,4,4
+58,nutz,nutz,MySQL,8,2013-01-23,2025-08-14,85,85
+58,nutz,nutz,PostgreSQL,4,2012-06-05,2025-08-14,102,102
+58,nutz,nutz,SQLite,1,2016-12-24,2025-08-14,58,58
+37,pitest,pitest,Hazelcast,1,2011-06-27,2011-09-05,25,25
+37,pitest,pitest-maven,Hazelcast,1,2011-06-27,2011-09-05,25,25
+63,presto,presto-bigquery,Cassandra,1,2024-08-23,2024-08-23,1,1
+63,presto,presto-cassandra,Cassandra,2,2014-01-23,2014-08-21,18,18
+63,presto,presto-redshift,Cassandra,1,2024-11-01,2024-11-01,1,1
+63,presto,presto-accumulo,ClickHouse,1,2025-09-11,2025-09-11,1,1
+63,presto,presto-base-arrow-flight,ClickHouse,1,2025-09-03,2025-09-08,2,2
+63,presto,presto-benchmark,ClickHouse,1,2025-08-12,2025-09-17,8,8
+63,presto,presto-bigquery,ClickHouse,1,2024-08-23,2025-09-17,7,7
+63,presto,presto-clickhouse,ClickHouse,1,2025-10-01,2026-01-08,3,3
+63,presto,presto-druid,ClickHouse,1,2025-08-18,2025-09-02,3,3
+63,presto,presto-elasticsearch,ClickHouse,1,2025-08-14,2025-08-14,1,1
+63,presto,presto-hana,ClickHouse,1,2025-09-11,2026-01-02,6,6
+63,presto,presto-hive-function-namespace,ClickHouse,1,2024-11-01,2025-12-16,11,11
+63,presto,presto-kafka,ClickHouse,1,2025-08-18,2025-09-17,3,3
+63,presto,presto-lark-sheets,ClickHouse,1,2025-09-17,2025-09-17,1,1
+63,presto,presto-mysql,ClickHouse,1,2025-09-05,2025-12-04,4,4
+63,presto,presto-oracle,ClickHouse,1,2025-03-28,2026-01-08,7,7
+63,presto,presto-parquet,ClickHouse,1,2025-09-25,2026-01-08,25,25
+63,presto,presto-pinot,ClickHouse,1,2025-09-17,2026-01-04,4,4
+63,presto,presto-pinot-toolkit,ClickHouse,1,2025-11-26,2026-01-06,6,6
+63,presto,presto-postgresql,ClickHouse,1,2025-01-27,2026-01-07,5,5
+63,presto,presto-redshift,ClickHouse,1,2025-05-29,2025-05-29,1,1
+63,presto,presto-singlestore,ClickHouse,1,2025-09-17,2025-12-12,5,5
+63,presto,presto-sqlserver,ClickHouse,1,2025-09-16,2025-09-16,1,1
+63,presto,presto-thrift-connector,ClickHouse,1,2025-09-17,2025-12-25,10,10
+63,presto,redis-hbo-provider,ClickHouse,1,2025-08-20,2025-09-16,2,2
+63,presto,presto,H2,1,2012-09-12,2012-10-18,5,5
+63,presto,presto-accumulo,H2,1,2025-08-12,2026-01-08,66,66
+63,presto,presto-atop,H2,1,2025-09-17,2025-12-16,3,3
+63,presto,presto-base-arrow-flight,H2,1,2025-08-12,2026-01-04,61,61
+63,presto,presto-base-jdbc,H2,1,2025-08-28,2026-01-08,8,8
+63,presto,presto-benchmark,H2,2,2014-05-23,2026-01-08,79,79
+63,presto,presto-benchmark-runner,H2,1,2025-08-14,2025-12-04,6,6
+63,presto,presto-benchto-benchmarks,H2,1,2024-08-23,2026-01-08,50,50
+63,presto,presto-bigquery,H2,1,2024-08-23,2026-01-08,72,72
+63,presto,presto-cache,H2,1,2025-10-13,2025-12-10,3,3
+63,presto,presto-cassandra,H2,2,2014-06-30,2025-12-10,26,26
+63,presto,presto-clickhouse,H2,1,2025-08-12,2026-01-08,50,50
+63,presto,presto-delta,H2,1,2024-08-23,2026-01-08,31,31
+63,presto,presto-druid,H2,1,2025-01-27,2026-01-08,67,67
+63,presto,presto-elasticsearch,H2,1,2025-08-12,2026-01-08,68,68
+63,presto,presto-example-http,H2,1,2025-08-16,2026-01-07,12,12
+63,presto,presto-function-server,H2,1,2025-08-18,2025-10-28,7,7
+63,presto,presto-google-sheets,H2,1,2025-08-20,2026-01-08,30,30
+63,presto,presto-grpc-testing-udf-server,H2,1,2025-08-14,2026-01-08,29,29
+63,presto,presto-hana,H2,1,2025-08-19,2026-01-08,43,43
+63,presto,presto-hive,H2,2,2014-06-30,2026-01-08,108,108
+63,presto,presto-hive-common,H2,1,2024-11-01,2025-08-14,4,4
+63,presto,presto-hive-function-namespace,H2,1,2024-08-23,2026-01-08,69,69
+63,presto,presto-hive-hadoop2,H2,1,2025-09-02,2025-12-01,4,4
+63,presto,presto-hive-metastore,H2,1,2025-09-17,2025-11-06,2,2
+63,presto,presto-hudi,H2,1,2025-08-12,2026-01-06,34,34
+63,presto,presto-i18n-functions,H2,1,2025-09-11,2026-01-02,6,6
+63,presto,presto-iceberg,H2,1,2024-11-01,2026-01-08,56,56
+63,presto,presto-jdbc,H2,2,2013-11-05,2026-01-08,98,98
+63,presto,presto-jmx,H2,1,2025-11-25,2025-11-25,1,1
+63,presto,presto-kafka,H2,1,2025-05-29,2026-01-08,65,65
+63,presto,presto-kudu,H2,1,2025-09-03,2025-11-13,9,9
+63,presto,presto-lark-sheets,H2,1,2025-08-29,2026-01-07,11,11
+63,presto,presto-main,H2,3,2012-10-18,2025-12-25,47,47
+63,presto,presto-main-base,H2,1,2025-03-28,2026-01-08,97,97
+63,presto,presto-memory,H2,1,2025-10-01,2025-10-28,3,3
+63,presto,presto-ml,H2,1,2025-09-02,2025-10-07,2,2
+63,presto,presto-mongodb,H2,1,2025-09-08,2026-01-08,7,7
+63,presto,presto-mysql,H2,1,2025-08-18,2026-01-08,48,48
+63,presto,presto-native-execution,H2,1,2024-08-23,2026-01-08,50,50
+63,presto,presto-native-sidecar-plugin,H2,1,2024-11-01,2026-01-08,107,107
+63,presto,presto-native-tests,H2,1,2025-07-28,2026-01-08,78,78
+63,presto,presto-oracle,H2,1,2024-08-23,2026-01-08,60,60
+63,presto,presto-orc,H2,1,2024-08-23,2026-01-08,58,58
+63,presto,presto-parquet,H2,1,2024-08-23,2026-01-08,96,96
+63,presto,presto-pinot,H2,1,2024-08-23,2026-01-08,50,50
+63,presto,presto-pinot-toolkit,H2,1,2024-11-01,2026-01-06,30,30
+63,presto,presto-plan-checker-router-plugin,H2,1,2025-08-12,2026-01-08,109,109
+63,presto,presto-postgresql,H2,1,2024-11-01,2026-01-08,46,46
+63,presto,presto-product-tests,H2,1,2025-03-28,2025-12-10,19,19
+63,presto,presto-prometheus,H2,1,2025-09-02,2025-10-03,5,5
+63,presto,presto-proxy,H2,1,2025-08-19,2026-01-08,28,28
+63,presto,presto-raptor,H2,1,2014-05-23,2014-08-21,7,7
+63,presto,presto-rcfile,H2,1,2025-09-16,2025-09-16,1,1
+63,presto,presto-record-decoder,H2,1,2025-08-12,2025-10-01,3,3
+63,presto,presto-redis,H2,1,2025-09-12,2026-01-08,13,13
+63,presto,presto-redshift,H2,1,2024-08-23,2026-01-08,60,60
+63,presto,presto-resource-group-managers,H2,1,2025-09-17,2025-10-16,3,3
+63,presto,presto-router,H2,1,2025-08-20,2026-01-08,7,7
+63,presto,presto-server,H2,2,2013-11-05,2026-01-08,54,54
+63,presto,presto-singlestore,H2,1,2024-08-23,2026-01-08,63,63
+63,presto,presto-spark,H2,1,2024-08-23,2026-01-08,65,65
+63,presto,presto-spark-base,H2,1,2025-08-12,2026-01-08,55,55
+63,presto,presto-spark-package,H2,1,2025-08-14,2026-01-02,28,28
+63,presto,presto-spark-testing,H2,1,2024-08-23,2026-01-08,91,91
+63,presto,presto-sqlserver,H2,1,2025-01-27,2026-01-08,62,62
+63,presto,presto-teradata-functions,H2,1,2025-08-14,2025-11-13,2,2
+63,presto,presto-test-coverage,H2,1,2024-11-01,2025-07-28,5,5
+63,presto,presto-testing-server-launcher,H2,1,2025-08-12,2025-08-12,1,1
+63,presto,presto-tests,H2,2,2014-06-17,2026-01-08,84,84
+63,presto,presto-thrift-connector,H2,1,2024-08-23,2026-01-08,64,64
+63,presto,presto-thrift-testing-server,H2,1,2025-08-18,2025-12-10,5,5
+63,presto,presto-tpcds,H2,1,2025-08-18,2025-12-11,9,9
+63,presto,presto-verifier,H2,1,2025-08-14,2026-01-06,34,34
+63,presto,redis-hbo-provider,H2,1,2025-08-14,2026-01-08,37,37
+63,presto,presto-accumulo,MS SQL Server_Microsoft Azure SQL Database,1,2025-08-14,2025-08-18,2,2
+63,presto,presto-benchmark,MS SQL Server_Microsoft Azure SQL Database,2,2025-08-20,2025-11-13,7,7
+63,presto,presto-benchmark-runner,MS SQL Server_Microsoft Azure SQL Database,2,2025-08-20,2025-12-16,6,6
+63,presto,presto-benchto-benchmarks,MS SQL Server_Microsoft Azure SQL Database,4,2024-08-23,2026-01-08,29,29
+63,presto,presto-bigquery,MS SQL Server_Microsoft Azure SQL Database,1,2025-08-21,2025-10-22,6,6
+63,presto,presto-clickhouse,MS SQL Server_Microsoft Azure SQL Database,1,2025-12-05,2025-12-05,1,1
+63,presto,presto-druid,MS SQL Server_Microsoft Azure SQL Database,2,2025-08-18,2025-11-26,4,4
+63,presto,presto-elasticsearch,MS SQL Server_Microsoft Azure SQL Database,2,2025-09-17,2025-11-19,2,2
+63,presto,presto-google-sheets,MS SQL Server_Microsoft Azure SQL Database,1,2025-09-08,2025-09-08,1,1
+63,presto,presto-hana,MS SQL Server_Microsoft Azure SQL Database,2,2025-08-19,2025-12-16,7,7
+63,presto,presto-hive-function-namespace,MS SQL Server_Microsoft Azure SQL Database,2,2025-08-28,2026-01-04,12,12
+63,presto,presto-iceberg,MS SQL Server_Microsoft Azure SQL Database,1,2025-09-12,2025-09-12,1,1
+63,presto,presto-kafka,MS SQL Server_Microsoft Azure SQL Database,1,2025-09-05,2025-09-17,2,2
+63,presto,presto-mysql,MS SQL Server_Microsoft Azure SQL Database,3,2025-08-16,2026-01-08,18,18
+63,presto,presto-native-execution,MS SQL Server_Microsoft Azure SQL Database,1,2025-08-22,2025-10-01,2,2
+63,presto,presto-oracle,MS SQL Server_Microsoft Azure SQL Database,4,2025-03-28,2026-01-07,6,6
+63,presto,presto-parquet,MS SQL Server_Microsoft Azure SQL Database,1,2025-07-28,2025-07-28,1,1
+63,presto,presto-pinot,MS SQL Server_Microsoft Azure SQL Database,1,2025-09-16,2025-09-16,1,1
+63,presto,presto-postgresql,MS SQL Server_Microsoft Azure SQL Database,4,2024-11-01,2026-01-08,15,15
+63,presto,presto-product-tests,MS SQL Server_Microsoft Azure SQL Database,3,2025-03-28,2025-12-04,9,9
+63,presto,presto-proxy,MS SQL Server_Microsoft Azure SQL Database,3,2025-09-03,2026-01-08,13,13
+63,presto,presto-redshift,MS SQL Server_Microsoft Azure SQL Database,2,2025-05-29,2025-12-11,12,12
+63,presto,presto-singlestore,MS SQL Server_Microsoft Azure SQL Database,4,2024-08-23,2026-01-06,5,5
+63,presto,presto-spark,MS SQL Server_Microsoft Azure SQL Database,3,2025-08-14,2026-01-07,14,14
+63,presto,presto-spark-package,MS SQL Server_Microsoft Azure SQL Database,2,2025-09-12,2026-01-02,3,3
+63,presto,presto-spark-testing,MS SQL Server_Microsoft Azure SQL Database,3,2024-11-01,2025-12-10,6,6
+63,presto,presto-sqlserver,MS SQL Server_Microsoft Azure SQL Database,1,2025-08-12,2025-10-13,7,7
+63,presto,presto-thrift-connector,MS SQL Server_Microsoft Azure SQL Database,2,2025-09-03,2026-01-02,8,8
+63,presto,presto-verifier,MS SQL Server_Microsoft Azure SQL Database,3,2025-08-18,2026-01-08,32,32
+63,presto,presto-accumulo,Maria DB,1,2025-08-20,2026-01-08,58,58
+63,presto,presto-atop,Maria DB,1,2025-09-17,2025-12-25,5,5
+63,presto,presto-base-arrow-flight,Maria DB,1,2025-08-20,2026-01-04,54,54
+63,presto,presto-base-jdbc,Maria DB,1,2025-08-28,2026-01-08,8,8
+63,presto,presto-benchmark,Maria DB,1,2025-08-20,2026-01-08,66,66
+63,presto,presto-benchmark-driver,Maria DB,1,2025-09-03,2026-01-08,14,14
+63,presto,presto-benchmark-runner,Maria DB,1,2025-10-01,2025-12-04,3,3
+63,presto,presto-benchto-benchmarks,Maria DB,1,2025-08-20,2026-01-08,45,45
+63,presto,presto-bigquery,Maria DB,1,2025-08-20,2026-01-08,65,65
+63,presto,presto-built-in-worker-function-tools,Maria DB,1,2025-09-15,2026-01-08,8,8
+63,presto,presto-cache,Maria DB,1,2025-08-22,2025-12-10,11,11
+63,presto,presto-cassandra,Maria DB,1,2025-08-20,2025-12-10,21,21
+63,presto,presto-cli,Maria DB,1,2025-09-17,2026-01-02,7,7
+63,presto,presto-clickhouse,Maria DB,1,2025-08-22,2026-01-08,47,47
+63,presto,presto-client,Maria DB,1,2025-10-30,2025-11-17,3,3
+63,presto,presto-db-session-property-manager,Maria DB,1,2025-09-12,2026-01-08,18,18
+63,presto,presto-delta,Maria DB,1,2025-08-20,2026-01-08,26,26
+63,presto,presto-druid,Maria DB,1,2025-08-20,2026-01-08,61,61
+63,presto,presto-elasticsearch,Maria DB,1,2025-08-21,2026-01-08,61,61
+63,presto,presto-function-namespace-managers,Maria DB,1,2025-08-20,2026-01-08,92,92
+63,presto,presto-function-server,Maria DB,1,2025-09-02,2025-12-16,6,6
+63,presto,presto-google-sheets,Maria DB,1,2025-08-20,2026-01-08,29,29
+63,presto,presto-grpc-api,Maria DB,1,2025-09-17,2025-12-16,3,3
+63,presto,presto-grpc-testing-udf-server,Maria DB,1,2025-08-20,2025-12-12,12,12
+63,presto,presto-hana,Maria DB,1,2025-08-21,2026-01-08,42,42
+63,presto,presto-hdfs-core,Maria DB,1,2025-09-11,2025-12-11,13,13
+63,presto,presto-hive,Maria DB,1,2025-08-20,2026-01-08,91,91
+63,presto,presto-hive-function-namespace,Maria DB,1,2025-08-20,2026-01-08,56,56
+63,presto,presto-hive-hadoop2,Maria DB,1,2025-09-02,2025-12-01,4,4
+63,presto,presto-hive-metastore,Maria DB,1,2025-09-17,2025-11-06,2,2
+63,presto,presto-hudi,Maria DB,1,2025-08-20,2026-01-06,33,33
+63,presto,presto-i18n-functions,Maria DB,1,2025-09-11,2026-01-02,6,6
+63,presto,presto-iceberg,Maria DB,1,2025-08-20,2026-01-08,46,46
+63,presto,presto-jdbc,Maria DB,1,2025-08-20,2026-01-08,67,67
+63,presto,presto-jmx,Maria DB,1,2025-11-25,2025-11-25,1,1
+63,presto,presto-kafka,Maria DB,1,2025-08-21,2026-01-08,59,59
+63,presto,presto-kudu,Maria DB,1,2025-09-03,2025-11-13,10,10
+63,presto,presto-lark-sheets,Maria DB,1,2025-08-29,2026-01-07,11,11
+63,presto,presto-main-base,Maria DB,1,2025-08-20,2026-01-08,88,88
+63,presto,presto-main-tests,Maria DB,1,2025-12-04,2025-12-10,2,2
+63,presto,presto-memory,Maria DB,1,2025-10-01,2025-10-28,3,3
+63,presto,presto-ml,Maria DB,1,2025-09-02,2025-10-07,2,2
+63,presto,presto-mongodb,Maria DB,1,2025-09-08,2026-01-08,9,9
+63,presto,presto-mysql,Maria DB,1,2025-08-20,2026-01-08,46,46
+63,presto,presto-native-execution,Maria DB,1,2025-08-20,2026-01-08,45,45
+63,presto,presto-native-sidecar-plugin,Maria DB,1,2025-08-20,2026-01-08,94,94
+63,presto,presto-native-tests,Maria DB,1,2025-08-20,2026-01-08,71,71
+63,presto,presto-oracle,Maria DB,1,2025-08-20,2026-01-08,50,50
+63,presto,presto-parquet,Maria DB,1,2025-08-20,2026-01-08,85,85
+63,presto,presto-password-authenticators,Maria DB,1,2025-09-05,2025-12-05,9,9
+63,presto,presto-pinot,Maria DB,1,2025-08-20,2026-01-08,42,42
+63,presto,presto-pinot-toolkit,Maria DB,1,2025-08-29,2026-01-06,25,25
+63,presto,presto-plan-checker-router-plugin,Maria DB,1,2025-08-20,2026-01-08,101,101
+63,presto,presto-postgresql,Maria DB,1,2025-08-20,2026-01-08,41,41
+63,presto,presto-product-tests,Maria DB,1,2025-08-21,2025-12-10,17,17
+63,presto,presto-prometheus,Maria DB,1,2025-09-17,2025-10-03,3,3
+63,presto,presto-proxy,Maria DB,1,2025-08-20,2026-01-08,27,27
+63,presto,presto-redis,Maria DB,1,2025-09-12,2026-01-08,13,13
+63,presto,presto-redshift,Maria DB,1,2025-08-20,2026-01-08,52,52
+63,presto,presto-router,Maria DB,1,2025-08-20,2026-01-08,7,7
+63,presto,presto-server,Maria DB,1,2025-09-05,2026-01-08,31,31
+63,presto,presto-singlestore,Maria DB,1,2025-08-20,2026-01-08,59,59
+63,presto,presto-spark,Maria DB,1,2025-08-20,2026-01-08,56,56
+63,presto,presto-spark-base,Maria DB,1,2025-08-20,2026-01-08,49,49
+63,presto,presto-spark-common,Maria DB,1,2025-09-03,2026-01-07,14,14
+63,presto,presto-spark-package,Maria DB,1,2025-08-20,2026-01-02,26,26
+63,presto,presto-spark-testing,Maria DB,1,2025-08-20,2026-01-08,80,80
+63,presto,presto-sqlserver,Maria DB,1,2025-08-20,2026-01-08,58,58
+63,presto,presto-teradata-functions,Maria DB,1,2025-11-13,2025-11-13,1,1
+63,presto,presto-tests,Maria DB,1,2025-08-20,2026-01-08,75,75
+63,presto,presto-thrift-connector,Maria DB,1,2025-08-20,2026-01-08,59,59
+63,presto,presto-thrift-testing-server,Maria DB,1,2025-09-03,2025-12-10,4,4
+63,presto,presto-thrift-testing-udf-server,Maria DB,1,2025-09-04,2025-12-05,5,5
+63,presto,presto-tpcds,Maria DB,1,2025-08-22,2025-12-11,8,8
+63,presto,presto-verifier,Maria DB,1,2025-08-20,2026-01-06,32,32
+63,presto,redis-hbo-provider,Maria DB,1,2025-08-21,2026-01-08,35,35
+63,presto,presto-accumulo,MySQL,1,2025-08-12,2026-01-08,64,64
+63,presto,presto-atop,MySQL,1,2025-09-17,2025-12-25,5,5
+63,presto,presto-base-arrow-flight,MySQL,1,2025-08-12,2026-01-04,61,61
+63,presto,presto-base-jdbc,MySQL,1,2025-08-28,2026-01-08,8,8
+63,presto,presto-benchmark,MySQL,2,2024-08-23,2026-01-08,75,75
+63,presto,presto-benchmark-driver,MySQL,1,2025-09-03,2026-01-08,14,14
+63,presto,presto-benchmark-runner,MySQL,1,2025-08-14,2025-12-16,12,12
+63,presto,presto-benchto-benchmarks,MySQL,2,2024-08-23,2026-01-08,51,51
+63,presto,presto-bigquery,MySQL,2,2024-08-23,2026-01-08,74,74
+63,presto,presto-built-in-worker-function-tools,MySQL,1,2025-09-15,2026-01-08,8,8
+63,presto,presto-cache,MySQL,1,2025-08-22,2025-12-10,11,11
+63,presto,presto-cassandra,MySQL,1,2025-08-14,2025-12-10,24,24
+63,presto,presto-cli,MySQL,1,2025-09-17,2026-01-02,7,7
+63,presto,presto-clickhouse,MySQL,1,2025-08-12,2026-01-08,51,51
+63,presto,presto-client,MySQL,1,2025-10-30,2025-11-17,3,3
+63,presto,presto-db-session-property-manager,MySQL,1,2025-09-12,2026-01-08,18,18
+63,presto,presto-delta,MySQL,2,2024-08-23,2026-01-08,31,31
+63,presto,presto-druid,MySQL,2,2025-01-27,2026-01-08,67,67
+63,presto,presto-elasticsearch,MySQL,1,2025-08-12,2026-01-08,67,67
+63,presto,presto-example-http,MySQL,1,2025-08-16,2026-01-07,12,12
+63,presto,presto-function-namespace-managers,MySQL,2,2024-08-23,2026-01-08,103,103
+63,presto,presto-function-server,MySQL,1,2025-08-18,2025-12-16,7,7
+63,presto,presto-google-sheets,MySQL,1,2025-08-20,2026-01-08,29,29
+63,presto,presto-grpc-api,MySQL,1,2025-09-17,2025-12-16,3,3
+63,presto,presto-grpc-testing-udf-server,MySQL,2,2025-03-28,2026-01-08,32,32
+63,presto,presto-hana,MySQL,1,2025-08-19,2026-01-08,43,43
+63,presto,presto-hdfs-core,MySQL,1,2025-09-11,2025-12-11,13,13
+63,presto,presto-hive,MySQL,2,2024-08-23,2026-01-08,105,105
+63,presto,presto-hive-common,MySQL,2,2024-11-01,2025-08-14,4,4
+63,presto,presto-hive-function-namespace,MySQL,2,2024-08-23,2026-01-08,67,67
+63,presto,presto-hive-hadoop2,MySQL,1,2025-09-02,2025-12-01,4,4
+63,presto,presto-hive-metastore,MySQL,1,2025-09-17,2025-11-06,2,2
+63,presto,presto-hudi,MySQL,1,2025-08-12,2026-01-06,34,34
+63,presto,presto-i18n-functions,MySQL,1,2025-09-11,2026-01-02,6,6
+63,presto,presto-iceberg,MySQL,2,2024-11-01,2026-01-08,57,57
+63,presto,presto-jdbc,MySQL,2,2024-08-23,2026-01-08,80,80
+63,presto,presto-jmx,MySQL,1,2025-11-25,2025-11-25,1,1
+63,presto,presto-kafka,MySQL,1,2025-05-29,2026-01-08,65,65
+63,presto,presto-kudu,MySQL,1,2025-09-03,2025-11-13,10,10
+63,presto,presto-lark-sheets,MySQL,1,2025-08-29,2026-01-07,11,11
+63,presto,presto-main,MySQL,2,2024-08-23,2025-12-25,20,20
+63,presto,presto-main-base,MySQL,2,2025-03-28,2026-01-08,97,97
+63,presto,presto-main-tests,MySQL,1,2025-12-04,2025-12-10,2,2
+63,presto,presto-memory,MySQL,1,2025-10-01,2025-10-28,3,3
+63,presto,presto-ml,MySQL,1,2025-09-02,2025-10-07,2,2
+63,presto,presto-mongodb,MySQL,1,2025-09-08,2026-01-08,9,9
+63,presto,presto-mysql,MySQL,1,2025-08-18,2026-01-08,47,47
+63,presto,presto-native-execution,MySQL,2,2024-08-23,2026-01-08,51,51
+63,presto,presto-native-sidecar-plugin,MySQL,2,2024-11-01,2026-01-08,107,107
+63,presto,presto-native-tests,MySQL,1,2025-07-28,2026-01-08,78,78
+63,presto,presto-oracle,MySQL,2,2024-08-23,2026-01-08,58,58
+63,presto,presto-orc,MySQL,2,2024-08-23,2026-01-08,60,60
+63,presto,presto-parquet,MySQL,2,2024-08-23,2026-01-08,98,98
+63,presto,presto-password-authenticators,MySQL,1,2025-09-05,2025-12-05,9,9
+63,presto,presto-pinot,MySQL,2,2024-08-23,2026-01-08,50,50
+63,presto,presto-pinot-toolkit,MySQL,2,2024-11-01,2026-01-06,30,30
+63,presto,presto-plan-checker-router-plugin,MySQL,1,2025-08-12,2026-01-08,109,109
+63,presto,presto-postgresql,MySQL,2,2024-11-01,2026-01-08,46,46
+63,presto,presto-product-tests,MySQL,2,2025-03-28,2025-12-10,20,20
+63,presto,presto-prometheus,MySQL,1,2025-09-17,2025-10-03,3,3
+63,presto,presto-proxy,MySQL,1,2025-08-19,2026-01-08,33,33
+63,presto,presto-rcfile,MySQL,1,2025-09-16,2025-09-16,1,1
+63,presto,presto-record-decoder,MySQL,1,2025-08-12,2025-10-01,3,3
+63,presto,presto-redis,MySQL,1,2025-09-12,2026-01-08,13,13
+63,presto,presto-redshift,MySQL,2,2024-08-23,2026-01-08,59,59
+63,presto,presto-resource-group-managers,MySQL,2,2025-01-27,2025-10-16,4,4
+63,presto,presto-router,MySQL,1,2025-08-20,2026-01-08,7,7
+63,presto,presto-server,MySQL,1,2025-08-16,2026-01-08,33,33
+63,presto,presto-singlestore,MySQL,2,2024-08-23,2026-01-08,64,64
+63,presto,presto-spark,MySQL,2,2024-08-23,2026-01-08,67,67
+63,presto,presto-spark-base,MySQL,1,2025-08-12,2026-01-08,54,54
+63,presto,presto-spark-common,MySQL,1,2025-09-03,2026-01-07,14,14
+63,presto,presto-spark-package,MySQL,1,2025-08-14,2026-01-02,29,29
+63,presto,presto-spark-testing,MySQL,2,2024-08-23,2026-01-08,92,92
+63,presto,presto-sqlserver,MySQL,2,2025-01-27,2026-01-08,64,64
+63,presto,presto-teradata-functions,MySQL,1,2025-11-13,2025-11-13,1,1
+63,presto,presto-test-coverage,MySQL,2,2024-11-01,2025-07-28,5,5
+63,presto,presto-testing-server-launcher,MySQL,1,2025-08-12,2025-08-12,1,1
+63,presto,presto-tests,MySQL,1,2025-08-14,2026-01-08,79,79
+63,presto,presto-thrift-connector,MySQL,2,2024-08-23,2026-01-08,67,67
+63,presto,presto-thrift-testing-server,MySQL,1,2025-08-18,2025-12-10,5,5
+63,presto,presto-thrift-testing-udf-server,MySQL,1,2025-09-04,2025-12-05,5,5
+63,presto,presto-tpcds,MySQL,1,2025-08-18,2025-12-11,9,9
+63,presto,presto-verifier,MySQL,2,2014-06-17,2026-01-08,49,49
+63,presto,redis-hbo-provider,MySQL,1,2025-08-14,2026-01-08,37,37
+63,presto,presto-accumulo,Oracle,1,2025-09-17,2025-09-17,1,1
+63,presto,presto-benchmark,Oracle,1,2025-09-17,2025-12-16,2,2
+63,presto,presto-bigquery,Oracle,1,2025-09-30,2025-12-01,2,2
+63,presto,presto-cache,Oracle,1,2025-10-22,2025-10-22,1,1
+63,presto,presto-clickhouse,Oracle,1,2025-10-01,2026-01-06,7,7
+63,presto,presto-hana,Oracle,1,2025-10-15,2026-01-02,2,2
+63,presto,presto-hive-function-namespace,Oracle,1,2025-08-20,2025-12-01,12,12
+63,presto,presto-mysql,Oracle,1,2025-09-17,2026-01-07,3,3
+63,presto,presto-oracle,Oracle,1,2025-08-12,2026-01-08,6,6
+63,presto,presto-parquet,Oracle,1,2024-08-23,2026-01-08,43,43
+63,presto,presto-pinot,Oracle,1,2025-11-13,2026-01-04,3,3
+63,presto,presto-pinot-toolkit,Oracle,1,2025-11-26,2025-12-25,5,5
+63,presto,presto-postgresql,Oracle,1,2025-01-27,2025-11-11,3,3
+63,presto,presto-singlestore,Oracle,1,2025-08-14,2026-01-08,17,17
+63,presto,presto-thrift-connector,Oracle,1,2025-03-28,2025-12-10,9,9
+63,presto,presto-accumulo,PostgreSQL,1,2025-09-17,2025-09-17,1,1
+63,presto,presto-benchmark,PostgreSQL,1,2025-09-15,2025-09-17,2,2
+63,presto,presto-benchmark-runner,PostgreSQL,1,2025-08-20,2025-12-16,6,6
+63,presto,presto-benchto-benchmarks,PostgreSQL,2,2024-08-23,2026-01-08,29,29
+63,presto,presto-bigquery,PostgreSQL,1,2025-12-01,2025-12-01,1,1
+63,presto,presto-clickhouse,PostgreSQL,1,2025-09-24,2025-12-10,4,4
+63,presto,presto-elasticsearch,PostgreSQL,1,2026-01-08,2026-01-08,1,1
+63,presto,presto-hana,PostgreSQL,1,2025-09-08,2026-01-06,6,6
+63,presto,presto-hive-function-namespace,PostgreSQL,1,2025-08-18,2026-01-08,12,12
+63,presto,presto-iceberg,PostgreSQL,1,2025-09-12,2025-09-12,1,1
+63,presto,presto-kafka,PostgreSQL,1,2025-09-17,2025-09-17,1,1
+63,presto,presto-mysql,PostgreSQL,1,2025-09-17,2025-12-12,2,2
+63,presto,presto-native-execution,PostgreSQL,1,2025-08-22,2025-10-01,2,2
+63,presto,presto-oracle,PostgreSQL,2,2025-03-28,2026-01-08,17,17
+63,presto,presto-parquet,PostgreSQL,2,2024-08-23,2026-01-04,31,31
+63,presto,presto-pinot,PostgreSQL,1,2025-11-13,2025-12-05,2,2
+63,presto,presto-pinot-toolkit,PostgreSQL,1,2025-11-26,2025-12-12,3,3
+63,presto,presto-postgresql,PostgreSQL,2,2024-11-01,2026-01-07,5,6
+63,presto,presto-product-tests,PostgreSQL,1,2025-03-28,2025-12-04,9,9
+63,presto,presto-proxy,PostgreSQL,1,2025-09-03,2026-01-08,13,13
+63,presto,presto-singlestore,PostgreSQL,2,2024-08-23,2025-11-06,15,15
+63,presto,presto-spark,PostgreSQL,1,2025-08-14,2026-01-07,14,14
+63,presto,presto-spark-package,PostgreSQL,1,2025-09-12,2026-01-02,3,3
+63,presto,presto-spark-testing,PostgreSQL,1,2024-11-01,2025-12-10,6,6
+63,presto,presto-thrift-connector,PostgreSQL,1,2025-03-28,2025-12-25,17,17
+63,presto,presto-verifier,PostgreSQL,1,2025-08-18,2026-01-08,32,32
+63,presto,presto-accumulo,Redis,3,2025-08-29,2026-01-08,14,14
+63,presto,presto-atop,Redis,1,2025-09-24,2025-09-24,1,1
+63,presto,presto-base-arrow-flight,Redis,2,2025-08-12,2025-12-04,14,14
+63,presto,presto-base-jdbc,Redis,1,2025-10-07,2025-10-07,1,1
+63,presto,presto-benchmark,Redis,4,2024-08-23,2026-01-08,29,31
+63,presto,presto-bigquery,Redis,3,2025-08-16,2026-01-08,17,22
+63,presto,presto-cassandra,Redis,1,2025-09-08,2025-10-13,3,3
+63,presto,presto-clickhouse,Redis,1,2025-10-10,2025-10-10,1,1
+63,presto,presto-druid,Redis,3,2025-08-18,2025-12-12,10,10
+63,presto,presto-elasticsearch,Redis,3,2025-08-18,2026-01-08,15,15
+63,presto,presto-google-sheets,Redis,3,2025-09-12,2025-12-12,7,7
+63,presto,presto-hana,Redis,3,2025-08-20,2026-01-08,5,5
+63,presto,presto-hive-function-namespace,Redis,4,2024-08-23,2026-01-06,11,12
+63,presto,presto-i18n-functions,Redis,1,2025-12-25,2026-01-02,2,2
+63,presto,presto-kafka,Redis,3,2025-08-14,2026-01-07,15,16
+63,presto,presto-mysql,Redis,1,2025-09-12,2025-09-12,1,1
+63,presto,presto-oracle,Redis,3,2025-03-28,2025-09-03,6,7
+63,presto,presto-parquet,Redis,2,2025-07-28,2025-11-11,2,2
+63,presto,presto-pinot-toolkit,Redis,2,2025-12-10,2026-01-04,2,2
+63,presto,presto-postgresql,Redis,5,2024-11-01,2025-12-01,11,14
+63,presto,presto-redshift,Redis,3,2025-08-20,2025-12-25,11,12
+63,presto,presto-singlestore,Redis,2,2025-09-17,2025-12-16,5,6
+63,presto,presto-sqlserver,Redis,3,2025-08-18,2025-12-05,13,14
+63,presto,presto-thrift-connector,Redis,3,2025-08-20,2025-12-11,14,15
+63,presto,redis-hbo-provider,Redis,2,2025-08-16,2025-12-11,5,5
+63,presto,presto-benchmark,SapHana,1,2025-09-17,2025-10-01,2,2
+63,presto,presto-bigquery,SapHana,1,2025-09-08,2025-09-08,1,1
+63,presto,presto-clickhouse,SapHana,2,2025-09-24,2026-01-08,8,8
+63,presto,presto-hana,SapHana,2,2025-10-15,2025-12-11,3,3
+63,presto,presto-hive,SapHana,1,2025-01-27,2025-07-28,4,4
+63,presto,presto-hive-function-namespace,SapHana,2,2025-08-18,2025-12-16,10,10
+63,presto,presto-mysql,SapHana,1,2025-09-17,2025-12-04,5,5
+63,presto,presto-oracle,SapHana,2,2025-08-12,2025-12-11,8,8
+63,presto,presto-parquet,SapHana,2,2024-08-23,2026-01-08,42,42
+63,presto,presto-pinot,SapHana,2,2025-11-04,2026-01-04,4,4
+63,presto,presto-pinot-toolkit,SapHana,2,2025-12-01,2026-01-06,5,5
+63,presto,presto-postgresql,SapHana,1,2025-08-16,2025-11-11,3,3
+63,presto,presto-singlestore,SapHana,1,2025-08-14,2025-11-13,13,13
+63,presto,presto-thrift-connector,SapHana,2,2025-09-04,2025-12-10,8,8
+63,presto,presto-accumulo,Singlestore,1,2025-09-17,2025-09-17,1,1
+63,presto,presto-benchmark,Singlestore,1,2025-12-16,2025-12-16,1,1
+63,presto,presto-bigquery,Singlestore,1,2025-09-08,2025-12-01,2,2
+63,presto,presto-cache,Singlestore,1,2025-10-22,2025-10-22,1,1
+63,presto,presto-clickhouse,Singlestore,1,2025-10-01,2026-01-08,4,4
+63,presto,presto-hana,Singlestore,1,2025-10-15,2026-01-02,2,2
+63,presto,presto-hive-function-namespace,Singlestore,1,2025-08-18,2025-10-30,10,10
+63,presto,presto-mysql,Singlestore,1,2025-09-17,2025-12-04,3,3
+63,presto,presto-oracle,Singlestore,1,2025-08-12,2026-01-08,7,7
+63,presto,presto-parquet,Singlestore,1,2024-08-23,2026-01-08,52,52
+63,presto,presto-pinot,Singlestore,1,2025-11-13,2026-01-04,3,3
+63,presto,presto-pinot-toolkit,Singlestore,1,2025-11-26,2025-12-12,4,4
+63,presto,presto-postgresql,Singlestore,1,2025-01-27,2026-01-07,5,5
+63,presto,presto-singlestore,Singlestore,1,2025-08-14,2025-10-28,10,10
+63,presto,presto-thrift-connector,Singlestore,1,2025-03-28,2026-01-06,11,11
+64,primefaces,primefaces,Hazelcast,19,2013-12-16,2023-10-17,964,964
+64,primefaces,primefaces-integration-tests,HyperSQL,2,2021-06-08,2021-09-24,114,114
+65,psi-probe,psi-probe-core,HyperSQL,1,2023-05-21,2023-05-21,4,4
+65,psi-probe,psi-probe-core,Oracle,22,2023-05-21,2026-01-03,1471,2888
+68,redisson,redisson-hibernate,H2,7,2018-12-24,2026-01-05,868,868
+68,redisson,redisson-hibernate-4,H2,7,2018-12-24,2026-01-05,838,838
+68,redisson,redisson-hibernate-5,H2,7,2018-12-24,2026-01-05,838,838
+68,redisson,redisson-hibernate-52,H2,7,2018-12-24,2026-01-05,841,841
+68,redisson,redisson-hibernate-53,H2,7,2018-12-24,2026-01-05,868,868
+68,redisson,redisson-hibernate-6,H2,3,2022-05-27,2026-01-05,563,563
+68,redisson,redisson-hibernate-7,H2,1,2025-05-21,2026-01-05,126,126
+68,redisson,redisson-hibernate-72,H2,1,2025-12-20,2026-01-05,21,21
+68,redisson,redisson,Hazelcast,1,2013-12-22,2013-12-22,1,1
+68,redisson,redisson,Redis,354,2013-12-22,2026-01-05,1096,1097
+68,redisson,redisson-all,Redis,291,2016-08-09,2026-01-05,952,952
+68,redisson,redisson-helidon,Redis,163,2021-06-08,2026-01-05,647,647
+68,redisson,redisson-helidon-20,Redis,133,2022-08-02,2026-01-05,550,550
+68,redisson,redisson-helidon-30,Redis,133,2022-08-02,2026-01-05,550,550
+68,redisson,redisson-helidon-40,Redis,83,2023-10-24,2026-01-05,403,403
+68,redisson,redisson-hibernate,Redis,237,2018-12-24,2026-01-05,868,868
+68,redisson,redisson-hibernate-4,Redis,230,2018-12-24,2026-01-05,838,838
+68,redisson,redisson-hibernate-5,Redis,230,2018-12-24,2026-01-05,838,838
+68,redisson,redisson-hibernate-52,Redis,230,2018-12-24,2026-01-05,841,841
+68,redisson,redisson-hibernate-53,Redis,237,2018-12-24,2026-01-05,868,868
+68,redisson,redisson-hibernate-6,Redis,139,2022-05-27,2026-01-05,563,563
+68,redisson,redisson-hibernate-7,Redis,15,2025-05-21,2026-01-05,126,126
+68,redisson,redisson-hibernate-72,Redis,3,2025-12-20,2026-01-05,21,21
+68,redisson,redisson-micronaut,Redis,163,2021-06-14,2026-01-05,643,643
+68,redisson,redisson-micronaut-20,Redis,159,2021-08-20,2026-01-05,618,618
+68,redisson,redisson-micronaut-30,Redis,159,2021-08-20,2026-01-05,618,618
+68,redisson,redisson-micronaut-40,Redis,97,2023-07-18,2026-01-05,440,440
+68,redisson,redisson-mybatis,Redis,207,2019-12-09,2026-01-05,779,779
+68,redisson,redisson-parent,Redis,253,2016-08-09,2026-01-05,912,912
+68,redisson,redisson-quarkus,Redis,163,2021-06-09,2026-01-05,645,645
+68,redisson,redisson-quarkus-16,Redis,163,2021-06-09,2026-01-05,645,645
+68,redisson,redisson-quarkus-16-deployment,Redis,163,2021-06-09,2026-01-05,645,645
+68,redisson,redisson-quarkus-16-integration-tests,Redis,163,2021-06-09,2026-01-05,645,645
+68,redisson,redisson-quarkus-16-parent,Redis,163,2021-06-09,2026-01-05,645,645
+68,redisson,redisson-quarkus-20,Redis,163,2021-06-09,2026-01-05,645,645
+68,redisson,redisson-quarkus-20-deployment,Redis,163,2021-06-09,2026-01-05,645,645
+68,redisson,redisson-quarkus-20-integration-tests,Redis,163,2021-06-09,2026-01-05,645,645
+68,redisson,redisson-quarkus-20-parent,Redis,163,2021-06-09,2026-01-05,645,645
+68,redisson,redisson-quarkus-30,Redis,113,2023-04-27,2026-01-05,480,480
+68,redisson,redisson-quarkus-30-cache,Redis,57,2024-06-21,2026-01-05,271,271
+68,redisson,redisson-quarkus-30-cache-deployment,Redis,57,2024-06-21,2026-01-05,271,271
+68,redisson,redisson-quarkus-30-cache-integration-tests,Redis,57,2024-06-21,2026-01-05,271,271
+68,redisson,redisson-quarkus-30-cache-parent,Redis,57,2024-06-21,2026-01-05,271,271
+68,redisson,redisson-quarkus-30-cdi-parent,Redis,57,2024-06-21,2026-01-05,271,271
+68,redisson,redisson-quarkus-30-deployment,Redis,113,2023-04-27,2026-01-05,480,480
+68,redisson,redisson-quarkus-30-integration-tests,Redis,113,2023-04-27,2026-01-05,480,480
+68,redisson,redisson-quarkus-30-parent,Redis,113,2023-04-27,2026-01-05,480,480
+68,redisson,redisson-quarkus-33,Redis,5,2025-12-16,2026-01-05,37,37
+68,redisson,redisson-quarkus-33-cache,Redis,5,2025-12-16,2026-01-05,37,37
+68,redisson,redisson-quarkus-33-cache-deployment,Redis,5,2025-12-16,2026-01-05,37,37
+68,redisson,redisson-quarkus-33-cache-integration-tests,Redis,5,2025-12-16,2026-01-05,37,37
+68,redisson,redisson-quarkus-33-cache-parent,Redis,5,2025-12-16,2026-01-05,37,37
+68,redisson,redisson-quarkus-33-cdi-parent,Redis,5,2025-12-16,2026-01-05,37,37
+68,redisson,redisson-quarkus-33-deployment,Redis,5,2025-12-16,2026-01-05,37,37
+68,redisson,redisson-quarkus-33-integration-tests,Redis,5,2025-12-16,2026-01-05,37,37
+68,redisson,redisson-quarkus-33-parent,Redis,5,2025-12-16,2026-01-05,37,37
+68,redisson,redisson-spring,Redis,3,2025-12-20,2026-01-05,24,24
+68,redisson,redisson-spring-boot-starter,Redis,291,2018-09-03,2026-01-05,874,2017
+68,redisson,redisson-spring-cache,Redis,3,2025-12-20,2026-01-05,24,24
+68,redisson,redisson-spring-data,Redis,246,2018-09-03,2026-01-05,874,2264
+68,redisson,redisson-spring-data-16,Redis,246,2018-09-03,2026-01-05,863,3094
+68,redisson,redisson-spring-data-17,Redis,246,2018-09-03,2026-01-05,863,3094
+68,redisson,redisson-spring-data-18,Redis,248,2018-09-03,2026-01-05,874,3138
+68,redisson,redisson-spring-data-20,Redis,248,2018-09-03,2026-01-05,874,3138
+68,redisson,redisson-spring-data-21,Redis,245,2018-12-24,2026-01-05,868,3126
+68,redisson,redisson-spring-data-22,Redis,218,2019-10-11,2026-01-05,795,2834
+68,redisson,redisson-spring-data-23,Redis,200,2020-05-26,2026-01-05,733,2586
+68,redisson,redisson-spring-data-24,Redis,188,2020-11-20,2026-01-05,691,2418
+68,redisson,redisson-spring-data-25,Redis,170,2021-06-15,2026-01-05,642,2222
+68,redisson,redisson-spring-data-26,Redis,160,2021-11-22,2026-01-05,605,2074
+68,redisson,redisson-spring-data-27,Redis,150,2022-05-15,2026-01-05,569,1930
+68,redisson,redisson-spring-data-30,Redis,135,2022-11-21,2026-01-05,532,1782
+68,redisson,redisson-spring-data-31,Redis,111,2023-05-19,2026-01-05,465,1514
+68,redisson,redisson-spring-data-32,Redis,87,2023-11-18,2026-01-05,395,1234
+68,redisson,redisson-spring-data-33,Redis,63,2024-05-30,2026-01-05,280,774
+68,redisson,redisson-spring-data-34,Redis,41,2024-11-23,2026-01-05,179,370
+68,redisson,redisson-spring-data-35,Redis,18,2025-05-23,2026-01-05,125,250
+68,redisson,redisson-spring-data-40,Redis,6,2025-11-27,2026-01-05,50,100
+68,redisson,redisson-spring-transaction,Redis,3,2025-12-22,2026-01-05,19,19
+68,redisson,redisson-tomcat,Redis,275,2016-11-26,2026-01-05,908,908
+68,redisson,redisson-tomcat-10,Redis,177,2021-01-04,2026-01-05,683,683
+68,redisson,redisson-tomcat-11,Redis,43,2024-10-14,2026-01-05,207,207
+68,redisson,redisson-tomcat-6,Redis,69,2016-11-26,2019-11-28,127,127
+68,redisson,redisson-tomcat-7,Redis,275,2016-11-26,2026-01-05,908,908
+68,redisson,redisson-tomcat-8,Redis,275,2016-11-26,2026-01-05,908,908
+68,redisson,redisson-tomcat-9,Redis,254,2018-01-29,2026-01-05,886,886
+69,runelite,http-service,H2,1,2020-02-13,2021-12-23,188,188
+69,runelite,http-service,Maria DB,1,2020-02-13,2021-12-23,188,188
+69,runelite,http-service,MongoDB,1,2020-02-13,2021-12-23,188,188
+69,runelite,cache-updater,MySQL,1,2020-02-13,2023-07-30,360,360
+69,runelite,http-service,Redis,1,2020-02-13,2021-12-23,188,188
+7,shardingsphere-elasticjob,elastic-job-cloud-executor,H2,1,2016-11-07,2017-10-27,44,44
+7,shardingsphere-elasticjob,elastic-job-common,H2,1,2016-08-12,2016-08-24,6,6
+7,shardingsphere-elasticjob,elastic-job-common-core,H2,1,2016-11-10,2017-12-19,36,36
+7,shardingsphere-elasticjob,elastic-job-core,H2,1,2016-08-25,2016-11-09,27,27
+7,shardingsphere-elasticjob,elastic-job-example-lite-java,H2,1,2020-07-06,2020-07-08,2,2
+7,shardingsphere-elasticjob,elastic-job-example-lite-spring,H2,1,2020-07-06,2020-07-08,2,2
+7,shardingsphere-elasticjob,elastic-job-example-lite-springboot,H2,1,2020-07-06,2020-07-08,2,2
+7,shardingsphere-elasticjob,elastic-job-lite-console,H2,1,2020-06-25,2020-07-08,17,17
+7,shardingsphere-elasticjob,elastic-job-lite-core,H2,1,2017-12-19,2020-06-23,21,21
+7,shardingsphere-elasticjob,elastic-job-lite-spring,H2,1,2016-08-22,2020-07-08,104,104
+7,shardingsphere-elasticjob,elastic-job-lite-tracing-rdb,H2,1,2020-06-23,2020-07-08,19,19
+7,shardingsphere-elasticjob,elasticjob-cloud-common,H2,2,2020-07-10,2023-10-14,125,125
+7,shardingsphere-elasticjob,elasticjob-cloud-executor,H2,2,2020-07-10,2023-10-14,125,125
+7,shardingsphere-elasticjob,elasticjob-cloud-scheduler,H2,2,2020-12-12,2023-10-14,42,42
+7,shardingsphere-elasticjob,elasticjob-engine-spring-boot-starter,H2,1,2023-10-14,2023-10-15,7,7
+7,shardingsphere-elasticjob,elasticjob-engine-spring-namespace,H2,1,2023-10-14,2023-10-15,7,7
+7,shardingsphere-elasticjob,elasticjob-lite-console,H2,1,2020-07-10,2020-07-21,28,28
+7,shardingsphere-elasticjob,elasticjob-lite-spring,H2,1,2020-07-10,2020-07-20,19,19
+7,shardingsphere-elasticjob,elasticjob-lite-spring-boot-starter,H2,2,2020-07-18,2023-10-14,110,110
+7,shardingsphere-elasticjob,elasticjob-lite-spring-namespace,H2,2,2020-07-20,2023-10-14,106,106
+7,shardingsphere-elasticjob,elasticjob-lite-tracing-rdb,H2,1,2020-07-10,2020-07-10,1,1
+7,shardingsphere-elasticjob,elasticjob-spring-boot-starter,H2,1,2023-10-15,2025-09-25,50,50
+7,shardingsphere-elasticjob,elasticjob-spring-namespace,H2,1,2023-10-15,2025-09-25,50,50
+7,shardingsphere-elasticjob,elasticjob-test-native,H2,1,2024-07-29,2025-09-25,17,17
+7,shardingsphere-elasticjob,elasticjob-tracing-rdb,H2,2,2020-07-11,2025-09-25,181,181
+7,shardingsphere-elasticjob,elasticjob-tracing-spring-boot-starter,H2,1,2020-07-18,2020-07-20,8,8
+7,shardingsphere-elasticjob,elastic-job-api,MySQL,1,2016-08-12,2016-08-22,5,5
+7,shardingsphere-elasticjob,elastic-job-cloud-agent,MySQL,1,2016-08-12,2016-08-22,5,5
+7,shardingsphere-elasticjob,elastic-job-cloud-executor,MySQL,1,2016-08-24,2017-10-27,48,48
+7,shardingsphere-elasticjob,elastic-job-cloud-master,MySQL,1,2016-08-12,2016-08-22,5,5
+7,shardingsphere-elasticjob,elastic-job-cloud-scheduler,MySQL,1,2016-08-24,2017-10-27,52,52
+7,shardingsphere-elasticjob,elastic-job-common,MySQL,1,2016-08-12,2016-08-24,6,6
+7,shardingsphere-elasticjob,elastic-job-core,MySQL,1,2016-08-24,2016-09-05,7,7
+7,shardingsphere-elasticjob,elastic-job-example-lite-java,MySQL,1,2020-07-06,2020-07-08,2,2
+7,shardingsphere-elasticjob,elastic-job-example-lite-spring,MySQL,1,2020-07-06,2020-07-08,2,2
+7,shardingsphere-elasticjob,elastic-job-example-lite-springboot,MySQL,1,2020-07-06,2020-07-08,2,2
+7,shardingsphere-elasticjob,elastic-job-lite-console,MySQL,1,2016-08-12,2020-06-26,58,58
+7,shardingsphere-elasticjob,elastic-job-lite-core,MySQL,1,2016-08-12,2020-06-25,35,35
+7,shardingsphere-elasticjob,elastic-job-lite-lifecycle,MySQL,1,2016-08-12,2020-06-25,35,35
+7,shardingsphere-elasticjob,elastic-job-lite-lifecycle-core,MySQL,1,2016-08-12,2016-09-02,11,11
+7,shardingsphere-elasticjob,elastic-job-lite-spring,MySQL,1,2016-08-12,2020-06-25,35,35
+7,shardingsphere-elasticjob,elastic-job-lite-tracing-rdb,MySQL,1,2020-06-23,2020-06-25,3,3
+7,shardingsphere-elasticjob,elasticjob-cloud-executor,MySQL,1,2020-07-10,2020-07-31,40,40
+7,shardingsphere-elasticjob,elasticjob-cloud-scheduler,MySQL,1,2020-07-10,2020-07-31,40,40
+7,shardingsphere-elasticjob,elasticjob-cloud-scheduler-distribution,MySQL,1,2020-07-27,2020-07-31,6,6
+6,shiro,shiro-all,Hazelcast,4,2016-11-10,2020-05-12,68,68
+6,shiro,shiro-hazelcast,Hazelcast,16,2016-11-10,2026-01-05,890,890
+6,shiro,shiro-test-coverage,Hazelcast,16,2016-11-10,2025-04-11,771,771
+6,shiro,samples-sprhib,HyperSQL,6,2019-06-13,2026-01-05,857,857
+6,shiro,samples-spring-mvc,HyperSQL,6,2019-06-13,2026-01-05,857,857
+6,shiro,shiro-core,HyperSQL,6,2019-06-13,2026-01-05,857,857
+10,skywalking,apache-skywalking-apm,Etcd,2,2022-03-02,2026-01-05,177,177
+10,skywalking,cluster-etcd-plugin,Etcd,2,2022-03-02,2026-01-05,177,177
+10,skywalking,configuration-etcd,Etcd,2,2022-03-02,2026-01-05,177,177
+10,skywalking,data-generator,Etcd,2,2022-04-23,2026-01-05,159,159
+10,skywalking,server-starter,Etcd,2,2022-03-02,2026-01-05,177,177
+10,skywalking,tool-profile-snapshot-bootstrap,Etcd,2,2022-03-02,2026-01-05,177,177
+10,skywalking,tool-profile-snapshot-exporter,Etcd,2,2022-03-02,2026-01-05,177,177
+10,skywalking,agent-grpc-provider,H2,1,2018-01-04,2018-02-25,16,16
+10,skywalking,agent-jetty-provider,H2,1,2018-01-04,2018-02-25,16,16
+10,skywalking,alarm-provider,H2,1,2018-01-04,2018-02-25,16,16
+10,skywalking,analysis-worker-model,H2,1,2018-01-04,2018-02-25,16,16
+10,skywalking,apache-skywalking-apm,H2,3,2019-04-21,2024-12-23,429,429
+10,skywalking,apache-skywalking-apm-es7,H2,1,2019-12-24,2020-11-08,145,145
+10,skywalking,apache-skywalking-apm-incubating,H2,1,2018-09-04,2019-04-17,71,71
+10,skywalking,apm-collector-agent,H2,1,2017-11-15,2017-11-19,4,4
+10,skywalking,apm-collector-agentjvm,H2,1,2017-08-01,2017-11-06,45,45
+10,skywalking,apm-collector-agentregister,H2,1,2017-08-01,2017-11-06,45,45
+10,skywalking,apm-collector-agentserver,H2,1,2017-08-01,2017-11-06,45,45
+10,skywalking,apm-collector-agentstream,H2,1,2017-08-01,2017-11-06,45,45
+10,skywalking,apm-collector-boot,H2,1,2017-07-17,2018-02-25,94,94
+10,skywalking,apm-collector-cache,H2,1,2017-10-21,2018-02-25,53,53
+10,skywalking,apm-collector-client,H2,1,2017-07-17,2017-11-06,49,49
+10,skywalking,apm-collector-cluster,H2,1,2017-07-17,2018-02-25,94,94
+10,skywalking,apm-collector-naming,H2,1,2017-11-15,2018-02-25,45,45
+10,skywalking,apm-collector-remote,H2,1,2017-11-15,2018-02-25,45,45
+10,skywalking,apm-collector-storage,H2,1,2017-08-01,2018-02-25,90,90
+10,skywalking,apm-collector-stream,H2,1,2017-08-01,2017-12-31,74,74
+10,skywalking,apm-collector-ui,H2,1,2017-08-01,2017-11-06,45,45
+10,skywalking,apm-h2-1.x-plugin,H2,1,2017-10-21,2020-11-08,410,410
+10,skywalking,apm-jdbc-plugin,H2,1,2017-04-28,2017-10-21,51,51
+10,skywalking,client-component,H2,1,2017-11-15,2018-02-25,45,45
+10,skywalking,cluster-kubernetes-plugin,H2,1,2018-09-04,2018-10-21,9,9
+10,skywalking,cluster-standalone-plugin,H2,1,2018-09-04,2018-10-21,9,9
+10,skywalking,cluster-zookeeper-plugin,H2,1,2018-09-04,2018-10-21,9,9
+10,skywalking,collector-agent-define,H2,1,2017-11-15,2017-11-19,4,4
+10,skywalking,collector-agent-grpc-provider,H2,1,2017-11-15,2017-12-31,29,29
+10,skywalking,collector-agent-jetty-provider,H2,1,2017-11-15,2017-12-31,29,29
+10,skywalking,collector-agent-stream,H2,1,2017-11-15,2017-11-19,4,4
+10,skywalking,collector-agent-stream-provider,H2,1,2017-11-19,2017-12-31,25,25
+10,skywalking,collector-alerting-provider,H2,1,2017-12-09,2017-12-31,12,12
+10,skywalking,collector-cache-define,H2,1,2017-11-15,2018-02-25,45,45
+10,skywalking,collector-cache-guava-provider,H2,1,2017-11-15,2018-02-25,45,45
+10,skywalking,collector-cluster-define,H2,1,2017-11-15,2018-02-25,45,45
+10,skywalking,collector-cluster-redis-provider,H2,1,2017-11-15,2018-02-25,45,45
+10,skywalking,collector-cluster-standalone-provider,H2,1,2017-11-15,2018-02-25,45,45
+10,skywalking,collector-cluster-zookeeper-provider,H2,1,2017-11-15,2018-02-25,45,45
+10,skywalking,collector-naming-define,H2,1,2017-11-15,2018-02-25,45,45
+10,skywalking,collector-naming-jetty-provider,H2,1,2017-11-15,2018-02-25,45,45
+10,skywalking,collector-remote-define,H2,1,2017-11-15,2018-02-25,45,45
+10,skywalking,collector-remote-grpc-provider,H2,1,2017-11-15,2018-02-25,45,45
+10,skywalking,collector-remote-kafka-provider,H2,1,2017-11-15,2018-02-25,45,45
+10,skywalking,collector-storage-define,H2,1,2017-11-15,2018-02-25,45,45
+10,skywalking,collector-storage-es-provider,H2,1,2017-11-15,2018-02-25,45,45
+10,skywalking,collector-storage-h2-provider,H2,1,2017-11-15,2018-02-25,45,45
+10,skywalking,collector-stream-define,H2,1,2017-11-15,2017-11-19,4,4
+10,skywalking,collector-stream-provider,H2,1,2017-11-15,2017-11-19,4,4
+10,skywalking,collector-ui-jetty-provider,H2,1,2017-11-15,2018-02-25,45,45
+10,skywalking,data-generator,H2,2,2022-04-23,2024-12-23,124,124
+10,skywalking,dubbo-impl,H2,1,2016-07-28,2016-12-06,24,24
+10,skywalking,example-dubbox-rest,H2,1,2016-08-11,2016-12-06,16,16
+10,skywalking,jvm-provider,H2,1,2018-01-04,2018-02-25,16,16
+10,skywalking,library-client,H2,1,2018-09-04,2018-10-21,9,9
+10,skywalking,mesh-receiver-module,H2,1,2018-09-04,2018-09-25,5,5
+10,skywalking,mesh-receiver-provider,H2,1,2018-09-04,2018-09-25,5,5
+10,skywalking,metric-provider,H2,1,2018-01-04,2018-02-25,16,16
+10,skywalking,query-graphql-plugin,H2,1,2018-09-04,2018-10-21,9,9
+10,skywalking,register-provider,H2,1,2018-01-04,2018-02-25,16,16
+10,skywalking,segment-parser-provider,H2,1,2018-01-04,2018-02-25,16,16
+10,skywalking,server-alarm-plugin,H2,1,2018-09-04,2018-10-21,9,9
+10,skywalking,server-bootstrap,H2,1,2019-11-21,2020-11-08,160,160
+10,skywalking,server-core,H2,1,2018-09-04,2018-10-21,9,9
+10,skywalking,server-receiver-plugin,H2,1,2018-09-04,2018-10-21,9,9
+10,skywalking,server-starter,H2,3,2018-09-04,2024-12-23,500,500
+10,skywalking,server-starter-es7,H2,1,2019-11-21,2020-11-08,160,160
+10,skywalking,skywalking-istio-telemetry-receiver-plugin,H2,1,2018-09-04,2018-10-21,9,9
+10,skywalking,skywalking-jdbc-plugin,H2,1,2016-07-22,2017-04-27,99,99
+10,skywalking,skywalking-jvm-receiver-plugin,H2,1,2018-09-04,2018-10-21,9,9
+10,skywalking,skywalking-mesh-receiver-plugin,H2,1,2018-09-04,2018-10-21,9,9
+10,skywalking,skywalking-register-receiver-plugin,H2,1,2018-09-04,2018-10-21,9,9
+10,skywalking,skywalking-trace-receiver-plugin,H2,1,2018-09-04,2018-10-21,9,9
+10,skywalking,storage-elasticsearch-plugin,H2,1,2018-09-04,2018-10-21,9,9
+10,skywalking,storage-influxdb-plugin,H2,1,2020-02-19,2020-03-31,19,19
+10,skywalking,storage-jdbc-hikaricp-plugin,H2,3,2018-10-28,2024-12-23,491,491
+10,skywalking,storage-shardingsphere-plugin,H2,1,2022-09-30,2023-03-14,34,34
+10,skywalking,storage-tidb-plugin,H2,2,2022-03-02,2023-03-14,71,71
+10,skywalking,tool-profile-snapshot-bootstrap,H2,3,2020-03-04,2024-12-23,250,250
+10,skywalking,tool-profile-snapshot-exporter,H2,3,2020-03-04,2024-12-23,250,250
+10,skywalking,tool-profile-snapshot-exporter-es7,H2,1,2020-03-04,2020-11-08,108,108
+10,skywalking,zipkin-receiver-plugin,H2,1,2018-09-04,2018-10-21,9,9
+10,skywalking,apm-hbase-1.x-plugin,HBase,1,2020-08-05,2020-11-08,52,52
+10,skywalking,skywalking-analysis,HBase,2,2016-04-03,2016-10-25,74,148
+10,skywalking,skywalking-server,HBase,1,2016-04-03,2016-10-25,74,74
+10,skywalking,skywalking-webui,HBase,1,2016-04-03,2016-10-25,74,74
+10,skywalking,apache-skywalking-apm,Influx DB,1,2020-02-19,2022-05-04,131,131
+10,skywalking,apache-skywalking-apm-es7,Influx DB,1,2020-02-19,2020-11-08,111,111
+10,skywalking,apm-influxdb-2.x-plugin,Influx DB,1,2020-06-21,2020-11-08,66,66
+10,skywalking,data-generator,Influx DB,1,2022-04-23,2022-05-04,2,2
+10,skywalking,server-bootstrap,Influx DB,1,2020-02-19,2020-11-08,111,111
+10,skywalking,server-starter,Influx DB,1,2020-02-19,2022-05-04,131,131
+10,skywalking,server-starter-es7,Influx DB,1,2020-02-19,2020-11-08,111,111
+10,skywalking,storage-influxdb-plugin,Influx DB,1,2020-02-19,2022-05-04,131,131
+10,skywalking,tool-profile-snapshot-bootstrap,Influx DB,1,2020-03-04,2022-05-04,128,128
+10,skywalking,tool-profile-snapshot-exporter,Influx DB,1,2020-03-04,2022-05-04,128,128
+10,skywalking,tool-profile-snapshot-exporter-es7,Influx DB,1,2020-03-04,2020-11-08,108,108
+10,skywalking,apm-mariadb-2.x-plugin,Maria DB,1,2020-05-07,2020-11-08,81,81
+10,skywalking,apm-mongodb-4.x-plugin,MongoDB,1,2020-09-22,2020-11-08,28,28
+10,skywalking,apm-jdbc-commons,MySQL,1,2017-10-21,2020-11-08,410,410
+10,skywalking,apm-jdbc-plugin,MySQL,2,2017-04-28,2017-10-21,51,51
+10,skywalking,apm-mysql-2.x-plugin,MySQL,1,2017-10-21,2017-11-01,5,5
+10,skywalking,apm-mysql-5.x-plugin,MySQL,2,2017-11-01,2020-11-08,405,405
+10,skywalking,apm-mysql-6.x-plugin,MySQL,1,2019-03-13,2020-11-08,306,306
+10,skywalking,apm-mysql-8.x-plugin,MySQL,1,2019-03-13,2020-11-08,306,306
+10,skywalking,apm-mysql-commons,MySQL,1,2019-03-13,2020-11-08,306,306
+10,skywalking,apm-sharding-jdbc-1.5.x-plugin,MySQL,1,2017-10-13,2020-11-08,417,417
+10,skywalking,apm-sharding-sphere-3.x-plugin,MySQL,1,2019-05-15,2020-11-08,280,280
+10,skywalking,apm-sharding-sphere-4.1.0-plugin,MySQL,1,2020-06-11,2020-11-08,73,73
+10,skywalking,apm-sharding-sphere-4.x-plugin,MySQL,1,2019-06-02,2020-11-08,274,274
+10,skywalking,apm-sharding-sphere-4.x-rc3-plugin,MySQL,1,2019-12-31,2020-11-08,130,130
+10,skywalking,apm-shardingsphere-4.0.x-plugin,MySQL,1,2020-06-15,2020-11-08,69,69
+10,skywalking,skywalking-agent,MySQL,1,2016-06-04,2016-06-05,2,2
+10,skywalking,skywalking-alarm,MySQL,1,2016-04-03,2017-02-09,109,109
+10,skywalking,skywalking-analysis,MySQL,1,2016-04-03,2016-10-25,74,74
+10,skywalking,skywalking-jdbc-plugin,MySQL,2,2016-04-03,2017-04-27,152,152
+10,skywalking,skywalking-mysql-plugin,MySQL,1,2016-04-03,2016-06-14,34,34
+10,skywalking,skywalking-spring-plugin,MySQL,1,2016-04-03,2016-08-11,66,66
+10,skywalking,skywalking-webui,MySQL,1,2016-04-03,2017-02-09,104,104
+10,skywalking,storage-shardingsphere-plugin,MySQL,1,2022-11-17,2023-03-14,27,27
+10,skywalking,apm-jdbc-plugin,Oracle,1,2017-04-28,2017-10-21,51,51
+10,skywalking,apm-oracle-10.x-plugin,Oracle,1,2017-10-21,2018-01-12,41,41
+10,skywalking,skywalking-jdbc-plugin,Oracle,2,2016-06-14,2017-04-27,121,121
+10,skywalking,apache-skywalking-apm,PostgreSQL,4,2022-03-02,2026-01-05,177,177
+10,skywalking,apm-jdbc-plugin,PostgreSQL,1,2017-10-18,2017-10-21,4,4
+10,skywalking,apm-postgresql-8.x-plugin,PostgreSQL,1,2017-10-21,2020-11-08,410,410
+10,skywalking,apm-postgresql-commons,PostgreSQL,1,2019-10-28,2019-10-28,1,1
+10,skywalking,apm-sharding-sphere-4.x-plugin,PostgreSQL,2,2019-06-02,2020-11-08,274,274
+10,skywalking,apm-sharding-sphere-4.x-rc3-plugin,PostgreSQL,1,2019-12-31,2020-11-08,130,130
+10,skywalking,data-generator,PostgreSQL,3,2022-04-23,2026-01-05,159,159
+10,skywalking,server-starter,PostgreSQL,4,2022-03-02,2026-01-05,177,177
+10,skywalking,storage-jdbc-hikaricp-plugin,PostgreSQL,4,2022-03-02,2026-01-05,177,177
+10,skywalking,storage-shardingsphere-plugin,PostgreSQL,1,2022-09-30,2023-03-14,34,34
+10,skywalking,storage-tidb-plugin,PostgreSQL,3,2022-03-02,2023-03-14,71,71
+10,skywalking,tool-profile-snapshot-bootstrap,PostgreSQL,4,2022-03-02,2026-01-05,177,177
+10,skywalking,tool-profile-snapshot-exporter,PostgreSQL,4,2022-03-02,2026-01-05,177,177
+10,skywalking,agent-grpc-provider,Redis,1,2018-01-04,2018-02-25,16,16
+10,skywalking,agent-jetty-provider,Redis,1,2018-01-04,2018-02-25,16,16
+10,skywalking,alarm-provider,Redis,1,2018-01-04,2018-02-25,16,16
+10,skywalking,analysis-worker-model,Redis,1,2018-01-04,2018-02-25,16,16
+10,skywalking,apm-collector-agent,Redis,1,2017-11-15,2017-11-19,4,4
+10,skywalking,apm-collector-agentjvm,Redis,1,2017-08-01,2017-11-06,45,45
+10,skywalking,apm-collector-agentregister,Redis,1,2017-08-01,2017-11-06,45,45
+10,skywalking,apm-collector-agentserver,Redis,1,2017-08-01,2017-11-06,45,45
+10,skywalking,apm-collector-agentstream,Redis,1,2017-08-01,2017-11-06,45,45
+10,skywalking,apm-collector-boot,Redis,1,2017-07-17,2018-02-25,94,94
+10,skywalking,apm-collector-cache,Redis,1,2017-10-21,2018-02-25,53,53
+10,skywalking,apm-collector-client,Redis,1,2017-07-17,2017-11-06,49,49
+10,skywalking,apm-collector-cluster,Redis,1,2017-07-17,2018-02-25,94,94
+10,skywalking,apm-collector-naming,Redis,1,2017-11-15,2018-02-25,45,45
+10,skywalking,apm-collector-remote,Redis,1,2017-11-15,2018-02-25,45,45
+10,skywalking,apm-collector-storage,Redis,1,2017-08-01,2018-02-25,90,90
+10,skywalking,apm-collector-stream,Redis,1,2017-08-01,2017-12-31,74,74
+10,skywalking,apm-collector-ui,Redis,1,2017-08-01,2017-11-06,45,45
+10,skywalking,apm-jedis-2.x-plugin,Redis,1,2017-04-28,2020-11-08,461,461
+10,skywalking,apm-lettuce-5.x-plugin,Redis,1,2019-01-26,2020-11-08,318,318
+10,skywalking,apm-redisson-3.x-plugin,Redis,1,2019-01-11,2020-11-08,320,320
+10,skywalking,client-component,Redis,1,2017-11-15,2018-02-25,45,45
+10,skywalking,collector-agent-define,Redis,1,2017-11-15,2017-11-19,4,4
+10,skywalking,collector-agent-grpc-provider,Redis,1,2017-11-15,2017-12-31,29,29
+10,skywalking,collector-agent-jetty-provider,Redis,1,2017-11-15,2017-12-31,29,29
+10,skywalking,collector-agent-stream,Redis,1,2017-11-15,2017-11-19,4,4
+10,skywalking,collector-agent-stream-provider,Redis,1,2017-11-19,2017-12-31,25,25
+10,skywalking,collector-alerting-provider,Redis,1,2017-12-09,2017-12-31,12,12
+10,skywalking,collector-cache-define,Redis,1,2017-11-15,2018-02-25,45,45
+10,skywalking,collector-cache-guava-provider,Redis,1,2017-11-15,2018-02-25,45,45
+10,skywalking,collector-cluster-define,Redis,1,2017-11-15,2018-02-25,45,45
+10,skywalking,collector-cluster-redis-provider,Redis,1,2017-11-15,2018-02-25,45,45
+10,skywalking,collector-cluster-standalone-provider,Redis,1,2017-11-15,2018-02-25,45,45
+10,skywalking,collector-cluster-zookeeper-provider,Redis,1,2017-11-15,2018-02-25,45,45
+10,skywalking,collector-naming-define,Redis,1,2017-11-15,2018-02-25,45,45
+10,skywalking,collector-naming-jetty-provider,Redis,1,2017-11-15,2018-02-25,45,45
+10,skywalking,collector-remote-define,Redis,1,2017-11-15,2018-02-25,45,45
+10,skywalking,collector-remote-grpc-provider,Redis,1,2017-11-15,2018-02-25,45,45
+10,skywalking,collector-remote-kafka-provider,Redis,1,2017-11-15,2018-02-25,45,45
+10,skywalking,collector-storage-define,Redis,1,2017-11-15,2018-02-25,45,45
+10,skywalking,collector-storage-es-provider,Redis,1,2017-11-15,2018-02-25,45,45
+10,skywalking,collector-storage-h2-provider,Redis,1,2017-11-15,2018-02-25,45,45
+10,skywalking,collector-stream-define,Redis,1,2017-11-15,2017-11-19,4,4
+10,skywalking,collector-stream-provider,Redis,1,2017-11-15,2017-11-19,4,4
+10,skywalking,collector-ui-jetty-provider,Redis,1,2017-11-15,2018-02-25,45,45
+10,skywalking,jvm-provider,Redis,1,2018-01-04,2018-02-25,16,16
+10,skywalking,metric-provider,Redis,1,2018-01-04,2018-02-25,16,16
+10,skywalking,register-provider,Redis,1,2018-01-04,2018-02-25,16,16
+10,skywalking,segment-parser-provider,Redis,1,2018-01-04,2018-02-25,16,16
+10,skywalking,skywalking-agent,Redis,1,2016-06-04,2016-06-06,12,12
+10,skywalking,skywalking-alarm,Redis,1,2016-04-03,2017-02-09,109,109
+10,skywalking,skywalking-analysis,Redis,1,2016-05-15,2016-05-15,1,1
+10,skywalking,skywalking-jedis-2.x-plugin,Redis,2,2016-04-03,2017-04-27,152,152
+10,skywalking,skywalking-routing,Redis,1,2016-12-12,2017-02-09,19,19
+10,skywalking,skywalking-server,Redis,1,2016-04-03,2016-10-25,74,74
+10,skywalking,skywalking-storage,Redis,1,2016-12-11,2016-12-11,2,2
+72,spring-batch,spring-batch-core,H2,7,2010-12-19,2025-12-17,234,234
+72,spring-batch,spring-batch-infrastructure,H2,7,2009-12-19,2025-12-17,278,278
+72,spring-batch,spring-batch-core,HyperSQL,5,2021-01-29,2025-12-17,177,177
+72,spring-batch,spring-batch-infrastructure,HyperSQL,5,2021-01-29,2025-12-17,177,177
+72,spring-batch,spring-batch-integration,HyperSQL,5,2021-01-29,2025-12-17,177,177
+72,spring-batch,spring-batch-jsr352-tck,HyperSQL,1,2021-01-29,2021-01-29,1,1
+72,spring-batch,spring-batch-samples,HyperSQL,5,2021-01-29,2025-12-17,177,177
+72,spring-batch,spring-batch-test,HyperSQL,5,2021-01-29,2025-12-17,177,177
+72,spring-batch,spring-batch-core,IBM DB2,5,2022-11-23,2025-12-17,175,175
+72,spring-batch,spring-batch-infrastructure,IBM DB2,4,2024-12-10,2025-12-17,78,78
+72,spring-batch,spring-batch-core,MS SQL Server_Microsoft Azure SQL Database,2,2022-11-23,2025-12-17,175,175
+72,spring-batch,spring-batch-infrastructure,MS SQL Server_Microsoft Azure SQL Database,1,2024-12-10,2025-12-17,78,78
+72,spring-batch,spring-batch-core,Maria DB,13,2022-11-23,2025-12-17,175,175
+72,spring-batch,spring-batch-infrastructure,Maria DB,7,2024-12-10,2025-12-17,78,78
+72,spring-batch,spring-batch-core,MongoDB,22,2024-10-10,2025-12-17,91,184
+72,spring-batch,spring-batch-infrastructure,MongoDB,45,2021-01-29,2025-12-17,177,406
+72,spring-batch,spring-batch-samples,MongoDB,45,2021-01-29,2025-12-17,177,406
+72,spring-batch,spring-batch-core,MySQL,12,2021-01-29,2025-12-17,177,177
+72,spring-batch,spring-batch-infrastructure,MySQL,5,2024-12-10,2025-12-17,78,78
+72,spring-batch,spring-batch-samples,MySQL,1,2008-03-25,2008-05-26,18,18
+72,spring-batch,spring-batch-infrastructure,Neo4j,10,2021-01-29,2025-07-23,122,122
+72,spring-batch,spring-batch-core,Oracle,11,2022-11-23,2025-12-17,175,175
+72,spring-batch,spring-batch-infrastructure,Oracle,5,2024-12-10,2025-12-17,78,78
+72,spring-batch,spring-batch-core,PostgreSQL,9,2022-11-23,2025-12-17,175,175
+72,spring-batch,spring-batch-infrastructure,PostgreSQL,4,2024-12-10,2025-12-17,78,78
+72,spring-batch,spring-batch-samples,PostgreSQL,2,2025-10-15,2025-12-17,29,29
+72,spring-batch,spring-batch-infrastructure,Redis,28,2023-09-12,2025-12-17,128,246
+72,spring-batch,spring-batch-core,SQLite,16,2022-11-23,2025-12-17,175,175
+72,spring-batch,spring-batch-infrastructure,SQLite,17,2021-01-29,2025-12-17,177,177
+72,spring-batch,spring-batch-core,SapHana,12,2022-11-23,2025-12-17,175,175
+71,spring-data-redis,spring-data-redis,Redis,90,2017-10-02,2025-11-14,169,507
+73,springdoc-openapi,springdoc-openapi-data-rest,H2,1,2019-12-05,2022-01-23,252,252
+73,springdoc-openapi,springdoc-openapi-data-rest-tests,H2,4,2022-07-30,2026-01-01,185,185
+73,springdoc-openapi,springdoc-openapi-hateoas,H2,1,2020-05-17,2022-01-23,151,151
+73,springdoc-openapi,springdoc-openapi-hateoas-tests,H2,4,2022-07-30,2026-01-01,185,185
+48,tablesaw,tablesaw,H2,1,2017-02-18,2017-08-09,15,15
+48,tablesaw,tablesaw-core,H2,8,2017-08-09,2025-07-11,292,292
+76,thingsboard,application,Cassandra,7,2016-12-01,2026-01-07,304,304
+76,thingsboard,black-box-tests,Cassandra,3,2020-06-11,2021-07-15,58,58
+76,thingsboard,dao,Cassandra,5,2016-12-01,2023-03-01,158,158
+76,thingsboard,rule-engine-components,Cassandra,4,2020-06-11,2023-03-01,145,145
+76,thingsboard,tools,Cassandra,6,2020-06-11,2026-01-07,291,291
+76,thingsboard,application,Firebase Realtime,4,2024-02-16,2026-01-07,94,188
+76,thingsboard,tb,Firebase Realtime,4,2024-02-16,2026-01-07,94,188
+76,thingsboard,tb-node,Firebase Realtime,4,2024-02-16,2026-01-07,94,188
+76,thingsboard,application,GoogleCloudFirestore,2,2024-02-16,2026-01-07,94,94
+76,thingsboard,tb,GoogleCloudFirestore,2,2024-02-16,2026-01-07,94,94
+76,thingsboard,tb-node,GoogleCloudFirestore,2,2024-02-16,2026-01-07,94,94
+76,thingsboard,application,Hazelcast,2,2016-12-01,2017-01-21,13,26
+76,thingsboard,coap,Hazelcast,2,2017-01-18,2017-01-21,2,4
+76,thingsboard,dao,Hazelcast,2,2016-12-01,2017-01-21,13,26
+76,thingsboard,http,Hazelcast,2,2017-01-18,2017-01-21,2,4
+76,thingsboard,mqtt,Hazelcast,2,2017-01-18,2017-01-21,2,4
+76,thingsboard,transport,Hazelcast,2,2017-01-18,2017-01-21,2,4
+76,thingsboard,application,HyperSQL,3,2020-06-11,2021-12-16,96,96
+76,thingsboard,dao,HyperSQL,3,2020-06-11,2021-12-16,96,96
+76,thingsboard,tb,HyperSQL,2,2020-06-11,2021-08-27,72,72
+76,thingsboard,tb-node,HyperSQL,2,2020-06-11,2021-08-27,72,72
+76,thingsboard,application,Oracle,2,2024-04-25,2026-01-07,84,84
+76,thingsboard,dao,Oracle,2,2024-04-25,2026-01-07,84,84
+76,thingsboard,application,PostgreSQL,7,2020-06-11,2026-01-07,291,291
+76,thingsboard,dao,PostgreSQL,7,2020-06-11,2026-01-07,291,291
+76,thingsboard,rule-engine-components,PostgreSQL,7,2020-06-11,2026-01-07,291,291
+76,thingsboard,tb,PostgreSQL,7,2020-06-11,2026-01-07,291,291
+76,thingsboard,tb-node,PostgreSQL,7,2020-06-11,2026-01-07,291,291
+76,thingsboard,application,Redis,18,2020-06-11,2026-01-07,291,582
+76,thingsboard,cache,Redis,17,2021-02-26,2026-01-07,262,524
+76,thingsboard,coap,Redis,17,2021-02-26,2026-01-07,262,524
+76,thingsboard,coap-server,Redis,17,2021-04-09,2026-01-07,255,510
+76,thingsboard,dao,Redis,18,2020-06-11,2026-01-07,291,582
+76,thingsboard,http,Redis,17,2021-02-26,2026-01-07,262,524
+76,thingsboard,lwm2m,Redis,17,2020-12-09,2026-01-07,272,534
+76,thingsboard,mqtt,Redis,17,2021-02-26,2026-01-07,262,524
+76,thingsboard,rule-engine-api,Redis,12,2020-06-11,2026-01-07,291,291
+76,thingsboard,rule-engine-components,Redis,18,2020-06-11,2026-01-07,291,582
+76,thingsboard,snmp,Redis,17,2021-04-28,2026-01-07,249,498
+76,thingsboard,tb,Redis,18,2020-06-11,2026-01-07,291,582
+76,thingsboard,tb-node,Redis,18,2020-06-11,2026-01-07,291,582
+76,thingsboard,transport-api,Redis,17,2021-02-26,2026-01-07,262,524
+14,tinkerpop,blueprints-neo4j-graph,H2,1,2013-12-29,2014-02-05,21,21
+14,tinkerpop,blueprints-test,H2,1,2013-12-29,2014-02-05,21,21
+14,tinkerpop,blueprints-tinkergraph,H2,1,2013-12-29,2014-02-05,21,21
+14,tinkerpop,giraph-gremlin,H2,1,2016-04-08,2016-10-19,7,7
+14,tinkerpop,gremlin-benchmark,H2,1,2016-04-08,2016-10-19,7,7
+14,tinkerpop,gremlin-console,H2,1,2016-04-08,2016-10-19,7,7
+14,tinkerpop,gremlin-groovy,H2,1,2014-02-05,2016-10-19,14,14
+14,tinkerpop,gremlin-groovy-test,H2,1,2016-04-08,2016-10-19,7,7
+14,tinkerpop,gremlin-java,H2,1,2014-02-05,2014-02-07,2,2
+14,tinkerpop,gremlin-python,H2,1,2016-09-06,2016-10-19,5,5
+14,tinkerpop,gremlin-server,H2,1,2013-11-07,2022-04-12,151,151
+14,tinkerpop,gremlin-test,H2,1,2014-02-05,2016-10-19,14,14
+14,tinkerpop,hadoop-gremlin,H2,1,2016-04-08,2016-10-19,7,7
+14,tinkerpop,neo4j-gremlin,H2,1,2016-04-08,2016-10-19,7,7
+14,tinkerpop,spark-gremlin,H2,1,2016-04-08,2016-10-19,7,7
+14,tinkerpop,tinkergraph,H2,1,2014-02-05,2014-02-26,7,7
+14,tinkerpop,tinkergraph-gremlin,H2,1,2016-04-08,2016-10-19,7,7
+14,tinkerpop,blueprints-neo4j-graph,Neo4j,1,2013-09-10,2014-02-05,39,39
+14,tinkerpop,gremlin-benchmark,Neo4j,1,2016-10-19,2016-10-19,1,1
+14,tinkerpop,gremlin-coverage,Neo4j,1,2019-11-08,2025-11-10,254,254
+14,tinkerpop,gremlin-server,Neo4j,2,2016-04-08,2023-07-21,181,181
+14,tinkerpop,neo4j-gremlin,Neo4j,2,2016-04-08,2025-11-10,261,261
+77,undertow,undertow-core,H2,5,2013-12-16,2025-10-17,298,298
+77,undertow,undertow-http2-test-suite,H2,1,2014-08-28,2014-08-28,1,1
+28,vert.x,vertx-dist,Hazelcast,2,2014-05-20,2014-08-20,32,32
+28,vert.x,vertx-hazelcast,Hazelcast,3,2014-05-20,2014-11-15,42,42
+28,vert.x,vertx-testsuite,Hazelcast,1,2014-05-20,2014-05-30,3,3
+82,xxl-job,xxl-job-admin,MySQL,19,2015-11-28,2026-01-04,232,232
+82,xxl-job,xxl-job-client-demo,MySQL,1,2016-05-19,2016-05-19,1,1
+82,xxl-job,xxl-job-demo,MySQL,1,2015-11-28,2015-12-01,3,3
+82,xxl-job,xxl-job-executor-example,MySQL,1,2016-05-24,2017-07-17,55,55
+82,xxl-job,xxl-job-executor-sample-jboot,MySQL,1,2019-05-23,2020-06-12,34,34
+82,xxl-job,xxl-job-executor-springboot-example,MySQL,1,2017-04-28,2017-07-17,19,19
+82,xxl-job,xxl-job-simple,MySQL,1,2015-12-26,2016-01-16,3,3
+82,xxl-job,xxl-job-executor-sample-jboot,Redis,1,2019-05-23,2020-06-12,34,34
+62,zipkin,benchmarks,Cassandra,3,2023-12-15,2025-08-15,116,116
+62,zipkin,zipkin-server,Cassandra,3,2023-12-15,2025-08-15,116,116
+62,zipkin,zipkin-storage-cassandra,Cassandra,3,2023-12-15,2025-08-15,116,116
+62,zipkin,benchmarks,Maria DB,19,2019-08-31,2025-08-15,388,388
+62,zipkin,interop,Maria DB,4,2016-01-20,2016-05-15,158,158
+62,zipkin,spanstore-jdbc,Maria DB,2,2016-02-16,2016-03-31,64,64
+62,zipkin,storage-jdbc,Maria DB,2,2016-04-03,2016-05-03,38,38
+62,zipkin,zipkin-autoconfigure-storage-mysql,Maria DB,17,2016-05-18,2019-04-21,520,520
+62,zipkin,zipkin-autoconfigure-storage-mysql-v1,Maria DB,1,2018-06-06,2018-06-07,5,5
+62,zipkin,zipkin-java-interop,Maria DB,3,2015-11-15,2016-01-19,51,51
+62,zipkin,zipkin-java-server,Maria DB,3,2015-11-15,2016-01-19,51,51
+62,zipkin,zipkin-server,Maria DB,40,2016-01-20,2025-08-15,1161,1161
+62,zipkin,zipkin-storage-jdbc,Maria DB,1,2016-05-04,2016-05-17,39,39
+62,zipkin,zipkin-storage-mysql,Maria DB,12,2016-05-18,2018-06-06,393,393
+62,zipkin,zipkin-storage-mysql-v1,Maria DB,26,2018-06-06,2025-08-15,608,608
+62,zipkin,zipkin-java-interop,MySQL,2,2015-10-04,2015-11-04,18,18
+62,zipkin,zipkin-java-jdbc,MySQL,1,2015-09-23,2015-09-27,4,4
+62,zipkin,zipkin-java-server,MySQL,2,2015-09-23,2015-11-04,22,22

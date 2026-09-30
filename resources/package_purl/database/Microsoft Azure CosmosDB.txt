@@ -1,0 +1,1 @@
+pkg:maven/com.microsoft.azure/azure-cosmos@

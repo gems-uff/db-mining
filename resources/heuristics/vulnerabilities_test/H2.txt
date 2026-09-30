@@ -1,0 +1,1 @@
+com\.h2database.*:\s*h2

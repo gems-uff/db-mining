@@ -1,2 +1,0 @@
-<\s*artifactId\s*>\s*jaybird
-<\s*artifactId\s*>\s*fbclient

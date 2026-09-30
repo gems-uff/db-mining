@@ -1,0 +1,3 @@
+com\.ibm\.db2\s*:\s*jcc
+com\.ibm\.db2\s*:\s*db2jcc
+com\.ibm\.db2\.[^:]+\s*:\s*jcc

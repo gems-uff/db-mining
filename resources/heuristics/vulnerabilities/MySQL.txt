@@ -1,0 +1,2 @@
+mysql(\.[^:]+)?\s*:\s*mysql-connector.*
+com\.mysql(\.[^:]+)?\s*:\s*mysql-connector.*

@@ -1,0 +1,4 @@
+com\.google\.firebase(\.[^:]+)?:\s*firebase-admin.*
+com\.google\.cloud(\.[^:]+)?:\s*google-cloud-firestore.*
+com\.google\.firebase(\.[^:]+)?:\s*firebase-database.*
+com\.google\.firebase(\.[^:]+)?:\s*firebase-firestore.*

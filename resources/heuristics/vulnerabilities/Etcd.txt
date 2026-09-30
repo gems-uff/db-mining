@@ -1,0 +1,2 @@
+io\.etcd\s*:\s*jetcd
+com\.ibm\.etcd\s*:\s*etcd-java

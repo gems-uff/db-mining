@@ -2,6 +2,7 @@ import json
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import inspect, text
 from sqlalchemy_utils import database_exists, create_database, drop_database
 from sqlalchemy.orm import load_only, selectinload
 
@@ -63,6 +64,10 @@ class Project(db.Model):
 
 
 class Version(db.Model):
+    __table_args__ = (
+        db.Index('idx_version_project_id_id', 'project_id', 'id'),
+        db.Index('idx_version_sha1', 'sha1'),
+    )
     id = db.Column(db.Integer, primary_key=True)
     sha1 = db.Column(db.String)
     isLast = db.Column(db.Boolean)
@@ -71,6 +76,7 @@ class Version(db.Model):
     date_commit = db.Column(db.String) #acrescentei
     project = db.relationship('Project', back_populates='versions')
     executions = db.relationship('Execution', back_populates='version', cascade="all, delete-orphan")
+    vulnerabilities = db.relationship('VersionVulnerability', back_populates='version', cascade="all, delete-orphan")
 
 
 label_category = db.Table('label_category',
@@ -102,6 +108,15 @@ class Heuristic(db.Model):
 
 
 class Execution(db.Model):
+    __table_args__ = (
+        db.UniqueConstraint(
+            'version_id',
+            'heuristic_id',
+            'execution_type',
+            name='uidx_execution_version_heuristic_type'
+        ),
+        db.Index('idx_execution_heuristic_id', 'heuristic_id'),
+    )
     id = db.Column(db.Integer, primary_key=True)
     output = db.Column(db.String)
     isValidated = db.Column(db.Boolean)
@@ -109,8 +124,20 @@ class Execution(db.Model):
     user = db.Column(db.String)
     heuristic_id = db.Column(db.Integer, db.ForeignKey('heuristic.id'))
     version_id = db.Column(db.Integer, db.ForeignKey('version.id'))
+    execution_type = db.Column(
+        db.String,
+        nullable=False,
+        default="ORIGINAL",
+        server_default="ORIGINAL",
+    )
     heuristic = db.relationship('Heuristic', back_populates='executions')
     version = db.relationship('Version', back_populates='executions')
+
+    vulnerabilities = db.relationship(
+        'VersionVulnerability',
+        back_populates='execution',
+        cascade="all, delete-orphan"
+    )
 
 
 class Vulnerability(db.Model):
@@ -119,19 +146,81 @@ class Vulnerability(db.Model):
     status = db.Column(db.String)
     description = db.Column(db.String)
     reference = db.Column(db.String)
-    phase = db.Column(db.String)
-    votes = db.Column(db.String)
-    commets = db.Column(db.String)
-    year = db.Column(db.String)
     version = db.Column(db.String)
+    last_modified_at = db.Column(db.String) 
+    cvss_score = db.Column(db.String)
+    cvss_severity = db.Column(db.String)
+    cvss_vector = db.Column(db.String)
+    purl = db.Column(db.String)
+    published_at = db.Column(db.String)       # ISO string do NVD
     label_id = db.Column(db.Integer, db.ForeignKey('label.id'))
     label = db.relationship('Label')
     
+class VersionVulnerability(db.Model):
+    __table_args__ = (
+        db.Index('idx_versionvuln_version_id', 'version_id'),
+        db.Index('idx_versionvuln_file_version', 'file', 'version_id'),
+    )
+    id = db.Column(db.Integer, primary_key=True)
+    versionNumber = db.Column(db.String)
+    file = db.Column(db.String)
+    commitsBetween = db.Column(db.Integer)
+    purl = db.Column(db.String)
+    version_id = db.Column(db.Integer, db.ForeignKey('version.id'))
+    execution_id = db.Column(db.Integer, db.ForeignKey('execution.id'))
+    version = db.relationship('Version', back_populates='vulnerabilities')
+    execution = db.relationship('Execution', back_populates='vulnerabilities')
 
+class Packagepurl(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    pattern = db.Column(db.String)
+    label_id = db.Column(db.Integer, db.ForeignKey('label.id'))
+    label = db.relationship('Label')
+
+
+class AnalysisEvent(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    project_id = db.Column(db.Integer, db.ForeignKey("project.id"), nullable=False)
+    version_id = db.Column(db.Integer, db.ForeignKey("version.id"), nullable=True)
+    event_type = db.Column(db.String(100), nullable=False)
+    status = db.Column(db.String(50), nullable=False)
+    commit_sha = db.Column(db.String(40), nullable=True)
+    message = db.Column(db.Text, nullable=True)
 
 ###########################################
 # DATABASE CONNECT, COMMIT, CLOSE
 ###########################################
+
+def ensure_schema_compatibility(engine):
+    """Apply additive schema updates required by the current code.
+
+    The Adoption and Interaction Study predates ``execution.execution_type``.
+    Adding the column with a database-side default keeps those databases
+    readable and preserves every historical execution as an original run.
+
+    This function deliberately does not retrofit the newer unique constraint
+    onto an existing database: legacy databases may contain duplicate rows,
+    and enforcing the constraint automatically could reject valid historical
+    data or make startup fail.
+    """
+    inspector = inspect(engine)
+    if "execution" not in inspector.get_table_names():
+        return []
+
+    columns = {column["name"] for column in inspector.get_columns("execution")}
+    applied = []
+
+    if "execution_type" not in columns:
+        statement = text(
+            "ALTER TABLE execution "
+            "ADD COLUMN execution_type VARCHAR NOT NULL DEFAULT 'ORIGINAL'"
+        )
+        with engine.begin() as connection:
+            connection.execute(statement)
+        applied.append("execution.execution_type")
+
+    return applied
+
 
 def connect():
     application.app_context().push()
@@ -142,7 +231,15 @@ def connect():
     if not database_exists(application.config['SQLALCHEMY_DATABASE_URI']):
         print('Creating Database...')
         create_database(application.config['SQLALCHEMY_DATABASE_URI'])
-        db.create_all()
+
+    migrations = ensure_schema_compatibility(db.engine)
+    for migration in migrations:
+        print(f'Applied database compatibility migration: {migration}')
+
+    # ``create_all`` is additive for existing databases: it creates tables
+    # introduced by the vulnerability study without dropping or rewriting the
+    # tables used by the Adoption and Interaction Study.
+    db.create_all()
 
 
 def commit():

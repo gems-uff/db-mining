@@ -20,5 +20,6 @@ def main():
     )
     process_projects(args)
 
+
 if __name__ == "__main__":
     main()

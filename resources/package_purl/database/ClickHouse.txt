@@ -1,0 +1,2 @@
+pkg:maven/com.clickhouse/clickhouse-jdbc@
+pkg:maven/ru.yandex.clickhouse/clickhouse-jdbc@

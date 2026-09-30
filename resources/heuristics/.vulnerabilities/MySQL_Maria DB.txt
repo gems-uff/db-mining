@@ -1,7 +1,0 @@
-com\.mysql\.jdbc\.Driver
-com\.mysql\.cj\.jdbc\.Driver
-jdbc:mysql
-mysql-connector-java
-org\.mariadb\.jdbc\.Driver
-jdbc:mariadb
-mariadb-java-client

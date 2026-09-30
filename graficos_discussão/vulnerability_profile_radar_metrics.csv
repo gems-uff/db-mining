@@ -1,0 +1,16 @@
+db,profile_group,vulnerable_releases_pct,propagation_pct,project_exposure_pct,post_resolution_persistence_pct,post_resolution_exposure_days_norm
+MySQL,Group 1: broad multidimensional exposure,54.807692307692314,80.0,100.0,51.4947712164211,78.41648590021691
+Redis,Group 2: propagation-oriented exposure,82.10526315789474,100.0,40.0,48.153840091421365,12.20173535791757
+PostgreSQL,Group 2: propagation-oriented exposure,34.76190476190476,60.0,100.0,15.135318251966726,100.0
+Snowflake,Group 2: propagation-oriented exposure,20.618556701030926,83.33333333333334,100.0,1.790633608815427,11.876355748373102
+H2,Group 1: broad multidimensional exposure,37.857142857142854,60.0,97.36842105263158,71.83881404677211,88.85574837310195
+Hazelcast,Group 3: high project exposure with limited temporal evidence,12.592592592592592,28.57142857142857,90.0,19.399538106235568,0.0
+SQLite,Group 2: propagation-oriented exposure,20.18348623853211,100.0,90.9090909090909,22.19086374376477,1.4099783080260302
+HyperSQL,Group 3: high project exposure with limited temporal evidence,80.0,0.0,90.0,5.514081447248884,0.0
+MSSQL/MicrosoftAzure,Group 3: high project exposure with limited temporal evidence,0.0,0.0,50.0,0.4808517946075906,0.0
+Cassandra,Group 3: high project exposure with limited temporal evidence,2.0618556701030926,0.0,75.0,0.0,0.0
+Ignite,Group 4: profiles strongly influenced by few cases,6.8181818181818175,0.0,100.0,43.802816901408455,2.9826464208242953
+MongoDB,Group 3: high project exposure with limited temporal evidence,4.191616766467066,0.0,36.36363636363637,40.684253915910965,10.84598698481562
+Couchbase,Group 4: profiles strongly influenced by few cases,1.9230769230769231,0.0,100.0,100.0,24.891540130151842
+Neo4j,Group 3: high project exposure with limited temporal evidence,0.19960079840319359,0.0,33.33333333333333,0.0,0.0
+HBase,Group 4: profiles strongly influenced by few cases,0.411522633744856,0.0,16.666666666666664,100.0,0.10845986984815618

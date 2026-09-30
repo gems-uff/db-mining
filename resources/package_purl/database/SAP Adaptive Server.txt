@@ -1,0 +1,1 @@
+pkg:maven/net.sf.squirrel-sql.plugins/sybase@
