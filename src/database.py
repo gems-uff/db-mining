@@ -2,6 +2,7 @@ import json
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import inspect, text
 from sqlalchemy_utils import database_exists, create_database, drop_database
 from sqlalchemy.orm import load_only, selectinload
 
@@ -123,7 +124,12 @@ class Execution(db.Model):
     user = db.Column(db.String)
     heuristic_id = db.Column(db.Integer, db.ForeignKey('heuristic.id'))
     version_id = db.Column(db.Integer, db.ForeignKey('version.id'))
-    execution_type = db.Column(db.String, default="ORIGINAL")
+    execution_type = db.Column(
+        db.String,
+        nullable=False,
+        default="ORIGINAL",
+        server_default="ORIGINAL",
+    )
     heuristic = db.relationship('Heuristic', back_populates='executions')
     version = db.relationship('Version', back_populates='executions')
 
@@ -185,6 +191,37 @@ class AnalysisEvent(db.Model):
 # DATABASE CONNECT, COMMIT, CLOSE
 ###########################################
 
+def ensure_schema_compatibility(engine):
+    """Apply additive schema updates required by the current code.
+
+    The Adoption and Interaction Study predates ``execution.execution_type``.
+    Adding the column with a database-side default keeps those databases
+    readable and preserves every historical execution as an original run.
+
+    This function deliberately does not retrofit the newer unique constraint
+    onto an existing database: legacy databases may contain duplicate rows,
+    and enforcing the constraint automatically could reject valid historical
+    data or make startup fail.
+    """
+    inspector = inspect(engine)
+    if "execution" not in inspector.get_table_names():
+        return []
+
+    columns = {column["name"] for column in inspector.get_columns("execution")}
+    applied = []
+
+    if "execution_type" not in columns:
+        statement = text(
+            "ALTER TABLE execution "
+            "ADD COLUMN execution_type VARCHAR NOT NULL DEFAULT 'ORIGINAL'"
+        )
+        with engine.begin() as connection:
+            connection.execute(statement)
+        applied.append("execution.execution_type")
+
+    return applied
+
+
 def connect():
     application.app_context().push()
     if config['drop_database'] == 'True':
@@ -194,7 +231,15 @@ def connect():
     if not database_exists(application.config['SQLALCHEMY_DATABASE_URI']):
         print('Creating Database...')
         create_database(application.config['SQLALCHEMY_DATABASE_URI'])
-        db.create_all()
+
+    migrations = ensure_schema_compatibility(db.engine)
+    for migration in migrations:
+        print(f'Applied database compatibility migration: {migration}')
+
+    # ``create_all`` is additive for existing databases: it creates tables
+    # introduced by the vulnerability study without dropping or rewriting the
+    # tables used by the Adoption and Interaction Study.
+    db.create_all()
 
 
 def commit():
